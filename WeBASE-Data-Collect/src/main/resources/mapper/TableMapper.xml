@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.webase.data.collect.table.TableMapper">
+
+	<update id="createTbFront">
+		CREATE TABLE IF NOT EXISTS tb_front (
+			front_id int(11) NOT NULL AUTO_INCREMENT COMMENT '前置服务编号',
+			node_id varchar(250) NOT NULL COMMENT '节点编号',
+			front_ip varchar(16) NOT NULL COMMENT '前置服务ip',
+			front_port int(11) DEFAULT NULL COMMENT '前置服务端口',
+			agency varchar(32) NOT NULL COMMENT '所属机构名称',
+			create_time datetime DEFAULT NULL COMMENT '创建时间',
+			modify_time datetime DEFAULT NULL COMMENT '修改时间',
+			PRIMARY KEY (front_id),
+			UNIQUE KEY unique_node_id (node_id)
+		) ENGINE=InnoDB AUTO_INCREMENT=100001 DEFAULT CHARSET=utf8 COMMENT='前置服务信息表';
+	</update>
+
+	<update id="createTbGroup">
+		CREATE TABLE IF NOT EXISTS tb_group (
+		    group_id int(11) NOT NULL COMMENT '群组ID',
+		    genesis_block_hash varchar(128) NOT NULL COMMENT '创世块hash',
+		    group_name varchar(64) NOT NULL COMMENT '群组名字',
+		    group_status tinyint(4) DEFAULT '1' COMMENT '状态（1-正常 2-异常）',
+		    node_count int DEFAULT '0' COMMENT '群组下节点数',
+		    group_desc varchar(1024) COMMENT '群组描述',
+		    create_time datetime DEFAULT NULL COMMENT '创建时间',
+		    modify_time datetime DEFAULT NULL COMMENT '修改时间',
+		    PRIMARY KEY (group_id)
+		) COMMENT='群组信息表' ENGINE=InnoDB CHARSET=utf8;
+	</update>
+	
+	<update id="createTbFrontGroupMap">
+		CREATE TABLE IF NOT EXISTS tb_front_group_map (
+			map_id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+			front_id int(11) NOT NULL COMMENT '前置服务编号',
+			group_id int(11) NOT NULL COMMENT '群组编号',
+			create_time datetime DEFAULT NULL COMMENT '创建时间',
+			modify_time datetime DEFAULT NULL COMMENT '修改时间',
+			PRIMARY KEY (map_id),
+			unique unique_front_group (front_id,group_id)
+		) ENGINE=InnoDB AUTO_INCREMENT=200001 DEFAULT CHARSET=utf8 COMMENT='前置群组映射表';
+	</update>
+	
+	<update id="createTbTaskPool" parameterType="java.lang.String">
+		CREATE TABLE IF NOT EXISTS ${tableName}(
+			id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+			block_number bigint(25) NOT NULL COMMENT '块高',
+			sync_status tinyint(4) NOT NULL COMMENT '同步状态',
+			certainty tinyint(4) NOT NULL COMMENT '确定性',
+			handle_item tinyint(4) NOT NULL COMMENT '处理项',
+			create_time datetime DEFAULT NULL COMMENT '创建时间',
+			modify_time datetime DEFAULT NULL COMMENT '修改时间',
+			PRIMARY KEY (id),
+			unique unique_number (block_number),
+			KEY index_status (sync_status)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块拉取任务信息表';
+	</update>
+
+	<update id="createTbBlock" parameterType="java.lang.String">
+		CREATE TABLE IF NOT EXISTS ${tableName}(
+			id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+			block_number bigint(25) NOT NULL COMMENT '块高',
+			block_hash varchar(128) NOT NULL COMMENT '块hash',
+			block_timestamp datetime NOT NULL COMMENT '出块时间',
+			sealer_index int(4) NOT NULL  COMMENT '打包节点索引',
+            sealer varchar(250) DEFAULT NULL  COMMENT '打包节点',
+			trans_count int(11) DEFAULT '0' COMMENT '块包含的交易数',
+			status tinyint(4) NOT NULL COMMENT '处理状态',
+			create_time datetime DEFAULT NULL COMMENT '创建时间',
+			modify_time datetime DEFAULT NULL COMMENT '修改时间',
+			PRIMARY KEY (id),
+			unique unique_number (block_number)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块信息表';
+	</update>
+
+	<update id="createTbTransaction" parameterType="java.lang.String">
+		CREATE TABLE IF NOT EXISTS ${tableName} (
+			id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+			trans_hash varchar(128) NOT NULL COMMENT '交易hash',
+			block_number bigint(25) NOT NULL COMMENT '所属区块',
+			trans_from varchar(64) DEFAULT NULL COMMENT 'from',
+			trans_to varchar(64) DEFAULT NULL COMMENT 'to',
+			input text DEFAULT NULL COMMENT '输入信息',
+			block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
+			audit_flag tinyint(4) DEFAULT '1' COMMENT '是否已统计（1-未审计，2-已审计）',
+			create_time datetime DEFAULT NULL COMMENT '创建时间',
+			modify_time datetime DEFAULT NULL COMMENT '修改时间',
+			PRIMARY KEY (id),
+			unique unique_hash (trans_hash),
+			KEY index_flag (audit_flag),
+			KEY index_number (block_number)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易信息表';
+	</update>
+
+	<update id="createTbReceipt" parameterType="java.lang.String">
+		CREATE TABLE IF NOT EXISTS ${tableName} (
+			id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+			trans_hash varchar(128) NOT NULL COMMENT '交易hash',
+			contract_address varchar(128) NOT NULL COMMENT '合约地址',
+			block_number bigint(25) NOT NULL COMMENT '所属区块',
+			status varchar(8) COMMENT '交易状态',
+			output text COMMENT '输出信息',
+			create_time datetime DEFAULT NULL COMMENT '创建时间',
+			modify_time datetime DEFAULT NULL COMMENT '修改时间',
+			PRIMARY KEY (id),
+			unique unique_hash (trans_hash),
+			KEY index_number (block_number)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易回执信息表';
+	</update>
+
+	<update id="createTbAudit" parameterType="java.lang.String">
+		CREATE TABLE IF NOT EXISTS ${tableName} (
+			user_name varchar(128) NOT NULL COMMENT '用户名称',
+			user_type tinyint(4) DEFAULT '0' COMMENT '用户类型(0-正常，1-异常)',
+			contract_name varchar(128) NOT NULL COMMENT '合约名称',
+			contract_address varchar(64) COMMENT '合约地址',
+			interface_name varchar(32) COMMENT '合约接口名',
+			trans_type tinyint(4) DEFAULT '0' COMMENT '交易类型(0-合约部署，1-接口调用)',
+			trans_unusual_type tinyint(4) DEFAULT '0' COMMENT '交易异常类型(0-正常，1-异常合约，2-异常接口)',
+			trans_count int(11) NOT NULL COMMENT '交易量',
+			trans_hashs varchar(1024) COMMENT '交易hashs(最多5个)',
+			trans_hash_lastest varchar(128) COMMENT '最新交易hash',
+			create_time datetime DEFAULT NULL COMMENT '创建时间',
+			modify_time datetime DEFAULT NULL COMMENT '修改时间',
+			INDEX idx_un (user_name),
+			INDEX idx_cn (contract_name),
+			INDEX idx_ct (create_time),
+			INDEX idx_mt (modify_time)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户交易监管统计表'
+			PARTITION BY RANGE (TO_DAYS(create_time)) (
+			PARTITION p1 VALUES LESS THAN (TO_DAYS('2019-07-01')),
+			PARTITION p2 VALUES LESS THAN (TO_DAYS('2020-01-01')),
+			PARTITION p3 VALUES LESS THAN (TO_DAYS('2020-07-01')),
+			PARTITION p4 VALUES LESS THAN (TO_DAYS('2021-01-01')),
+			PARTITION p5 VALUES LESS THAN (TO_DAYS('2021-07-01')),
+			PARTITION p6 VALUES LESS THAN (TO_DAYS('2022-01-01')),
+			PARTITION p7 VALUES LESS THAN (TO_DAYS('2022-07-01')),
+			PARTITION p8 VALUES LESS THAN (TO_DAYS('2023-01-01')),
+			PARTITION p9 VALUES LESS THAN (TO_DAYS('2023-07-01')),
+			PARTITION p99 VALUES LESS THAN (MAXVALUE)
+		);
+	</update>
+
+	<select id="queryTables" resultType="java.lang.String">
+		select table_name from information_schema.tables where
+		table_schema=#{dbName}
+		<if test="tableName != null">
+			and table_name = #{tableName}
+		</if>
+	</select>
+
+	<delete id="deleteByTableName" parameterType="java.lang.String">
+		delete from ${tableName} limit 1000
+	</delete>
+
+	<update id="dropTable" parameterType="java.lang.String">
+		drop table if exists ${tableName}
+	</update>
+
+</mapper>

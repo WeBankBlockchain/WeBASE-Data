@@ -1,0 +1,50 @@
+#server config
+server:
+  port: 5009
+  servlet:
+    context-path: /WeBASE-Data-Collect
+
+# database connection configuration
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/webasedatacollect?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+    username: "defaultAccount"
+    password: "defaultPassword"
+
+sdk:
+  encryptType: 1 # 1:guomi, 0:standard
+
+#constants
+constant:
+  ###front http request
+  httpTimeOut: 5000
+  maxRequestFail: 3
+  sleepWhenHttpMaxFail: 60000
+
+  ###common
+  resetGroupListCycle: 300000
+  groupInvalidGrayscaleValue: 1m    # y:year, M:month, d:day of month, h:hour, m:minute, n:forever valid
+
+  ###block info (pulling data from chain)
+  startBlockNumber: 0
+  crawlBatchUnit: 50
+  pullBlockTaskFixedDelay: 10000
+
+# executor config for pulling data
+executor:
+  corePoolSize: 50
+  maxPoolSize: 100
+  queueSize: 50
+  threadNamePrefix: "custom-async-"
+
+#mybatis config
+mybatis:
+  typeAliasesPackage: com.webank.webase.data.collect
+  mapperLocations: classpath:mapper/*.xml
+ 
+#log config
+logging:
+  config: classpath:log/log4j2-dev.xml
+  level:
+    com.webank.webase.data.collect: info
