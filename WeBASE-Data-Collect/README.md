@@ -1,6 +1,6 @@
 # 数据监管服务
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://webasedoc.readthedocs.io/zh_CN/latest/docs/WeBASE/CONTRIBUTING.html)
-[![Code Lines](https://tokei.rs/b1/github/Sayou1989/WeBASE-Data-Collect?category=code)](https://github.com/Sayou1989/WeBASE-Data-Collect)
+[![Code Lines](https://tokei.rs/b1/github/WeBankFinTech/WeBASE-Data?category=code)](https://github.com/WeBankFinTech/WeBASE-Data)
 [![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)](http://www.apache.org/licenses/)
 
 ## 简介

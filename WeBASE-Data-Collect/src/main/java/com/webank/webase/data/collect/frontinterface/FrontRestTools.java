@@ -140,7 +140,7 @@ public class FrontRestTools {
                 throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL, ex);
             }
         }
-        return null;
+        throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL);
     }
     
     /**

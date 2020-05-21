@@ -45,6 +45,6 @@ mybatis:
  
 #log config
 logging:
-  config: classpath:log/log4j2-dev.xml
+  config: classpath:log/log4j2.xml
   level:
     com.webank.webase.data.collect: info
