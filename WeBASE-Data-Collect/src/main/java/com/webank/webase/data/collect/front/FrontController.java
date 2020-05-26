@@ -14,7 +14,6 @@
 package com.webank.webase.data.collect.front;
 
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
@@ -57,7 +56,7 @@ public class FrontController extends BaseController {
     public BaseResponse newFront(@RequestBody @Valid FrontInfo frontInfo, BindingResult result) {
         checkBindResult(result);
         Instant startTime = Instant.now();
-        log.info("start newFront. frontInfo:{}", JSON.toJSONString(frontInfo));
+        log.info("start newFront. frontInfo:{}", frontInfo);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         TbFront tbFront = frontService.newFront(frontInfo);
         baseResponse.setData(tbFront);

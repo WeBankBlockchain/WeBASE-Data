@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.front;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.tools.CommonTools;
@@ -98,7 +97,7 @@ public class FrontService {
         // save front info
         frontMapper.add(tbFront);
         if (tbFront.getFrontId() == null || tbFront.getFrontId() == 0) {
-            log.warn("fail newFront, after save, tbFront:{}", JSON.toJSONString(tbFront));
+            log.warn("fail newFront, after save, tbFront:{}", tbFront);
             throw new BaseException(ConstantCode.SAVE_FRONT_FAIL);
         }
         for (String groupId : groupIdList) {

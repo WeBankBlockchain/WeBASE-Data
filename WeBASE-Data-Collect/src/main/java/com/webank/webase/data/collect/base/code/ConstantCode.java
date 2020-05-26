@@ -112,8 +112,8 @@ public class ConstantCode {
 
     public static final RetCode SERVER_CONNECT_FAIL = RetCode
         .mark(202051, "wrong host or port");
-    public static final RetCode INVALID_TOKEN = RetCode.mark(202052, "invalid token");
-    public static final RetCode TOKEN_EXPIRE = RetCode.mark(202053, "token expire");
+    
+    public static final RetCode REQUEST_NODE_EXCEPTION = RetCode.mark(205033, "request node exception");
 
     // 证书管理
     public static final RetCode CERT_ERROR = RetCode.mark(202060, "cert handle error");

@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.receipt;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
@@ -67,7 +66,7 @@ public class ReceiptService {
         try {
             listOfTran = receiptMapper.getList(tableName, param);
         } catch (RuntimeException ex) {
-            log.error("fail queryBlockList. TransListParam:{} ", JSON.toJSONString(param), ex);
+            log.error("fail queryBlockList.", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
         return listOfTran;
@@ -81,7 +80,7 @@ public class ReceiptService {
         try {
             return receiptMapper.getCount(tableName, queryParam);
         } catch (RuntimeException ex) {
-            log.error("fail queryCountOfTran. queryParam:{}", JSON.toJSONString(queryParam), ex);
+            log.error("fail queryCountOfTran.", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }

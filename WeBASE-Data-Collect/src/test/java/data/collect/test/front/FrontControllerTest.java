@@ -13,8 +13,8 @@
  */
 package data.collect.test.front;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.Application;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.front.entity.FrontInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class FrontControllerTest {
         param.setAgency("1fe");
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post( "/front/new").
-            content(JSON.toJSONString(param)).
+            content(JacksonUtils.objToString(param)).
             contentType(MediaType.APPLICATION_JSON)
         );
         resultActions.

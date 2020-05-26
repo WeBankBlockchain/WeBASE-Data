@@ -70,7 +70,6 @@ List test = [
 dependencies {
     compile springboot,jaxb,web3jsdk,swagger,jackson,mysql
     compile "org.apache.commons:commons-lang3:3.8.1"
-    compile "com.alibaba:fastjson:1.2.67"
     compile "cn.hutool:hutool-all:4.1.19"
     compile "com.zaxxer:HikariCP:3.2.0"
     compile "com.github.sgroschupf:zkclient:0.1"
@@ -91,6 +90,7 @@ configurations {
     all*.exclude group: 'com.google.protobuf', module: 'protobuf-java'
     all*.exclude group: 'javax.annotation', module: 'javax.annotation-api'
     all*.exclude group: 'org.ethereum'
+    all*.exclude group: 'com.alibaba', module: 'fastjson'
 }
 
 sourceSets {

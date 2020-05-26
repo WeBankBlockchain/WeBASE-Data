@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.block;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
@@ -105,7 +104,6 @@ public class BlockService {
      */
     @Transactional
     public void addBlockInfo(TbBlock tbBlock, int groupId) throws BaseException {
-        log.debug("start addBlockInfo tbBlock:{}", JSON.toJSONString(tbBlock));
         String tableName = TableName.BLOCK.getTableName(groupId);
         // save block info
         blockMapper.add(tableName, tbBlock);
@@ -116,15 +114,10 @@ public class BlockService {
      */
     public List<TbBlock> queryBlockList(int groupId, BlockListParam queryParam)
             throws BaseException {
-        log.debug("start queryBlockList groupId:{},queryParam:{}", groupId,
-                JSON.toJSONString(queryParam));
-
         List<TbBlock> listOfBlock =
                 blockMapper.getList(TableName.BLOCK.getTableName(groupId), queryParam);
         // check sealer
         listOfBlock.stream().forEach(block -> checkSearlerOfBlock(groupId, block));
-
-        log.debug("end queryBlockList listOfBlockSize:{}", listOfBlock.size());
         return listOfBlock;
     }
 

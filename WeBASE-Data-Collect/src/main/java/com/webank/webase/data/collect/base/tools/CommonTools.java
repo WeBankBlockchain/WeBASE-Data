@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,8 +13,6 @@
  */
 package com.webank.webase.data.collect.base.tools;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.code.RetCode;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
@@ -31,8 +29,14 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -46,33 +50,8 @@ import org.fisco.bcos.web3j.utils.Numeric;
 @Log4j2
 public class CommonTools {
 
-    public static final String TOKEN_HEADER_NAME = "AuthorizationToken";
-    private static final String TOKEN_START = "Token";
     public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String DATE_TIME_FORMAT_NO_SPACE = "yyyyMMddHHmmss";
-    private static final char[] CHARS = {'2', '3', '4', '5', '6', '7', '8', '9', 'a',
-        'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's',
-        't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J',
-        'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-
-
-    /**
-     * 获取指定位数的数字和字母组合的字符串
-     *
-     * @param length 字符串长度
-     */
-    public static String randomString(int length) {
-        if (length > CHARS.length) {
-            return null;
-        }
-        StringBuffer sb = new StringBuffer();
-        Random random = new Random();
-        for (int i = 0; i < length; i++) {
-            sb.append(CHARS[random.nextInt(CHARS.length)]);
-        }
-        return sb.toString();
-    }
-
 
     /**
      * convert hex to localDateTime.
@@ -132,33 +111,9 @@ public class CommonTools {
     }
 
     /**
-     * conver object to java bean.
-     */
-    public static <T> T object2JavaBean(Object obj, Class<T> clazz) {
-        if (obj == null || clazz == null) {
-            log.warn("object2JavaBean. obj or clazz null");
-            return null;
-        }
-        String jsonStr = JSON.toJSONString(obj);
-
-        return JSON.parseObject(jsonStr, clazz);
-    }
-
-
-    public static JSONObject Object2JSONObject(Object obj) {
-        if (obj == null) {
-            log.warn("obj is null");
-            return null;
-        }
-        String objJson = JSON.toJSONString(obj);
-        return JSONObject.parseObject(objJson);
-    }
-
-    /**
      * encode list by sha.
      */
     public static String shaList(List<String> values) {
-        log.info("shaList start. values:{}", JSON.toJSONString(values));
         // list按字段排序，并转换成字符串
         String list2SortString = list2SortString(values);
         // SHA加密字符串
@@ -192,14 +147,13 @@ public class CommonTools {
     }
 
     /**
-     * get hash value
-     * type: sha256 or sm3
+     * get hash value type: sha256 or sm3
      */
     public static byte[] getHashValue(byte[] byteArray) {
         byte[] hashResult;
-        if(EncryptType.encryptType == 1) {
-           hashResult = Hash.sha3(byteArray);
-           return hashResult;
+        if (EncryptType.encryptType == 1) {
+            hashResult = Hash.sha3(byteArray);
+            return hashResult;
         } else {
             MessageDigest sha = null;
             try {
@@ -214,9 +168,9 @@ public class CommonTools {
     }
 
     /**
-     * get x509 cert's fingerprint
-     * Hash using: SHA-1
-      * @param byteArray
+     * get x509 cert's fingerprint Hash using: SHA-1
+     * 
+     * @param byteArray
      * @return
      */
     public static String getCertFingerPrint(byte[] byteArray) {
@@ -231,6 +185,7 @@ public class CommonTools {
             return null;
         }
     }
+
     /**
      * sort list and convert to String.
      */
@@ -317,9 +272,9 @@ public class CommonTools {
         // check host
         // checkServerHostConnect(serverHost);
 
-        Socket socket =null;
+        Socket socket = null;
         try {
-            //check port
+            // check port
             socket = new Socket();
             socket.setReceiveBufferSize(8193);
             socket.setSoTimeout(500);
@@ -328,8 +283,8 @@ public class CommonTools {
         } catch (Exception ex) {
             log.error("fail checkServerConnect", ex);
             throw new BaseException(ConstantCode.SERVER_CONNECT_FAIL);
-        }finally {
-            if(Objects.nonNull(socket)){
+        } finally {
+            if (Objects.nonNull(socket)) {
                 try {
                     socket.close();
                 } catch (IOException e) {
@@ -345,12 +300,10 @@ public class CommonTools {
      */
     public static void responseRetCodeException(HttpServletResponse response, RetCode retCode) {
         BaseResponse baseResponse = new BaseResponse(retCode);
-/*        baseResponse.setMessage(ex.getMessage());
-        response.setContentType("application/json;charset=UTF-8");*/
         try {
-            response.getWriter().write(JSON.toJSONString(baseResponse));
+            response.getWriter().write(JacksonUtils.objToString(baseResponse));
         } catch (IOException e) {
-            log.error("fail responseRetCodeException",e);
+            log.error("fail responseRetCodeException", e);
         }
     }
 
@@ -360,7 +313,7 @@ public class CommonTools {
      *
      * @param dateTime target time.
      * @param validLength y:year, M:month, d:day of month, h:hour, m:minute, n:forever valid;
-     * example1:1d;example2:n
+     *        example1:1d;example2:n
      */
     public static boolean isDateTimeInValid(LocalDateTime dateTime, String validLength) {
         log.debug("start isDateTimeInValid. dateTime:{} validLength:{}", dateTime, validLength);
@@ -368,7 +321,7 @@ public class CommonTools {
             return true;
         }
         if (Objects.isNull(dateTime) || StringUtils.isBlank(validLength)
-            || validLength.length() < 2) {
+                || validLength.length() < 2) {
             return false;
         }
 
@@ -397,20 +350,6 @@ public class CommonTools {
     }
 
     /**
-     * is json.
-     */
-    public static boolean isJSON(String str) {
-        boolean result;
-        try {
-            JSON.parse(str);
-            result = true;
-        } catch (Exception e) {
-            result = false;
-        }
-        return result;
-    }
-
-    /**
      * response string.
      */
     public static void responseString(HttpServletResponse response, String str) {
@@ -420,38 +359,21 @@ public class CommonTools {
         }
 
         RetCode retCode;
-        if (isJSON(str) && (retCode = JSONObject.parseObject(str, RetCode.class)) != null) {
+        if (JacksonUtils.isJson(str)
+                && (retCode = JacksonUtils.stringToObj(str, RetCode.class)) != null) {
             baseResponse = new BaseResponse(retCode);
         }
 
         try {
-            response.getWriter().write(JSON.toJSONString(baseResponse));
+            response.getWriter().write(JacksonUtils.objToString(baseResponse));
         } catch (IOException e) {
             log.error("fail responseRetCodeException", e);
         }
     }
 
-
-    /**
-     * get token.
-     */
-    public static synchronized String getToken(HttpServletRequest request) {
-        String header = request.getHeader(TOKEN_HEADER_NAME);
-        if (StringUtils.isBlank(header)) {
-            log.error("not found token");
-            throw new BaseException(ConstantCode.INVALID_TOKEN);
-        }
-
-        String token = StringUtils.removeStart(header, TOKEN_START).trim();
-        if (StringUtils.isBlank(token)) {
-            log.error("token is empty");
-            throw new BaseException(ConstantCode.INVALID_TOKEN);
-        }
-        return token;
-    }
-
     /**
      * sort Mappings
+     * 
      * @param mapping
      * @return List<MapHandle>
      */
@@ -471,7 +393,7 @@ public class CommonTools {
         });
         return list;
     }
-    
+
     /**
      * parseHexStr2Int.
      * 

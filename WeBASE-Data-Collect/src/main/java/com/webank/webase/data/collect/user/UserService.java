@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.user;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.HasPk;
 import com.webank.webase.data.collect.base.exception.BaseException;
@@ -55,7 +54,7 @@ public class UserService {
      */
     @Transactional
     public Integer bindUserInfo(BindUserInputParam user) throws BaseException {
-        log.debug("start bindUserInfo User:{}", JSON.toJSONString(user));
+        log.info("start bindUserInfo.");
 
         String publicKey = user.getPublicKey();
         if (StringUtils.isBlank(publicKey)) {
@@ -64,7 +63,7 @@ public class UserService {
         }
 
         if (publicKey.length() != ConstantProperties.PUBLICKEY_LENGTH
-            && publicKey.length() != ConstantProperties.ADDRESS_LENGTH) {
+                && publicKey.length() != ConstantProperties.ADDRESS_LENGTH) {
             log.info("fail bindUserInfo. publicKey length error");
             throw new BaseException(ConstantCode.PUBLICKEY_LENGTH_ERROR);
         }
@@ -92,7 +91,7 @@ public class UserService {
 
         // add row
         TbUser newUserRow = new TbUser(HasPk.NONE.getValue(), user.getUserType(),
-            user.getUserName(), user.getGroupId(), address, publicKey, user.getDescription());
+                user.getUserName(), user.getGroupId(), address, publicKey, user.getDescription());
         Integer affectRow = userMapper.addUserRow(newUserRow);
         if (affectRow == 0) {
             log.warn("bindUserInfo affect 0 rows of tb_user");
@@ -104,7 +103,7 @@ public class UserService {
         // update monitor unusual user's info
         monitorService.updateUnusualUser(user.getGroupId(), user.getUserName(), address);
 
-        log.debug("end bindUserInfo userId:{}", userId);
+        log.info("end bindUserInfo userId:{}", userId);
         return userId;
     }
 
@@ -112,14 +111,11 @@ public class UserService {
      * query count of user.
      */
     public Integer countOfUser(UserParam userParam) throws BaseException {
-        log.debug("start countOfUser. userParam:{}", JSON.toJSONString(userParam));
-
         try {
             Integer count = userMapper.countOfUser(userParam);
-            log.debug("end countOfUser userParam:{} count:{}", JSON.toJSONString(userParam), count);
             return count;
         } catch (RuntimeException ex) {
-            log.error("fail countOfUser userParam:{}", JSON.toJSONString(userParam), ex);
+            log.error("fail countOfUser.", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
@@ -137,10 +133,8 @@ public class UserService {
      * query user list by page.
      */
     public List<TbUser> qureyUserList(UserParam userParam) throws BaseException {
-        log.debug("start qureyUserList userParam:{}", JSON.toJSONString(userParam));
         // query user list
         List<TbUser> listOfUser = userMapper.listOfUser(userParam);
-        log.debug("end qureyUserList listOfUser:{}", JSON.toJSONString(listOfUser));
         return listOfUser;
     }
 
@@ -148,18 +142,13 @@ public class UserService {
      * query user row.
      */
     public TbUser queryUser(Integer userId, Integer groupId, String userName, String address)
-        throws BaseException {
-        log.debug("start queryUser userId:{} groupId:{} userName:{} address:{}", userId,
-            groupId, userName, address);
+            throws BaseException {
         try {
             TbUser userRow = userMapper.queryUser(userId, groupId, userName, address);
-            log.debug(
-                "end queryUser userId:{} groupId:{} userName:{}  address:{} TbUser:{}",
-                userId, groupId, userName, address, JSON.toJSONString(userRow));
             return userRow;
         } catch (RuntimeException ex) {
-            log.error("fail queryUser userId:{} groupId:{} userName:{}  address:{}",
-                userId, groupId, userName, address, ex);
+            log.error("fail queryUser userId:{} groupId:{} userName:{}  address:{}", userId,
+                    groupId, userName, address, ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
@@ -167,8 +156,7 @@ public class UserService {
     /**
      * query by groupId、userName.
      */
-    public TbUser queryUser(Integer groupId, String userName)
-        throws BaseException {
+    public TbUser queryUser(Integer groupId, String userName) throws BaseException {
         return queryUser(null, groupId, userName, null);
     }
 
@@ -208,7 +196,6 @@ public class UserService {
      * update user info.
      */
     public void updateUser(TbUser user) throws BaseException {
-        log.debug("start updateUser user", JSON.toJSONString(user));
         Integer userId = Optional.ofNullable(user).map(u -> u.getUserId()).orElse(null);
         String description = Optional.ofNullable(user).map(u -> u.getDescription()).orElse(null);
         if (userId == null) {
@@ -228,25 +215,18 @@ public class UserService {
             log.error("fail updateUser  userId:{} description:{}", userId, description, ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
-
-        log.debug("end updateOrtanization");
     }
 
 
     /**
      * get user name by address.
      */
-    public String queryUserNameByAddress(Integer groupId, String address)
-        throws BaseException {
-        log.debug("queryUserNameByAddress address:{} ", address);
+    public String queryUserNameByAddress(Integer groupId, String address) throws BaseException {
         String userName = userMapper.queryUserNameByAddress(groupId, address);
-        log.debug("end queryUserNameByAddress");
         return userName;
     }
 
-    public void deleteByAddress(String address) throws BaseException{
-        log.debug("deleteByAddress address:{} ", address);
+    public void deleteByAddress(String address) throws BaseException {
         userMapper.deleteByAddress(address);
-        log.debug("end deleteByAddress");
     }
 }

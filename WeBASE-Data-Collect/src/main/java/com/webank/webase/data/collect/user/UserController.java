@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.user;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
@@ -38,13 +37,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Key pair manage
  */
 @Log4j2
-//@RestController
+// @RestController
 @RequestMapping("user")
 public class UserController extends BaseController {
 
@@ -56,7 +54,7 @@ public class UserController extends BaseController {
      */
     @PostMapping(value = "/bind")
     public BaseResponse bindUserInfo(@RequestBody @Valid BindUserInputParam user,
-        BindingResult result) throws BaseException {
+            BindingResult result) throws BaseException {
         checkBindResult(result);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
@@ -68,8 +66,8 @@ public class UserController extends BaseController {
         TbUser userRow = userService.queryByUserId(userId);
         baseResponse.setData(userRow);
 
-        log.info("end bindUserInfo useTime:{} result:{}",
-            Duration.between(startTime, Instant.now()).toMillis(), JSON.toJSONString(baseResponse));
+        log.info("end bindUserInfo useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
     }
 
@@ -78,12 +76,11 @@ public class UserController extends BaseController {
      */
     @PutMapping(value = "/userInfo")
     public BaseResponse updateUserInfo(@RequestBody @Valid UpdateUserInputParam user,
-        BindingResult result) throws BaseException {
+            BindingResult result) throws BaseException {
         checkBindResult(result);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
-        log.info("start updateUserInfo startTime:{} User:{}", startTime.toEpochMilli(),
-            JSON.toJSONString(user));
+        log.info("start updateUserInfo.");
 
         // update user row
         userService.updateUser(user);
@@ -91,8 +88,8 @@ public class UserController extends BaseController {
         TbUser userRow = userService.queryByUserId(user.getUserId());
         baseResponse.setData(userRow);
 
-        log.info("end updateUserInfo useTime:{} result:{}",
-            Duration.between(startTime, Instant.now()).toMillis(), JSON.toJSONString(baseResponse));
+        log.info("end updateUserInfo useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
     }
 
@@ -101,15 +98,14 @@ public class UserController extends BaseController {
      */
     @GetMapping(value = "/userList/{groupId}/{pageNumber}/{pageSize}")
     public BasePageResponse userList(@PathVariable("groupId") Integer groupId,
-        @PathVariable("pageNumber") Integer pageNumber,
-        @PathVariable("pageSize") Integer pageSize,
-        @RequestParam(value = "userParam", required = false) String commParam)
-        throws BaseException {
+            @PathVariable("pageNumber") Integer pageNumber,
+            @PathVariable("pageSize") Integer pageSize,
+            @RequestParam(value = "userParam", required = false) String commParam)
+            throws BaseException {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start userList startTime:{} groupId:{} pageNumber:{} pageSize:{} commParam:{}",
-            startTime.toEpochMilli(), groupId, pageNumber, pageSize,
-            commParam);
+                startTime.toEpochMilli(), groupId, pageNumber, pageSize, commParam);
 
         UserParam param = new UserParam();
         param.setGroupId(groupId);
@@ -118,8 +114,8 @@ public class UserController extends BaseController {
 
         Integer count = userService.countOfUser(param);
         if (count != null && count > 0) {
-            Integer start = Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize)
-                .orElse(null);
+            Integer start =
+                    Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
             param.setStart(start);
             param.setPageSize(pageSize);
 
@@ -128,8 +124,7 @@ public class UserController extends BaseController {
             pagesponse.setTotalCount(count);
         }
 
-        log.info("end userList useTime:{} result:{}",
-            Duration.between(startTime, Instant.now()).toMillis(), JSON.toJSONString(pagesponse));
+        log.info("end userList useTime:{}", Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }
 }

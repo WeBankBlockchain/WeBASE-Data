@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.monitor;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import lombok.extern.log4j.Log4j2;
@@ -36,13 +35,13 @@ public class MonitorTransactionService {
     public void dataAddAndUpdate(int groupId, TbMonitor tbMonitor) {
         TbMonitor dbInfo = this.queryTbMonitor(groupId, tbMonitor);
         if (dbInfo == null) {
-            log.info("====== data is not exist, add tbMonitor:{}", JSON.toJSONString(tbMonitor));
+            log.info("====== data is not exist, add tbMonitor.");
             this.addRow(groupId, tbMonitor);
         } else {
             String[] txHashsArr = dbInfo.getTransHashs().split(",");
             if (txHashsArr.length < 5) {
                 StringBuilder sb = new StringBuilder(dbInfo.getTransHashs()).append(",")
-                    .append(tbMonitor.getTransHashLastest());
+                        .append(tbMonitor.getTransHashLastest());
                 tbMonitor.setTransHashs(sb.toString());
             } else {
                 tbMonitor.setTransHashs(dbInfo.getTransHashs());

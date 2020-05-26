@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.method;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
@@ -31,10 +30,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
-//@RestController
+// @RestController
 @RequestMapping("method")
 public class MethodController extends BaseController {
 
@@ -46,17 +44,16 @@ public class MethodController extends BaseController {
      */
     @PostMapping(value = "/add")
     public BaseResponse addMethod(@RequestBody @Valid NewMethodInputParam newMethodInputParam,
-        BindingResult result) throws BaseException {
+            BindingResult result) throws BaseException {
         checkBindResult(result);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
-        log.info("start addMethod. startTime:{} newMethodInputParam:{}",
-            startTime.toEpochMilli(), JSON.toJSONString(newMethodInputParam));
+        log.info("start addMethod.");
 
         methodService.saveMethod(newMethodInputParam);
 
         log.info("end addMethod. useTime:{} result:{}",
-            Duration.between(startTime, Instant.now()).toMillis(), JSON.toJSONString(baseResponse));
+                Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
     }
 
@@ -65,17 +62,17 @@ public class MethodController extends BaseController {
      */
     @GetMapping(value = "findById/{groupId}/{methodId}")
     public BaseResponse getBymethodId(@PathVariable("groupId") Integer groupId,
-        @PathVariable("methodId") String methodId) {
+            @PathVariable("methodId") String methodId) {
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start addMethodInfo. startTime:{} groupId:{} methodId:{}",
-            startTime.toEpochMilli(), groupId, methodId);
+                startTime.toEpochMilli(), groupId, methodId);
 
         TbMethod tbMethod = methodService.getByMethodId(methodId, groupId);
         baseResponse.setData(tbMethod);
 
-        log.info("end addMethodInfo. useTime:{} result:{}",
-            Duration.between(startTime, Instant.now()).toMillis(), JSON.toJSONString(baseResponse));
+        log.info("end addMethodInfo. useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
     }
 }

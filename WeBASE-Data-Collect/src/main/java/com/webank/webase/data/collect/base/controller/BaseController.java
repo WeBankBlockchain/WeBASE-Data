@@ -13,31 +13,27 @@
  */
 package com.webank.webase.data.collect.base.controller;
 
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.ParamException;
+import java.util.Map;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 public class BaseController {
-
-    @Autowired
-    protected HttpServletRequest request;
-
     /**
      * check param valid result.
      */
     protected void checkBindResult(BindingResult result) {
         if (result.hasErrors()) {
-            String errFieldStr = result.getAllErrors().stream()
-                .map(obj -> JSON.parseObject(JSON.toJSONString(obj)))
-                .map(err -> err.getString("field"))
-                .collect(Collectors.joining(","));
-            StringUtils.removeEnd(errFieldStr, ",");
-            String message = "these fields can not be empty:" + errFieldStr;
+            Map<String, String> fields = Maps.newHashMap();
+            result.getAllErrors().forEach(e -> {
+                if (e instanceof FieldError) {
+                    FieldError fe = (FieldError) e;
+                    fields.put(fe.getField(), fe.getDefaultMessage());
+                }
+            });
+            String message = "these fields error:" + fields;
             throw new ParamException(ConstantCode.PARAM_EXCEPTION.getCode(), message);
         }
     }

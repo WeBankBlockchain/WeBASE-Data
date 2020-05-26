@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.transaction;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
@@ -48,11 +47,8 @@ public class TransactionService {
      * add trans hash info.
      */
     public void addTransInfo(int groupId, TbTransaction tbTransaction) throws BaseException {
-        log.debug("start addTransInfo groupId:{} tbTransHash:{}", groupId,
-                JSON.toJSONString(tbTransaction));
         String tableName = TableName.TRANS.getTableName(groupId);
         transactionMapper.add(tableName, tbTransaction);
-        log.debug("end addTransInfo");
     }
 
     /**
@@ -60,17 +56,14 @@ public class TransactionService {
      */
     public List<TbTransaction> queryTransList(int groupId, TransListParam param)
             throws BaseException {
-        log.debug("start queryTransList. TransListParam:{}", JSON.toJSONString(param));
         String tableName = TableName.TRANS.getTableName(groupId);
         List<TbTransaction> listOfTran = null;
         try {
             listOfTran = transactionMapper.getList(tableName, param);
         } catch (RuntimeException ex) {
-            log.error("fail queryBlockList. TransListParam:{} ", JSON.toJSONString(param), ex);
+            log.error("fail queryBlockList.", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
-
-        log.debug("end queryBlockList. listOfTran:{}", JSON.toJSONString(listOfTran));
         return listOfTran;
     }
 
@@ -81,11 +74,9 @@ public class TransactionService {
         String tableName = TableName.TRANS.getTableName(groupId);
         try {
             Integer count = transactionMapper.getCount(tableName, queryParam);
-            log.info("end queryCountOfTran. queryParam:{} count:{}", JSON.toJSONString(queryParam),
-                    count);
             return count;
         } catch (RuntimeException ex) {
-            log.error("fail queryCountOfTran. queryParam:{}", JSON.toJSONString(queryParam), ex);
+            log.error("fail queryCountOfTran.", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
@@ -173,7 +164,6 @@ public class TransactionService {
      */
     public List<TbTransaction> getTransListFromChain(Integer groupId, String transHash,
             BigInteger blockNumber) {
-        log.debug("start getTransListFromChain.");
         List<TbTransaction> transList = new ArrayList<>();
         // find by transHash
         if (transHash != null) {
@@ -194,7 +184,6 @@ public class TransactionService {
                 });
             }
         }
-        log.debug("end getTransListFromChain.");
         return transList;
     }
 
@@ -204,14 +193,12 @@ public class TransactionService {
      */
     public TbTransaction getTbTransFromFrontByHash(Integer groupId, String transHash)
             throws BaseException {
-        log.info("start getTransFromFrontByHash. groupId:{}  transaction:{}", groupId, transHash);
         TransactionInfo trans = frontInterface.getTransaction(groupId, transHash);
         TbTransaction tbTransaction = null;
         if (trans != null) {
             tbTransaction = new TbTransaction(transHash, trans.getFrom(), trans.getTo(),
                     trans.getInput(), trans.getBlockNumber(), null);
         }
-        log.info("end getTransFromFrontByHash. tbTransHash:{}", JSON.toJSONString(tbTransaction));
         return tbTransaction;
     }
 
@@ -221,7 +208,7 @@ public class TransactionService {
     public TransactionInfo getTransaction(int groupId, String transHash) {
         return frontInterface.getTransaction(groupId, transHash);
     }
-    
+
     /**
      * get transaction receipt
      */

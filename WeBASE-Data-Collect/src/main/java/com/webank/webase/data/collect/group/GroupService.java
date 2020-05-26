@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.group;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.DataStatus;
 import com.webank.webase.data.collect.base.exception.BaseException;
@@ -171,7 +170,7 @@ public class GroupService {
             try {
                 groupIdList = frontInterface.getGroupListFromSpecificFront(frontIp, frontPort);
             } catch (Exception ex) {
-                log.error("fail getGroupListFromSpecificFront.", ex);
+                log.error("fail getGroupListFromSpecificFront.");
                 continue;
             }
             for (String groupId : groupIdList) {
@@ -226,7 +225,7 @@ public class GroupService {
 
                 if (!CommonTools.isDateTimeInValid(localGroup.getModifyTime(),
                         constants.getGroupInvalidGrayscaleValue())) {
-                    log.warn("remove group, localGroup:{}", JSON.toJSONString(localGroup));
+                    log.warn("remove group, localGroup:{}", localGroup.getGroupId());
                     // remove group
                     removeByGroupId(localGroupId);
                     continue;
@@ -239,7 +238,7 @@ public class GroupService {
                     continue;
                 }
             } catch (Exception ex) {
-                log.info("fail check group. localGroup:{}", JSON.toJSONString(localGroup));
+                log.info("fail check group. localGroup:{}", localGroup.getGroupId());
                 continue;
             }
 

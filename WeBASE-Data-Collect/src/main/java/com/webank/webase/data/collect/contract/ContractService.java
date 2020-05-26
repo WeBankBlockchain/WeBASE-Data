@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.contract;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.ContractStatus;
 import com.webank.webase.data.collect.base.exception.BaseException;
@@ -35,7 +34,7 @@ import org.springframework.stereotype.Service;
  */
 @Log4j2
 @Service
-public class  ContractService {
+public class ContractService {
 
     @Autowired
     private ContractMapper contractMapper;
@@ -47,18 +46,17 @@ public class  ContractService {
      * add new contract data.
      */
     public TbContract saveContract(Contract contract) throws BaseException {
-        log.debug("start addContractInfo Contract:{}", JSON.toJSONString(contract));
         TbContract tbContract;
         if (contract.getContractId() == null) {
-            tbContract = newContract(contract);//new
+            tbContract = newContract(contract);// new
         } else {
-            tbContract = updateContract(contract);//update
+            tbContract = updateContract(contract);// update
         }
 
         if (Objects.nonNull(tbContract) && StringUtils.isNotBlank(tbContract.getContractBin())) {
             // update monitor unusual deployInputParam's info
             monitorService.updateUnusualContract(tbContract.getGroupId(),
-                tbContract.getContractName(), tbContract.getContractBin());
+                    tbContract.getContractName(), tbContract.getContractBin());
         }
 
         return tbContract;
@@ -69,11 +67,11 @@ public class  ContractService {
      * save new contract.
      */
     private TbContract newContract(Contract contract) {
-        //check contract not exist.
+        // check contract not exist.
         verifyContractNotExist(contract.getGroupId(), contract.getContractName(),
-            contract.getContractPath());
+                contract.getContractPath());
 
-        //add to database.
+        // add to database.
         TbContract tbContract = new TbContract();
         BeanUtils.copyProperties(contract, tbContract);
         contractMapper.add(tbContract);
@@ -85,12 +83,12 @@ public class  ContractService {
      * update contract.
      */
     private TbContract updateContract(Contract contract) {
-        //check not deploy
-        TbContract tbContract = verifyContractNotDeploy(contract.getContractId(),
-            contract.getGroupId());
-        //check contractName
+        // check not deploy
+        TbContract tbContract =
+                verifyContractNotDeploy(contract.getContractId(), contract.getGroupId());
+        // check contractName
         verifyContractNameNotExist(contract.getGroupId(), contract.getContractPath(),
-            contract.getContractName(), contract.getContractId());
+                contract.getContractName(), contract.getContractId());
         BeanUtils.copyProperties(contract, tbContract);
         contractMapper.update(tbContract);
         return tbContract;
@@ -101,24 +99,18 @@ public class  ContractService {
      * delete contract by contractId.
      */
     public void deleteContract(Integer contractId, int groupId) throws BaseException {
-        log.debug("start deleteContract contractId:{} groupId:{}", contractId, groupId);
         // check contract id
         verifyContractNotDeploy(contractId, groupId);
-        //remove
+        // remove
         contractMapper.remove(contractId);
-        log.debug("end deleteContract");
     }
 
     /**
      * query contract list.
      */
     public List<TbContract> qureyContractList(ContractParam param) throws BaseException {
-        log.debug("start qureyContractList ContractListParam:{}", JSON.toJSONString(param));
-
         // query contract list
         List<TbContract> listOfContract = contractMapper.listOfContract(param);
-
-        log.debug("end qureyContractList listOfContract:{}", JSON.toJSONString(listOfContract));
         return listOfContract;
     }
 
@@ -127,7 +119,6 @@ public class  ContractService {
      * query count of contract.
      */
     public int countOfContract(ContractParam param) throws BaseException {
-        log.debug("start countOfContract ContractListParam:{}", JSON.toJSONString(param));
         try {
             return contractMapper.countOfContract(param);
         } catch (RuntimeException ex) {
@@ -140,11 +131,8 @@ public class  ContractService {
      * query contract by contract id.
      */
     public TbContract queryByContractId(Integer contractId) throws BaseException {
-        log.debug("start queryContract contractId:{}", contractId);
         try {
             TbContract contractRow = contractMapper.queryByContractId(contractId);
-            log.debug("start queryContract contractId:{} contractRow:{}", contractId,
-                JSON.toJSONString(contractRow));
             return contractRow;
         } catch (RuntimeException ex) {
             log.error("fail countOfContract", ex);
@@ -158,13 +146,12 @@ public class  ContractService {
      * query DeployInputParam By Address.
      */
     public List<TbContract> queryContractByBin(Integer groupId, String contractBin)
-        throws BaseException {
+            throws BaseException {
         try {
             if (StringUtils.isEmpty(contractBin)) {
                 return null;
             }
             List<TbContract> contractRow = contractMapper.queryContractByBin(groupId, contractBin);
-            log.debug("start queryContractByBin:{}", contractBin, JSON.toJSONString(contractRow));
             return contractRow;
         } catch (RuntimeException ex) {
             log.error("fail queryContractByBin", ex);
@@ -176,10 +163,7 @@ public class  ContractService {
      * query contract info.
      */
     public TbContract queryContract(ContractParam queryParam) {
-        log.debug("start queryContract. queryParam:{}", JSON.toJSONString(queryParam));
         TbContract tbContract = contractMapper.queryContract(queryParam);
-        log.debug("end queryContract. queryParam:{} tbContract:{}", JSON.toJSONString(queryParam),
-            JSON.toJSONString(tbContract));
         return tbContract;
     }
 

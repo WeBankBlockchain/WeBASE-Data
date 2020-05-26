@@ -17,22 +17,18 @@ package com.webank.webase.data.collect.base.tools;
 
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.fisco.bcos.web3j.crypto.Hash;
-import org.fisco.bcos.web3j.crypto.Keys;
-import org.fisco.bcos.web3j.crypto.gm.sm3.SM3Digest;
-import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
-import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
-import org.fisco.bcos.web3j.tx.txdecode.ConstantProperties;
-import org.fisco.bcos.web3j.utils.Numeric;
-import org.fisco.bcos.web3j.utils.Strings;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.fisco.bcos.web3j.crypto.Hash;
+import org.fisco.bcos.web3j.crypto.Keys;
+import org.fisco.bcos.web3j.protocol.ObjectMapperFactory;
+import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
+import org.fisco.bcos.web3j.tx.txdecode.ConstantProperties;
+import org.fisco.bcos.web3j.utils.Numeric;
 
 public class Web3Tools {
 
@@ -42,24 +38,6 @@ public class Web3Tools {
     public static final int ADDRESS_LENGTH_IN_HEX = ADDRESS_SIZE >> 2;
 
     static final int PUBLIC_KEY_LENGTH_IN_HEX = PUBLIC_KEY_SIZE << 1;
-
-    /*   public static SignatureData stringToSignatureData(String signatureData) {
-        byte[] byte_3 = Numeric.hexStringToByteArray(signatureData);
-        byte[] signR = new byte[32];
-        System.arraycopy(byte_3, 1, signR, 0, signR.length);
-        byte[] signS = new byte[32];
-        System.arraycopy(byte_3, 1 + signR.length, signS, 0, signS.length);
-        return new SignatureData(byte_3[0], signR, signS);
-    }
-
-    public static String signatureDataToString(SignatureData signatureData) {
-        byte[] byte_3 = new byte[1 + signatureData.getR().length + signatureData.getS().length];
-        byte_3[0] = signatureData.getV();
-        System.arraycopy(signatureData.getR(), 0, byte_3, 1, signatureData.getR().length);
-        System.arraycopy(signatureData.getS(), 0, byte_3, signatureData.getR().length + 1,
-            signatureData.getS().length);
-        return Numeric.toHexString(byte_3, 0, byte_3.length, false);
-    }*/
 
     /**
      * get address from public key
@@ -116,14 +94,16 @@ public class Web3Tools {
      * @return
      */
     public static AbiDefinition getAbiDefinition(String funName, String contractAbi) {
-        JSONArray abiArr = JSONArray.parseArray(contractAbi);
+        JsonNode arrNode = JacksonUtils.stringToJsonNode(contractAbi);
         AbiDefinition result = null;
-        for (Object object : abiArr) {
-            AbiDefinition abiDefinition = JSON.parseObject(object.toString(), AbiDefinition.class);
-            if (ConstantProperties.TYPE_FUNCTION.equals(abiDefinition.getType())
-                    && funName.equals(abiDefinition.getName())) {
-                result = abiDefinition;
-                break;
+        if (arrNode.isArray()) {
+            for (JsonNode object : arrNode) {
+                AbiDefinition abiDefinition = JacksonUtils.stringToObj(object.asText(), AbiDefinition.class);
+                if (ConstantProperties.TYPE_FUNCTION.equals(abiDefinition.getType())
+                        && funName.equals(abiDefinition.getName())) {
+                    result = abiDefinition;
+                    break;
+                }
             }
         }
         return result;
