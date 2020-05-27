@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -14,16 +14,18 @@
 package com.webank.webase.data.collect.user.entity;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * bind public user to import
+ */
 @Data
 @NoArgsConstructor
-public class UpdateUserInputParam {
-
-    @NotNull
-    public Integer userId;
+public class UserInfo {
     @NotBlank
-    public String description;
+    private String userName;
+    @NotBlank
+    private String address;
+    private String description;
 }

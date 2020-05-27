@@ -27,6 +27,8 @@ public interface TableMapper {
     int createTbGroup();
 
     int createTbFrontGroupMap();
+    
+    int createTbUser();
 
     int createTbTaskPool(@Param("tableName") String tableName);
 

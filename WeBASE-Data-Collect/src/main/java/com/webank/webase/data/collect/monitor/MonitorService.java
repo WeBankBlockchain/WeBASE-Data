@@ -431,7 +431,7 @@ public class MonitorService {
      * monitor user.
      */
     private UserMonitorResult monitorUser(int chainId, int groupId, String userAddress) {
-        String userName = userService.queryUserNameByAddress(groupId, userAddress);
+        String userName = userService.queryByAddress(userAddress).getUserName();
 
         int userType = MonitorUserType.NORMAL.getValue();
         if (StringUtils.isBlank(userName)) {

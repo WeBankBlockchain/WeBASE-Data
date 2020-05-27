@@ -14,7 +14,7 @@
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (chain_id),
 		UNIQUE KEY unique_name (chain_name)
-		) ENGINE=InnoDB CHARSET=utf8 COMMENT='区块链信息表';
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块链信息表';
 	</update>
 
 	<update id="createTbFront">
@@ -29,8 +29,7 @@
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (front_id),
 		UNIQUE KEY unique_chain_node (chain_id,node_id)
-		) ENGINE=InnoDB AUTO_INCREMENT=100001
-		DEFAULT CHARSET=utf8 COMMENT='前置服务信息表';
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='前置服务信息表';
 	</update>
 
 	<update id="createTbGroup">
@@ -47,7 +46,7 @@
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
 		unique unique_group_chain (group_id,chain_id)
-		) COMMENT='群组信息表' ENGINE=InnoDB CHARSET=utf8;
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='群组信息表';
 	</update>
 
 	<update id="createTbFrontGroupMap">
@@ -60,10 +59,22 @@
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (map_id),
 		unique unique_chain_front_group (chain_id,front_id,group_id)
-		) ENGINE=InnoDB
-		AUTO_INCREMENT=200001 DEFAULT CHARSET=utf8 COMMENT='前置群组映射表';
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='前置群组映射表';
 	</update>
-
+	
+	<update id="createTbUser">
+		CREATE TABLE IF NOT EXISTS tb_user (
+	    user_id int(11) NOT NULL AUTO_INCREMENT COMMENT '用户编号',
+	    user_name varchar(64) binary NOT NULL COMMENT '用户名',
+	    address varchar(64) DEFAULT NULL COMMENT '链上地址',
+	    description varchar(250) DEFAULT NULL COMMENT '备注',
+	    create_time datetime DEFAULT NULL COMMENT '创建时间',
+	    modify_time datetime DEFAULT NULL COMMENT '修改时间',
+	    PRIMARY KEY (user_id),
+	    UNIQUE KEY unique_address (address)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息表';
+	</update>
+	
 	<update id="createTbTaskPool" parameterType="java.lang.String">
 		CREATE TABLE IF NOT
 		EXISTS ${tableName}(
@@ -77,8 +88,7 @@
 		PRIMARY KEY (id),
 		unique unique_number (block_number),
 		KEY index_status (sync_status)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8
-		COMMENT='区块拉取任务信息表';
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块拉取任务信息表';
 	</update>
 
 	<update id="createTbBlock" parameterType="java.lang.String">
@@ -96,8 +106,7 @@
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
 		unique unique_number (block_number)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8
-		COMMENT='区块信息表';
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块信息表';
 	</update>
 
 	<update id="createTbTransaction" parameterType="java.lang.String">
@@ -117,8 +126,7 @@
 		unique unique_hash (trans_hash),
 		KEY index_flag (audit_flag),
 		KEY index_number (block_number)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8
-		COMMENT='交易信息表';
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易信息表';
 	</update>
 
 	<update id="createTbReceipt" parameterType="java.lang.String">
@@ -135,8 +143,7 @@
 		PRIMARY KEY (id),
 		unique unique_hash (trans_hash),
 		KEY index_number (block_number)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8
-		COMMENT='交易回执信息表';
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易回执信息表';
 	</update>
 
 	<update id="createTbAudit" parameterType="java.lang.String">

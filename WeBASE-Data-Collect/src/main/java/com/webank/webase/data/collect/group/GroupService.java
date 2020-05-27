@@ -121,10 +121,6 @@ public class GroupService {
      * Check the validity of the groupId.
      */
     public void checkGroupId(Integer chainId, Integer groupId) throws BaseException {
-        if (groupId == null) {
-            log.error("fail checkGroupId groupId is null");
-            throw new BaseException(ConstantCode.GROUP_ID_NULL);
-        }
         Integer groupCount = countOfGroup(chainId, groupId, null);
         if (groupCount == null || groupCount == 0) {
             throw new BaseException(ConstantCode.INVALID_GROUP_ID);
