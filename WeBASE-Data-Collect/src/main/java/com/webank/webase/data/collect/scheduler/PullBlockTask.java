@@ -59,14 +59,15 @@ public class PullBlockTask {
     public void pullBlockStart() {
         log.info("start pullBLock.");
         Instant startTime = Instant.now();
-        List<TbGroup> groupList = groupService.getGroupList(DataStatus.NORMAL.getValue());
+        List<TbGroup> groupList = groupService.getGroupList(null, DataStatus.NORMAL.getValue());
         if (CollectionUtils.isEmpty(groupList)) {
             log.warn("pullBlock jump over: not found any group");
             return;
         }
 
         CountDownLatch latch = new CountDownLatch(groupList.size());
-        groupList.stream().forEach(group -> pullBlockByGroupId(latch, group.getGroupId()));
+        groupList.stream()
+                .forEach(group -> pullBlockProcess(latch, group.getChainId(), group.getGroupId()));
 
         try {
             latch.await();
@@ -74,7 +75,6 @@ public class PullBlockTask {
             log.error("InterruptedException", ex);
             Thread.currentThread().interrupt();
         }
-
         log.info("end pullBLock useTime:{} ",
                 Duration.between(startTime, Instant.now()).toMillis());
     }
@@ -82,51 +82,54 @@ public class PullBlockTask {
     /**
      * get block from chain by groupId
      */
-    @Async(value = "mgrAsyncExecutor")
-    public void pullBlockByGroupId(CountDownLatch latch, int groupId) {
-        log.info("start pullBlockByGroupId groupId:{}", groupId);
+    @Async(value = "asyncExecutor")
+    public void pullBlockProcess(CountDownLatch latch, int chainId, int groupId) {
+        log.info("start pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
         try {
             boolean check = true;
             while (check) {
                 // max block in chain
-                long currentChainHeight = frontInterface.getLatestBlockNumber(groupId).longValue();
-                long fromHeight = getHeight(blockTaskPoolService.getTaskPoolHeight(groupId));
+                long currentChainHeight =
+                        frontInterface.getLatestBlockNumber(chainId, groupId).longValue();
+                long fromHeight =
+                        getHeight(blockTaskPoolService.getTaskPoolHeight(chainId, groupId));
                 // control the batch unit number
                 long end = fromHeight + cProperties.getCrawlBatchUnit() - 1;
                 long toHeight = currentChainHeight < end ? currentChainHeight : end;
-                log.info("Current depot status: {} of {}, and try to process block from {} to {}",
+                log.debug("Current depot status: {} of {}, and try to process block from {} to {}",
                         fromHeight - 1, currentChainHeight, fromHeight, toHeight);
                 boolean certainty = toHeight + 1 < currentChainHeight
                         - BlockConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
                 if (fromHeight <= toHeight) {
-                    log.info("Try to sync block number {} to {} of {}", fromHeight, toHeight,
+                    log.debug("Try to sync block number {} to {} of {}", fromHeight, toHeight,
                             currentChainHeight);
-                    blockTaskPoolService.prepareTask(groupId, fromHeight, toHeight, certainty);
+                    blockTaskPoolService.prepareTask(chainId, groupId, fromHeight, toHeight,
+                            certainty);
                 }
 
-                log.info("Begin to fetch at most {} tasks", cProperties.getCrawlBatchUnit());
-                List<BlockInfo> taskList =
-                        blockTaskPoolService.fetchData(groupId, cProperties.getCrawlBatchUnit());
+                log.debug("Begin to fetch at most {} tasks", cProperties.getCrawlBatchUnit());
+                List<BlockInfo> taskList = blockTaskPoolService.fetchData(chainId, groupId,
+                        cProperties.getCrawlBatchUnit());
                 for (BlockInfo b : taskList) {
-                    blockTaskPoolService.handleSingleBlock(groupId, b, currentChainHeight);
+                    blockTaskPoolService.handleSingleBlock(chainId, groupId, b, currentChainHeight);
                 }
                 if (!certainty) {
-                    blockTaskPoolService.checkForks(groupId, currentChainHeight);
-                    blockTaskPoolService.checkTaskCount(groupId, cProperties.getStartBlockNumber(),
-                            currentChainHeight);
+                    blockTaskPoolService.checkForks(chainId, groupId, currentChainHeight);
+                    blockTaskPoolService.checkTaskCount(chainId, groupId,
+                            cProperties.getStartBlockNumber(), currentChainHeight);
                 }
-                blockTaskPoolService.checkTimeOut(groupId);
-                blockTaskPoolService.processErrors(groupId);
+                blockTaskPoolService.checkTimeOut(chainId, groupId);
+                blockTaskPoolService.processErrors(chainId, groupId);
                 if (fromHeight > toHeight) {
                     check = false;
                 }
             }
         } catch (Exception ex) {
-            log.error("fail pullBlockByGroupId. groupId:{} ", groupId, ex);
+            log.error("fail pullBlockProcess. chainId:{} groupId:{} ", chainId, groupId, ex);
         } finally {
             latch.countDown();
         }
-        log.info("end pullBlockByGroupId groupId:{}", groupId);
+        log.info("end pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
     }
 
     private long getHeight(long height) {

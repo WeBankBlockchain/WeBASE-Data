@@ -22,7 +22,7 @@ import lombok.Data;
 public class GroupGeneral {
 
     private Integer groupId;
-    private int orgCount;
+    private Integer chainId;
     private int nodeCount;
     private int contractCount;
     private BigInteger transactionCount = BigInteger.ZERO;

@@ -69,7 +69,7 @@ public class UserService {
         }
 
         // check group id
-        groupService.checkGroupId(user.getGroupId());
+        groupService.checkGroupId(user.getChainId(), user.getGroupId());
 
         // check userName
         TbUser userRow = queryByName(user.getGroupId(), user.getUserName());
@@ -101,7 +101,8 @@ public class UserService {
         Integer userId = newUserRow.getUserId();
 
         // update monitor unusual user's info
-        monitorService.updateUnusualUser(user.getGroupId(), user.getUserName(), address);
+        monitorService.updateUnusualUser(user.getChainId(), user.getGroupId(), user.getUserName(),
+                address);
 
         log.info("end bindUserInfo userId:{}", userId);
         return userId;

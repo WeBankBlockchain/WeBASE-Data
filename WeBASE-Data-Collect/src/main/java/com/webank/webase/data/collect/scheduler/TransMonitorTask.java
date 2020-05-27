@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -21,11 +21,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import lombok.extern.log4j.Log4j2;
 
 /**
  * using in async monitor
@@ -39,7 +38,7 @@ public class TransMonitorTask {
     @Autowired
     private GroupService groupService;
 
-//    @Scheduled(fixedRateString = "${constant.transMonitorTaskFixedRate}", initialDelay = 1000)
+    // @Scheduled(fixedRateString = "${constant.transMonitorTaskFixedRate}", initialDelay = 1000)
     public void taskStart() {
         monitorStart();
     }
@@ -50,25 +49,25 @@ public class TransMonitorTask {
     public void monitorStart() {
         Instant startTime = Instant.now();
         log.info("=== start monitor. startTime:{}", startTime.toEpochMilli());
-        //get group list
-        List<TbGroup> groupList = groupService.getGroupList(DataStatus.NORMAL.getValue());
+        // get group list
+        List<TbGroup> groupList = groupService.getGroupList(null, DataStatus.NORMAL.getValue());
         if (CollectionUtils.isEmpty(groupList)) {
             log.info("monitor jump over .not found any group");
             return;
         }
 
         CountDownLatch latch = new CountDownLatch(groupList.size());
-        groupList.stream()
-            .forEach(group -> monitorService.transMonitorByGroupId(latch, group.getGroupId()));
+        groupList.stream().forEach(group -> monitorService.transMonitorByGroupId(latch,
+                group.getChainId(), group.getGroupId()));
 
         try {
-             latch.await();
+            latch.await();
         } catch (InterruptedException ex) {
             log.error("InterruptedException", ex);
             Thread.currentThread().interrupt();
         }
 
         log.info("=== end monitor. useTime:{} ",
-            Duration.between(startTime, Instant.now()).toMillis());
+                Duration.between(startTime, Instant.now()).toMillis());
     }
 }

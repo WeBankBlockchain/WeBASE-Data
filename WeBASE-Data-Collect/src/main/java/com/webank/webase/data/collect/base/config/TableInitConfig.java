@@ -30,6 +30,7 @@ public class TableInitConfig implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        tableMapper.createTbChain();
         tableMapper.createTbFront();
         tableMapper.createTbGroup();
         tableMapper.createTbFrontGroupMap();

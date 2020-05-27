@@ -32,6 +32,8 @@ public class BindUserInputParam {
     @NotBlank
     private String publicKey;
     @NotNull
+    private Integer chainId;
+    @NotNull
     private Integer groupId;
     private String description;
     private Integer userType = UserType.GENERALUSER.getValue();

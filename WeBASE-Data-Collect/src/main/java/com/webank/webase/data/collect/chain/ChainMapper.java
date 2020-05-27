@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2019  the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -11,28 +11,24 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.front;
+package com.webank.webase.data.collect.chain;
 
-import com.webank.webase.data.collect.front.entity.FrontParam;
-import com.webank.webase.data.collect.front.entity.TbFront;
+import com.webank.webase.data.collect.chain.entity.ChainParam;
+import com.webank.webase.data.collect.chain.entity.TbChain;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FrontMapper {
+public interface ChainMapper {
 
-    int add(TbFront tbFront);
+    int add(TbChain tbChain);
 
-    Integer getCount(FrontParam param);
+    Integer getCount(ChainParam param);
 
-    List<TbFront> getList(FrontParam param);
-
-    TbFront getById(@Param("frontId") int frontId);
+    List<TbChain> getList(ChainParam param);
     
-    TbFront getByChainIdAndNodeId(@Param("chainId") int chainId, @Param("nodeId") String nodeId);
-
-    int removeById(@Param("frontId") int frontId);
-
-    int removeByChainId(@Param("chainId") int chainId);
+    TbChain getChainById(@Param("chainId") Integer chainId);
+    
+    int remove(@Param("chainId") Integer chainId);
 }

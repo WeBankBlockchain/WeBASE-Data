@@ -35,6 +35,14 @@ public class ConstantCode {
     /**
      * Business exception.
      */
+    public static final RetCode CHAIN_ID_EXISTS = RetCode.mark(205029, "chain id already exists");
+    
+    public static final RetCode CHAIN_NAME_EXISTS = RetCode.mark(205021, "chain name already exists");
+    
+    public static final RetCode SAVE_CHAIN_FAIL = RetCode.mark(205022, "save chain fail");
+    
+    public static final RetCode INVALID_CHAIN_ID = RetCode.mark(205023, "invalid chain id");    
+    
     public static final RetCode INVALID_FRONT_ID = RetCode.mark(202000, "invalid front id");
 
     public static final RetCode DB_EXCEPTION = RetCode.mark(202001, "database exception");

@@ -11,12 +11,14 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.frontgroupmap.entity;
+package com.webank.webase.data.collect.frontgroupmap;
 
 
-import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
+import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup;
+import com.webank.webase.data.collect.frontgroupmap.entity.MapListParam;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,44 +28,45 @@ public class FrontGroupMapCache {
     @Autowired
     private FrontGroupMapService mapService;
 
-    private static List<FrontGroup> mapList;
+    private static Map<Integer, List<FrontGroup>> mapList = new ConcurrentHashMap<>();
 
 
     /**
      * clear mapList.
      */
-    public void clearMapList() {
-        mapList = null;
+    public void clearMapList(int chainId) {
+        mapList.remove(chainId);
     }
 
     /**
      * reset mapList.
      */
-    public List<FrontGroup> resetMapList() {
-        mapList = mapService.getList(new MapListParam());
+    public Map<Integer, List<FrontGroup>> resetMapList(int chainId, int groupId) {
+        MapListParam param = new MapListParam();
+        param.setChainId(chainId);
+        param.setGroupId(groupId);
+        mapList.put(chainId, mapService.getList(param));
         return mapList;
     }
 
     /**
      * get mapList.
      */
-    public List<FrontGroup> getMapListByGroupId(int groupId) {
-        List<FrontGroup> list = getAllMap();
+    public List<FrontGroup> getMapListByChainId(int chainId, int groupId) {
+        List<FrontGroup> list = getAllMap(chainId, groupId);
         if (list == null) {
             return null;
         }
-        List<FrontGroup> map = list.stream().filter(m -> groupId == m.getGroupId())
-            .collect(Collectors.toList());
-        return map;
+        return list;
     }
 
     /**
      * get all mapList.
      */
-    public List<FrontGroup> getAllMap() {
-        if (mapList == null || mapList.size() == 0) {
-            mapList = resetMapList();
+    public List<FrontGroup> getAllMap(int chainId, int groupId) {
+        if (mapList == null || mapList.get(chainId) == null) {
+            mapList = resetMapList(chainId, groupId);
         }
-        return mapList;
+        return mapList.get(chainId);
     }
 }

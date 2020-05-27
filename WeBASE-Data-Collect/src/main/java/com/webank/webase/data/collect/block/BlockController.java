@@ -44,8 +44,10 @@ public class BlockController {
     /**
      * query block list.
      */
-    @GetMapping(value = "/list/{groupId}/{pageNumber}/{pageSize}")
-    public BasePageResponse queryBlockList(@PathVariable("groupId") Integer groupId,
+    @GetMapping(value = "/list/{chainId}/{groupId}/{pageNumber}/{pageSize}")
+    public BasePageResponse queryBlockList(
+            @RequestParam(value = "chainId", required = false) Integer chainId,
+            @PathVariable("groupId") Integer groupId,
             @PathVariable("pageNumber") Integer pageNumber,
             @PathVariable("pageSize") Integer pageSize,
             @RequestParam(value = "blockHash", required = false) String blockHash,
@@ -54,13 +56,13 @@ public class BlockController {
         BasePageResponse pageResponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start queryBlockList.}");
-        int count = blockService.queryCountOfBlock(groupId, blockHash, blockNumber);
+        int count = blockService.queryCountOfBlock(chainId, groupId, blockHash, blockNumber);
         if (count > 0) {
             Integer start =
                     Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
             BlockListParam queryParam = new BlockListParam(start, pageSize, blockHash, blockNumber,
                     SqlSortType.DESC.getValue());
-            List<TbBlock> blockList = blockService.queryBlockList(groupId, queryParam);
+            List<TbBlock> blockList = blockService.queryBlockList(chainId, groupId, queryParam);
             pageResponse.setData(blockList);
             pageResponse.setTotalCount(count);
         }
@@ -73,13 +75,15 @@ public class BlockController {
     /**
      * get block by number.
      */
-    @GetMapping("/blockByNumber/{groupId}/{blockNumber}")
-    public BaseResponse getBlockByNumber(@PathVariable("groupId") Integer groupId,
+    @GetMapping("/blockByNumber/{chainId}/{groupId}/{blockNumber}")
+    public BaseResponse getBlockByNumber(
+            @RequestParam(value = "chainId", required = false) Integer chainId,
+            @PathVariable("groupId") Integer groupId,
             @PathVariable("blockNumber") BigInteger blockNumber) throws BaseException {
         Instant startTime = Instant.now();
         log.info("start getBlockByNumber. blockNumber:{}", blockNumber);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        Object blockInfo = blockService.getBlockFromFrontByNumber(groupId, blockNumber);
+        Object blockInfo = blockService.getBlockFromFrontByNumber(chainId, groupId, blockNumber);
         baseResponse.setData(blockInfo);
         log.info("end getBlockByNumber useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());

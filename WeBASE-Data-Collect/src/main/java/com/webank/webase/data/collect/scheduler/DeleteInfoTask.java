@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -51,9 +51,9 @@ public class DeleteInfoTask {
     private MonitorService monitorService;
 
 
-//    @Scheduled(cron = "${constant.deleteInfoCron}", initialDelay = 1000)
+    // @Scheduled(cron = "${constant.deleteInfoCron}", initialDelay = 1000)
     public void taskStart() {
-       deleteInfoStart();
+        deleteInfoStart();
     }
 
     /**
@@ -62,39 +62,40 @@ public class DeleteInfoTask {
     public void deleteInfoStart() {
         Instant startTime = Instant.now();
         log.info("start deleteInfoStart. startTime:{}", startTime.toEpochMilli());
-        //get group list
-        List<TbGroup> groupList = groupService.getGroupList(DataStatus.NORMAL.getValue());
+        // get group list
+        List<TbGroup> groupList = groupService.getGroupList(null, DataStatus.NORMAL.getValue());
         if (CollectionUtils.isEmpty(groupList)) {
             log.info("DeleteInfoTask jump over .not found any group");
             return;
         }
 
-        groupList.stream().forEach(g -> deleteByGroupId(g.getGroupId()));
+        groupList.stream().forEach(g -> deleteByGroupId(g.getChainId(), g.getGroupId()));
 
         log.info("end deleteInfoStart useTime:{}",
-            Duration.between(startTime, Instant.now()).toMillis());
+                Duration.between(startTime, Instant.now()).toMillis());
     }
 
     /**
      * delete by groupId.
      */
-    private void deleteByGroupId(int groupId) {
-        //delete block
-        deleteBlock(groupId);
-        //delete transHash
-        deleteTransHash(groupId);
-        //delete transaction monitor info
-        deleteTransMonitor(groupId);
+    private void deleteByGroupId(int chainId, int groupId) {
+        // delete block
+        deleteBlock(chainId, groupId);
+        // delete transHash
+        deleteTransHash(chainId, groupId);
+        // delete transaction monitor info
+        deleteTransMonitor(chainId, groupId);
     }
 
 
     /**
      * delete block.
      */
-    private void deleteBlock(int groupId) {
+    private void deleteBlock(int chainId, int groupId) {
         log.info("start deleteBlock. groupId:{}", groupId);
         try {
-            Integer removeCount = blockService.remove(groupId, cProperties.getBlockRetainMax());
+            Integer removeCount =
+                    blockService.remove(chainId, groupId, cProperties.getBlockRetainMax());
             log.info("end deleteBlock. groupId:{} removeCount:{}", groupId, removeCount);
         } catch (Exception ex) {
             log.info("fail deleteBlock. groupId:{}", groupId, ex);
@@ -104,16 +105,16 @@ public class DeleteInfoTask {
     /**
      * delete transHash.
      */
-    private void deleteTransHash(int groupId) {
+    private void deleteTransHash(int chainId, int groupId) {
         log.info("start deleteTransHash. groupId:{}", groupId);
         try {
-//            TransListParam queryParam = new TransListParam(null, null);
-//            Integer count = transHashService.queryCountOfTran(groupId, queryParam);
-            Integer count = transactionService.queryCountOfTranByMinus(groupId);
+            // TransListParam queryParam = new TransListParam(null, null);
+            // Integer count = transHashService.queryCountOfTran(chainId,groupId, queryParam);
+            Integer count = transactionService.queryCountOfTranByMinus(chainId, groupId);
             Integer removeCount = 0;
             if (count > cProperties.getTransRetainMax().intValue()) {
                 Integer subTransNum = count - cProperties.getTransRetainMax().intValue();
-                removeCount = transactionService.remove(groupId, subTransNum);
+                removeCount = transactionService.remove(chainId, groupId, subTransNum);
             }
             log.info("end deleteTransHash. groupId:{} removeCount:{}", groupId, removeCount);
         } catch (Exception ex) {
@@ -125,11 +126,11 @@ public class DeleteInfoTask {
     /**
      * delete monitor info.
      */
-    private void deleteTransMonitor(int groupId) {
+    private void deleteTransMonitor(int chainId, int groupId) {
         log.info("start deleteTransMonitor. groupId:{}", groupId);
         try {
-            Integer removeCount = monitorService
-                .delete(groupId, cProperties.getMonitorInfoRetainMax());
+            Integer removeCount =
+                    monitorService.delete(chainId, groupId, cProperties.getMonitorInfoRetainMax());
             log.info("end deleteTransMonitor. groupId:{} removeCount:{}", groupId, removeCount);
         } catch (Exception ex) {
             log.info("fail deleteTransMonitor. groupId:{}", groupId, ex);

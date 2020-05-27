@@ -31,6 +31,7 @@ public class TbContract {
     private String contractVersion;
     private String contractName;
     private Integer contractStatus;
+    private Integer chainId;
     private Integer groupId;
     private Integer contractType;
     private String contractSource;

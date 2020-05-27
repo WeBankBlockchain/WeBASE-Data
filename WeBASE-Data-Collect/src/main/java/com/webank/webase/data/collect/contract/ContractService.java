@@ -55,7 +55,7 @@ public class ContractService {
 
         if (Objects.nonNull(tbContract) && StringUtils.isNotBlank(tbContract.getContractBin())) {
             // update monitor unusual deployInputParam's info
-            monitorService.updateUnusualContract(tbContract.getGroupId(),
+            monitorService.updateUnusualContract(tbContract.getChainId(), tbContract.getGroupId(),
                     tbContract.getContractName(), tbContract.getContractBin());
         }
 

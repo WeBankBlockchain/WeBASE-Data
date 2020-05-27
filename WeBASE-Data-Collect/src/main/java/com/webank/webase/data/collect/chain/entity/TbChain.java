@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2019  the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webase.data.collect.front.entity;
+package com.webank.webase.data.collect.chain.entity;
 
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class TbFront {
-    private Integer frontId;
+public class TbChain {
     private Integer chainId;
-    private String nodeId;
-    private String frontIp;
-    private Integer frontPort;
-    private String agency;
+    private String chainName;
+    private Integer chainType;
+    private String description;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 }

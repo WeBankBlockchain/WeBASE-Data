@@ -79,9 +79,9 @@ public class BeanConfig {
      * pull block and trans from chain
      * @return
      */
-    @Bean
-    public ThreadPoolTaskExecutor mgrAsyncExecutor() {
-        log.info("start mgrAsyncExecutor init..");
+    @Bean(name = "asyncExecutor")
+    public ThreadPoolTaskExecutor asyncExecutor() {
+        log.info("start asyncExecutor init..");
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(executorProperties.getCorePoolSize());
         executor.setMaxPoolSize(executorProperties.getMaxPoolSize());

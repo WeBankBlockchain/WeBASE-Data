@@ -19,8 +19,8 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
+import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup;
-import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontinterface.entity.FailInfo;
 import java.time.Duration;
 import java.time.Instant;
@@ -113,22 +113,24 @@ public class FrontRestTools {
     /**
      * get from front for entity.
      */
-    public <T> T getForEntity(Integer groupId, String uri, Class<T> clazz) {
-        return restTemplateExchange(groupId, uri, HttpMethod.GET, null, clazz);
+    public <T> T getForEntity(Integer chainId, Integer groupId, String uri, Class<T> clazz) {
+        return restTemplateExchange(chainId, groupId, uri, HttpMethod.GET, null, clazz);
     }
 
     /**
      * post from front for entity.
      */
-    public <T> T postForEntity(Integer groupId, String uri, Object params, Class<T> clazz) {
-        return restTemplateExchange(groupId, uri, HttpMethod.POST, params, clazz);
+    public <T> T postForEntity(Integer chainId, Integer groupId, String uri, Object params,
+            Class<T> clazz) {
+        return restTemplateExchange(chainId, groupId, uri, HttpMethod.POST, params, clazz);
     }
 
     /**
      * delete from front for entity.
      */
-    public <T> T deleteForEntity(Integer groupId, String uri, Object params, Class<T> clazz) {
-        return restTemplateExchange(groupId, uri, HttpMethod.DELETE, params, clazz);
+    public <T> T deleteForEntity(Integer chainId, Integer groupId, String uri, Object params,
+            Class<T> clazz) {
+        return restTemplateExchange(chainId, groupId, uri, HttpMethod.DELETE, params, clazz);
     }
 
     /**
@@ -155,9 +157,9 @@ public class FrontRestTools {
      * request exchange.
      */
     @SuppressWarnings("rawtypes")
-    private <T> T restTemplateExchange(int groupId, String uri, HttpMethod method, Object param,
-            Class<T> clazz) {
-        List<FrontGroup> frontList = frontGroupMapCache.getMapListByGroupId(groupId);
+    private <T> T restTemplateExchange(int chainId, int groupId, String uri, HttpMethod method,
+            Object param, Class<T> clazz) {
+        List<FrontGroup> frontList = frontGroupMapCache.getMapListByChainId(chainId, groupId);
         if (frontList == null || frontList.size() == 0) {
             log.error("fail restTemplateExchange. frontList is empty");
             throw new BaseException(ConstantCode.FRONT_LIST_NOT_FOUNT);

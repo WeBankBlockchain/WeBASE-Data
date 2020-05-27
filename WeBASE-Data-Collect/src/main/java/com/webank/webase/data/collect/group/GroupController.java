@@ -48,13 +48,13 @@ public class GroupController extends BaseController {
     /**
      * get group general.
      */
-//    @GetMapping("/general/{groupId}")
-    public BaseResponse getGroupGeneral(@PathVariable("groupId") Integer groupId)
-            throws BaseException {
+    // @GetMapping("/general/{chainId}/{groupId}")
+    public BaseResponse getGroupGeneral(@PathVariable("chainId") Integer chainId,
+            @PathVariable("groupId") Integer groupId) throws BaseException {
         Instant startTime = Instant.now();
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         log.info("start getGroupGeneral. groupId:{}", groupId);
-        GroupGeneral groupGeneral = groupService.queryGroupGeneral(groupId);
+        GroupGeneral groupGeneral = groupService.queryGroupGeneral(chainId, groupId);
 
         baseResponse.setData(groupGeneral);
         log.info("end getGroupGeneral useTime:{}",
@@ -65,16 +65,18 @@ public class GroupController extends BaseController {
     /**
      * query all group.
      */
-    @GetMapping("/list")
-    public BasePageResponse getGroupList() throws BaseException {
+    @GetMapping("/list/{chainId}")
+    public BasePageResponse getGroupList(@PathVariable("chainId") Integer chainId)
+            throws BaseException {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start getGroupList.");
 
         // get group list
-        int count = groupService.countOfGroup(null, DataStatus.NORMAL.getValue());
+        int count = groupService.countOfGroup(chainId, null, DataStatus.NORMAL.getValue());
         if (count > 0) {
-            List<TbGroup> groupList = groupService.getGroupList(DataStatus.NORMAL.getValue());
+            List<TbGroup> groupList =
+                    groupService.getGroupList(chainId, DataStatus.NORMAL.getValue());
             pagesponse.setTotalCount(count);
             pagesponse.setData(groupList);
         }

@@ -32,11 +32,11 @@ public class MonitorTransactionService {
      * insert and update.
      */
     @Transactional
-    public void dataAddAndUpdate(int groupId, TbMonitor tbMonitor) {
-        TbMonitor dbInfo = this.queryTbMonitor(groupId, tbMonitor);
+    public void dataAddAndUpdate(int chainId, int groupId, TbMonitor tbMonitor) {
+        TbMonitor dbInfo = this.queryTbMonitor(chainId, groupId, tbMonitor);
         if (dbInfo == null) {
             log.info("====== data is not exist, add tbMonitor.");
-            this.addRow(groupId, tbMonitor);
+            this.addRow(chainId, groupId, tbMonitor);
         } else {
             String[] txHashsArr = dbInfo.getTransHashs().split(",");
             if (txHashsArr.length < 5) {
@@ -46,26 +46,27 @@ public class MonitorTransactionService {
             } else {
                 tbMonitor.setTransHashs(dbInfo.getTransHashs());
             }
-            this.updateRow(groupId, tbMonitor);
+            this.updateRow(chainId, groupId, tbMonitor);
         }
         log.debug("====== updateTransStatFlag transHash:{}", tbMonitor.getTransHashLastest());
-        transactionService.updateTransStatFlag(groupId, tbMonitor.getTransHashLastest());
+        transactionService.updateTransStatFlag(chainId, groupId, tbMonitor.getTransHashLastest());
     }
 
 
     /**
      * query monitor info.
      */
-    public TbMonitor queryTbMonitor(int groupId, TbMonitor tbMonitor) {
-        return monitorMapper.queryTbMonitor(TableName.AUDIT.getTableName(groupId), tbMonitor);
+    public TbMonitor queryTbMonitor(int chainId, int groupId, TbMonitor tbMonitor) {
+        return monitorMapper.queryTbMonitor(TableName.AUDIT.getTableName(chainId, groupId),
+                tbMonitor);
     }
 
-    public void addRow(int groupId, TbMonitor tbMonitor) {
-        monitorMapper.add(TableName.AUDIT.getTableName(groupId), tbMonitor);
+    public void addRow(int chainId, int groupId, TbMonitor tbMonitor) {
+        monitorMapper.add(TableName.AUDIT.getTableName(chainId, groupId), tbMonitor);
     }
 
-    public void updateRow(int groupId, TbMonitor tbMonitor) {
-        monitorMapper.update(TableName.AUDIT.getTableName(groupId), tbMonitor);
+    public void updateRow(int chainId, int groupId, TbMonitor tbMonitor) {
+        monitorMapper.update(TableName.AUDIT.getTableName(chainId, groupId), tbMonitor);
     }
 
 }

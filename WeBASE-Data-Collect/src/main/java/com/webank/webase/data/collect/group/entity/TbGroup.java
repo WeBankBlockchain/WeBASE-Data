@@ -26,7 +26,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TbGroup {
 
+    private Integer id;
     private Integer groupId;
+    private Integer chainId;
     private String groupName;
     private String genesisBlockHash;
     private Integer groupStatus;
@@ -34,8 +36,9 @@ public class TbGroup {
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
-    public TbGroup(Integer groupId, String groupName,Integer nodeCount,String genesisBlockHash){
+    public TbGroup(Integer groupId, Integer chainId, String groupName,Integer nodeCount,String genesisBlockHash){
         this.groupId = groupId;
+        this.chainId = chainId;
         this.groupName = groupName;
         this.nodeCount = nodeCount;
         this.genesisBlockHash = genesisBlockHash;

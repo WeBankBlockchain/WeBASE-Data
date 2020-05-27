@@ -23,6 +23,8 @@ import lombok.Data;
 @Data
 public class Contract {
     @NotNull
+    private Integer chainId;
+    @NotNull
     private Integer groupId;
     private Integer contractId;
     @NotBlank

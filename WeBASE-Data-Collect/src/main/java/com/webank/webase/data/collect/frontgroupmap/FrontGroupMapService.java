@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -29,10 +29,10 @@ public class FrontGroupMapService {
     /**
      * add new mapping
      */
-    public TbFrontGroupMap newFrontGroup(Integer frontId, Integer groupId) {
-        TbFrontGroupMap tbFrontGroupMap = new TbFrontGroupMap(frontId, groupId);
+    public TbFrontGroupMap newFrontGroup(Integer chainId, Integer frontId, Integer groupId) {
+        TbFrontGroupMap tbFrontGroupMap = new TbFrontGroupMap(chainId, frontId, groupId);
 
-        //add db
+        // add db
         frontGroupMapMapper.add(tbFrontGroupMap);
         return tbFrontGroupMap;
     }
@@ -45,14 +45,25 @@ public class FrontGroupMapService {
     }
 
     /**
-     * remove by groupId
+     * remove by chainId
      */
-    public void removeByGroupId(int groupId) {
-        if (groupId == 0) {
+    public void removeByChainId(int chainId) {
+        if (chainId == 0) {
             return;
         }
-        //remove by groupId
-        frontGroupMapMapper.removeByGroupId(groupId);
+        // remove by chainId
+        frontGroupMapMapper.removeByChainId(chainId);
+    }
+
+    /**
+     * remove by groupId
+     */
+    public void removeByGroupId(int chainId, int groupId) {
+        if (chainId == 0 || groupId == 0) {
+            return;
+        }
+        // remove by groupId
+        frontGroupMapMapper.removeByGroupId(chainId, groupId);
     }
 
     /**
@@ -62,7 +73,7 @@ public class FrontGroupMapService {
         if (frontId == 0) {
             return;
         }
-        //remove by frontId
+        // remove by frontId
         frontGroupMapMapper.removeByFrontId(frontId);
     }
 

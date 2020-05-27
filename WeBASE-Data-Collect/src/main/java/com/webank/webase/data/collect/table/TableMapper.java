@@ -19,6 +19,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TableMapper {
+    
+    int createTbChain();
 
     int createTbFront();
 

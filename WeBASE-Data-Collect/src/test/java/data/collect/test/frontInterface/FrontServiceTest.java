@@ -38,6 +38,7 @@ public class FrontServiceTest {
 
     @Autowired
     private FrontInterfaceService frontInterface;
+    private Integer chainId = 1;
     private Integer groupId = 1;
     private BigInteger blockNumber = new BigInteger("12");
     private String transHash = "0x1d99fdfa84b90d9478f09b722bb85b7d804e6b4d0273ec94fa4418c56a415211";
@@ -48,49 +49,51 @@ public class FrontServiceTest {
     @Test
     public void getContractCodeTest() {
         String contractAddress = "0xb68b0ca60cc4d8b207875c9a0ab6c3a782db9318";
-        String str = frontInterface.getContractCode(groupId, contractAddress, blockNumber);
+        String str = frontInterface.getContractCode(chainId, groupId, contractAddress, blockNumber);
         assert (str != null);
         System.out.println(str);
     }
 
     @Test
     public void getTransReceiptTest() {
-        TransReceipt transReceipt = frontInterface.getTransReceipt(groupId, transHash);
+        TransReceipt transReceipt = frontInterface.getTransReceipt(chainId, groupId, transHash);
         assert (transReceipt != null);
         System.out.println(JacksonUtils.objToString(transReceipt));
     }
 
     @Test
     public void getTransactionTest() {
-        TransactionInfo transactionInfo = frontInterface.getTransaction(groupId, transHash);
+        TransactionInfo transactionInfo =
+                frontInterface.getTransaction(chainId, groupId, transHash);
         assert (transactionInfo != null);
         System.out.println(JacksonUtils.objToString(transactionInfo));
     }
 
     @Test
     public void getBlockByNumberTest() {
-        BlockInfo blockInfo = frontInterface.getBlockByNumber(groupId, blockNumber);
+        BlockInfo blockInfo = frontInterface.getBlockByNumber(chainId, groupId, blockNumber);
         assert (blockInfo != null);
         System.out.println(JacksonUtils.objToString(blockInfo));
     }
 
     @Test
     public void getblockFromFrontByHashTest() {
-        BlockInfo blockInfo = frontInterface.getblockByHash(groupId, blockHash);
+        BlockInfo blockInfo = frontInterface.getblockByHash(chainId, groupId, blockHash);
         assert (blockInfo != null);
         System.out.println(JacksonUtils.objToString(blockInfo));
     }
 
     @Test
     public void getTransFromFrontByHashTest() {
-        ChainTransInfo chainTransInfo = frontInterface.getTransInfoByHash(groupId, transHash);
+        ChainTransInfo chainTransInfo =
+                frontInterface.getTransInfoByHash(chainId, groupId, transHash);
         assert (chainTransInfo != null);
         System.out.println(JacksonUtils.objToString(chainTransInfo));
     }
 
     @Test
     public void getAddressFromFrontByHashTest() {
-        String contractAddress = frontInterface.getAddressByHash(groupId, transHash);
+        String contractAddress = frontInterface.getAddressByHash(chainId, groupId, transHash);
         assert (contractAddress != null);
         System.out.println(contractAddress);
     }
@@ -98,7 +101,8 @@ public class FrontServiceTest {
     @Test
     public void getCodeFromFronthTest() {
         String contractAddress = "0xb68b0ca60cc4d8b207875c9a0ab6c3a782db9318";
-        String code = frontInterface.getCodeFromFront(groupId, contractAddress, blockNumber);
+        String code =
+                frontInterface.getCodeFromFront(chainId, groupId, contractAddress, blockNumber);
         assert (code != null);
         System.out.println(code);
     }
@@ -107,21 +111,23 @@ public class FrontServiceTest {
 
     @Test
     public void getTotalTransactionCountTest() {
-        TotalTransCountInfo totalTransCount = frontInterface.getTotalTransactionCount(groupId);
+        TotalTransCountInfo totalTransCount =
+                frontInterface.getTotalTransactionCount(chainId, groupId);
         assert (totalTransCount != null);
         System.out.println(JacksonUtils.objToString(totalTransCount));
     }
 
     @Test
     public void getTransByBlockNumberTest() {
-        List<TransactionInfo> list = frontInterface.getTransByBlockNumber(groupId, blockNumber);
+        List<TransactionInfo> list =
+                frontInterface.getTransByBlockNumber(chainId, groupId, blockNumber);
         assert (list != null && list.size() > 0);
         System.out.println(JacksonUtils.objToString(list));
     }
 
     @Test
     public void getGroupPeersTest() {
-        List<String> list = frontInterface.getGroupPeers(groupId);
+        List<String> list = frontInterface.getGroupPeers(chainId, groupId);
         assert (list != null && list.size() > 0);
         System.out.println(JacksonUtils.objToString(list));
     }
@@ -136,21 +142,21 @@ public class FrontServiceTest {
 
     @Test
     public void getPeersTest() {
-        PeerInfo[] list = frontInterface.getPeers(groupId);
+        PeerInfo[] list = frontInterface.getPeers(chainId, groupId);
         assert (list != null && list.length > 0);
         System.out.println("=====================list:" + JacksonUtils.objToString(list));
     }
 
     @Test
     public void getConsensusStatusTest() {
-        String consensunsStatus = frontInterface.getConsensusStatus(groupId);
+        String consensunsStatus = frontInterface.getConsensusStatus(chainId, groupId);
         assert (consensunsStatus != null);
         System.out.println("=====================consensunsStatus:" + consensunsStatus);
     }
 
     @Test
     public void syncStatusTest() {
-        SyncStatus status = frontInterface.getSyncStatus(groupId);
+        SyncStatus status = frontInterface.getSyncStatus(chainId, groupId);
         assert (status != null);
         System.out.println("=====================status:" + JacksonUtils.objToString(status));
     }

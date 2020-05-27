@@ -40,28 +40,28 @@ public class ReceiptService {
     /**
      * add receipt info.
      */
-    public void handleReceiptInfo(int groupId, String transHash) throws BaseException {
-        TransReceipt transReceipt = frontInterface.getTransReceipt(groupId, transHash);
+    public void handleReceiptInfo(int chainId, int groupId, String transHash) throws BaseException {
+        TransReceipt transReceipt = frontInterface.getTransReceipt(chainId, groupId, transHash);
         TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
                 transReceipt.getContractAddress(), transReceipt.getStatus(),
                 transReceipt.getOutput(), transReceipt.getBlockNumber());
-        addReceiptInfo(groupId, tbReceipt);
+        addReceiptInfo(chainId, groupId, tbReceipt);
     }
 
     /**
      * add receipt info.
      */
-    public void addReceiptInfo(int groupId, TbReceipt tbReceipt) throws BaseException {
-        String tableName = TableName.RECEIPT.getTableName(groupId);
+    public void addReceiptInfo(int chainId, int groupId, TbReceipt tbReceipt) throws BaseException {
+        String tableName = TableName.RECEIPT.getTableName(chainId, groupId);
         receiptMapper.add(tableName, tbReceipt);
     }
 
     /**
      * query receipt list.
      */
-    public List<TbReceipt> queryReceiptList(int groupId, TransListParam param)
+    public List<TbReceipt> queryReceiptList(int chainId, int groupId, TransListParam param)
             throws BaseException {
-        String tableName = TableName.RECEIPT.getTableName(groupId);
+        String tableName = TableName.RECEIPT.getTableName(chainId, groupId);
         List<TbReceipt> listOfTran = null;
         try {
             listOfTran = receiptMapper.getList(tableName, param);
@@ -75,8 +75,9 @@ public class ReceiptService {
     /**
      * query count of receipt.
      */
-    public Integer queryCountOfTran(int groupId, TransListParam queryParam) throws BaseException {
-        String tableName = TableName.RECEIPT.getTableName(groupId);
+    public int queryCountOfTran(int chainId, int groupId, TransListParam queryParam)
+            throws BaseException {
+        String tableName = TableName.RECEIPT.getTableName(chainId, groupId);
         try {
             return receiptMapper.getCount(tableName, queryParam);
         } catch (RuntimeException ex) {
@@ -88,15 +89,15 @@ public class ReceiptService {
     /**
      * get transaction receipt
      */
-    public TransReceipt getTransReceipt(int groupId, String transHash) {
-        return frontInterface.getTransReceipt(groupId, transHash);
+    public TransReceipt getTransReceipt(int chainId, int groupId, String transHash) {
+        return frontInterface.getTransReceipt(chainId, groupId, transHash);
     }
 
     /**
      * Remove receipt info.
      */
-    public int remove(Integer groupId, Integer subTransNum) {
-        String tableName = TableName.RECEIPT.getTableName(groupId);
+    public int remove(int chainId, int groupId, int subTransNum) {
+        String tableName = TableName.RECEIPT.getTableName(chainId, groupId);
         int affectRow = receiptMapper.remove(tableName, subTransNum, groupId);
         return affectRow;
     }

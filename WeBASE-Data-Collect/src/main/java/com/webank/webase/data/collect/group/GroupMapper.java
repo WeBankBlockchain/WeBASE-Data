@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -33,26 +33,28 @@ public interface GroupMapper {
     /**
      * remove by id.
      */
-    int remove(@Param("groupId") Integer groupId);
+    int remove(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId);
 
     /**
      * update status.
      */
-    int updateStatus(@Param("groupId") Integer groupId, @Param("groupStatus") Integer groupStatus);
+    int updateStatus(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId,
+            @Param("groupStatus") Integer groupStatus);
 
     /**
      * query group count.
      */
-    int getCount(@Param("groupId") Integer groupId, @Param("groupStatus") Integer groupStatus);
+    int getCount(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId,
+            @Param("groupStatus") Integer groupStatus);
 
     /**
      * get all group.
      */
-    List<TbGroup> getList(@Param("groupStatus") Integer groupStatus);
+    List<TbGroup> getList(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId,
+            @Param("groupStatus") Integer groupStatus);
 
     /**
      * query general info.
      */
-    GroupGeneral getGeneral(@Param("groupId") Integer groupId);
-
+    GroupGeneral getGeneral(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId);
 }

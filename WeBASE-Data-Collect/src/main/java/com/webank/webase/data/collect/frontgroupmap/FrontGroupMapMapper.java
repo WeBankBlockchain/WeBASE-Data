@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -27,9 +27,11 @@ public interface FrontGroupMapMapper {
 
     int getCount(MapListParam mapListParam);
 
-    int removeByGroupId(@Param("groupId") Integer groupId);
+    int removeByChainId(@Param("chainId") Integer chainId);
 
     int removeByFrontId(@Param("frontId") Integer frontId);
+
+    int removeByGroupId(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId);
 
     List<FrontGroup> getList(MapListParam mapListParam);
 

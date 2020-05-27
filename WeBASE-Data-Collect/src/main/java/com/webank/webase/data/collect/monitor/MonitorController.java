@@ -38,15 +38,15 @@ public class MonitorController {
     /**
      * monitor user list.
      */
-    @GetMapping(value = "/userList/{groupId}")
-    public BaseResponse monitorUserList(@PathVariable("groupId") Integer groupId)
-            throws BaseException {
+    @GetMapping(value = "/userList/{chainId}/{groupId}")
+    public BaseResponse monitorUserList(@PathVariable("chainId") Integer chainId,
+            @PathVariable("groupId") Integer groupId) throws BaseException {
         BaseResponse response = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start monitorUserList startTime:{} groupId:{} ", startTime.toEpochMilli(),
                 groupId);
 
-        List<TbMonitor> listOfUser = monitorService.qureyMonitorUserList(groupId);
+        List<TbMonitor> listOfUser = monitorService.qureyMonitorUserList(chainId, groupId);
         response.setData(listOfUser);
 
         log.info("end monitorUserList useTime:{}",
@@ -57,8 +57,9 @@ public class MonitorController {
     /**
      * monitor interface list.
      */
-    @GetMapping(value = "/interfaceList/{groupId}")
-    public BaseResponse monitorInterfaceList(@PathVariable("groupId") Integer groupId,
+    @GetMapping(value = "/interfaceList/{chainId}/{groupId}")
+    public BaseResponse monitorInterfaceList(@PathVariable("chainId") Integer chainId,
+            @PathVariable("groupId") Integer groupId,
             @RequestParam(value = "userName") String userName) throws BaseException {
         BaseResponse response = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
@@ -66,7 +67,7 @@ public class MonitorController {
                 groupId);
 
         List<TbMonitor> listOfInterface =
-                monitorService.qureyMonitorInterfaceList(groupId, userName);
+                monitorService.qureyMonitorInterfaceList(chainId, groupId, userName);
         response.setData(listOfInterface);
 
         log.info("end monitorInterfaceList useTime:{}",
@@ -77,8 +78,9 @@ public class MonitorController {
     /**
      * monitor trans list.
      */
-    @GetMapping(value = "/transList/{groupId}")
-    public BaseResponse monitorTransList(@PathVariable("groupId") Integer groupId,
+    @GetMapping(value = "/transList/{chainId}/{groupId}")
+    public BaseResponse monitorTransList(@PathVariable("chainId") Integer chainId,
+            @PathVariable("groupId") Integer groupId,
             @RequestParam(value = "userName", required = false) String userName,
             @RequestParam(value = "startDate", required = false) String startDate,
             @RequestParam(value = "endDate", required = false) String endDate,
@@ -90,8 +92,8 @@ public class MonitorController {
                         + " endDate:{} interfaceName:{}",
                 startTime.toEpochMilli(), groupId, userName, startDate, endDate, interfaceName);
 
-        BaseResponse response = monitorService.qureyMonitorTransList(groupId, userName, startDate,
-                endDate, interfaceName);
+        BaseResponse response = monitorService.qureyMonitorTransList(chainId, groupId, userName,
+                startDate, endDate, interfaceName);
 
         log.info("end monitorTransList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
@@ -101,8 +103,9 @@ public class MonitorController {
     /**
      * unusual user list.
      */
-    @GetMapping(value = "/unusualUserList/{groupId}/{pageNumber}/{pageSize}")
-    public BasePageResponse unusualUserList(@PathVariable("groupId") Integer groupId,
+    @GetMapping(value = "/unusualUserList/{chainId}/{groupId}/{pageNumber}/{pageSize}")
+    public BasePageResponse unusualUserList(@PathVariable("chainId") Integer chainId,
+            @PathVariable("groupId") Integer groupId,
             @PathVariable("pageNumber") Integer pageNumber,
             @PathVariable("pageSize") Integer pageSize,
             @RequestParam(value = "userName", required = false) String userName)
@@ -114,10 +117,10 @@ public class MonitorController {
                         + " userName:{}",
                 startTime.toEpochMilli(), groupId, pageNumber, pageSize, userName);
 
-        Integer count = monitorService.countOfUnusualUser(groupId, userName);
+        Integer count = monitorService.countOfUnusualUser(chainId, groupId, userName);
         if (count != null && count > 0) {
-            List<UnusualUserInfo> listOfUnusualUser =
-                    monitorService.qureyUnusualUserList(groupId, userName, pageNumber, pageSize);
+            List<UnusualUserInfo> listOfUnusualUser = monitorService.qureyUnusualUserList(chainId,
+                    groupId, userName, pageNumber, pageSize);
             pagesponse.setData(listOfUnusualUser);
             pagesponse.setTotalCount(count);
         }
@@ -130,8 +133,9 @@ public class MonitorController {
     /**
      * unusual contract list.
      */
-    @GetMapping(value = "/unusualContractList/{groupId}/{pageNumber}/{pageSize}")
-    public BasePageResponse unusualContractList(@PathVariable("groupId") Integer groupId,
+    @GetMapping(value = "/unusualContractList/{chainId}/{groupId}/{pageNumber}/{pageSize}")
+    public BasePageResponse unusualContractList(@PathVariable("chainId") Integer chainId,
+            @PathVariable("groupId") Integer groupId,
             @PathVariable("pageNumber") Integer pageNumber,
             @PathVariable("pageSize") Integer pageSize,
             @RequestParam(value = "contractAddress", required = false) String contractAddress)
@@ -143,10 +147,11 @@ public class MonitorController {
                         + " pageSize:{} contractAddress:{}",
                 startTime.toEpochMilli(), groupId, pageNumber, pageSize, contractAddress);
 
-        Integer count = monitorService.countOfUnusualContract(groupId, contractAddress);
+        Integer count = monitorService.countOfUnusualContract(chainId, groupId, contractAddress);
         if (count != null && count > 0) {
-            List<UnusualContractInfo> listOfUnusualContract = monitorService
-                    .qureyUnusualContractList(groupId, contractAddress, pageNumber, pageSize);
+            List<UnusualContractInfo> listOfUnusualContract =
+                    monitorService.qureyUnusualContractList(chainId, groupId, contractAddress,
+                            pageNumber, pageSize);
             pagesponse.setData(listOfUnusualContract);
             pagesponse.setTotalCount(count);
         }
