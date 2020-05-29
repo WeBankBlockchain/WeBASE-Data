@@ -14,7 +14,6 @@
 package com.webank.webase.data.collect.contract;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
-import com.webank.webase.data.collect.base.enums.ContractStatus;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.contract.entity.Contract;
 import com.webank.webase.data.collect.contract.entity.ContractParam;
@@ -58,7 +57,6 @@ public class ContractService {
             monitorService.updateUnusualContract(tbContract.getChainId(), tbContract.getGroupId(),
                     tbContract.getContractName(), tbContract.getContractBin());
         }
-
         return tbContract;
     }
 
@@ -68,14 +66,14 @@ public class ContractService {
      */
     private TbContract newContract(Contract contract) {
         // check contract not exist.
-        verifyContractNotExist(contract.getGroupId(), contract.getContractName(),
-                contract.getContractPath());
+        verifyContractNotExist(contract.getChainId(), contract.getGroupId(),
+                contract.getContractName(), contract.getContractPath());
 
         // add to database.
         TbContract tbContract = new TbContract();
         BeanUtils.copyProperties(contract, tbContract);
         contractMapper.add(tbContract);
-        return tbContract;
+        return queryByContractId(tbContract.getContractId());
     }
 
 
@@ -83,25 +81,21 @@ public class ContractService {
      * update contract.
      */
     private TbContract updateContract(Contract contract) {
-        // check not deploy
-        TbContract tbContract =
-                verifyContractNotDeploy(contract.getContractId(), contract.getGroupId());
+        // check id
+        TbContract tbContract = verifyContractIdExist(contract.getChainId(),
+                contract.getContractId(), contract.getGroupId());
         // check contractName
-        verifyContractNameNotExist(contract.getGroupId(), contract.getContractPath(),
-                contract.getContractName(), contract.getContractId());
+        verifyContractNameNotExist(contract.getChainId(), contract.getGroupId(),
+                contract.getContractPath(), contract.getContractName(), contract.getContractId());
         BeanUtils.copyProperties(contract, tbContract);
         contractMapper.update(tbContract);
-        return tbContract;
+        return queryByContractId(tbContract.getContractId());
     }
-
 
     /**
      * delete contract by contractId.
      */
     public void deleteContract(Integer contractId, int groupId) throws BaseException {
-        // check contract id
-        verifyContractNotDeploy(contractId, groupId);
-        // remove
         contractMapper.remove(contractId);
     }
 
@@ -109,11 +103,9 @@ public class ContractService {
      * query contract list.
      */
     public List<TbContract> qureyContractList(ContractParam param) throws BaseException {
-        // query contract list
         List<TbContract> listOfContract = contractMapper.listOfContract(param);
         return listOfContract;
     }
-
 
     /**
      * query count of contract.
@@ -140,7 +132,6 @@ public class ContractService {
         }
 
     }
-
 
     /**
      * query DeployInputParam By Address.
@@ -170,8 +161,8 @@ public class ContractService {
     /**
      * verify that the contract does not exist.
      */
-    private void verifyContractNotExist(int groupId, String name, String path) {
-        ContractParam param = new ContractParam(groupId, path, name);
+    private void verifyContractNotExist(int chainId, int groupId, String name, String path) {
+        ContractParam param = new ContractParam(chainId, groupId, path, name);
         TbContract contract = queryContract(param);
         if (Objects.nonNull(contract)) {
             log.warn("contract is exist. groupId:{} name:{} path:{}", groupId, name, path);
@@ -180,34 +171,10 @@ public class ContractService {
     }
 
     /**
-     * verify that the contract had not deployed.
-     */
-    private TbContract verifyContractNotDeploy(int contractId, int groupId) {
-        TbContract contract = verifyContractIdExist(contractId, groupId);
-        if (ContractStatus.DEPLOYED.getValue() == contract.getContractStatus()) {
-            log.info("contract had bean deployed contractId:{}", contractId);
-            throw new BaseException(ConstantCode.CONTRACT_HAS_BEAN_DEPLOYED);
-        }
-        return contract;
-    }
-
-    /**
-     * verify that the contract had bean deployed.
-     */
-    private TbContract verifyContractDeploy(int contractId, int groupId) {
-        TbContract contract = verifyContractIdExist(contractId, groupId);
-        if (ContractStatus.DEPLOYED.getValue() != contract.getContractStatus()) {
-            log.info("contract had bean deployed contractId:{}", contractId);
-            throw new BaseException(ConstantCode.CONTRACT_NOT_DEPLOY);
-        }
-        return contract;
-    }
-
-    /**
      * verify that the contractId is exist.
      */
-    private TbContract verifyContractIdExist(int contractId, int groupId) {
-        ContractParam param = new ContractParam(contractId, groupId);
+    private TbContract verifyContractIdExist(int chainId, int contractId, int groupId) {
+        ContractParam param = new ContractParam(chainId, contractId, groupId);
         TbContract contract = queryContract(param);
         if (Objects.isNull(contract)) {
             log.info("contractId is invalid. contractId:{}", contractId);
@@ -219,8 +186,9 @@ public class ContractService {
     /**
      * contract name can not be repeated.
      */
-    private void verifyContractNameNotExist(int groupId, String path, String name, int contractId) {
-        ContractParam param = new ContractParam(groupId, path, name);
+    private void verifyContractNameNotExist(int chainId, int groupId, String path, String name,
+            int contractId) {
+        ContractParam param = new ContractParam(chainId, groupId, path, name);
         TbContract localContract = queryContract(param);
         if (Objects.isNull(localContract)) {
             return;
@@ -229,7 +197,6 @@ public class ContractService {
             throw new BaseException(ConstantCode.CONTRACT_NAME_REPEAT);
         }
     }
-
 
     /**
      * delete by groupId

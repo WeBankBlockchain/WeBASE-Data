@@ -75,6 +75,25 @@
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息表';
 	</update>
 	
+	<update id="createTbContract">
+		CREATE TABLE IF NOT EXISTS tb_contract (
+	    contract_id int(11) NOT NULL AUTO_INCREMENT COMMENT '合约编号',
+	    chain_id int(11) NOT NULL COMMENT '所属区块链编号',
+	    group_id int(11) NOT NULL COMMENT '所属群组编号',
+	    contract_path varchar(24) binary NOT NULL COMMENT '合约所在目录',
+	    contract_name varchar(120) binary NOT NULL COMMENT '合约名称',
+	    contract_source text COMMENT '合约源码',
+	    contract_abi text COMMENT '编译合约生成的abi文件内容',
+	    contract_bin text COMMENT '合约运行时binary，用于合约解析',
+	    bytecode_bin text COMMENT '合约bytecode binary，用于部署合约',
+	    description varchar(1024) COMMENT '描述',
+	    create_time datetime DEFAULT NULL COMMENT '创建时间',
+	    modify_time datetime DEFAULT NULL COMMENT '修改时间',
+	    PRIMARY KEY (contract_id),
+	    UNIQUE KEY uk_group_path_name (chain_id,group_id,contract_path,contract_name)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='合约表';
+	</update>
+	
 	<update id="createTbTaskPool" parameterType="java.lang.String">
 		CREATE TABLE IF NOT
 		EXISTS ${tableName}(

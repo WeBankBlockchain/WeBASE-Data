@@ -22,7 +22,7 @@ import lombok.Data;
  * entity of newMethod input.
  */
 @Data
-public class NewMethodInputParam {
+public class NewMethodInput {
     @NotNull
     private Integer groupId;
     @NotNull

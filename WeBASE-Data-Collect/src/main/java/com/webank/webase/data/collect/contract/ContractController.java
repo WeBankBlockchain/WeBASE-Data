@@ -39,9 +39,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
-// @RestController
+@RestController
 @RequestMapping("contract")
 public class ContractController extends BaseController {
 
@@ -55,13 +56,11 @@ public class ContractController extends BaseController {
     public BaseResponse saveContract(@RequestBody @Valid Contract contract, BindingResult result)
             throws BaseException {
         checkBindResult(result);
-        BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start saveContract.");
 
-        // add contract row
+        BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         TbContract tbContract = contractService.saveContract(contract);
-
         baseResponse.setData(tbContract);
 
         log.info("end saveContract useTime:{}",

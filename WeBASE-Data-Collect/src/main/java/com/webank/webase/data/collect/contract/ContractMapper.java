@@ -44,12 +44,5 @@ public interface ContractMapper {
     List<TbContract> queryContractByBin(@Param("groupId") Integer groupId,
         @Param("contractBin") String contractBin);
 
-    String querySystemContractBin(@Param("groupId") Integer groupId,
-        @Param("contractName") String contractName);
-
-    void updateSystemContract(@Param("groupId") Integer groupId,
-        @Param("contractName") String contractName, @Param("contractBin") String contractBin,
-        @Param("contractAddress") String contractAddress);
-
     void removeByGroupId(@Param("groupId") Integer groupId);
 }

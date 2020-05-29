@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,17 +15,14 @@ package com.webank.webase.data.collect.method;
 
 import com.webank.webase.data.collect.base.enums.ContractType;
 import com.webank.webase.data.collect.method.entity.Method;
-import com.webank.webase.data.collect.method.entity.NewMethodInputParam;
+import com.webank.webase.data.collect.method.entity.NewMethodInput;
 import com.webank.webase.data.collect.method.entity.TbMethod;
 import java.util.List;
 import java.util.Objects;
-
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Log4j2
 @Service
 public class MethodService {
 
@@ -35,12 +32,12 @@ public class MethodService {
     /**
      * save method info.
      */
-    public void saveMethod(NewMethodInputParam newMethodInputParam) {
-        List<Method> methodList = newMethodInputParam.getMethodList();
+    public void saveMethod(NewMethodInput newMethodInput) {
+        List<Method> methodList = newMethodInput.getMethodList();
         TbMethod tbMethod = new TbMethod();
-        tbMethod.setGroupId(newMethodInputParam.getGroupId());
+        tbMethod.setGroupId(newMethodInput.getGroupId());
         tbMethod.setContractType(ContractType.GENERALCONTRACT.getValue());
-        //save each method
+        // save each method
         for (Method method : methodList) {
             BeanUtils.copyProperties(method, tbMethod);
             methodMapper.add(tbMethod);
@@ -65,8 +62,8 @@ public class MethodService {
     /**
      * delete by groupId.
      */
-    public void deleteByGroupId(int groupId){
-        if(groupId==0){
+    public void deleteByGroupId(int groupId) {
+        if (groupId == 0) {
             return;
         }
         methodMapper.removeByGroupId(groupId);

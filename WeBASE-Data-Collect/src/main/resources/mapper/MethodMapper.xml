@@ -21,17 +21,20 @@
 	</resultMap>
 
 
-	<insert id="add" parameterType="com.webank.webase.data.collect.method.entity.TbMethod">
-		REPLACE INTO tb_method(method_id,group_id,abi_info,method_type,contract_type,create_time,modify_time)
-		VALUES (#{methodId},#{groupId},#{abiInfo},#{methodType},#{contractType},now(),now())
+	<insert id="add"
+		parameterType="com.webank.webase.data.collect.method.entity.TbMethod">
+		REPLACE INTO
+		tb_method(method_id,group_id,abi_info,method_type,contract_type,create_time,modify_time)
+		VALUES
+		(#{methodId},#{groupId},#{abiInfo},#{methodType},#{contractType},now(),now())
 	</insert>
 
 	<select id="getMethodById" resultMap="methodMap">
 		SELECT * FROM tb_method
-		WHERE method_id = #{methodId} 
+		WHERE method_id = #{methodId}
 		<if test="groupId != null and groupId != ''">
-	      and group_id = #{groupId}
-	    </if>
+			and group_id = #{groupId}
+		</if>
 		limit 1
 	</select>
 

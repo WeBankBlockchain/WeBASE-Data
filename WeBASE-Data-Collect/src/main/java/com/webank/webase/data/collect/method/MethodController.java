@@ -17,7 +17,7 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.exception.BaseException;
-import com.webank.webase.data.collect.method.entity.NewMethodInputParam;
+import com.webank.webase.data.collect.method.entity.NewMethodInput;
 import com.webank.webase.data.collect.method.entity.TbMethod;
 import java.time.Duration;
 import java.time.Instant;
@@ -30,9 +30,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
-// @RestController
+@RestController
 @RequestMapping("method")
 public class MethodController extends BaseController {
 
@@ -43,14 +44,14 @@ public class MethodController extends BaseController {
      * add method info.
      */
     @PostMapping(value = "/add")
-    public BaseResponse addMethod(@RequestBody @Valid NewMethodInputParam newMethodInputParam,
+    public BaseResponse addMethod(@RequestBody @Valid NewMethodInput newMethodInput,
             BindingResult result) throws BaseException {
         checkBindResult(result);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start addMethod.");
 
-        methodService.saveMethod(newMethodInputParam);
+        methodService.saveMethod(newMethodInput);
 
         log.info("end addMethod. useTime:{} result:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
