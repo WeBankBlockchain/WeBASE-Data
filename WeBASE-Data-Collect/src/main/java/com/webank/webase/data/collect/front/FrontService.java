@@ -190,7 +190,6 @@ public class FrontService {
         if (chainId == 0) {
             return;
         }
-
         // remove front
         frontMapper.removeByChainId(chainId);
     }

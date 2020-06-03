@@ -21,8 +21,9 @@
 			property="frontIp" />
 		<result column="front_port" javaType="java.lang.Integer"
 			jdbcType="INTEGER" property="frontPort" />
+		<result column="group_status" javaType="java.lang.Integer" jdbcType="INTEGER"
+			property="groupStatus" />
 	</resultMap>
-
 
 	<insert id="add"
 		parameterType="com.webank.webase.data.collect.frontgroupmap.entity.TbFrontGroupMap">
@@ -52,11 +53,13 @@
 
 	<select id="getList" resultMap="frontGroupMap"
 		parameterType="com.webank.webase.data.collect.frontgroupmap.entity.MapListParam">
-		select
-		a.map_id,a.chain_id,a.group_id,a.front_id,b.front_ip,b.front_port
+		select a.map_id,a.chain_id,a.group_id,a.front_id,b.front_ip,b.front_port,c.group_status
 		from tb_front_group_map a
 		left join tb_front b on(a.front_id=b.front_id)
-		left join tb_group c on(a.chain_id=c.chain_id and a.group_id=c.group_id)
+		left join tb_group c on(
+		a.chain_id=c.chain_id
+		and a.group_id=c.group_id
+		)
 		left join tb_chain d on(a.chain_id=d.chain_id)
 		where 1=1
 		<if test="mapId != null and mapId != ''">
@@ -74,16 +77,19 @@
 	</select>
 
 	<delete id="removeByChainId">
-		delete from tb_front_group_map where chain_id = #{chainId}
+		delete from tb_front_group_map where chain_id =
+		#{chainId}
 	</delete>
 
 	<delete id="removeByFrontId">
-		delete from tb_front_group_map where front_id = #{frontId}
+		delete from tb_front_group_map where front_id =
+		#{frontId}
 	</delete>
 
 	<delete id="removeByGroupId">
 		delete from tb_front_group_map
-		where chain_id = #{chainId}
+		where chain_id =
+		#{chainId}
 		and group_id = #{groupId}
 	</delete>
 

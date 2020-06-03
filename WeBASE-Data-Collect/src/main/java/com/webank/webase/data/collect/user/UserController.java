@@ -69,7 +69,7 @@ public class UserController extends BaseController {
     /**
      * query user info list.
      */
-    @GetMapping(value = "/userList/{pageNumber}/{pageSize}")
+    @GetMapping(value = "/list/{pageNumber}/{pageSize}")
     public BasePageResponse userList(@PathVariable("pageNumber") Integer pageNumber,
             @PathVariable("pageSize") Integer pageSize,
             @RequestParam(value = "userParam", required = false) String userParam)

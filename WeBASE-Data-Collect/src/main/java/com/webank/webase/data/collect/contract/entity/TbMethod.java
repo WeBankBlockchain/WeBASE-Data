@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.method.entity;
+package com.webank.webase.data.collect.contract.entity;
 
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -21,12 +21,13 @@ import lombok.Data;
  */
 @Data
 public class TbMethod {
-    private String methodId;
+    private Integer contractId;
+    private Integer chainId;
     private Integer groupId;
+    private String methodId;
+    private String methodName;
     private String abiInfo;
     private String methodType;
-    // general contract and precompiled contract
-    private Integer contractType;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 }

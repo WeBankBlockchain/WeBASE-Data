@@ -35,5 +35,7 @@ public class TableInitConfig implements InitializingBean {
         tableMapper.createTbGroup();
         tableMapper.createTbFrontGroupMap();
         tableMapper.createTbUser();
+        tableMapper.createTbContract();
+        tableMapper.createTbMethod();
     }
 }

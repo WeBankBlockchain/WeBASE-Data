@@ -11,10 +11,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.method;
+package com.webank.webase.data.collect.contract;
 
 
-import com.webank.webase.data.collect.method.entity.TbMethod;
+import com.webank.webase.data.collect.contract.entity.MethodInfo;
+import com.webank.webase.data.collect.contract.entity.TbMethod;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -23,8 +24,8 @@ public interface MethodMapper {
 
     void add(TbMethod tbMethod);
 
-    void removeByGroupId(@Param("groupId") int groupId);
+    void removeByChainIdAndGroupId(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId);
 
-    TbMethod getMethodById(@Param("methodId") String methodId, @Param("groupId") Integer groupId);
-
+    MethodInfo getMethodById(@Param("methodId") String methodId, @Param("chainId") Integer chainId,
+            @Param("groupId") Integer groupId);
 }

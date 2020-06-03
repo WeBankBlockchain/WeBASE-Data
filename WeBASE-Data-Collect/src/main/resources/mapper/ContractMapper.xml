@@ -24,8 +24,8 @@
 			jdbcType="VARCHAR" property="contractBin" />
 		<result column="bytecode_bin" javaType="java.lang.String"
 			jdbcType="VARCHAR" property="bytecodeBin" />
-		<result column="contract_address" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="contractAddress" />
+		<result column="contract_type" javaType="java.lang.Integer"
+			jdbcType="INTEGER" property="contractType" />
 		<result column="description" javaType="java.lang.String"
 			jdbcType="VARCHAR" property="description" />
 		<result column="create_time" javaType="java.time.LocalDateTime"
@@ -39,7 +39,7 @@
 		parameterType="com.webank.webase.data.collect.contract.entity.TbContract">
 		insert into
 		tb_contract(chain_id,group_id,contract_path,contract_name,contract_source,contract_abi,contract_bin,bytecode_bin,description,create_time,modify_time)
-		values(#{chainId},#{groupId},#{contractPath},#{contractName},#{contractSource},#{contractAbi},#{contractBin},#{bytecodeBin},#{description}},NOW(),NOW())
+		values(#{chainId},#{groupId},#{contractPath},#{contractName},#{contractSource},#{contractAbi},#{contractBin},#{bytecodeBin},#{description},NOW(),NOW())
 		<selectKey keyProperty="contractId" order="AFTER"
 			resultType="java.lang.Integer">
 			SELECT LAST_INSERT_ID()
@@ -103,10 +103,9 @@
 			and contract_name like CONCAT('%',#{contractName},'%')
 		</if>
 		<if test="contractPath != null and contractPath != ''">
-			and contract_path = #{contractVersion}
+			and contract_path = #{contractPath}
 		</if>
 	</select>
-
 
 	<select id="listOfContract"
 		parameterType="com.webank.webase.data.collect.contract.entity.ContractParam"
@@ -125,7 +124,7 @@
 			and contract_name = #{contractName}
 		</if>
 		<if test="contractPath != null and contractPath != ''">
-			and contract_path = #{contractVersion}
+			and contract_path = #{contractPath}
 		</if>
 		<if test="flagSortedByTime != null and flagSortedByTime != ''">
 			order by modify_time ${flagSortedByTime}

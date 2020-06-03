@@ -69,7 +69,7 @@ public class ChainController extends BaseController {
     public BasePageResponse queryChainList() {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
-        log.info("start queryChainList startTime:{}", startTime.toEpochMilli());
+        log.info("start queryChainList.");
 
         // query chain info
         int count = chainService.getChainCount(null);
@@ -90,7 +90,7 @@ public class ChainController extends BaseController {
     @DeleteMapping("/{chainId}")
     public BaseResponse removeChain(@PathVariable("chainId") Integer chainId) {
         Instant startTime = Instant.now();
-        log.info("start removeChain startTime:{} chainId:{}", startTime.toEpochMilli(), chainId);
+        log.info("start removeChain. chainId:{}", chainId);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
 
         // remove

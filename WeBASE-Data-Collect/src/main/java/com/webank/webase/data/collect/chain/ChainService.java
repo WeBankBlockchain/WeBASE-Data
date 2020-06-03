@@ -19,6 +19,7 @@ import com.webank.webase.data.collect.chain.entity.ChainInfo;
 import com.webank.webase.data.collect.chain.entity.ChainParam;
 import com.webank.webase.data.collect.chain.entity.TbChain;
 import com.webank.webase.data.collect.contract.ContractService;
+import com.webank.webase.data.collect.contract.MethodService;
 import com.webank.webase.data.collect.front.FrontService;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
@@ -53,6 +54,8 @@ public class ChainService {
     private FrontGroupMapService frontGroupMapService;
     @Autowired
     private ContractService contractService;
+    @Autowired
+    private MethodService methodService;
     @Autowired
     private FrontGroupMapCache frontGroupMapCache;
     @Autowired
@@ -137,7 +140,9 @@ public class ChainService {
         // remove map
         frontGroupMapService.removeByChainId(chainId);
         // remove contract
-//        contractService.deleteContractByChainId(chainId);
+        contractService.deleteContractByChainId(chainId);
+        // remove method
+        methodService.removeByChainIdAndGroupId(chainId, null);
         // clear cache
         frontGroupMapCache.clearMapList(chainId);
         // drop sub tables

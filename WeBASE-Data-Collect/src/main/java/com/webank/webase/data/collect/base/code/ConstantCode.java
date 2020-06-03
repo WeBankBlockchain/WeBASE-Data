@@ -69,24 +69,13 @@ public class ConstantCode {
     public static final RetCode CONTRACT_NAME_REPEAT =
             RetCode.mark(202017, "contract name cannot be repeated");
 
-    public static final RetCode CONTRACT_NOT_DEPLOY =
-            RetCode.mark(202018, "contract has not deploy");
-
-    public static final RetCode CONTRACT_HAS_BEAN_DEPLOYED =
-            RetCode.mark(202019, "contract has been deployed");
-
-    public static final RetCode CONTRACT_DEPLOY_FAIL =
-            RetCode.mark(202020, "contract deploy not success");
-
-    public static final RetCode SERVER_CONNECT_FAIL = RetCode.mark(202021, "wrong host or port");
+    public static final RetCode SERVER_CONNECT_FAIL = RetCode.mark(202018, "wrong host or port");
 
     public static final RetCode REQUEST_NODE_EXCEPTION =
-            RetCode.mark(202022, "request node exception");
+            RetCode.mark(202019, "request node exception");
 
-    public static final RetCode UPDATE_METHOD_ID_GM_ERROR =
-            RetCode.mark(202023, "Update guomi methodId error");
     public static final RetCode ENCRYPT_TYPE_NOT_MATCH =
-            RetCode.mark(202024, "Front's encrypt type not matches");
+            RetCode.mark(202020, "Front's encrypt type not matches");
 
     /* param exception */
     public static final RetCode PARAM_EXCEPTION = RetCode.mark(302000, "param exception");

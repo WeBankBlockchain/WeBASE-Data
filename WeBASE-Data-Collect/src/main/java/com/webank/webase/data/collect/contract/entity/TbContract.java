@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class TbContract {
-
     private Integer contractId;
     private Integer chainId;
     private Integer groupId;
@@ -33,6 +32,7 @@ public class TbContract {
     private String contractAbi;
     private String contractBin;
     private String bytecodeBin;
+    private Integer contractType;
     private String description;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
@@ -44,5 +44,4 @@ public class TbContract {
         this.chainId = chainId;
         this.groupId = groupId;
     }
-
 }

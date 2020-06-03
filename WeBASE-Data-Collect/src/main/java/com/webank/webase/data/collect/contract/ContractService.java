@@ -60,7 +60,6 @@ public class ContractService {
         return tbContract;
     }
 
-
     /**
      * save new contract.
      */
@@ -95,14 +94,14 @@ public class ContractService {
     /**
      * delete contract by contractId.
      */
-    public void deleteContract(Integer contractId, int groupId) throws BaseException {
+    public void deleteContract(Integer contractId) {
         contractMapper.remove(contractId);
     }
 
     /**
      * query contract list.
      */
-    public List<TbContract> qureyContractList(ContractParam param) throws BaseException {
+    public List<TbContract> qureyContractList(ContractParam param) {
         List<TbContract> listOfContract = contractMapper.listOfContract(param);
         return listOfContract;
     }
@@ -110,7 +109,7 @@ public class ContractService {
     /**
      * query count of contract.
      */
-    public int countOfContract(ContractParam param) throws BaseException {
+    public Integer countOfContract(ContractParam param) throws BaseException {
         try {
             return contractMapper.countOfContract(param);
         } catch (RuntimeException ex) {
@@ -130,7 +129,6 @@ public class ContractService {
             log.error("fail countOfContract", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
-
     }
 
     /**
@@ -159,21 +157,9 @@ public class ContractService {
     }
 
     /**
-     * verify that the contract does not exist.
-     */
-    private void verifyContractNotExist(int chainId, int groupId, String name, String path) {
-        ContractParam param = new ContractParam(chainId, groupId, path, name);
-        TbContract contract = queryContract(param);
-        if (Objects.nonNull(contract)) {
-            log.warn("contract is exist. groupId:{} name:{} path:{}", groupId, name, path);
-            throw new BaseException(ConstantCode.CONTRACT_EXISTS);
-        }
-    }
-
-    /**
      * verify that the contractId is exist.
      */
-    private TbContract verifyContractIdExist(int chainId, int contractId, int groupId) {
+    public TbContract verifyContractIdExist(Integer chainId, Integer contractId, Integer groupId) {
         ContractParam param = new ContractParam(chainId, contractId, groupId);
         TbContract contract = queryContract(param);
         if (Objects.isNull(contract)) {
@@ -184,10 +170,23 @@ public class ContractService {
     }
 
     /**
+     * verify that the contract does not exist.
+     */
+    private void verifyContractNotExist(Integer chainId, Integer groupId, String name,
+            String path) {
+        ContractParam param = new ContractParam(chainId, groupId, path, name);
+        TbContract contract = queryContract(param);
+        if (Objects.nonNull(contract)) {
+            log.warn("contract is exist. groupId:{} name:{} path:{}", groupId, name, path);
+            throw new BaseException(ConstantCode.CONTRACT_EXISTS);
+        }
+    }
+
+    /**
      * contract name can not be repeated.
      */
-    private void verifyContractNameNotExist(int chainId, int groupId, String path, String name,
-            int contractId) {
+    private void verifyContractNameNotExist(Integer chainId, Integer groupId, String path,
+            String name, Integer contractId) {
         ContractParam param = new ContractParam(chainId, groupId, path, name);
         TbContract localContract = queryContract(param);
         if (Objects.isNull(localContract)) {
@@ -201,11 +200,15 @@ public class ContractService {
     /**
      * delete by groupId
      */
-    public void deleteByGroupId(int groupId) {
-        if (groupId == 0) {
-            return;
-        }
-        contractMapper.removeByGroupId(groupId);
+    public void deleteByGroupId(Integer chainId, Integer groupId) {
+        contractMapper.removeByGroupId(chainId, groupId);
+    }
+
+    /**
+     * delete contract by chainId.
+     */
+    public void deleteContractByChainId(Integer chainId) {
+        contractMapper.removeByChainId(chainId);
     }
 
 }

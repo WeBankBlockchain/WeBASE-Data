@@ -24,11 +24,13 @@ import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.base.tools.Web3Tools;
 import com.webank.webase.data.collect.contract.ContractService;
+import com.webank.webase.data.collect.contract.MethodService;
 import com.webank.webase.data.collect.contract.entity.ContractParam;
+import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
-import com.webank.webase.data.collect.method.MethodService;
-import com.webank.webase.data.collect.method.entity.TbMethod;
+import com.webank.webase.data.collect.group.GroupService;
+import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.monitor.entity.ContractMonitorResult;
 import com.webank.webase.data.collect.monitor.entity.UserMonitorResult;
 import com.webank.webase.data.collect.transaction.TransactionService;
@@ -60,6 +62,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class MonitorService {
 
+    @Autowired
+    private GroupService groupService;
     @Autowired
     private MonitorMapper monitorMapper;
     @Autowired
@@ -149,10 +153,13 @@ public class MonitorService {
     }
 
 
-    public void updateUnusualUser(int chainId, int groupId, String userName, String address) {
+    public void updateUnusualUser(String userName, String address) {
         log.info("start updateUnusualUser address:{}", address);
-        monitorMapper.updateUnusualUser(TableName.AUDIT.getTableName(chainId, groupId), userName,
-                address);
+        List<TbGroup> groupList = groupService.getGroupList(null, null);
+        groupList.stream()
+                .forEach(g -> monitorMapper.updateUnusualUser(
+                        TableName.AUDIT.getTableName(g.getChainId(), g.getGroupId()), userName,
+                        address));
     }
 
     /**
@@ -403,9 +410,9 @@ public class MonitorService {
                 }
             } else {
                 contractName = getNameFromContractBin(chainId, groupId, contractBin);
-                TbMethod tbMethod = methodService.getByMethodId(methodId, groupId);
-                if (Objects.nonNull(tbMethod)) {
-                    interfaceName = getInterfaceName(methodId, "[" + tbMethod.getAbiInfo() + "]");
+                MethodInfo methodInfo = methodService.getByMethodId(methodId, null, groupId);
+                if (Objects.nonNull(methodInfo)) {
+                    interfaceName = getInterfaceName(methodId, "[" + methodInfo.getAbiInfo() + "]");
                     log.info("monitor methodId:{} interfaceName:{}", methodId, interfaceName);
                 }
                 if (StringUtils.isBlank(interfaceName)) {

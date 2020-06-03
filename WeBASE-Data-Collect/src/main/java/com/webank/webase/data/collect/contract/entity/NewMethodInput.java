@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.method.entity;
+package com.webank.webase.data.collect.contract.entity;
 
 
 import java.util.List;
@@ -24,7 +24,7 @@ import lombok.Data;
 @Data
 public class NewMethodInput {
     @NotNull
-    private Integer groupId;
+    private Integer contractId;
     @NotNull
     List<Method> methodList;
 }

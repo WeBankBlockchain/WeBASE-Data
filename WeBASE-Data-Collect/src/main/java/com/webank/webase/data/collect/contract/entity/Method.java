@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webase.data.collect.method.entity;
+package com.webank.webase.data.collect.contract.entity;
 
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
@@ -25,6 +25,8 @@ import lombok.Data;
 public class Method {
     @NotBlank
     private String methodId;
+    @NotBlank
+    private String methodName;
     @NotBlank
     private String abiInfo;
     @NotBlank

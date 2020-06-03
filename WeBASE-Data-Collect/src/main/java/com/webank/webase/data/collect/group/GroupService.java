@@ -21,6 +21,7 @@ import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.chain.ChainService;
 import com.webank.webase.data.collect.chain.entity.TbChain;
 import com.webank.webase.data.collect.contract.ContractService;
+import com.webank.webase.data.collect.contract.MethodService;
 import com.webank.webase.data.collect.front.FrontService;
 import com.webank.webase.data.collect.front.entity.FrontParam;
 import com.webank.webase.data.collect.front.entity.TbFront;
@@ -30,7 +31,6 @@ import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.group.entity.GroupGeneral;
 import com.webank.webase.data.collect.group.entity.TbGroup;
-import com.webank.webase.data.collect.method.MethodService;
 import com.webank.webase.data.collect.table.TableService;
 import java.math.BigInteger;
 import java.time.Duration;
@@ -264,9 +264,9 @@ public class GroupService {
         // remove mapping.
         frontGroupMapService.removeByGroupId(chainId, groupId);
         // remove contract
-        contractService.deleteByGroupId(groupId);
+        contractService.deleteByGroupId(chainId, groupId);
         // remove method
-        methodService.deleteByGroupId(groupId);
+        methodService.removeByChainIdAndGroupId(chainId, groupId);
         // drop table.
         tableService.dropTable(chainId, groupId);
     }

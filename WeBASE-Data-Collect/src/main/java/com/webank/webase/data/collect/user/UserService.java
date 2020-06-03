@@ -62,6 +62,10 @@ public class UserService {
             log.warn("addUserInfo affect 0 rows of tb_user");
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
+        
+        // update unusual user's info
+        monitorService.updateUnusualUser(user.getUserName(), user.getAddress());
+        
         return queryByUserId(newUser.getUserId());
     }
 

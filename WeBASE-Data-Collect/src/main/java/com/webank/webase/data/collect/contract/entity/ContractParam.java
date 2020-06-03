@@ -31,14 +31,14 @@ public class ContractParam extends BaseQueryParam {
     private String contractAddress;
     private String partOfBytecodeBin;
 
-    public ContractParam(int chainId, int contractId, int groupId) {
+    public ContractParam(Integer chainId, Integer contractId, Integer groupId) {
         super();
         super.setChainId(chainId);
         this.contractId = contractId;
         this.groupId = groupId;
     }
 
-    public ContractParam(int chainId, int groupId, String contractPath, String contractName) {
+    public ContractParam(Integer chainId, Integer groupId, String contractPath, String contractName) {
         super();
         super.setChainId(chainId);
         this.groupId = groupId;

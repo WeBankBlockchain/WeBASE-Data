@@ -11,12 +11,14 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.method;
+package com.webank.webase.data.collect.contract;
 
 import com.webank.webase.data.collect.base.enums.ContractType;
-import com.webank.webase.data.collect.method.entity.Method;
-import com.webank.webase.data.collect.method.entity.NewMethodInput;
-import com.webank.webase.data.collect.method.entity.TbMethod;
+import com.webank.webase.data.collect.contract.entity.Method;
+import com.webank.webase.data.collect.contract.entity.MethodInfo;
+import com.webank.webase.data.collect.contract.entity.NewMethodInput;
+import com.webank.webase.data.collect.contract.entity.TbContract;
+import com.webank.webase.data.collect.contract.entity.TbMethod;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.BeanUtils;
@@ -28,15 +30,18 @@ public class MethodService {
 
     @Autowired
     private MethodMapper methodMapper;
+    @Autowired
+    private ContractService contractService;
 
     /**
      * save method info.
      */
     public void saveMethod(NewMethodInput newMethodInput) {
+        TbContract contract =
+                contractService.verifyContractIdExist(null, newMethodInput.getContractId(), null);
         List<Method> methodList = newMethodInput.getMethodList();
         TbMethod tbMethod = new TbMethod();
-        tbMethod.setGroupId(newMethodInput.getGroupId());
-        tbMethod.setContractType(ContractType.GENERALCONTRACT.getValue());
+        BeanUtils.copyProperties(contract, tbMethod);
         // save each method
         for (Method method : methodList) {
             BeanUtils.copyProperties(method, tbMethod);
@@ -47,26 +52,23 @@ public class MethodService {
     /**
      * query by methodId.
      */
-    public TbMethod getByMethodId(String methodId, Integer groupId) {
-        TbMethod tbMethod = methodMapper.getMethodById(methodId, null);
-        if (Objects.nonNull(tbMethod)) {
-            if (ContractType.SYSTEMCONTRACT.getValue() == tbMethod.getContractType().intValue()) {
-                return tbMethod;
+    public MethodInfo getByMethodId(String methodId, Integer chainId, Integer groupId) {
+        MethodInfo methodInfo = methodMapper.getMethodById(methodId, null, null);
+        if (Objects.nonNull(methodInfo)) {
+            if (ContractType.SYSTEMCONTRACT.getValue() == methodInfo.getContractType().intValue()) {
+                return methodInfo;
             } else {
-                return methodMapper.getMethodById(methodId, groupId);
+                return methodMapper.getMethodById(methodId, chainId, groupId);
             }
         }
         return null;
     }
 
     /**
-     * delete by groupId.
+     * removeByChainIdAndGroupId.
      */
-    public void deleteByGroupId(int groupId) {
-        if (groupId == 0) {
-            return;
-        }
-        methodMapper.removeByGroupId(groupId);
+    public void removeByChainIdAndGroupId(Integer chainId, Integer groupId) {
+        methodMapper.removeByChainIdAndGroupId(chainId, groupId);
     }
 
 }

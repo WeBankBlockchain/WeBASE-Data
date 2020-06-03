@@ -19,7 +19,6 @@ import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.tools.pagetools.entity.MapHandle;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -40,8 +39,6 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.fisco.bcos.web3j.crypto.EncryptType;
-import org.fisco.bcos.web3j.crypto.Hash;
 import org.fisco.bcos.web3j.utils.Numeric;
 
 /**
@@ -108,63 +105,6 @@ public class CommonTools {
         DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
         String localTimeStr = df.format(dateTime);
         return localTimeStr;
-    }
-
-    /**
-     * encode list by sha.
-     */
-    public static String shaList(List<String> values) {
-        // list按字段排序，并转换成字符串
-        String list2SortString = list2SortString(values);
-        // SHA加密字符串
-        String shaStr = shaEncode(list2SortString);
-        log.info("shaList end. ShaStr:{}", shaStr);
-        return shaStr;
-    }
-
-    /**
-     * encode String by sha.
-     */
-    public static String shaEncode(String inStr) {
-
-        byte[] byteArray = new byte[0];
-        try {
-            byteArray = inStr.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            log.warn("shaEncode fail:", e);
-            return null;
-        }
-        byte[] hashValue = getHashValue(byteArray);
-        StringBuffer hexValue = new StringBuffer();
-        for (int i = 0; i < hashValue.length; i++) {
-            int val = ((int) hashValue[i]) & 0xff;
-            if (val < 16) {
-                hexValue.append("0");
-            }
-            hexValue.append(Integer.toHexString(val));
-        }
-        return hexValue.toString();
-    }
-
-    /**
-     * get hash value type: sha256 or sm3
-     */
-    public static byte[] getHashValue(byte[] byteArray) {
-        byte[] hashResult;
-        if (EncryptType.encryptType == 1) {
-            hashResult = Hash.sha3(byteArray);
-            return hashResult;
-        } else {
-            MessageDigest sha = null;
-            try {
-                sha = MessageDigest.getInstance("SHA-256");
-                hashResult = sha.digest(byteArray);
-                return hashResult;
-            } catch (Exception e) {
-                log.error("shaEncode getHashValue fail:", e);
-                return null;
-            }
-        }
     }
 
     /**
