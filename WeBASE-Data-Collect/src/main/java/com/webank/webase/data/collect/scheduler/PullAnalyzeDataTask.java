@@ -16,7 +16,6 @@ package com.webank.webase.data.collect.scheduler;
 import com.webank.webase.data.collect.base.enums.DataStatus;
 import com.webank.webase.data.collect.base.properties.BlockConstants;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
-import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.block.taskpool.BlockTaskPoolService;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.group.GroupService;
@@ -26,6 +25,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -108,9 +108,9 @@ public class PullAnalyzeDataTask {
                 }
 
                 log.debug("Begin to fetch at most {} tasks", cProperties.getCrawlBatchUnit());
-                List<BlockInfo> taskList = blockTaskPoolService.fetchData(chainId, groupId,
+                List<Block> taskList = blockTaskPoolService.fetchData(chainId, groupId,
                         cProperties.getCrawlBatchUnit());
-                for (BlockInfo b : taskList) {
+                for (Block b : taskList) {
                     blockTaskPoolService.handleSingleBlock(chainId, groupId, b, currentChainHeight);
                 }
                 if (!certainty) {

@@ -38,11 +38,9 @@ import com.webank.webase.data.collect.parser.entity.TransParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
 import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
 import com.webank.webase.data.collect.parser.entity.UserParserResult;
-import com.webank.webase.data.collect.receipt.entity.TransReceipt;
+import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
-import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import com.webank.webase.data.collect.user.UserService;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -223,24 +221,24 @@ public class ParserService {
     /**
      * parserTransaction.
      */
-    public void parserTransaction(int chainId, int groupId, TransactionInfo transInfo,
-            TransReceipt transReceipt) {
+    public void parserTransaction(int chainId, int groupId, TbTransaction tbTransaction,
+            TbReceipt tbReceipt) {
         try {
             // parser user
-            UserParserResult userResult = parserUser(chainId, groupId, transInfo.getFrom());
+            UserParserResult userResult = parserUser(chainId, groupId, tbTransaction.getTransFrom());
             // parser contract
             ContractParserResult contractResult =
-                    parserContract(chainId, groupId, transInfo, transReceipt);
+                    parserContract(chainId, groupId, tbTransaction, tbReceipt);
 
             TbParser tbParser = new TbParser();
             BeanUtils.copyProperties(userResult, tbParser);
             BeanUtils.copyProperties(contractResult, tbParser);
-            tbParser.setBlockNumber(transInfo.getBlockNumber());
-            tbParser.setTransHash(transInfo.getHash());
+            tbParser.setBlockNumber(tbTransaction.getBlockNumber());
+            tbParser.setTransHash(tbTransaction.getTransHash());
             // tbParser.setBlockTimestamp(trans.getBlockTimestamp());
             addRow(chainId, groupId, tbParser);
         } catch (Exception ex) {
-            log.error("transaction:{} analysis fail...", transInfo.getHash(), ex);
+            log.error("transaction:{} analysis fail...", tbTransaction.getTransHash(), ex);
         }
     }
 
@@ -260,15 +258,15 @@ public class ParserService {
     /**
      * parser contract.
      */
-    private ContractParserResult parserContract(int chainId, int groupId, TransactionInfo transInfo,
-            TransReceipt transReceipt) {
-        String transInput = transInfo.getInput();
+    private ContractParserResult parserContract(int chainId, int groupId, TbTransaction tbTransaction,
+            TbReceipt tbReceipt) {
+        String transInput = tbTransaction.getInput();
         String contractAddress, contractName, interfaceName = "", contractBin;
         int transType = TransType.DEPLOY.getValue();
         int transUnusualType = TransUnusualType.NORMAL.getValue();
 
-        if (isDeploy(transInfo.getTo())) {
-            contractAddress = transReceipt.getContractAddress();
+        if (isDeploy(tbTransaction.getTransTo())) {
+            contractAddress = tbReceipt.getContractAddress();
             if (ConstantProperties.ADDRESS_DEPLOY.equals(contractAddress)) {
                 contractBin = StringUtils.removeStart(transInput, "0x");
                 ContractParam param = new ContractParam();
@@ -284,7 +282,7 @@ public class ParserService {
                 }
             } else {
                 contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
-                        transInfo.getBlockNumber());
+                        tbTransaction.getBlockNumber());
                 contractBin = removeBinFirstAndLast(contractBin);
                 TbContract contractRow =
                         contractService.queryContractByBin(chainId, groupId, contractBin);
@@ -299,9 +297,9 @@ public class ParserService {
         } else { // function call
             transType = TransType.CALL.getValue();
             String methodId = transInput.substring(0, 10);
-            contractAddress = transInfo.getTo();
+            contractAddress = tbTransaction.getTransTo();
             contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
-                    transInfo.getBlockNumber());
+                    tbTransaction.getBlockNumber());
             contractBin = removeBinFirstAndLast(contractBin);
 
             TbContract contractRow =

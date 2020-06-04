@@ -18,16 +18,16 @@ import com.webank.webase.data.collect.base.entity.BasePageResponse;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.enums.SqlSortType;
 import com.webank.webase.data.collect.base.exception.BaseException;
-import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
-import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,7 +86,7 @@ public class TransactionController {
         Instant startTime = Instant.now();
         log.info("start getTransaction. transHash:{}", transHash);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        TransactionInfo transInfo = transactionService.getTransaction(chainId, groupId, transHash);
+        Transaction transInfo = transactionService.getTransaction(chainId, groupId, transHash);
         baseResponse.setData(transInfo);
         log.info("end getTransaction useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
@@ -103,7 +103,7 @@ public class TransactionController {
         Instant startTime = Instant.now();
         log.info("start getTransReceipt transHash:{}", transHash);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        TransReceipt transReceipt = transactionService.getTransReceipt(chainId, groupId, transHash);
+        TransactionReceipt transReceipt = transactionService.getTransReceipt(chainId, groupId, transHash);
         baseResponse.setData(transReceipt);
         log.info("end getTransReceipt useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());

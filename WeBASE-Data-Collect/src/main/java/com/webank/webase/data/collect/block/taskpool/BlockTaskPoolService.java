@@ -18,7 +18,6 @@ import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.properties.BlockConstants;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.block.BlockService;
-import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.block.entity.TbBlockTaskPool;
 import com.webank.webase.data.collect.block.enums.BlockCertaintyEnum;
 import com.webank.webase.data.collect.block.enums.TxInfoStatusEnum;
@@ -32,6 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -91,7 +91,7 @@ public class BlockTaskPoolService {
         log.debug("Sync blocks from {} to {} are prepared.", begin, end);
     }
 
-    public List<BlockInfo> fetchData(int chainId, int groupId, int count) {
+    public List<Block> fetchData(int chainId, int groupId, int count) {
         List<TbBlockTaskPool> tasks = taskPoolMapper.findBySyncStatusOrderByBlockHeightLimit(
                 TableName.TASK.getTableName(chainId, groupId), TxInfoStatusEnum.INIT.getStatus(),
                 count);
@@ -102,13 +102,13 @@ public class BlockTaskPoolService {
         }
     }
 
-    public List<BlockInfo> getTasks(int chainId, int groupId, List<TbBlockTaskPool> tasks) {
-        List<BlockInfo> result = new ArrayList<>();
+    public List<Block> getTasks(int chainId, int groupId, List<TbBlockTaskPool> tasks) {
+        List<Block> result = new ArrayList<>();
         List<TbBlockTaskPool> pools = new ArrayList<>();
         for (TbBlockTaskPool task : tasks) {
             task.setSyncStatus(TxInfoStatusEnum.DOING.getStatus());
             BigInteger bigBlockHeight = new BigInteger(Long.toString(task.getBlockNumber()));
-            BlockInfo block;
+            Block block;
             try {
                 block = frontInterface.getBlockByNumber(chainId, groupId, bigBlockHeight);
                 result.add(block);
@@ -127,17 +127,17 @@ public class BlockTaskPoolService {
     }
 
     @Async("asyncExecutor")
-    public void handleSingleBlock(int chainId, int groupId, BlockInfo b, long total) {
+    public void handleSingleBlock(int chainId, int groupId, Block b, long total) {
         process(chainId, groupId, b, total);
     }
 
-    public void processDataSequence(int chainId, int groupId, List<BlockInfo> data, long total) {
-        for (BlockInfo b : data) {
+    public void processDataSequence(int chainId, int groupId, List<Block> data, long total) {
+        for (Block b : data) {
             process(chainId, groupId, b, total);
         }
     }
 
-    public void process(int chainId, int groupId, BlockInfo b, long total) {
+    public void process(int chainId, int groupId, Block b, long total) {
         try {
             blockService.saveBlockInfo(b, chainId, groupId);
             taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(chainId, groupId),
@@ -170,7 +170,7 @@ public class BlockTaskPoolService {
                             BlockCertaintyEnum.FIXED.getCertainty(), pool.getBlockNumber());
                     continue;
                 }
-                BlockInfo block = frontInterface.getBlockByNumber(chainId, groupId,
+                Block block = frontInterface.getBlockByNumber(chainId, groupId,
                         BigInteger.valueOf(pool.getBlockNumber()));
                 String newHash = block.getHash();
                 if (!StringUtils.equals(newHash,

@@ -18,10 +18,10 @@ import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
-import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ public class ReceiptService {
     /**
      * add receipt info.
      */
-    public void handleReceiptInfo(int chainId, int groupId, TransReceipt transReceipt) {
+    public void handleReceiptInfo(int chainId, int groupId, TransactionReceipt transReceipt) {
         TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
                 transReceipt.getContractAddress(), transReceipt.getStatus(),
                 transReceipt.getOutput(), transReceipt.getBlockNumber());
@@ -88,7 +88,7 @@ public class ReceiptService {
     /**
      * get transaction receipt
      */
-    public TransReceipt getTransReceipt(int chainId, int groupId, String transHash) {
+    public TransactionReceipt getTransReceipt(int chainId, int groupId, String transHash) {
         return frontInterface.getTransReceipt(chainId, groupId, transHash);
     }
 

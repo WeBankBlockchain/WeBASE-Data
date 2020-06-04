@@ -15,16 +15,17 @@ package data.collect.test.frontInterface;
 
 import com.webank.webase.data.collect.Application;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
-import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.front.entity.TotalTransCountInfo;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.frontinterface.entity.PeerInfo;
 import com.webank.webase.data.collect.frontinterface.entity.SyncStatus;
-import com.webank.webase.data.collect.receipt.entity.TransReceipt;
-import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,29 +56,28 @@ public class FrontServiceTest {
 
     @Test
     public void getTransReceiptTest() {
-        TransReceipt transReceipt = frontInterface.getTransReceipt(chainId, groupId, transHash);
+        TransactionReceipt transReceipt = frontInterface.getTransReceipt(chainId, groupId, transHash);
         assert (transReceipt != null);
         System.out.println(JacksonUtils.objToString(transReceipt));
     }
 
     @Test
     public void getTransactionTest() {
-        TransactionInfo transactionInfo =
-                frontInterface.getTransaction(chainId, groupId, transHash);
+        Transaction transactionInfo = frontInterface.getTransaction(chainId, groupId, transHash);
         assert (transactionInfo != null);
         System.out.println(JacksonUtils.objToString(transactionInfo));
     }
 
     @Test
     public void getBlockByNumberTest() {
-        BlockInfo blockInfo = frontInterface.getBlockByNumber(chainId, groupId, blockNumber);
+        Block blockInfo = frontInterface.getBlockByNumber(chainId, groupId, blockNumber);
         assert (blockInfo != null);
         System.out.println(JacksonUtils.objToString(blockInfo));
     }
 
     @Test
     public void getblockFromFrontByHashTest() {
-        BlockInfo blockInfo = frontInterface.getblockByHash(chainId, groupId, blockHash);
+        Block blockInfo = frontInterface.getblockByHash(chainId, groupId, blockHash);
         assert (blockInfo != null);
         System.out.println(JacksonUtils.objToString(blockInfo));
     }
@@ -108,7 +108,7 @@ public class FrontServiceTest {
 
     @Test
     public void getTransByBlockNumberTest() {
-        List<TransactionInfo> list =
+        List<TransactionResult> list =
                 frontInterface.getTransByBlockNumber(chainId, groupId, blockNumber);
         assert (list != null && list.size() > 0);
         System.out.println(JacksonUtils.objToString(list));

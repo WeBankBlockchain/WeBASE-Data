@@ -14,17 +14,18 @@
 package com.webank.webase.data.collect.frontinterface;
 
 import com.webank.webase.data.collect.base.exception.BaseException;
-import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.front.entity.TotalTransCountInfo;
 import com.webank.webase.data.collect.frontinterface.entity.PeerInfo;
 import com.webank.webase.data.collect.frontinterface.entity.SyncStatus;
-import com.webank.webase.data.collect.receipt.entity.TransReceipt;
-import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,11 +37,10 @@ public class FrontInterfaceService {
     @Autowired
     private FrontRestTools frontRestTools;
 
-    public BlockInfo getBlockByNumberFromSpecificFront(String frontIp, Integer frontPort,
+    public Block getBlockByNumberFromSpecificFront(String frontIp, Integer frontPort,
             Integer groupId, BigInteger blockNumber) throws BaseException {
         String uri = String.format(FrontRestTools.URI_BLOCK_BY_NUMBER, blockNumber);
-        return frontRestTools.getFromSpecificFront(groupId, frontIp, frontPort, uri,
-                BlockInfo.class);
+        return frontRestTools.getFromSpecificFront(groupId, frontIp, frontPort, uri, Block.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -115,47 +115,47 @@ public class FrontInterfaceService {
         return contractCode;
     }
 
-    public TransReceipt getTransReceipt(Integer chainId, Integer groupId, String transHash)
+    public TransactionReceipt getTransReceipt(Integer chainId, Integer groupId, String transHash)
             throws BaseException {
         String uri = String.format(FrontRestTools.FRONT_TRANS_RECEIPT_BY_HASH_URI, transHash);
-        TransReceipt transReceipt =
-                frontRestTools.getForEntity(chainId, groupId, uri, TransReceipt.class);
+        TransactionReceipt transReceipt =
+                frontRestTools.getForEntity(chainId, groupId, uri, TransactionReceipt.class);
         return transReceipt;
     }
 
-    public TransactionInfo getTransaction(Integer chainId, Integer groupId, String transHash)
+    public Transaction getTransaction(Integer chainId, Integer groupId, String transHash)
             throws BaseException {
         if (StringUtils.isBlank(transHash)) {
             return null;
         }
         String uri = String.format(FrontRestTools.URI_TRANS_BY_HASH, transHash);
-        TransactionInfo transInfo =
-                frontRestTools.getForEntity(chainId, groupId, uri, TransactionInfo.class);
+        Transaction transInfo =
+                frontRestTools.getForEntity(chainId, groupId, uri, Transaction.class);
         return transInfo;
     }
 
-    public BlockInfo getBlockByNumber(Integer chainId, Integer groupId, BigInteger blockNumber)
+    public Block getBlockByNumber(Integer chainId, Integer groupId, BigInteger blockNumber)
             throws BaseException {
         String uri = String.format(FrontRestTools.URI_BLOCK_BY_NUMBER, blockNumber);
-        BlockInfo blockInfo = null;
+        Block block = null;
         try {
-            blockInfo = frontRestTools.getForEntity(chainId, groupId, uri, BlockInfo.class);
+            block = frontRestTools.getForEntity(chainId, groupId, uri, Block.class);
         } catch (Exception ex) {
             log.info("fail getBlockByNumber,exception:{}", ex);
         }
-        return blockInfo;
+        return block;
     }
 
-    public BlockInfo getblockByHash(Integer chainId, Integer groupId, String blockHash)
+    public Block getblockByHash(Integer chainId, Integer groupId, String blockHash)
             throws BaseException {
         String uri = String.format(FrontRestTools.URI_BLOCK_BY_HASH, blockHash);
-        BlockInfo blockInfo = frontRestTools.getForEntity(chainId, groupId, uri, BlockInfo.class);
-        return blockInfo;
+        Block block = frontRestTools.getForEntity(chainId, groupId, uri, Block.class);
+        return block;
     }
 
     public String getAddressByHash(Integer chainId, Integer groupId, String transHash)
             throws BaseException {
-        TransReceipt transReceipt = getTransReceipt(chainId, groupId, transHash);
+        TransactionReceipt transReceipt = getTransReceipt(chainId, groupId, transHash);
         String contractAddress = transReceipt.getContractAddress();
         return contractAddress;
     }
@@ -173,14 +173,15 @@ public class FrontInterfaceService {
         return totalCount;
     }
 
-    public List<TransactionInfo> getTransByBlockNumber(Integer chainId, Integer groupId,
+    @SuppressWarnings("rawtypes")
+    public List<TransactionResult> getTransByBlockNumber(Integer chainId, Integer groupId,
             BigInteger blockNumber) {
-        BlockInfo blockInfo = getBlockByNumber(chainId, groupId, blockNumber);
-        if (blockInfo == null) {
+        Block block = getBlockByNumber(chainId, groupId, blockNumber);
+        if (block == null) {
             return null;
         }
-        List<TransactionInfo> transInBLock = blockInfo.getTransactions();
-        return transInBLock;
+        List<TransactionResult> transList = block.getTransactions();
+        return transList;
     }
 
     @SuppressWarnings("unchecked")

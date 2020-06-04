@@ -17,21 +17,22 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.tools.CommonTools;
-import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.block.entity.BlockListParam;
 import com.webank.webase.data.collect.block.entity.TbBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
-import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
-import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,26 +54,22 @@ public class BlockService {
     private ReceiptService receiptService;
     @Autowired
     private ParserService parserService;
-    
+
     private static final Long SAVE_TRANS_SLEEP_TIME = 5L;
 
     /**
      * copy chainBlock properties;
      */
-    public static TbBlock chainBlock2TbBlock(BlockInfo blockInfo) {
-        if (blockInfo == null) {
+    public static TbBlock chainBlock2TbBlock(Block block) {
+        if (block == null) {
             return null;
         }
-        BigInteger bigIntegerNumber = blockInfo.getNumber();
         LocalDateTime blockTimestamp =
-                CommonTools.timestamp2LocalDateTime(Long.valueOf(blockInfo.getTimestamp()));
-        int sealerIndex = Integer.parseInt(blockInfo.getSealer().substring(2), 16);
-
-        List<TransactionInfo> transList = blockInfo.getTransactions();
-
+                CommonTools.timestamp2LocalDateTime(block.getTimestamp().longValue());
+        int sealerIndex = Integer.parseInt(block.getSealer().substring(2), 16);
         // save block info
-        TbBlock tbBlock = new TbBlock(blockInfo.getHash(), bigIntegerNumber, blockTimestamp,
-                transList.size(), sealerIndex);
+        TbBlock tbBlock = new TbBlock(block.getHash(), block.getNumber(), blockTimestamp,
+                block.getTransactions().size(), sealerIndex);
         return tbBlock;
     }
 
@@ -80,24 +77,27 @@ public class BlockService {
      * save report block info.
      */
     @Transactional
-    public void saveBlockInfo(BlockInfo blockInfo, int chainId, int groupId) throws BaseException {
+    @SuppressWarnings("rawtypes")
+    public void saveBlockInfo(Block block, int chainId, int groupId) throws BaseException {
         // save block info
-        TbBlock tbBlock = chainBlock2TbBlock(blockInfo);
+        TbBlock tbBlock = chainBlock2TbBlock(block);
         addBlockInfo(tbBlock, chainId, groupId);
 
         // save trans hash
-        List<TransactionInfo> transList = blockInfo.getTransactions();
-        for (TransactionInfo trans : transList) {
+        List<TransactionResult> transList = block.getTransactions();
+        for (TransactionResult result : transList) {
             // save trans
+            Transaction trans = (Transaction) result.get();
             TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getFrom(),
-                    trans.getTo(), trans.getInput(), tbBlock.getBlockNumber(),
+                    trans.getTo(), trans.getInput(), trans.getBlockNumber(),
                     tbBlock.getBlockTimestamp());
             transactionService.addTransInfo(chainId, groupId, tbTransaction);
             // save receipt
-            TransReceipt transReceipt = frontInterface.getTransReceipt(chainId, groupId, trans.getHash());
+            TransactionReceipt transReceipt =
+                    frontInterface.getTransReceipt(chainId, groupId, trans.getHash());
             receiptService.handleReceiptInfo(chainId, groupId, transReceipt);
             // parserTransaction
-//            parserService.parserTransaction(chainId, groupId, trans, transReceipt);
+            // parserService.parserTransaction(chainId, groupId, trans, transReceipt);
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);
             } catch (InterruptedException ex) {
@@ -214,14 +214,14 @@ public class BlockService {
     /**
      * get block by block from front server
      */
-    public BlockInfo getBlockFromFrontByNumber(int chainId, int groupId, BigInteger blockNumber) {
+    public Block getBlockFromFrontByNumber(int chainId, int groupId, BigInteger blockNumber) {
         return frontInterface.getBlockByNumber(chainId, groupId, blockNumber);
     }
 
     /**
      * get block by block from front server
      */
-    public BlockInfo getblockFromFrontByHash(int chainId, int groupId, String blockHash) {
+    public Block getblockFromFrontByHash(int chainId, int groupId, String blockHash) {
         return frontInterface.getblockByHash(chainId, groupId, blockHash);
     }
 }

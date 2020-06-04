@@ -18,15 +18,16 @@ import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.block.entity.MinMaxBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
-import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
-import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
@@ -176,10 +177,11 @@ public class TransactionService {
         }
         // find trans by block number
         if (transList.size() == 0 && blockNumber != null) {
-            List<TransactionInfo> transInBlock =
+            List<TransactionResult> transInBlock =
                     frontInterface.getTransByBlockNumber(chainId, groupId, blockNumber);
             if (transInBlock != null && transInBlock.size() != 0) {
-                transInBlock.stream().forEach(tran -> {
+                transInBlock.stream().forEach(result -> {
+                    Transaction tran = (Transaction) result.get();
                     TbTransaction tbTransaction = new TbTransaction(tran.getHash(), tran.getFrom(),
                             tran.getTo(), tran.getInput(), tran.getBlockNumber(), null);
                     transList.add(tbTransaction);
@@ -195,7 +197,7 @@ public class TransactionService {
      */
     public TbTransaction getTbTransFromFrontByHash(int chainId, Integer groupId, String transHash)
             throws BaseException {
-        TransactionInfo trans = frontInterface.getTransaction(chainId, groupId, transHash);
+        Transaction trans = frontInterface.getTransaction(chainId, groupId, transHash);
         TbTransaction tbTransaction = null;
         if (trans != null) {
             tbTransaction = new TbTransaction(transHash, trans.getFrom(), trans.getTo(),
@@ -207,14 +209,14 @@ public class TransactionService {
     /**
      * get transaction info
      */
-    public TransactionInfo getTransaction(int chainId, int groupId, String transHash) {
+    public Transaction getTransaction(int chainId, int groupId, String transHash) {
         return frontInterface.getTransaction(chainId, groupId, transHash);
     }
 
     /**
      * get transaction receipt
      */
-    public TransReceipt getTransReceipt(int chainId, int groupId, String transHash) {
+    public TransactionReceipt getTransReceipt(int chainId, int groupId, String transHash) {
         return frontInterface.getTransReceipt(chainId, groupId, transHash);
     }
 }
