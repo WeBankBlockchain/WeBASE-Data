@@ -177,7 +177,7 @@ public class BlockTaskPoolService {
                         blockService.getBlockByBlockNumber(chainId, groupId, pool.getBlockNumber())
                                 .getBlockHash())) {
                     log.debug("Block {} is forked!!! ready to resync", pool.getBlockNumber());
-                    rollBackService.rollback(groupId, pool.getBlockNumber());
+                    rollBackService.rollback(chainId, groupId, pool.getBlockNumber());
                     taskPoolMapper.setSyncStatusAndCertaintyByBlockHeight(
                             TableName.TASK.getTableName(chainId, groupId),
                             TxInfoStatusEnum.INIT.getStatus(),
@@ -248,7 +248,7 @@ public class BlockTaskPoolService {
             log.debug("sync block detect {} error transactions.", unnormalRecords.size());
             unnormalRecords.parallelStream().map(b -> b.getBlockNumber()).forEach(e -> {
                 log.error("Block {} sync error, and begin to rollback.", e);
-                rollBackService.rollback(groupId, e);
+                rollBackService.rollback(chainId, groupId, e);
                 taskPoolMapper.setSyncStatusByBlockHeight(
                         TableName.TASK.getTableName(chainId, groupId),
                         TxInfoStatusEnum.INIT.getStatus(), e);

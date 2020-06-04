@@ -36,5 +36,5 @@ public interface ReceiptMapper {
     int remove(@Param("tableName") String tableName,
         @Param("subTransNum") Integer subTransNum,@Param("groupId") Integer groupId);
     
-    void rollback(@Param("groupId") int groupId, @Param("blockNumber") long blockNumber);
+    void rollback(@Param("tableName") String tableName, @Param("blockNumber") long blockNumber);
 }

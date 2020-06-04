@@ -44,7 +44,7 @@ public class TableService {
         tableMapper.createTbBlock(TableName.BLOCK.getTableName(chainId, groupId));
         tableMapper.createTbTransaction(TableName.TRANS.getTableName(chainId, groupId));
         tableMapper.createTbReceipt(TableName.RECEIPT.getTableName(chainId, groupId));
-        // tableMapper.createTbAudit(TableName.AUDIT.getTableName(groupId));
+        // tableMapper.createTbAudit(TableName.PARSER.getTableName(groupId));
     }
 
     /**

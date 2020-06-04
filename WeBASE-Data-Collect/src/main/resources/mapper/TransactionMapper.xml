@@ -119,6 +119,6 @@
 	</update>
 	
 	<delete id="rollback">
-		DELETE from tb_block_${groupId} where block_number = ${blockNumber}
+		DELETE from ${tableName} where block_number = ${blockNumber}
 	</delete>
 </mapper>

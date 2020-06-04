@@ -11,25 +11,26 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.monitor;
+package com.webank.webase.data.collect.parser;
 
+import com.webank.webase.data.collect.parser.entity.PageTransInfo;
+import com.webank.webase.data.collect.parser.entity.TbParser;
+import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
+import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
- * user transaction monitor.
+ * user transaction parser.
  */
 @Repository
-public interface MonitorMapper {
+public interface ParserMapper {
 
-    void add(@Param("tableName") String tableName, @Param("monitor") TbMonitor tbMonitor);
+    void add(@Param("tableName") String tableName, @Param("parser") TbParser tbParser);
 
-    void update(@Param("tableName") String tableName, @Param("monitor") TbMonitor tbMonitor);
-
-    Integer deleteAndRetainMax(@Param("tableName") String tableName,
-        @Param("monitorInfoRetainMax") Integer monitorInfoRetainMax);
+    void update(@Param("tableName") String tableName, @Param("parser") TbParser tbParser);
 
     void updateUnusualUser(@Param("tableName") String tableName,
         @Param("userName") String userName, @Param("address") String address);
@@ -39,18 +40,18 @@ public interface MonitorMapper {
         @Param("contractBin") String contractBin, @Param("interfaceName") String interfaceName,
         @Param("transUnusualType") int transUnusualType);
 
-    String queryUnusualTxhash(@Param("tableName") String tableName,
+    List<String> queryUnusualTxHash(@Param("tableName") String tableName,
         @Param("contractBin") String contractBin);
 
-    TbMonitor queryTbMonitor(@Param("tableName") String tableName,
-        @Param("monitor") TbMonitor tbMonitor);
+    TbParser queryTbParser(@Param("tableName") String tableName,
+        @Param("parser") TbParser tbParser);
 
-    List<TbMonitor> monitorUserList(@Param("tableName") String tableName);
+    List<TbParser> parserUserList(@Param("tableName") String tableName);
 
-    List<TbMonitor> monitorInterfaceList(@Param("tableName") String tableName,
+    List<TbParser> parserInterfaceList(@Param("tableName") String tableName,
         @Param("userName") String userName);
 
-    Integer countOfMonitorTrans(Map<String, Object> queryParam);
+    Integer countOfParserTrans(Map<String, Object> queryParam);
 
     List<PageTransInfo> qureyTransCountList(Map<String, Object> queryParam);
 

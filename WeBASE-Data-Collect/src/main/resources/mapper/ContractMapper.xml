@@ -34,7 +34,6 @@
 			jdbcType="TIMESTAMP" property="modifyTime" />
 	</resultMap>
 
-
 	<insert id="add"
 		parameterType="com.webank.webase.data.collect.contract.entity.TbContract">
 		insert into
@@ -166,8 +165,11 @@
 
 	<select id="queryContractByBin" resultMap="contractMap">
 		select * from
-		tb_contract where group_id = #{groupId} and contract_bin like
-		CONCAT(#{contractBin},'%')
+		tb_contract
+		where contract_id = #{contractId}
+		and group_id = #{groupId}
+		and contract_bin like CONCAT(#{contractBin},'%')
+		limit 1
 	</select>
 
 </mapper>

@@ -11,18 +11,23 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.monitor.entity;
-
-import lombok.Data;
+package com.webank.webase.data.collect.base.enums;
 
 /**
- * contract monitor result info.
+ * monitor result type of user.
+ *
+ * 0:normal, 1:abnormal.
  */
-@Data
-public class ContractMonitorResult {
-    private String contractName;
-    private String contractAddress;
-    private String interfaceName;
-    private Integer transType;
-    private Integer transUnusualType;
+public enum ParserUserType {
+    NORMAL(0), ABNORMAL(1);
+
+    private int value;
+
+    ParserUserType(Integer type) {
+        this.value = type;
+    }
+
+    public int getValue() {
+        return this.value;
+    }
 }

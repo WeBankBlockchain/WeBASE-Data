@@ -11,23 +11,17 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.base.enums;
+package com.webank.webase.data.collect.parser.entity;
+
+import lombok.Data;
 
 /**
- * monitor result type of user.
- *
- * 0:normal, 1:abnormal.
+ * user monitor result info.
  */
-public enum MonitorUserType {
-    NORMAL(0), ABNORMAL(1);
-
-    private int value;
-
-    MonitorUserType(Integer type) {
-        this.value = type;
-    }
-
-    public int getValue() {
-        return this.value;
-    }
+@Data
+public class UserParserResult implements Cloneable {
+    private String userName;
+    private Integer userType;
 }
+
+

@@ -47,11 +47,11 @@ public class ConstantProperties {
     private Long sleepWhenHttpMaxFail = 60000L;  //default 1min
 
     //transaction monitor
-    private Long transMonitorTaskFixedRate = 60000L; //second
-    private Integer monitorInfoRetainMax = 10000;
-    private Long analysisSleepTime = 200L;
-    private Integer monitorUnusualMaxCount = 20;
-    private Boolean isMonitorIgnoreUser = false;
-    private Boolean isMonitorIgnoreContract = false;
+//    private Long transMonitorTaskFixedRate = 60000L; //second
+//    private Integer monitorInfoRetainMax = 10000;
+//    private Long analysisSleepTime = 200L;
+//    private Integer monitorUnusualMaxCount = 20;
+//    private Boolean isMonitorIgnoreUser = false;
+//    private Boolean isMonitorIgnoreContract = false;
 
 }

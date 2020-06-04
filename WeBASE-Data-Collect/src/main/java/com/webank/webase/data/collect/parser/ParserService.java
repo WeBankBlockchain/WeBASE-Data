@@ -11,11 +11,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.monitor;
+package com.webank.webase.data.collect.parser;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
-import com.webank.webase.data.collect.base.enums.MonitorUserType;
+import com.webank.webase.data.collect.base.enums.ParserUserType;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.enums.TransType;
 import com.webank.webase.data.collect.base.enums.TransUnusualType;
@@ -31,144 +31,61 @@ import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
-import com.webank.webase.data.collect.monitor.entity.ContractMonitorResult;
-import com.webank.webase.data.collect.monitor.entity.UserMonitorResult;
-import com.webank.webase.data.collect.transaction.TransactionService;
+import com.webank.webase.data.collect.parser.entity.ContractParserResult;
+import com.webank.webase.data.collect.parser.entity.PageTransInfo;
+import com.webank.webase.data.collect.parser.entity.TbParser;
+import com.webank.webase.data.collect.parser.entity.TransParser;
+import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
+import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
+import com.webank.webase.data.collect.parser.entity.UserParserResult;
+import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
+import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import com.webank.webase.data.collect.user.UserService;
 import java.math.BigInteger;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.AbiDefinition;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 /**
- * MonitorService.
+ * ParserService.
  */
 @Log4j2
 @Service
-public class MonitorService {
+public class ParserService {
 
     @Autowired
     private GroupService groupService;
     @Autowired
-    private MonitorMapper monitorMapper;
-    @Autowired
+    private ParserMapper parserMapper;
     @Lazy
+    @Autowired
     private ContractService contractService;
-    @Autowired
     @Lazy
-    private UserService userService;
     @Autowired
-    private TransactionService transactionService;
+    private UserService userService;
     @Autowired
     private FrontInterfaceService frontInterfacee;
     @Autowired
-    private MonitorTransactionService monitorTransactionService;
-    @Autowired
     private MethodService methodService;
-    @Autowired
-    private ConstantProperties cProperties;
-
-
-    /**
-     * monitor every group.
-     */
-    @Async(value = "asyncExecutor")
-    public void transMonitorByGroupId(CountDownLatch latch, int chainId, int groupId) {
-        try {
-            Instant startTimem = Instant.now();// start time
-            Long useTimeSum = 0L;
-            LocalDateTime start = LocalDateTime.now(); // createTime of monitor info
-            LocalDateTime createTime = start;
-            do {
-                List<TbTransaction> transHashList =
-                        transactionService.qureyUnStatTransactionList(chainId, groupId);
-                log.info("=== groupId:{} transHashList:{}", groupId, transHashList.size());
-                if (Objects.isNull(transHashList) || transHashList.size() == 0) {
-                    log.debug("transMonitorByGroupId jump over. transHashList is empty");
-                    return;
-                }
-
-                if (checkUnusualMax(chainId, groupId)) {
-                    return;
-                }
-
-                // monitor
-                for (TbTransaction trans : transHashList) {
-                    if (createTime.getDayOfYear() != trans.getBlockTimestamp().getDayOfYear()
-                            || start == createTime) {
-                        log.info("============== createTime:{} blockTimestamp:{}", createTime,
-                                trans.getBlockTimestamp());
-                        log.info("============== createData:{} blockTimestampData:{}",
-                                createTime.getDayOfYear(),
-                                trans.getBlockTimestamp().getDayOfYear());
-                        createTime = trans.getBlockTimestamp();
-                    }
-                    monitorTransHash(chainId, groupId, trans, createTime);
-                }
-
-                // monitor useTime
-                useTimeSum = Duration.between(startTimem, Instant.now()).getSeconds();
-                log.debug("monitor groupId:{} useTimeSum:{}s maxTime:{}s", groupId, useTimeSum,
-                        cProperties.getTransMonitorTaskFixedRate());
-            } while (useTimeSum < cProperties.getTransMonitorTaskFixedRate());
-            log.info("=== end monitor. groupId:{} allUseTime:{}s", groupId, useTimeSum);
-        } catch (Exception ex) {
-            log.error("fail transMonitorByGroupId, group:{}", groupId, ex);
-        } finally {
-            if (Objects.nonNull(latch)) {
-                latch.countDown();
-            }
-        }
-    }
-
-    /**
-     * check unusualUserCount or unusualContractCount is max.
-     */
-    private boolean checkUnusualMax(int chainId, int groupId) {
-        int unusualUserCount = this.countOfUnusualUser(chainId, groupId, null);
-        int unusualContractCount = this.countOfUnusualContract(chainId, groupId, null);
-        int unusualMaxCount = cProperties.getMonitorUnusualMaxCount();
-        if (unusualUserCount >= unusualMaxCount || unusualContractCount >= unusualMaxCount) {
-            log.error(
-                    "monitorHandle jump over. unusualUserCount:{} unusualContractCount:{} monitorUnusualMaxCount:{}",
-                    unusualUserCount, unusualContractCount, unusualMaxCount);
-            return true;
-        }
-        return false;
-    }
-
 
     public void updateUnusualUser(String userName, String address) {
         log.info("start updateUnusualUser address:{}", address);
         List<TbGroup> groupList = groupService.getGroupList(null, null);
         groupList.stream()
-                .forEach(g -> monitorMapper.updateUnusualUser(
-                        TableName.AUDIT.getTableName(g.getChainId(), g.getGroupId()), userName,
+                .forEach(g -> parserMapper.updateUnusualUser(
+                        TableName.PARSER.getTableName(g.getChainId(), g.getGroupId()), userName,
                         address));
-    }
-
-    /**
-     * Remove trans monitor info.
-     */
-    public Integer delete(int chainId, int groupId, Integer monitorInfoRetainMax) {
-        String tableName = TableName.AUDIT.getTableName(chainId, groupId);
-        Integer affectRow = monitorMapper.deleteAndRetainMax(tableName, monitorInfoRetainMax);
-        return affectRow;
     }
 
     /**
@@ -179,71 +96,69 @@ public class MonitorService {
         try {
             log.info("start updateUnusualContract groupId:{} contractName:{} contractBin:{}",
                     groupId, contractName, contractBin);
-            String tableName = TableName.AUDIT.getTableName(chainId, groupId);
+            String tableName = TableName.PARSER.getTableName(chainId, groupId);
             contractBin = removeBinFirstAndLast(contractBin);
             String subContractBin = subContractBinForName(contractBin);
-            String txHash = monitorMapper.queryUnusualTxhash(tableName, subContractBin);
-            if (StringUtils.isBlank(txHash)) {
+            List<String> txHashList = parserMapper.queryUnusualTxHash(tableName, subContractBin);
+            if (CollectionUtils.isEmpty(txHashList)) {
                 return;
             }
-            ChainTransInfo trans = frontInterfacee.getTransInfoByHash(chainId, groupId, txHash);
+            // TODO
+            TbTransaction trans = new TbTransaction();
             if (trans == null) {
                 return;
             }
-            ContractMonitorResult contractResult = monitorContract(chainId, groupId, txHash,
-                    trans.getTo(), trans.getInput(), trans.getBlockNumber());
+            ContractParserResult contractResult = parserContract(chainId, groupId, null,null);
 
-            // update monitor into
-            monitorMapper.updateUnusualContract(tableName, contractName, subContractBin,
+            // update parser into
+            parserMapper.updateUnusualContract(tableName, contractName, subContractBin,
                     contractResult.getInterfaceName(), contractResult.getTransUnusualType());
         } catch (Exception ex) {
             log.error("fail updateUnusualContract", ex);
         }
     }
 
-
     /**
-     * query monitor user list.
+     * query parser user list.
      */
-    public List<TbMonitor> qureyMonitorUserList(int chainId, int groupId) throws BaseException {
-
-        List<TbMonitor> monitorUserList =
-                monitorMapper.monitorUserList(TableName.AUDIT.getTableName(chainId, groupId));
-        return monitorUserList;
+    public List<TbParser> qureyParserUserList(int chainId, int groupId) throws BaseException {
+        List<TbParser> parserUserList =
+                parserMapper.parserUserList(TableName.PARSER.getTableName(chainId, groupId));
+        return parserUserList;
     }
 
     /**
-     * query monitor interface list.
+     * query parser interface list.
      */
-    public List<TbMonitor> qureyMonitorInterfaceList(int chainId, int groupId, String userName)
+    public List<TbParser> qureyParserInterfaceList(int chainId, int groupId, String userName)
             throws BaseException {
 
-        List<TbMonitor> monitorInterfaceList = monitorMapper
-                .monitorInterfaceList(TableName.AUDIT.getTableName(chainId, groupId), userName);
-        return monitorInterfaceList;
+        List<TbParser> parserInterfaceList = parserMapper
+                .parserInterfaceList(TableName.PARSER.getTableName(chainId, groupId), userName);
+        return parserInterfaceList;
     }
 
     /**
-     * query monitor trans list.
+     * query parser trans list.
      */
-    public BaseResponse qureyMonitorTransList(int chainId, int groupId, String userName,
+    public BaseResponse qureyParserTransList(int chainId, int groupId, String userName,
             String startDate, String endDate, String interfaceName) throws BaseException {
         BaseResponse response = new BaseResponse(ConstantCode.SUCCESS);
 
         // param
-        String tableName = TableName.AUDIT.getTableName(chainId, groupId);
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
         List<String> nameList = Arrays.asList("tableName", "groupId", "userName", "startDate",
                 "endDate", "interfaceName");
         List<Object> valueList =
                 Arrays.asList(tableName, groupId, userName, startDate, endDate, interfaceName);
         Map<String, Object> param = CommonTools.buidMap(nameList, valueList);
 
-        Integer count = monitorMapper.countOfMonitorTrans(param);
-        List<PageTransInfo> transInfoList = monitorMapper.qureyTransCountList(param);
+        Integer count = parserMapper.countOfParserTrans(param);
+        List<PageTransInfo> transInfoList = parserMapper.qureyTransCountList(param);
 
-        MonitorTrans monitorTrans =
-                new MonitorTrans(chainId, groupId, userName, interfaceName, count, transInfoList);
-        response.setData(monitorTrans);
+        TransParser transParser =
+                new TransParser(chainId, groupId, userName, interfaceName, count, transInfoList);
+        response.setData(transParser);
         return response;
     }
 
@@ -251,7 +166,7 @@ public class MonitorService {
      * query count of unusual user.
      */
     public Integer countOfUnusualUser(int chainId, int groupId, String userName) {
-        return monitorMapper.countOfUnusualUser(TableName.AUDIT.getTableName(chainId, groupId),
+        return parserMapper.countOfUnusualUser(TableName.PARSER.getTableName(chainId, groupId),
                 userName);
     }
 
@@ -265,13 +180,13 @@ public class MonitorService {
 
         Integer start =
                 Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
-        String tableName = TableName.AUDIT.getTableName(chainId, groupId);
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
         List<String> nameList =
                 Arrays.asList("tableName", "groupId", "userName", "start", "pageSize");
         List<Object> valueList = Arrays.asList(tableName, groupId, userName, start, pageSize);
         Map<String, Object> param = CommonTools.buidMap(nameList, valueList);
 
-        List<UnusualUserInfo> listOfUnusualUser = monitorMapper.listOfUnusualUser(param);
+        List<UnusualUserInfo> listOfUnusualUser = parserMapper.listOfUnusualUser(param);
         return listOfUnusualUser;
     }
 
@@ -279,7 +194,7 @@ public class MonitorService {
      * query count of unusual contract.
      */
     public Integer countOfUnusualContract(int chainId, int groupId, String contractAddress) {
-        return monitorMapper.countOfUnusualContract(TableName.AUDIT.getTableName(chainId, groupId),
+        return parserMapper.countOfUnusualContract(TableName.PARSER.getTableName(chainId, groupId),
                 contractAddress);
     }
 
@@ -291,7 +206,7 @@ public class MonitorService {
         log.debug("start qureyUnusualContractList groupId:{} userName:{} pageNumber:{} pageSize:{}",
                 groupId, contractAddress, pageNumber, pageSize);
 
-        String tableName = TableName.AUDIT.getTableName(chainId, groupId);
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
         Integer start =
                 Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
 
@@ -301,76 +216,66 @@ public class MonitorService {
                 Arrays.asList(tableName, groupId, contractAddress, start, pageSize);
         Map<String, Object> param = CommonTools.buidMap(nameList, valueList);
 
-        List<UnusualContractInfo> listOfUnusualContract =
-                monitorMapper.listOfUnusualContract(param);
+        List<UnusualContractInfo> listOfUnusualContract = parserMapper.listOfUnusualContract(param);
         return listOfUnusualContract;
     }
 
     /**
-     * monitor TransHash.
+     * parserTransaction.
      */
-    public void monitorTransHash(int chainId, int groupId, TbTransaction trans,
-            LocalDateTime createTime) {
-
+    public void parserTransaction(int chainId, int groupId, TransactionInfo transInfo,
+            TransReceipt transReceipt) {
         try {
-            ChainTransInfo chanTrans =
-                    frontInterfacee.getTransInfoByHash(chainId, groupId, trans.getTransHash());
-            if (Objects.isNull(chanTrans)) {
-                log.error("monitor jump over,invalid hash. groupId:{} hash:{}", groupId,
-                        trans.getTransHash());
-                return;
-            }
+            // parser user
+            UserParserResult userResult = parserUser(chainId, groupId, transInfo.getFrom());
+            // parser contract
+            ContractParserResult contractResult =
+                    parserContract(chainId, groupId, transInfo, transReceipt);
 
-            // monitor user
-            UserMonitorResult userResult = monitorUser(chainId, groupId, trans.getTransFrom());
-            // monitor contract
-            ContractMonitorResult contractRes =
-                    monitorContract(chainId, groupId, trans.getTransHash(), chanTrans.getTo(),
-                            chanTrans.getInput(), trans.getBlockNumber());
-
-            TbMonitor tbMonitor = new TbMonitor();
-            BeanUtils.copyProperties(userResult, tbMonitor);
-            BeanUtils.copyProperties(contractRes, tbMonitor);
-            tbMonitor.setTransHashs(trans.getTransHash());
-            tbMonitor.setTransHashLastest(trans.getTransHash());
-            tbMonitor.setTransCount(1);
-            tbMonitor.setCreateTime(createTime);
-            tbMonitor.setModifyTime(trans.getBlockTimestamp());
-            // refresh transaction audit
-            monitorTransactionService.dataAddAndUpdate(chainId, groupId, tbMonitor);
+            TbParser tbParser = new TbParser();
+            BeanUtils.copyProperties(userResult, tbParser);
+            BeanUtils.copyProperties(contractResult, tbParser);
+            tbParser.setBlockNumber(transInfo.getBlockNumber());
+            tbParser.setTransHash(transInfo.getHash());
+            // tbParser.setBlockTimestamp(trans.getBlockTimestamp());
+            addRow(chainId, groupId, tbParser);
         } catch (Exception ex) {
-            log.error("transaction:{} analysis fail...", trans.getTransHash(), ex);
-            return;
-        } finally {
-            try {
-                Thread.sleep(cProperties.getAnalysisSleepTime());
-            } catch (InterruptedException e) {
-                log.error("thread sleep fail", e);
-                Thread.currentThread().interrupt();
-            }
+            log.error("transaction:{} analysis fail...", transInfo.getHash(), ex);
         }
     }
 
+    public TbParser queryTbParser(int chainId, int groupId, TbParser tbParser) {
+        return parserMapper.queryTbParser(TableName.PARSER.getTableName(chainId, groupId),
+                tbParser);
+    }
+
+    public void addRow(int chainId, int groupId, TbParser tbParser) {
+        parserMapper.add(TableName.PARSER.getTableName(chainId, groupId), tbParser);
+    }
+
+    public void updateRow(int chainId, int groupId, TbParser tbParser) {
+        parserMapper.update(TableName.PARSER.getTableName(chainId, groupId), tbParser);
+    }
 
     /**
-     * monitor contract.
+     * parser contract.
      */
-    private ContractMonitorResult monitorContract(int chainId, int groupId, String transHash,
-            String transTo, String transInput, BigInteger blockNumber) {
+    private ContractParserResult parserContract(int chainId, int groupId, TransactionInfo transInfo,
+            TransReceipt transReceipt) {
+        String transInput = transInfo.getInput();
         String contractAddress, contractName, interfaceName = "", contractBin;
         int transType = TransType.DEPLOY.getValue();
         int transUnusualType = TransUnusualType.NORMAL.getValue();
 
-        if (isDeploy(transTo)) {
-            contractAddress = frontInterfacee.getAddressByHash(chainId, groupId, transHash);
+        if (isDeploy(transInfo.getTo())) {
+            contractAddress = transReceipt.getContractAddress();
             if (ConstantProperties.ADDRESS_DEPLOY.equals(contractAddress)) {
                 contractBin = StringUtils.removeStart(transInput, "0x");
-
                 ContractParam param = new ContractParam();
+                param.setChainId(chainId);
                 param.setGroupId(groupId);
                 param.setPartOfBytecodeBin(contractBin);
                 TbContract tbContract = contractService.queryContract(param);
-
                 if (Objects.nonNull(tbContract)) {
                     contractName = tbContract.getContractName();
                 } else {
@@ -379,13 +284,12 @@ public class MonitorService {
                 }
             } else {
                 contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
-                        blockNumber);
+                        transInfo.getBlockNumber());
                 contractBin = removeBinFirstAndLast(contractBin);
-
-                List<TbContract> contractRow =
-                        contractService.queryContractByBin(groupId, contractBin);
-                if (contractRow != null && contractRow.size() > 0) {
-                    contractName = contractRow.get(0).getContractName();
+                TbContract contractRow =
+                        contractService.queryContractByBin(chainId, groupId, contractBin);
+                if (Objects.nonNull(contractRow)) {
+                    contractName = contractRow.getContractName();
                 } else {
                     contractName = getNameFromContractBin(chainId, groupId, contractBin);
                     transUnusualType = TransUnusualType.CONTRACT.getValue();
@@ -395,15 +299,16 @@ public class MonitorService {
         } else { // function call
             transType = TransType.CALL.getValue();
             String methodId = transInput.substring(0, 10);
-            contractAddress = transTo;
+            contractAddress = transInfo.getTo();
             contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
-                    blockNumber);
+                    transInfo.getBlockNumber());
             contractBin = removeBinFirstAndLast(contractBin);
 
-            List<TbContract> contractRow = contractService.queryContractByBin(groupId, contractBin);
-            if (contractRow != null && contractRow.size() > 0) {
-                contractName = contractRow.get(0).getContractName();
-                interfaceName = getInterfaceName(methodId, contractRow.get(0).getContractAbi());
+            TbContract contractRow =
+                    contractService.queryContractByBin(chainId, groupId, contractBin);
+            if (Objects.nonNull(contractRow)) {
+                contractName = contractRow.getContractName();
+                interfaceName = getInterfaceName(methodId, contractRow.getContractAbi());
                 if (StringUtils.isBlank(interfaceName)) {
                     interfaceName = transInput.substring(0, 10);
                     transUnusualType = TransUnusualType.FUNCTION.getValue();
@@ -413,7 +318,7 @@ public class MonitorService {
                 MethodInfo methodInfo = methodService.getByMethodId(methodId, null, groupId);
                 if (Objects.nonNull(methodInfo)) {
                     interfaceName = getInterfaceName(methodId, "[" + methodInfo.getAbiInfo() + "]");
-                    log.info("monitor methodId:{} interfaceName:{}", methodId, interfaceName);
+                    log.info("parser methodId:{} interfaceName:{}", methodId, interfaceName);
                 }
                 if (StringUtils.isBlank(interfaceName)) {
                     interfaceName = transInput.substring(0, 10);
@@ -421,10 +326,7 @@ public class MonitorService {
                 }
             }
         }
-
-        transUnusualType = cProperties.getIsMonitorIgnoreContract()
-                ? TransUnusualType.NORMAL.getValue() : transUnusualType;
-        ContractMonitorResult contractResult = new ContractMonitorResult();
+        ContractParserResult contractResult = new ContractParserResult();
         contractResult.setContractName(contractName);
         contractResult.setContractAddress(contractAddress);
         contractResult.setInterfaceName(interfaceName);
@@ -435,22 +337,19 @@ public class MonitorService {
 
 
     /**
-     * monitor user.
+     * parser user.
      */
-    private UserMonitorResult monitorUser(int chainId, int groupId, String userAddress) {
+    private UserParserResult parserUser(int chainId, int groupId, String userAddress) {
         String userName = userService.queryByAddress(userAddress).getUserName();
-
-        int userType = MonitorUserType.NORMAL.getValue();
+        int userType = ParserUserType.NORMAL.getValue();
         if (StringUtils.isBlank(userName)) {
             userName = userAddress;
-            userType = cProperties.getIsMonitorIgnoreUser() ? MonitorUserType.NORMAL.getValue()
-                    : MonitorUserType.ABNORMAL.getValue();
+            userType = ParserUserType.ABNORMAL.getValue();
         }
-
-        UserMonitorResult monitorResult = new UserMonitorResult();
-        monitorResult.setUserName(userName);
-        monitorResult.setUserType(userType);
-        return monitorResult;
+        UserParserResult parserResult = new UserParserResult();
+        parserResult.setUserName(userName);
+        parserResult.setUserType(userType);
+        return parserResult;
     }
 
     /**
@@ -511,9 +410,9 @@ public class MonitorService {
      * get contractName from contractBin.
      */
     private String getNameFromContractBin(int chainId, int groupId, String contractBin) {
-        List<TbContract> contractList = contractService.queryContractByBin(groupId, contractBin);
-        if (contractList != null && contractList.size() > 0) {
-            return contractList.get(0).getContractName();
+        TbContract tbContract = contractService.queryContractByBin(chainId, groupId, contractBin);
+        if (Objects.nonNull(tbContract)) {
+            return tbContract.getContractName();
         }
         return subContractBinForName(contractBin);
     }

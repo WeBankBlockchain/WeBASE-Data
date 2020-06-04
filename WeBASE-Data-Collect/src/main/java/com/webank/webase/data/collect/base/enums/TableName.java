@@ -21,7 +21,7 @@ public enum TableName {
     BLOCK("tb_block_"), 
     TRANS("tb_transaction_"), 
     RECEIPT("tb_receipt_"), 
-    AUDIT("tb_audit_");
+    PARSER("tb_parser_");
 
     String value;
 

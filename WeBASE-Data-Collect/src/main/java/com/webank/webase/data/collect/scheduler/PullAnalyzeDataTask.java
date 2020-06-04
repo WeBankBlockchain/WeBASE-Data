@@ -37,7 +37,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Log4j2
 @Component
-public class PullBlockTask {
+public class PullAnalyzeDataTask {
 
     @Autowired
     private BlockTaskPoolService blockTaskPoolService;

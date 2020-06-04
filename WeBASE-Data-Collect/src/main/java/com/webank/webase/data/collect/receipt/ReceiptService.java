@@ -40,8 +40,7 @@ public class ReceiptService {
     /**
      * add receipt info.
      */
-    public void handleReceiptInfo(int chainId, int groupId, String transHash) throws BaseException {
-        TransReceipt transReceipt = frontInterface.getTransReceipt(chainId, groupId, transHash);
+    public void handleReceiptInfo(int chainId, int groupId, TransReceipt transReceipt) {
         TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
                 transReceipt.getContractAddress(), transReceipt.getStatus(),
                 transReceipt.getOutput(), transReceipt.getBlockNumber());

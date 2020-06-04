@@ -18,12 +18,10 @@ import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.front.entity.TotalTransCountInfo;
 import com.webank.webase.data.collect.frontinterface.entity.PeerInfo;
 import com.webank.webase.data.collect.frontinterface.entity.SyncStatus;
-import com.webank.webase.data.collect.monitor.ChainTransInfo;
 import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Objects;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.NodeVersion;
@@ -153,17 +151,6 @@ public class FrontInterfaceService {
         String uri = String.format(FrontRestTools.URI_BLOCK_BY_HASH, blockHash);
         BlockInfo blockInfo = frontRestTools.getForEntity(chainId, groupId, uri, BlockInfo.class);
         return blockInfo;
-    }
-
-    public ChainTransInfo getTransInfoByHash(Integer chainId, Integer groupId, String hash)
-            throws BaseException {
-        TransactionInfo trans = getTransaction(chainId, groupId, hash);
-        if (Objects.isNull(trans)) {
-            return null;
-        }
-        ChainTransInfo chainTransInfo = new ChainTransInfo(trans.getFrom(), trans.getTo(),
-                trans.getInput(), trans.getBlockNumber());
-        return chainTransInfo;
     }
 
     public String getAddressByHash(Integer chainId, Integer groupId, String transHash)

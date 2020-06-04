@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.webank.webase.data.collect.monitor;
+package com.webank.webase.data.collect.parser.entity;
 
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class UnusualContractInfo {
+public class UnusualUserInfo {
 
-    private String contractName;
-    private String contractAddress;
+    private String userName;
     private int transCount;
     private String hashs;
     private LocalDateTime time;

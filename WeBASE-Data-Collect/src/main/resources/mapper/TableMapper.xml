@@ -181,7 +181,7 @@
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易回执信息表';
 	</update>
 
-	<update id="createTbAudit" parameterType="java.lang.String">
+	<update id="createTbParser" parameterType="java.lang.String">
 		CREATE TABLE IF NOT EXISTS ${tableName} (
 		id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
 		trans_hash varchar(128) COMMENT '交易hash',
@@ -192,12 +192,15 @@
 		interface_name varchar(32) COMMENT '合约接口名',
 		trans_type tinyint(4) DEFAULT '0' COMMENT '交易类型(0-合约部署，1-接口调用)',
 		trans_unusual_type tinyint(4) DEFAULT '0' COMMENT '交易异常类型(0-正常，1-异常合约，2-异常接口)',
+		input text COMMENT '输入信息',
+		output text COMMENT '输出信息',
+		block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
 		create_time datetime DEFAULT NULL COMMENT '创建时间',
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
 		INDEX idx_un (user_name),
 		INDEX idx_cn (contract_name)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户交易监管统计表';
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易解析信息表';
 	</update>
 
 	<select id="queryTables" resultType="java.lang.String">

@@ -18,7 +18,7 @@ import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.contract.entity.Contract;
 import com.webank.webase.data.collect.contract.entity.ContractParam;
 import com.webank.webase.data.collect.contract.entity.TbContract;
-import com.webank.webase.data.collect.monitor.MonitorService;
+import com.webank.webase.data.collect.parser.ParserService;
 import java.util.List;
 import java.util.Objects;
 import lombok.extern.log4j.Log4j2;
@@ -39,7 +39,7 @@ public class ContractService {
     private ContractMapper contractMapper;
     @Autowired
     @Lazy
-    private MonitorService monitorService;
+    private ParserService parserService;
 
     /**
      * add new contract data.
@@ -54,7 +54,7 @@ public class ContractService {
 
         if (Objects.nonNull(tbContract) && StringUtils.isNotBlank(tbContract.getContractBin())) {
             // update monitor unusual deployInputParam's info
-            monitorService.updateUnusualContract(tbContract.getChainId(), tbContract.getGroupId(),
+            parserService.updateUnusualContract(tbContract.getChainId(), tbContract.getGroupId(),
                     tbContract.getContractName(), tbContract.getContractBin());
         }
         return tbContract;
@@ -132,16 +132,12 @@ public class ContractService {
     }
 
     /**
-     * query DeployInputParam By Address.
+     * queryContractByBin.
      */
-    public List<TbContract> queryContractByBin(Integer groupId, String contractBin)
+    public TbContract queryContractByBin(Integer chainId, Integer groupId, String contractBin)
             throws BaseException {
         try {
-            if (StringUtils.isEmpty(contractBin)) {
-                return null;
-            }
-            List<TbContract> contractRow = contractMapper.queryContractByBin(groupId, contractBin);
-            return contractRow;
+            return contractMapper.queryContractByBin(chainId, groupId, contractBin);
         } catch (RuntimeException ex) {
             log.error("fail queryContractByBin", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);

@@ -49,5 +49,5 @@ public interface TransactionMapper {
 
     void updateTransStatFlag(@Param("tableName") String tableName,@Param("transHash") String transHash);
 
-    void rollback(@Param("groupId") int groupId, @Param("blockNumber") long blockNumber);
+    void rollback(@Param("tableName") String tableName, @Param("blockNumber") long blockNumber);
 }

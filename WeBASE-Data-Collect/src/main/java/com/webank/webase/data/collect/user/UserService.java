@@ -15,7 +15,7 @@ package com.webank.webase.data.collect.user;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
-import com.webank.webase.data.collect.monitor.MonitorService;
+import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.user.entity.TbUser;
 import com.webank.webase.data.collect.user.entity.UserInfo;
 import com.webank.webase.data.collect.user.entity.UserParam;
@@ -38,7 +38,7 @@ public class UserService {
     private UserMapper userMapper;
     @Lazy
     @Autowired
-    private MonitorService monitorService;
+    private ParserService parserService;
 
     /**
      * add user info.
@@ -64,7 +64,7 @@ public class UserService {
         }
         
         // update unusual user's info
-        monitorService.updateUnusualUser(user.getUserName(), user.getAddress());
+        parserService.updateUnusualUser(user.getUserName(), user.getAddress());
         
         return queryByUserId(newUser.getUserId());
     }

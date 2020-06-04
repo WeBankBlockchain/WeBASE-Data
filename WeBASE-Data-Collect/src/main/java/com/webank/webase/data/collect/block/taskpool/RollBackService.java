@@ -13,6 +13,7 @@
  */
 package com.webank.webase.data.collect.block.taskpool;
 
+import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.block.BlockMapper;
 import com.webank.webase.data.collect.receipt.ReceiptMapper;
 import com.webank.webase.data.collect.transaction.TransactionMapper;
@@ -41,9 +42,9 @@ public class RollBackService {
      * @param blockNumber
      */
     @Transactional
-    public void rollback(int groupId, long blockNumber) {
-        blockMapper.rollback(groupId, blockNumber);
-        transactionMapper.rollback(groupId, blockNumber);
-        receiptMapper.rollback(groupId, blockNumber);
+    public void rollback(int chainId, int groupId, long blockNumber) {
+        blockMapper.rollback(TableName.BLOCK.getTableName(chainId, groupId), blockNumber);
+        transactionMapper.rollback(TableName.TRANS.getTableName(chainId, groupId), blockNumber);
+        receiptMapper.rollback(TableName.RECEIPT.getTableName(chainId, groupId), blockNumber);
     }
 }

@@ -20,7 +20,6 @@ import com.webank.webase.data.collect.front.entity.TotalTransCountInfo;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.frontinterface.entity.PeerInfo;
 import com.webank.webase.data.collect.frontinterface.entity.SyncStatus;
-import com.webank.webase.data.collect.monitor.ChainTransInfo;
 import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
@@ -84,14 +83,6 @@ public class FrontServiceTest {
     }
 
     @Test
-    public void getTransFromFrontByHashTest() {
-        ChainTransInfo chainTransInfo =
-                frontInterface.getTransInfoByHash(chainId, groupId, transHash);
-        assert (chainTransInfo != null);
-        System.out.println(JacksonUtils.objToString(chainTransInfo));
-    }
-
-    @Test
     public void getAddressFromFrontByHashTest() {
         String contractAddress = frontInterface.getAddressByHash(chainId, groupId, transHash);
         assert (contractAddress != null);
@@ -106,8 +97,6 @@ public class FrontServiceTest {
         assert (code != null);
         System.out.println(code);
     }
-
-
 
     @Test
     public void getTotalTransactionCountTest() {

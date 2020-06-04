@@ -21,7 +21,9 @@ import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.block.entity.BlockListParam;
 import com.webank.webase.data.collect.block.entity.TbBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
+import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
+import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
@@ -49,6 +51,9 @@ public class BlockService {
     private TransactionService transactionService;
     @Autowired
     private ReceiptService receiptService;
+    @Autowired
+    private ParserService parserService;
+    
     private static final Long SAVE_TRANS_SLEEP_TIME = 5L;
 
     /**
@@ -83,13 +88,16 @@ public class BlockService {
         // save trans hash
         List<TransactionInfo> transList = blockInfo.getTransactions();
         for (TransactionInfo trans : transList) {
+            // save trans
             TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getFrom(),
                     trans.getTo(), trans.getInput(), tbBlock.getBlockNumber(),
                     tbBlock.getBlockTimestamp());
             transactionService.addTransInfo(chainId, groupId, tbTransaction);
-
             // save receipt
-            receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
+            TransReceipt transReceipt = frontInterface.getTransReceipt(chainId, groupId, trans.getHash());
+            receiptService.handleReceiptInfo(chainId, groupId, transReceipt);
+            // parserTransaction
+//            parserService.parserTransaction(chainId, groupId, trans, transReceipt);
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);
             } catch (InterruptedException ex) {

@@ -11,12 +11,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.monitor;
+package com.webank.webase.data.collect.parser;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.parser.entity.TbParser;
+import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
+import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -29,57 +32,57 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Log4j2
 // @RestController
-@RequestMapping("monitor")
-public class MonitorController {
+@RequestMapping("parser")
+public class ParserController {
 
     @Autowired
-    private MonitorService monitorService;
+    private ParserService parserService;
 
     /**
-     * monitor user list.
+     * parser user list.
      */
     @GetMapping(value = "/userList/{chainId}/{groupId}")
-    public BaseResponse monitorUserList(@PathVariable("chainId") Integer chainId,
+    public BaseResponse parserUserList(@PathVariable("chainId") Integer chainId,
             @PathVariable("groupId") Integer groupId) throws BaseException {
         BaseResponse response = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
-        log.info("start monitorUserList startTime:{} groupId:{} ", startTime.toEpochMilli(),
+        log.info("start parserUserList startTime:{} groupId:{} ", startTime.toEpochMilli(),
                 groupId);
 
-        List<TbMonitor> listOfUser = monitorService.qureyMonitorUserList(chainId, groupId);
+        List<TbParser> listOfUser = parserService.qureyParserUserList(chainId, groupId);
         response.setData(listOfUser);
 
-        log.info("end monitorUserList useTime:{}",
+        log.info("end parserUserList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return response;
     }
 
     /**
-     * monitor interface list.
+     * parser interface list.
      */
     @GetMapping(value = "/interfaceList/{chainId}/{groupId}")
-    public BaseResponse monitorInterfaceList(@PathVariable("chainId") Integer chainId,
+    public BaseResponse parserInterfaceList(@PathVariable("chainId") Integer chainId,
             @PathVariable("groupId") Integer groupId,
             @RequestParam(value = "userName") String userName) throws BaseException {
         BaseResponse response = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
-        log.info("start monitorInterfaceList startTime:{} groupId:{} ", startTime.toEpochMilli(),
+        log.info("start parserInterfaceList startTime:{} groupId:{} ", startTime.toEpochMilli(),
                 groupId);
 
-        List<TbMonitor> listOfInterface =
-                monitorService.qureyMonitorInterfaceList(chainId, groupId, userName);
+        List<TbParser> listOfInterface =
+                parserService.qureyParserInterfaceList(chainId, groupId, userName);
         response.setData(listOfInterface);
 
-        log.info("end monitorInterfaceList useTime:{}",
+        log.info("end parserInterfaceList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return response;
     }
 
     /**
-     * monitor trans list.
+     * parser trans list.
      */
     @GetMapping(value = "/transList/{chainId}/{groupId}")
-    public BaseResponse monitorTransList(@PathVariable("chainId") Integer chainId,
+    public BaseResponse parserTransList(@PathVariable("chainId") Integer chainId,
             @PathVariable("groupId") Integer groupId,
             @RequestParam(value = "userName", required = false) String userName,
             @RequestParam(value = "startDate", required = false) String startDate,
@@ -88,14 +91,14 @@ public class MonitorController {
             throws BaseException {
         Instant startTime = Instant.now();
         log.info(
-                "start monitorTransList startTime:{} groupId:{} userName:{} startDate:{}"
+                "start parserTransList startTime:{} groupId:{} userName:{} startDate:{}"
                         + " endDate:{} interfaceName:{}",
                 startTime.toEpochMilli(), groupId, userName, startDate, endDate, interfaceName);
 
-        BaseResponse response = monitorService.qureyMonitorTransList(chainId, groupId, userName,
+        BaseResponse response = parserService.qureyParserTransList(chainId, groupId, userName,
                 startDate, endDate, interfaceName);
 
-        log.info("end monitorTransList useTime:{}",
+        log.info("end parserTransList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return response;
     }
@@ -117,9 +120,9 @@ public class MonitorController {
                         + " userName:{}",
                 startTime.toEpochMilli(), groupId, pageNumber, pageSize, userName);
 
-        Integer count = monitorService.countOfUnusualUser(chainId, groupId, userName);
+        Integer count = parserService.countOfUnusualUser(chainId, groupId, userName);
         if (count != null && count > 0) {
-            List<UnusualUserInfo> listOfUnusualUser = monitorService.qureyUnusualUserList(chainId,
+            List<UnusualUserInfo> listOfUnusualUser = parserService.qureyUnusualUserList(chainId,
                     groupId, userName, pageNumber, pageSize);
             pagesponse.setData(listOfUnusualUser);
             pagesponse.setTotalCount(count);
@@ -147,10 +150,10 @@ public class MonitorController {
                         + " pageSize:{} contractAddress:{}",
                 startTime.toEpochMilli(), groupId, pageNumber, pageSize, contractAddress);
 
-        Integer count = monitorService.countOfUnusualContract(chainId, groupId, contractAddress);
+        Integer count = parserService.countOfUnusualContract(chainId, groupId, contractAddress);
         if (count != null && count > 0) {
             List<UnusualContractInfo> listOfUnusualContract =
-                    monitorService.qureyUnusualContractList(chainId, groupId, contractAddress,
+                    parserService.qureyUnusualContractList(chainId, groupId, contractAddress,
                             pageNumber, pageSize);
             pagesponse.setData(listOfUnusualContract);
             pagesponse.setTotalCount(count);
