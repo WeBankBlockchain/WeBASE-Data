@@ -6,6 +6,10 @@
 <mapper namespace="com.webank.webase.data.collect.parser.ParserMapper">
 	<resultMap id="parserMap"
 		type="com.webank.webase.data.collect.parser.entity.TbParser">
+		<result column="trans_hash" javaType="java.lang.String"
+			jdbcType="VARCHAR" property="transHash" />
+		<result column="block_number" javaType="java.math.BigInteger"
+			jdbcType="INTEGER" property="blockNumber" />
 		<result column="user_name" javaType="java.lang.String"
 			jdbcType="VARCHAR" property="userName" />
 		<result column="user_type" javaType="java.lang.Integer"
@@ -20,12 +24,12 @@
 			jdbcType="INTEGER" property="transType" />
 		<result column="trans_unusual_type" javaType="java.lang.Integer"
 			jdbcType="INTEGER" property="transUnusualType" />
-		<result column="trans_count" javaType="java.lang.Integer"
-			jdbcType="INTEGER" property="transCount" />
-		<result column="trans_hashs" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="transHashs" />
-		<result column="trans_hash_lastest" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="transHashLastest" />
+		<result column="input" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="input" />
+		<result column="output" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="output" />
+		<result column="block_timestamp" javaType="java.time.LocalDateTime"
+			jdbcType="TIMESTAMP" property="blockTimestamp" />
 		<result column="create_time" javaType="java.time.LocalDateTime"
 			jdbcType="TIMESTAMP" property="createTime" />
 		<result column="modify_time" javaType="java.time.LocalDateTime"
@@ -34,37 +38,14 @@
 
 	<insert id="add">
 		insert into ${tableName}
-		(user_name,user_type,contract_name,contract_address,interface_name,trans_type,
-		trans_unusual_type,trans_count,trans_hashs,trans_hash_lastest,create_time,modify_time)
+		(trans_hash,block_number,user_name,user_type,contract_name,contract_address,interface_name,trans_type,
+		trans_unusual_type,input,output,block_timestamp,create_time,modify_time)
 		values
-		(#{parser.userName},#{parser.userType},#{parser.contractName},
+		(#{parser.transHash},#{parser.blockNumber},#{parser.userName},#{parser.userType},#{parser.contractName},
 		#{parser.contractAddress},#{parser.interfaceName},#{parser.transType},
-		#{parser.transUnusualType},#{parser.transCount},#{parser.transHashs},
-		#{parser.transHashLastest},now(),now())
+		#{parser.transUnusualType},#{parser.input},#{parser.output},
+		#{parser.blockTimestamp},now(),now())
 	</insert>
-
-	<update id="update">
-		update ${tableName}
-		set trans_count = trans_count + 1,
-		trans_hashs = #{parser.transHashs},
-		trans_hash_lastest =
-		#{parser.transHashLastest},
-		modify_time = now()
-		where user_name =
-		#{parser.userName}
-		and contract_name = #{parser.contractName}
-		and
-		DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') =
-		DATE_FORMAT(#{parser.createTime},'%Y-%m-%d %H:%i:%s')
-		and user_type =
-		#{parser.userType}
-		and contract_address = #{parser.contractAddress}
-		and
-		interface_name = #{parser.interfaceName}
-		and trans_type =
-		#{parser.transType}
-		and trans_unusual_type = #{parser.transUnusualType}
-	</update>
 
 	<update id="updateUnusualUser">
 		update ${tableName}
@@ -219,4 +200,8 @@
 		where contract_name = #{contractBin}
 		and (trans_unusual_type = 1 or trans_unusual_type = 2)
 	</select>
+	
+	<delete id="rollback">
+		DELETE from ${tableName} where block_number = ${blockNumber}
+	</delete>
 </mapper>

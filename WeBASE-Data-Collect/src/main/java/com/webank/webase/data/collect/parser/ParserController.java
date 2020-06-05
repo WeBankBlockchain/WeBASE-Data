@@ -14,29 +14,52 @@
 package com.webank.webase.data.collect.parser;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
+import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.parser.entity.ResetInfo;
 import com.webank.webase.data.collect.parser.entity.TbParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
 import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
-// @RestController
+@RestController
 @RequestMapping("parser")
-public class ParserController {
+public class ParserController extends BaseController {
 
     @Autowired
     private ParserService parserService;
+
+    /**
+     * parser reset.
+     */
+    @PostMapping(value = "/reset")
+    public BaseResponse reset(@RequestBody @Valid ResetInfo resetInfo, BindingResult result) {
+        checkBindResult(result);
+        BaseResponse response = new BaseResponse(ConstantCode.SUCCESS);
+        Instant startTime = Instant.now();
+        log.info("start reset. blockNumber:{} ", startTime.toEpochMilli(),
+                resetInfo.getBlockNumber());
+        parserService.reset(resetInfo);
+        log.info("end reset. useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return response;
+    }
 
     /**
      * parser user list.

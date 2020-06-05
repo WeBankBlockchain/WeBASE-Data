@@ -166,7 +166,7 @@
 	<select id="queryContractByBin" resultMap="contractMap">
 		select * from
 		tb_contract
-		where contract_id = #{contractId}
+		where chain_id = #{chainId}
 		and group_id = #{groupId}
 		and contract_bin like CONCAT(#{contractBin},'%')
 		limit 1

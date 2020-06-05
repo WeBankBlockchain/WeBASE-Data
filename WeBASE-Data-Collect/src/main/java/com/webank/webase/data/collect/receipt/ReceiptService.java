@@ -38,13 +38,16 @@ public class ReceiptService {
     private FrontInterfaceService frontInterface;
 
     /**
-     * add receipt info.
+     * handle receipt info.
      */
-    public void handleReceiptInfo(int chainId, int groupId, TransactionReceipt transReceipt) {
+    public TbReceipt handleReceiptInfo(int chainId, int groupId, String transHash) {
+        TransactionReceipt transReceipt =
+                frontInterface.getTransReceipt(chainId, groupId, transHash);
         TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
                 transReceipt.getContractAddress(), transReceipt.getStatus(),
                 transReceipt.getOutput(), transReceipt.getBlockNumber());
         addReceiptInfo(chainId, groupId, tbReceipt);
+        return tbReceipt;
     }
 
     /**

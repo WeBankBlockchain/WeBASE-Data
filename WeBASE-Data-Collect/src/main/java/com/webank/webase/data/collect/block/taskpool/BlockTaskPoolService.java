@@ -14,7 +14,9 @@
 package com.webank.webase.data.collect.block.taskpool;
 
 import com.google.common.collect.Lists;
+import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
+import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.BlockConstants;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.block.BlockService;
@@ -151,6 +153,23 @@ public class BlockTaskPoolService {
         }
     }
 
+    public void resetDataByBlockNumber(int chainId, int groupId, long blockNumber) {
+        String tableName = TableName.TASK.getTableName(chainId, groupId);
+        TbBlockTaskPool blockTaskPool = taskPoolMapper.findByBlockNumber(tableName, blockNumber);
+        if (Objects.isNull(blockTaskPool)) {
+            throw new BaseException(ConstantCode.INVALID_BLOCK_NUMBER);
+        }
+        if (blockTaskPool.getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
+            throw new BaseException(ConstantCode.TASK_RUNNING);
+        }
+        if (blockTaskPool.getSyncStatus() == TxInfoStatusEnum.INIT.getStatus()) {
+            throw new BaseException(ConstantCode.BLOCK_BEEN_RESET);
+        }
+        rollBackService.rollback(chainId, groupId, blockNumber);
+        taskPoolMapper.setSyncStatusByBlockHeight(tableName, TxInfoStatusEnum.INIT.getStatus(),
+                blockNumber);
+    }
+
     public void checkForks(int chainId, int groupId, long currentBlockHeight) throws IOException {
         log.debug("current block height is {}, and begin to check forks", currentBlockHeight);
         List<TbBlockTaskPool> uncertainBlocks =
@@ -269,7 +288,8 @@ public class BlockTaskPoolService {
             if (ids.indexOf(tmpIndex) >= 0) {
                 continue;
             }
-            log.debug("Successfully detect block {} is missing. Try to sync block again.", tmpIndex);
+            log.debug("Successfully detect block {} is missing. Try to sync block again.",
+                    tmpIndex);
             TbBlockTaskPool pool = new TbBlockTaskPool().setBlockNumber(tmpIndex)
                     .setSyncStatus(TxInfoStatusEnum.ERROR.getStatus())
                     .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());

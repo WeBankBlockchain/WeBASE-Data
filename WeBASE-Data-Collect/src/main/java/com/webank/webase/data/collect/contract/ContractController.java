@@ -87,7 +87,6 @@ public class ContractController extends BaseController {
         return baseResponse;
     }
 
-
     /**
      * qurey contract info list.
      */

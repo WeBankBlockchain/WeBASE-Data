@@ -22,6 +22,7 @@ import com.webank.webase.data.collect.block.entity.TbBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
+import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import java.math.BigInteger;
@@ -32,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
-import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,16 +88,14 @@ public class BlockService {
         for (TransactionResult result : transList) {
             // save trans
             Transaction trans = (Transaction) result.get();
-            TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getFrom(),
-                    trans.getTo(), trans.getInput(), trans.getBlockNumber(),
-                    tbBlock.getBlockTimestamp());
+            TbTransaction tbTransaction =
+                    new TbTransaction(trans.getHash(), trans.getFrom(), trans.getTo(),
+                            trans.getInput(), trans.getBlockNumber(), tbBlock.getBlockTimestamp());
             transactionService.addTransInfo(chainId, groupId, tbTransaction);
             // save receipt
-            TransactionReceipt transReceipt =
-                    frontInterface.getTransReceipt(chainId, groupId, trans.getHash());
-            receiptService.handleReceiptInfo(chainId, groupId, transReceipt);
+            TbReceipt tbReceipt = receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
             // parserTransaction
-            // parserService.parserTransaction(chainId, groupId, trans, transReceipt);
+            parserService.parserTransaction(chainId, groupId, tbTransaction, tbReceipt);
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);
             } catch (InterruptedException ex) {
@@ -110,7 +108,6 @@ public class BlockService {
     /**
      * add block info to db.
      */
-    @Transactional
     public void addBlockInfo(TbBlock tbBlock, int chainId, int groupId) throws BaseException {
         String tableName = TableName.BLOCK.getTableName(chainId, groupId);
         // save block info

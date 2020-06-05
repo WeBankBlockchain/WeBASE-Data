@@ -30,9 +30,7 @@ public interface ParserMapper {
 
     void add(@Param("tableName") String tableName, @Param("parser") TbParser tbParser);
 
-    void update(@Param("tableName") String tableName, @Param("parser") TbParser tbParser);
-
-    void updateUnusualUser(@Param("tableName") String tableName,
+    int updateUnusualUser(@Param("tableName") String tableName,
         @Param("userName") String userName, @Param("address") String address);
 
     void updateUnusualContract(@Param("tableName") String tableName,
@@ -64,4 +62,6 @@ public interface ParserMapper {
         @Param("contractAddress") String contractAddress);
 
     List<UnusualContractInfo> listOfUnusualContract(Map<String, Object> queryParam);
+    
+    void rollback(@Param("tableName") String tableName, @Param("blockNumber") long blockNumber);
 }

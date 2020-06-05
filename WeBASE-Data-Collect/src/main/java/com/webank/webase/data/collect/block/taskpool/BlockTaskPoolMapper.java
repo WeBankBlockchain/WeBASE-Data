@@ -28,12 +28,15 @@ public interface BlockTaskPoolMapper {
 
     Integer saveAll(@Param("tableName") String tableName,
             @Param("list") List<TbBlockTaskPool> list);
-    
+
     BigInteger getLatestBlockNumber(@Param("tableName") String tableName);
 
     List<TbBlockTaskPool> findBySyncStatusOrderByBlockHeightLimit(
             @Param("tableName") String tableName, @Param("syncStatus") int syncStatus,
             @Param("limit") int limit);
+
+    TbBlockTaskPool findByBlockNumber(@Param("tableName") String tableName,
+            @Param("blockNumber") long blockNumber);
 
     Integer setSyncStatusByBlockHeight(@Param("tableName") String tableName,
             @Param("syncStatus") int syncStatus, @Param("blockNumber") long blockNumber);

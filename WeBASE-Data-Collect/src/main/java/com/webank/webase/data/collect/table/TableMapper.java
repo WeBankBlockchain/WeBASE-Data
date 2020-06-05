@@ -42,7 +42,7 @@ public interface TableMapper {
 
     int createTbReceipt(@Param("tableName") String tableName);
 
-    int createTbAudit(@Param("tableName") String tableName);
+    int createTbParser(@Param("tableName") String tableName);
 
     List<String> queryTables(@Param("dbName") String dbName, @Param("tableName") String tableName);
 

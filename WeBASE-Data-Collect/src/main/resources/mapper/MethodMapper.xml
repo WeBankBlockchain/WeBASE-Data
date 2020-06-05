@@ -25,22 +25,6 @@
 		<result column="modify_time" javaType="java.time.LocalDateTime"
 			jdbcType="TIMESTAMP" property="modifyTime" />
 	</resultMap>
-	
-	<resultMap id="methodInfoMap"
-		type="com.webank.webase.data.collect.contract.entity.MethodInfo">
-		<result column="method_id" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="methodId" />
-		<result column="method_name" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="methodName" />
-		<result column="abi_info" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="abiInfo" />
-		<result column="method_type" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="methodType" />
-		<result column="contract_name" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="contractName" />
-		<result column="contract_type" javaType="java.lang.Integer"
-			jdbcType="INTEGER" property="contractType" />
-	</resultMap>
 
 	<insert id="add"
 		parameterType="com.webank.webase.data.collect.contract.entity.TbMethod">
@@ -50,13 +34,13 @@
 		(#{contractId},#{chainId},#{groupId},#{methodId},#{methodName},#{abiInfo},#{methodType},now(),now())
 	</insert>
 
-	<select id="getMethodById" resultMap="methodInfoMap">
+	<select id="getMethodById" resultType="com.webank.webase.data.collect.contract.entity.MethodInfo">
 		SELECT t1.method_id as methodId,
 			   t1.method_name as methodName,
 			   t1.abi_info as abiInfo,
 			   t1.method_type as methodType,
 			   t2.contract_name as contractName,
-			   t2.contract_type as contractType,
+			   t2.contract_type as contractType
 		FROM tb_method t1,tb_contract t2
 		WHERE t1.method_id = #{methodId}
 		  AND t1.contract_id = t2.contract_id

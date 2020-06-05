@@ -23,6 +23,7 @@ import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.base.tools.Web3Tools;
+import com.webank.webase.data.collect.block.taskpool.BlockTaskPoolService;
 import com.webank.webase.data.collect.contract.ContractService;
 import com.webank.webase.data.collect.contract.MethodService;
 import com.webank.webase.data.collect.contract.entity.ContractParam;
@@ -33,6 +34,7 @@ import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.parser.entity.ContractParserResult;
 import com.webank.webase.data.collect.parser.entity.PageTransInfo;
+import com.webank.webase.data.collect.parser.entity.ResetInfo;
 import com.webank.webase.data.collect.parser.entity.TbParser;
 import com.webank.webase.data.collect.parser.entity.TransParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
@@ -41,6 +43,7 @@ import com.webank.webase.data.collect.parser.entity.UserParserResult;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.user.UserService;
+import com.webank.webase.data.collect.user.entity.TbUser;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +79,13 @@ public class ParserService {
     private FrontInterfaceService frontInterfacee;
     @Autowired
     private MethodService methodService;
+    @Autowired
+    private BlockTaskPoolService blockTaskPoolService;
+
+    public void reset(ResetInfo resetInfo) {
+        blockTaskPoolService.resetDataByBlockNumber(resetInfo.getChainId(), resetInfo.getGroupId(),
+                resetInfo.getBlockNumber().longValue());
+    }
 
     public void updateUnusualUser(String userName, String address) {
         log.info("start updateUnusualUser address:{}", address);
@@ -106,7 +116,7 @@ public class ParserService {
             if (trans == null) {
                 return;
             }
-            ContractParserResult contractResult = parserContract(chainId, groupId, null,null);
+            ContractParserResult contractResult = parserContract(chainId, groupId, null, null);
 
             // update parser into
             parserMapper.updateUnusualContract(tableName, contractName, subContractBin,
@@ -223,23 +233,19 @@ public class ParserService {
      */
     public void parserTransaction(int chainId, int groupId, TbTransaction tbTransaction,
             TbReceipt tbReceipt) {
-        try {
-            // parser user
-            UserParserResult userResult = parserUser(chainId, groupId, tbTransaction.getTransFrom());
-            // parser contract
-            ContractParserResult contractResult =
-                    parserContract(chainId, groupId, tbTransaction, tbReceipt);
+        // parser user
+        UserParserResult userResult = parserUser(chainId, groupId, tbTransaction.getTransFrom());
+        // parser contract
+        ContractParserResult contractResult =
+                parserContract(chainId, groupId, tbTransaction, tbReceipt);
 
-            TbParser tbParser = new TbParser();
-            BeanUtils.copyProperties(userResult, tbParser);
-            BeanUtils.copyProperties(contractResult, tbParser);
-            tbParser.setBlockNumber(tbTransaction.getBlockNumber());
-            tbParser.setTransHash(tbTransaction.getTransHash());
-            // tbParser.setBlockTimestamp(trans.getBlockTimestamp());
-            addRow(chainId, groupId, tbParser);
-        } catch (Exception ex) {
-            log.error("transaction:{} analysis fail...", tbTransaction.getTransHash(), ex);
-        }
+        TbParser tbParser = new TbParser();
+        BeanUtils.copyProperties(userResult, tbParser);
+        BeanUtils.copyProperties(contractResult, tbParser);
+        tbParser.setBlockNumber(tbTransaction.getBlockNumber());
+        tbParser.setTransHash(tbTransaction.getTransHash());
+        tbParser.setBlockTimestamp(tbTransaction.getBlockTimestamp());
+        addRow(chainId, groupId, tbParser);
     }
 
     public TbParser queryTbParser(int chainId, int groupId, TbParser tbParser) {
@@ -251,15 +257,11 @@ public class ParserService {
         parserMapper.add(TableName.PARSER.getTableName(chainId, groupId), tbParser);
     }
 
-    public void updateRow(int chainId, int groupId, TbParser tbParser) {
-        parserMapper.update(TableName.PARSER.getTableName(chainId, groupId), tbParser);
-    }
-
     /**
      * parser contract.
      */
-    private ContractParserResult parserContract(int chainId, int groupId, TbTransaction tbTransaction,
-            TbReceipt tbReceipt) {
+    private ContractParserResult parserContract(int chainId, int groupId,
+            TbTransaction tbTransaction, TbReceipt tbReceipt) {
         String transInput = tbTransaction.getInput();
         String contractAddress, contractName, interfaceName = "", contractBin;
         int transType = TransType.DEPLOY.getValue();
@@ -289,7 +291,7 @@ public class ParserService {
                 if (Objects.nonNull(contractRow)) {
                     contractName = contractRow.getContractName();
                 } else {
-                    contractName = getNameFromContractBin(chainId, groupId, contractBin);
+                    contractName = subContractBinForName(contractBin);
                     transUnusualType = TransUnusualType.CONTRACT.getValue();
                 }
             }
@@ -302,25 +304,21 @@ public class ParserService {
                     tbTransaction.getBlockNumber());
             contractBin = removeBinFirstAndLast(contractBin);
 
-            TbContract contractRow =
-                    contractService.queryContractByBin(chainId, groupId, contractBin);
-            if (Objects.nonNull(contractRow)) {
-                contractName = contractRow.getContractName();
-                interfaceName = getInterfaceName(methodId, contractRow.getContractAbi());
-                if (StringUtils.isBlank(interfaceName)) {
-                    interfaceName = transInput.substring(0, 10);
-                    transUnusualType = TransUnusualType.FUNCTION.getValue();
-                }
+            MethodInfo methodInfo = methodService.getByMethodId(methodId, chainId, groupId);
+            if (Objects.nonNull(methodInfo)) {
+                contractName = methodInfo.getContractName();
+                interfaceName = methodInfo.getMethodName();
             } else {
-                contractName = getNameFromContractBin(chainId, groupId, contractBin);
-                MethodInfo methodInfo = methodService.getByMethodId(methodId, null, groupId);
-                if (Objects.nonNull(methodInfo)) {
-                    interfaceName = getInterfaceName(methodId, "[" + methodInfo.getAbiInfo() + "]");
-                    log.info("parser methodId:{} interfaceName:{}", methodId, interfaceName);
-                }
-                if (StringUtils.isBlank(interfaceName)) {
-                    interfaceName = transInput.substring(0, 10);
-                    transUnusualType = TransUnusualType.CONTRACT.getValue();
+                contractName = subContractBinForName(contractBin);
+                transUnusualType = TransUnusualType.CONTRACT.getValue();
+                interfaceName = transInput.substring(0, 10);
+                if (StringUtils.isNoneBlank(contractBin)) {
+                    TbContract contractRow =
+                            contractService.queryContractByBin(chainId, groupId, contractBin);
+                    if (Objects.nonNull(contractRow)) {
+                        contractName = contractRow.getContractName();
+                        transUnusualType = TransUnusualType.FUNCTION.getValue();
+                    }
                 }
             }
         }
@@ -338,11 +336,12 @@ public class ParserService {
      * parser user.
      */
     private UserParserResult parserUser(int chainId, int groupId, String userAddress) {
-        String userName = userService.queryByAddress(userAddress).getUserName();
-        int userType = ParserUserType.NORMAL.getValue();
-        if (StringUtils.isBlank(userName)) {
-            userName = userAddress;
-            userType = ParserUserType.ABNORMAL.getValue();
+        String userName = userAddress;
+        int userType = ParserUserType.ABNORMAL.getValue();
+        TbUser tbUser = userService.queryByAddress(userAddress);
+        if (Objects.nonNull(tbUser)) {
+            userName = tbUser.getUserName();
+            userType = ParserUserType.NORMAL.getValue();
         }
         UserParserResult parserResult = new UserParserResult();
         parserResult.setUserName(userName);
@@ -399,7 +398,7 @@ public class ParserService {
      */
     private boolean isDeploy(String address) {
         if (StringUtils.isBlank(address)) {
-            return false;
+            return true;
         }
         return ConstantProperties.ADDRESS_DEPLOY.equals(address);
     }

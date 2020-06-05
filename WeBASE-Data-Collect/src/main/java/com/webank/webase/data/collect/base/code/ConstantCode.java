@@ -76,6 +76,12 @@ public class ConstantCode {
 
     public static final RetCode ENCRYPT_TYPE_NOT_MATCH =
             RetCode.mark(202020, "Front's encrypt type not matches");
+    
+    public static final RetCode INVALID_BLOCK_NUMBER = RetCode.mark(202021, "invalid block number");
+    
+    public static final RetCode TASK_RUNNING = RetCode.mark(202022, "task is still running");
+    
+    public static final RetCode BLOCK_BEEN_RESET = RetCode.mark(202023, "block has been reset");
 
     /* param exception */
     public static final RetCode PARAM_EXCEPTION = RetCode.mark(302000, "param exception");

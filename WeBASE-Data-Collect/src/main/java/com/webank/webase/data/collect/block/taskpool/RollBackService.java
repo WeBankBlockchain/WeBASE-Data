@@ -15,6 +15,7 @@ package com.webank.webase.data.collect.block.taskpool;
 
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.block.BlockMapper;
+import com.webank.webase.data.collect.parser.ParserMapper;
 import com.webank.webase.data.collect.receipt.ReceiptMapper;
 import com.webank.webase.data.collect.transaction.TransactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class RollBackService {
     private TransactionMapper transactionMapper;
     @Autowired
     private ReceiptMapper receiptMapper;
+    @Autowired
+    private ParserMapper parserMapper;
 
     /**
      * Do rollback.
@@ -46,5 +49,6 @@ public class RollBackService {
         blockMapper.rollback(TableName.BLOCK.getTableName(chainId, groupId), blockNumber);
         transactionMapper.rollback(TableName.TRANS.getTableName(chainId, groupId), blockNumber);
         receiptMapper.rollback(TableName.RECEIPT.getTableName(chainId, groupId), blockNumber);
+        parserMapper.rollback(TableName.PARSER.getTableName(chainId, groupId), blockNumber);
     }
 }
