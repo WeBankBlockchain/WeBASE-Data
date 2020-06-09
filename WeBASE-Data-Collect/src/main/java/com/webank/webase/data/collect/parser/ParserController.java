@@ -53,8 +53,7 @@ public class ParserController extends BaseController {
         checkBindResult(result);
         BaseResponse response = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
-        log.info("start reset. blockNumber:{} ", startTime.toEpochMilli(),
-                resetInfo.getBlockNumber());
+        log.info("start reset. blockNumber:{} ", resetInfo.getBlockNumber());
         parserService.reset(resetInfo);
         log.info("end reset. useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());

@@ -39,8 +39,9 @@ public class RollBackService {
     private ParserMapper parserMapper;
 
     /**
-     * Do rollback.
+     * Do rollback by blockNumber.
      * 
+     * @param chainId
      * @param groupId
      * @param blockNumber
      */

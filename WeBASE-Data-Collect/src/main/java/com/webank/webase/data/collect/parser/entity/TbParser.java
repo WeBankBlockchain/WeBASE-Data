@@ -25,6 +25,7 @@ public class TbParser {
     private String transHash;
     private BigInteger blockNumber = BigInteger.ZERO;
     private String userName;
+    private String userAddress;
     private Integer userType = ParserUserType.NORMAL.getValue();
     private String contractName;
     private String contractAddress;
@@ -33,6 +34,7 @@ public class TbParser {
     private Integer transUnusualType = TransUnusualType.NORMAL.getValue();
     private String input;
     private String output;
+    private String logs;
     private LocalDateTime blockTimestamp;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;

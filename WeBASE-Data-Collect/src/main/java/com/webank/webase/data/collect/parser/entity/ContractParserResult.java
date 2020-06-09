@@ -27,4 +27,5 @@ public class ContractParserResult {
     private Integer transUnusualType;
     private String input;
     private String output;
+    private String logs;
 }

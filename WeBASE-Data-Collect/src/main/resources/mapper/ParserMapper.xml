@@ -12,6 +12,8 @@
 			jdbcType="INTEGER" property="blockNumber" />
 		<result column="user_name" javaType="java.lang.String"
 			jdbcType="VARCHAR" property="userName" />
+		<result column="user_address" javaType="java.lang.String"
+			jdbcType="VARCHAR" property="userAddress" />
 		<result column="user_type" javaType="java.lang.Integer"
 			jdbcType="INTEGER" property="userType" />
 		<result column="contract_name" javaType="java.lang.String"
@@ -28,6 +30,8 @@
 			property="input" />
 		<result column="output" javaType="java.lang.String" jdbcType="VARCHAR"
 			property="output" />
+		<result column="logs" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="logs" />
 		<result column="block_timestamp" javaType="java.time.LocalDateTime"
 			jdbcType="TIMESTAMP" property="blockTimestamp" />
 		<result column="create_time" javaType="java.time.LocalDateTime"
@@ -38,12 +42,12 @@
 
 	<insert id="add">
 		insert into ${tableName}
-		(trans_hash,block_number,user_name,user_type,contract_name,contract_address,interface_name,trans_type,
-		trans_unusual_type,input,output,block_timestamp,create_time,modify_time)
+		(trans_hash,block_number,user_name,user_address,user_type,contract_name,contract_address,interface_name,trans_type,
+		trans_unusual_type,input,output,logs,block_timestamp,create_time,modify_time)
 		values
-		(#{parser.transHash},#{parser.blockNumber},#{parser.userName},#{parser.userType},#{parser.contractName},
-		#{parser.contractAddress},#{parser.interfaceName},#{parser.transType},
-		#{parser.transUnusualType},#{parser.input},#{parser.output},
+		(#{parser.transHash},#{parser.blockNumber},#{parser.userName},#{parser.userAddress},#{parser.userType},
+		#{parser.contractName},#{parser.contractAddress},#{parser.interfaceName},#{parser.transType},
+		#{parser.transUnusualType},#{parser.input},#{parser.output},#{parser.logs},
 		#{parser.blockTimestamp},now(),now())
 	</insert>
 

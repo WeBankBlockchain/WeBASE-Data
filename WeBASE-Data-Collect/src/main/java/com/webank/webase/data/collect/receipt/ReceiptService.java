@@ -16,6 +16,7 @@ package com.webank.webase.data.collect.receipt;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
@@ -45,7 +46,8 @@ public class ReceiptService {
                 frontInterface.getTransReceipt(chainId, groupId, transHash);
         TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
                 transReceipt.getContractAddress(), transReceipt.getStatus(),
-                transReceipt.getOutput(), transReceipt.getBlockNumber());
+                transReceipt.getInput(), transReceipt.getOutput(),
+                JacksonUtils.objToString(transReceipt.getLogs()), transReceipt.getBlockNumber());
         addReceiptInfo(chainId, groupId, tbReceipt);
         return tbReceipt;
     }

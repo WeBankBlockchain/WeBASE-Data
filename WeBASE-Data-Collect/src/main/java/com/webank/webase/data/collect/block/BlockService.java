@@ -88,12 +88,12 @@ public class BlockService {
         for (TransactionResult result : transList) {
             // save trans
             Transaction trans = (Transaction) result.get();
-            TbTransaction tbTransaction =
-                    new TbTransaction(trans.getHash(), trans.getFrom(), trans.getTo(),
-                            trans.getInput(), trans.getBlockNumber(), tbBlock.getBlockTimestamp());
+            TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getFrom(),
+                    trans.getTo(), trans.getBlockNumber(), tbBlock.getBlockTimestamp());
             transactionService.addTransInfo(chainId, groupId, tbTransaction);
             // save receipt
-            TbReceipt tbReceipt = receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
+            TbReceipt tbReceipt =
+                    receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
             // parserTransaction
             parserService.parserTransaction(chainId, groupId, tbTransaction, tbReceipt);
             try {

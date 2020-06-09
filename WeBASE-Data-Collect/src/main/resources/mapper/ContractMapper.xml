@@ -164,8 +164,7 @@
 	</select>
 
 	<select id="queryContractByBin" resultMap="contractMap">
-		select * from
-		tb_contract
+		select * from tb_contract
 		where chain_id = #{chainId}
 		and group_id = #{groupId}
 		and contract_bin like CONCAT(#{contractBin},'%')

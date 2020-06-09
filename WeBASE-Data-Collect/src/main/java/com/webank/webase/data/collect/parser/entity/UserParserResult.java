@@ -21,6 +21,7 @@ import lombok.Data;
 @Data
 public class UserParserResult implements Cloneable {
     private String userName;
+    private String userAddress;
     private Integer userType;
 }
 

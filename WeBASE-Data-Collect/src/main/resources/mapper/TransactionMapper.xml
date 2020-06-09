@@ -14,8 +14,6 @@
 			jdbcType="VARCHAR" property="transFrom" />
 		<result column="trans_to" javaType="java.lang.String" jdbcType="VARCHAR"
 			property="transTo" />
-		<result column="input" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="input" />
 		<result column="block_number" javaType="java.math.BigInteger"
 			jdbcType="INTEGER" property="blockNumber" />
 		<result column="block_timestamp" javaType="java.time.LocalDateTime"
@@ -31,8 +29,8 @@
 
 	<insert id="add">
 		insert ignore into
-		${tableName}(trans_hash,trans_from,trans_to,input,block_number,block_timestamp,create_time,modify_time)
-		values(#{trans.transHash},#{trans.transFrom},#{trans.transTo},#{trans.input},#{trans.blockNumber},#{trans.blockTimestamp},NOW(),NOW())
+		${tableName}(trans_hash,trans_from,trans_to,block_number,block_timestamp,create_time,modify_time)
+		values(#{trans.transHash},#{trans.transFrom},#{trans.transTo},#{trans.blockNumber},#{trans.blockTimestamp},NOW(),NOW())
 	</insert>
 
 

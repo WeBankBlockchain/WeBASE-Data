@@ -14,8 +14,12 @@
 			jdbcType="VARCHAR" property="contractAddress" />
 		<result column="status" javaType="java.lang.String" jdbcType="VARCHAR"
 			property="status" />
+		<result column="input" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="input" />
 		<result column="output" javaType="java.lang.String" jdbcType="VARCHAR"
 			property="output" />
+		<result column="logs" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="logs" />
 		<result column="block_number" javaType="java.math.BigInteger"
 			jdbcType="INTEGER" property="blockNumber" />
 		<result column="create_time" javaType="java.time.LocalDateTime"
@@ -26,8 +30,8 @@
 
 	<insert id="add">
 		insert ignore into
-		${tableName}(trans_hash,contract_address,status,output,block_number,create_time,modify_time)
-		values(#{trans.transHash},#{trans.contractAddress},#{trans.status},#{trans.output},#{trans.blockNumber},NOW(),NOW())
+		${tableName}(trans_hash,contract_address,status,input,output,logs,block_number,create_time,modify_time)
+		values(#{trans.transHash},#{trans.contractAddress},#{trans.status},#{trans.input},#{trans.output},#{trans.logs},#{trans.blockNumber},NOW(),NOW())
 	</insert>
 
 	<select id="getCount"

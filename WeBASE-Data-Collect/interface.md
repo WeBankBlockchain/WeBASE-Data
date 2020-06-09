@@ -27,7 +27,7 @@
 ***2）入参示例***
 
 ```
-http://localhost:5005/WeBASE-Data-Collect/chain/new
+http://localhost:5009/WeBASE-Data-Collect/chain/new
 ```
 
 ```
@@ -102,7 +102,7 @@ http://localhost:5005/WeBASE-Data-Collect/chain/new
 ***2）入参示例***
 
 ```
-http://localhost:5005/WeBASE-Data-Collect/chain/all
+http://localhost:5009/WeBASE-Data-Collect/chain/all
 ```
 
 #### 1.2.3 返回参数 
@@ -176,7 +176,7 @@ http://localhost:5005/WeBASE-Data-Collect/chain/all
 ***2）入参示例***
 
 ```
-http://localhost:5005/WeBASE-Data-Collect/chain/1
+http://localhost:5009/WeBASE-Data-Collect/chain/1
 ```
 
 #### 1.3.3 返回参数 
@@ -797,12 +797,11 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/list/1/1/1/2?transHash=0x4
 | 4.1.1 | transHash       | String        | 否     | 交易hash                   |
 | 4.1.2 | transFrom | String     | 否     | 发送方              |
 | 4.1.3 | transTo | String | 否 | 接收方 |
-| 4.1.4 | input | String | 否 | 输入信息 |
-| 4.1.5 | blockNumber     | BigInteger    | 否     | 所属块高                   |
-| 4.1.6 | blockTimestamp | LocalDateTime | 否 | 所属块出块时间 |
-| 4.1.7 | auditFlag | Int           | 否     | 是否已统计（1-未审计，2-已审计） |
-| 4.1.8 | createTime      | LocalDateTime | 否     | 落库时间                   |
-| 4.1.9 | modifyTime      | LocalDateTime | 否     | 修改时间                   |
+| 4.1.4 | blockNumber     | BigInteger    | 否     | 所属块高                   |
+| 4.1.5 | blockTimestamp | LocalDateTime | 否 | 所属块出块时间 |
+| 4.1.6 | auditFlag | Int           | 否     | 是否已统计（1-未审计，2-已审计） |
+| 4.1.7 | createTime      | LocalDateTime | 否     | 落库时间                   |
+| 4.1.8 | modifyTime      | LocalDateTime | 否     | 修改时间                   |
 
 
 ***2）出参示例***
@@ -817,7 +816,6 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/list/1/1/1/2?transHash=0x4
       "transHash": "0x4933b1e0a7d6913a2179b879cdf716096d8da1c162fe400a492b0d61259e2ab2",
       "transFrom": "0x95824169cf64b29a9bcd5036fe0fa78ca0ecaa6f",
       "transTo": "0xd221da074ac2f34d6b453d3d456576c45e3f0843",
-      "input": "0x3590b49f000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000047465737400000000000000000000000000000000000000000000000000000000",
       "blockNumber": 35,
       "blockTimestamp": "2020-05-13 19:47:37",
       "auditFlag": 1,
@@ -976,9 +974,10 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/receipt/1/1/0x4933b1e0a7d6
 | 3.7 | status      | String | 否     | 交易的状态值                   |
 | 3.8 | from      | String | 否     | 交易发起者                   |
 | 3.9 | to      | String | 否     | 交易目标                   |
-| 3.10 | output      | String | 否     | 交易输出内容                   |
-| 3.11 | logs      | String | 否     | 日志                   |
-| 3.12 | logsBloom      | String | 否     | log的布隆过滤值                   |
+| 3.10 | input | String | 否 | 交易输入信息 |
+| 3.11 | output      | String | 否     | 交易输出内容                   |
+| 3.12 | logs      | String | 否     | 日志                   |
+| 3.13 | logsBloom      | String | 否     | log的布隆过滤值                   |
 
 
 ***2）出参示例***
@@ -998,6 +997,7 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/receipt/1/1/0x4933b1e0a7d6
     "status": "0x0",
     "from": "0x95824169cf64b29a9bcd5036fe0fa78ca0ecaa6f",
     "to": "0xd221da074ac2f34d6b453d3d456576c45e3f0843",
+    "input": "0x608060405234801561001057600080fd5b50610373806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680634ed3885e146100515780636d4ce63c146100ba575b600080fd5b34801561005d57600080fd5b506100b8600480360381019080803590602001908201803590602001908080601f016020809104026020016040519081016040528093929190818152602001838380828437820191505050505050919291929050505061014a565b005b3480156100c657600080fd5b506100cf610200565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561010f5780820151818401526020810190506100f4565b50505050905090810190601f16801561013c5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b7f4df9dcd34ae35f40f2c756fd8ac83210ed0b76d065543ee73d868aec7c7fcf02816040518080602001828103825283818151815260200191508051906020019080838360005b838110156101ac578082015181840152602081019050610191565b50505050905090810190601f1680156101d95780820380516001836020036101000a031916815260200191505b509250505060405180910390a180600090805190602001906101fc9291906102a2565b5050565b606060008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156102985780601f1061026d57610100808354040283529160200191610298565b820191906000526020600020905b81548152906001019060200180831161027b57829003601f168201915b5050505050905090565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106102e357805160ff1916838001178555610311565b82800160010185558215610311579182015b828111156103105782518255916020019190600101906102f5565b5b50905061031e9190610322565b5090565b61034491905b80821115610340576000816000905550600101610328565b5090565b905600a165627a7a72305820baa9e2a7ab055843a8a3de62b50fba49e6309323fb92358b598491fa5a76b9e90029",
     "output": "0x",
     "logs": [
       {
@@ -1270,7 +1270,7 @@ http://localhost:5009/WeBASE-Data-Collect/user/1
 ***2）入参示例***
 
 ```
-http://localhost:5005/WeBASE-Data-Collect/contract/save
+http://localhost:5009/WeBASE-Data-Collect/contract/save
 ```
 
 ```
@@ -1369,7 +1369,7 @@ http://localhost:5005/WeBASE-Data-Collect/contract/save
 ***2）入参示例***
 
 ```
-http://localhost:5005/WeBASE-Data-Collect/contract/list
+http://localhost:5009/WeBASE-Data-Collect/contract/list
 ```
 
 ```
@@ -1528,7 +1528,7 @@ http://localhost:5009/WeBASE-Data-Collect/contract/1
 ***2）入参示例***
 
 ```
-http://127.0.0.1:5005/WeBASE-Chain-Manager/contract/addMethod
+http://127.0.0.1:5009/WeBASE-Data-Collect/contract/addMethod
 ```
 
 ```

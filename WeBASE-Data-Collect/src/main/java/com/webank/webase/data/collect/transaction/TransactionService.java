@@ -183,7 +183,7 @@ public class TransactionService {
                 transInBlock.stream().forEach(result -> {
                     Transaction tran = (Transaction) result.get();
                     TbTransaction tbTransaction = new TbTransaction(tran.getHash(), tran.getFrom(),
-                            tran.getTo(), tran.getInput(), tran.getBlockNumber(), null);
+                            tran.getTo(), tran.getBlockNumber(), null);
                     transList.add(tbTransaction);
                 });
             }
@@ -201,7 +201,7 @@ public class TransactionService {
         TbTransaction tbTransaction = null;
         if (trans != null) {
             tbTransaction = new TbTransaction(transHash, trans.getFrom(), trans.getTo(),
-                    trans.getInput(), trans.getBlockNumber(), null);
+                    trans.getBlockNumber(), null);
         }
         return tbTransaction;
     }

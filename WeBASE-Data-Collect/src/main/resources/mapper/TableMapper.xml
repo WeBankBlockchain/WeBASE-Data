@@ -101,11 +101,11 @@
 		CREATE TABLE IF NOT EXISTS tb_method (
 		id int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
 		contract_id int(11) NOT NULL COMMENT '所属合约编号',
+		contract_name varchar(120) binary NOT NULL COMMENT '合约名称',
 		chain_id int(11) NOT NULL COMMENT '所属区块链编号',
 	    group_id int(11) NOT NULL COMMENT '所属群组编号',
 		method_id varchar(128) COMMENT '方法id',
 		method_name varchar(128) COMMENT '方法名',
-		abi_info text COMMENT 'abi信息',
 		method_type varchar(32) COMMENT '方法类型',
 		create_time datetime DEFAULT NULL COMMENT '创建时间',
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
@@ -153,7 +153,6 @@
 		block_number bigint(25) NOT NULL COMMENT '所属区块',
 		trans_from varchar(64) DEFAULT NULL COMMENT 'from',
 		trans_to varchar(64) DEFAULT NULL COMMENT 'to',
-		input text DEFAULT NULL COMMENT '输入信息',
 		block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
 		audit_flag tinyint(4) DEFAULT '1' COMMENT '是否已统计（1-未审计，2-已审计）',
 		create_time datetime DEFAULT NULL COMMENT '创建时间',
@@ -172,7 +171,9 @@
 		contract_address varchar(128) NOT NULL COMMENT '合约地址',
 		block_number bigint(25) NOT NULL COMMENT '所属区块',
 		status varchar(8) COMMENT '交易状态',
+		input text COMMENT '输入信息',
 		output text COMMENT '输出信息',
+		logs text COMMENT '日志信息',
 		create_time datetime DEFAULT NULL COMMENT '创建时间',
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
@@ -187,6 +188,7 @@
 		trans_hash varchar(128) COMMENT '交易hash',
 		block_number bigint(25) NOT NULL COMMENT '所属区块',
 		user_name varchar(128) NOT NULL COMMENT '用户名称',
+		user_address varchar(64) NOT NULL COMMENT '用户地址',
 		user_type tinyint(4) DEFAULT '0' COMMENT '用户类型(0-正常，1-异常)',
 		contract_name varchar(128) NOT NULL COMMENT '合约名称',
 		contract_address varchar(64) COMMENT '合约地址',
@@ -195,12 +197,13 @@
 		trans_unusual_type tinyint(4) DEFAULT '0' COMMENT '交易异常类型(0-正常，1-异常合约，2-异常接口)',
 		input text COMMENT '输入信息',
 		output text COMMENT '输出信息',
+		logs text COMMENT '日志信息',
 		block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
 		create_time datetime DEFAULT NULL COMMENT '创建时间',
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
-		INDEX idx_un (user_name),
-		INDEX idx_cn (contract_name)
+		INDEX idx_ua (user_address),
+		INDEX idx_ca (contract_address)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易解析信息表';
 	</update>
 

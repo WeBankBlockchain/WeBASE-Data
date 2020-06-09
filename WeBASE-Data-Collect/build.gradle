@@ -49,11 +49,12 @@ List swagger = [
     'io.springfox:springfox-swagger-ui:2.8.0'
 ]
 
+def jackson_version="2.11.0"
 List jackson = [
-    "com.fasterxml.jackson.core:jackson-databind:2.10.0",
-    "com.fasterxml.jackson.module:jackson-module-parameter-names:2.10.0",
-    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.0",
-    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.0"
+    "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
+    "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson_version",
+    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson_version",
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
 ]
 
 List mysql = [
@@ -90,7 +91,7 @@ configurations {
     all*.exclude group: 'com.google.protobuf', module: 'protobuf-java'
     all*.exclude group: 'javax.annotation', module: 'javax.annotation-api'
     all*.exclude group: 'org.ethereum'
-    all*.exclude group: 'com.alibaba', module: 'fastjson'
+    //all*.exclude group: 'com.alibaba', module: 'fastjson'
 }
 
 sourceSets {

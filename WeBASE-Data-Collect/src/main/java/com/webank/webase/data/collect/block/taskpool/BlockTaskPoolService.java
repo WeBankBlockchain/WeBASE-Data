@@ -141,6 +141,7 @@ public class BlockTaskPoolService {
 
     public void process(int chainId, int groupId, Block b, long total) {
         try {
+            log.info("process chainId:{} groupId:{} number:{}.", chainId, groupId, b.getNumber());
             blockService.saveBlockInfo(b, chainId, groupId);
             taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(chainId, groupId),
                     TxInfoStatusEnum.DONE.getStatus(), b.getNumber().longValue());
