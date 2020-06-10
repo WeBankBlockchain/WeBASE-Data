@@ -376,16 +376,16 @@ http://localhost:5009/WeBASE-Data-Collect/front/list
 ```
 
 
-### 1.3 删除前置信息
+### 2.3 删除前置信息
 
-#### 1.3.1 传输协议规范
+#### 2.3.1 传输协议规范
 * 网络传输协议：使用HTTP协议
 * 请求地址：**/front/{frontId}**
 * 请求方式：DELETE
 * 请求头：Content-type: application/json
 * 返回格式：JSON
 
-#### 1.3.2 请求参数
+#### 2.3.2 请求参数
 
 ***1）入参表***
 
@@ -401,7 +401,7 @@ http://localhost:5009/WeBASE-Data-Collect/front/1
 ```
 
 
-#### 1.3.3 返回参数 
+#### 2.3.3 返回参数 
 
 ***1）出参表***
 
@@ -536,7 +536,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 | 序号 | 输入参数    | 类型       | 可为空 | 备注       |
 | ---- | ----------- | ---------- | ------ | ---------- |
 | 1    | chainId     | Int        | 否     | 链编号     |
-| 2    | groupId     | Int        | 否     | 当前所属链 |
+| 2    | groupId     | Int        | 否     | 群组编号   |
 | 3    | pageSize    | Int        | 否     | 每页记录数 |
 | 4    | pageNumber  | Int        | 否     | 当前页码   |
 | 5    | blockHash   | String     | 是     | 区块hash   |
@@ -629,13 +629,14 @@ http://localhost:5009/WeBASE-Data-Collect/block/list/1/1/1/2?blockHash=
 
 | 序号 | 输入参数    | 类型       | 可为空 | 备注     |
 | ---- | ----------- | ---------- | ------ | -------- |
-| 1    | groupId     | Int        | 否     | 群组编号 |
-| 2    | blockNumber | BigInteger | 是     | 块高     |
+| 1    | chainId     | Int        | 否     | 链编号   |
+| 2    | groupId     | Int        | 否     | 群组编号 |
+| 3    | blockNumber | BigInteger | 是     | 块高     |
 
 ***2）入参示例***
 
 ```
-http://localhost:5009/WeBASE-Data-Collect/block/blockByNumber/1/1
+http://localhost:5009/WeBASE-Data-Collect/block/blockByNumber/1/1/1
 ```
 
 #### 4.2.3 返回参数 
@@ -769,7 +770,7 @@ http://localhost:5009/WeBASE-Data-Collect/block/blockByNumber/1/1
 | 序号 | 输入参数    | 类型          | 可为空 | 备注                                       |
 |------|-------------|---------------|--------|-------------------------------|
 | 1 | chainId | Int | 否 | 链编号 |
-| 2     | groupId         | Int           | 否     | 所属群组编号               |
+| 2     | groupId         | Int           | 否     | 群组编号               |
 | 3 | pageNumber | Int | 否 | 当前页码 |
 | 4 | pageSize | Int | 否 | 每页记录数 |
 | 5     | transHash   | String        | 是     | 交易hash                   |
@@ -851,11 +852,11 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/list/1/1/1/2?transHash=0x4
 
 ***1）入参表***
 
-| 序号 | 输入参数  | 类型   | 可为空 | 备注         |
-| ---- | --------- | ------ | ------ | ------------ |
-| 1    | chainId   | Int    | 否     | 链编号       |
-| 2    | groupId   | Int    | 否     | 所属群组编号 |
-| 3    | transHash | String | 是     | 交易hash     |
+| 序号 | 输入参数  | 类型   | 可为空 | 备注     |
+| ---- | --------- | ------ | ------ | -------- |
+| 1    | chainId   | Int    | 否     | 链编号   |
+| 2    | groupId   | Int    | 否     | 群组编号 |
+| 3    | transHash | String | 是     | 交易hash |
 
 ***2）入参示例***
 
@@ -1045,9 +1046,11 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/receipt/1/1/0x4933b1e0a7d6
 
 | 序号 | 输入参数    | 类型   | 可为空 | 备注     |
 | ---- | ----------- | ------ | ------ | -------- |
-| 1    | userName    | string | 否     | 用户名   |
-| 2    | address     | string | 否     | 用户地址 |
-| 3    | description | int    | 否     | 描述     |
+| 1    | chainId     | Int    | 否     | 链编号   |
+| 2    | groupId     | Int    | 否     | 群组编号 |
+| 3    | userName    | string | 否     | 用户名   |
+| 4    | address     | string | 否     | 用户地址 |
+| 5    | description | int    | 否     | 描述     |
 
 ***2）入参示例***
 
@@ -1058,7 +1061,9 @@ http://localhost:5009/WeBASE-Data-Collect/user/add
 ```
 {
   "address": "0x056a6b8bd27e861773ec2419a871ff245291a2d6",
-  "description": "test",
+  "chainId": 1,
+  "description": "string",
+  "groupId": 1,
   "userName": "alice"
 }
 ```
@@ -1073,6 +1078,8 @@ http://localhost:5009/WeBASE-Data-Collect/user/add
 | 2    | message     | String        | 否     | 描述                       |
 | 3    |             | Object        |        | 节点信息对象               |
 | 3.1  | userId      | Int           | 否     | 用户编号                   |
+| 3.2  | chainId     | Int           | 否     | 链编号                     |
+| 3.3  | groupId     | Int           | 否     | 群组编号                   |
 | 3.2  | userName    | string        | 否     | 用户名                     |
 | 3.3  | address     | string        | 否     | 用户地址                   |
 | 3.4  | description | string        | 否     | 描述                       |
@@ -1089,6 +1096,8 @@ http://localhost:5009/WeBASE-Data-Collect/user/add
   "message": "success",
   "data": {
     "userId": 1,
+    "chainId": 1,
+    "groupId": 1,
     "userName": "alice",
     "address": "0x056a6b8bd27e861773ec2419a871ff245291a2d6",
     "description": "test",
@@ -1113,7 +1122,7 @@ http://localhost:5009/WeBASE-Data-Collect/user/add
 #### 6.2.1 传输协议规范
 
 - 网络传输协议：使用HTTP协议
-- 请求地址：**/user/list/{pageNumber}/{pageSize}?userParam={userParam}**
+- 请求地址：**/user/list/{pageNumber}/{pageSize}?chainId={chainId}&groupId={groupId}&userParam={userParam}**
 - 请求方式：GET
 - 返回格式：JSON
 
@@ -1125,7 +1134,9 @@ http://localhost:5009/WeBASE-Data-Collect/user/add
 | ---- | ---------- | ------ | ------ | ------------------ |
 | 1    | pageNumber | Int    | 否     | 当前页码           |
 | 2    | pageSize   | Int    | 否     | 每页记录数         |
-| 3    | userParam  | String | 是     | 参数，用户名或地址 |
+| 3    | chainId    | Int    | 否     | 链编号             |
+| 4    | groupId    | Int    | 否     | 群组编号           |
+| 5    | userParam  | String | 是     | 参数，用户名或地址 |
 
 ***2）入参示例***
 
@@ -1145,11 +1156,13 @@ http://localhost:5009/WeBASE-Data-Collect/user/list/1/2
 | 4     | data        | List          | 否   | 列表                       |
 | 4.1   |             | Object        |      | 对象                       |
 | 4.1.1 | userId      | Int           | 否   | 用户编号                   |
-| 4.1.2 | userName    | string        | 否   | 用户名                     |
-| 4.1.3 | address     | string        | 否   | 用户地址                   |
-| 4.1.4 | description | string        | 否   | 描述                       |
-| 4.1.5 | createTime  | LocalDateTime | 否   | 落库时间                   |
-| 4.1.6 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
+| 4.1.2 | chainId     | Int           | 否   | 链编号                     |
+| 4.1.3 | groupId     | Int           | 否   | 群组编号                   |
+| 4.1.4 | userName    | string        | 否   | 用户名                     |
+| 4.1.5 | address     | string        | 否   | 用户地址                   |
+| 4.1.6 | description | string        | 否   | 描述                       |
+| 4.1.7 | createTime  | LocalDateTime | 否   | 落库时间                   |
+| 4.1.8 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
 
 ***2）出参示例***
 
@@ -1162,6 +1175,8 @@ http://localhost:5009/WeBASE-Data-Collect/user/list/1/2
   "data": [
     {
       "userId": 1,
+      "chainId": 1,
+      "groupId": 1,
       "userName": "alice",
       "address": "0x056a6b8bd27e861773ec2419a871ff245291a2d6",
       "description": "test",
@@ -1258,7 +1273,7 @@ http://localhost:5009/WeBASE-Data-Collect/user/1
 | 序号 | 输入参数       | 类型   | 可为空 | 备注                                       |
 | ---- | -------------- | ------ | ------ | ------------------------------------------ |
 | 1    | chainId        | Int    | 否     | 链编号                                     |
-| 2    | groupId        | Int    | 否     | 所属群组编号                               |
+| 2    | groupId        | Int    | 否     | 群组编号                                   |
 | 3    | contractName   | String | 否     | 合约名称                                   |
 | 4    | contractSource | String | 是     | 合约源码，Base64编码                       |
 | 5    | contractAbi    | String | 是     | 编译合约生成的abi文件内容                  |
@@ -1299,7 +1314,7 @@ http://localhost:5009/WeBASE-Data-Collect/contract/save
 | 3.2  | contractPath   | String        | 否   | 合约所在目录                            |
 | 3.3  | contractName   | String        | 否   | 合约名称                                |
 | 3.4  | chainId        | Int           | 否   | 链编号                                  |
-| 3.5  | groupId        | Int           | 否   | 所属群组编号                            |
+| 3.5  | groupId        | Int           | 否   | 群组编号                                |
 | 3.6  | contractType   | Int           | 否   | 合约类型(0-普通合约，1-系统合约，默认0) |
 | 3.7  | contractSource | String        | 否   | 合约源码                                |
 | 3.8  | contractAbi    | String        | 是   | 编译合约生成的abi文件内容               |
@@ -1396,7 +1411,7 @@ http://localhost:5009/WeBASE-Data-Collect/contract/list
 | 5.1.2  | contractPath   | String        | 否   | 合约所在目录                      |
 | 5.1.3  | contractName   | String        | 否   | 合约名称                          |
 | 5.1.4  | chainId        | int           | 否   | 链编号                            |
-| 5.1.5  | groupId        | Int           | 否   | 所属群组编号                      |
+| 5.1.5  | groupId        | Int           | 否   | 群组编号                          |
 | 5.1.6  | contractType   | Int           | 否   | 合约类型(0-普通合约，1-系统合约)  |
 | 5.1.7  | contractSource | String        | 否   | 合约源码                          |
 | 5.1.8  | contractAbi    | String        | 是   | 编译合约生成的abi文件内容         |
@@ -1459,9 +1474,9 @@ http://localhost:5009/WeBASE-Data-Collect/contract/list
 
 ***1）入参表***
 
-| 序号 | 输入参数 | 类型 | 可为空 | 备注     |
-| ---- | -------- | ---- | ------ | -------- |
-| 1    | contract | int  | 否     | 合约编号 |
+| 序号 | 输入参数   | 类型 | 可为空 | 备注     |
+| ---- | ---------- | ---- | ------ | -------- |
+| 1    | contractId | int  | 否     | 合约编号 |
 
 ***2）入参示例***
 
@@ -1515,15 +1530,14 @@ http://localhost:5009/WeBASE-Data-Collect/contract/1
 
 ***1）入参表***
 
-| 序号  | 输入参数   | 类型   | 可为空 | 备注        |
-| ----- | ---------- | ------ | ------ | ----------- |
-| 1     | contractId | Int    | 否     | 合约编号    |
-| 2     | methodList | List   | 否     | 方法列表    |
-| 2.1   |            | Object | 否     | 方法实体    |
-| 2.1.1 | methodId   | String | 否     | 方法编号    |
-| 2.1.2 | methodName | String | 否     | 方法名      |
-| 2.1.3 | abiInfo    | String | 否     | 方法abi信息 |
-| 2.1.4 | methodType | String | 否     | 方法类型    |
+| 序号  | 输入参数   | 类型   | 可为空 | 备注     |
+| ----- | ---------- | ------ | ------ | -------- |
+| 1     | contractId | Int    | 否     | 合约编号 |
+| 2     | methodList | List   | 否     | 方法列表 |
+| 2.1   |            | Object | 否     | 方法实体 |
+| 2.1.1 | methodId   | String | 否     | 方法编号 |
+| 2.1.2 | methodName | String | 否     | 方法名   |
+| 2.1.4 | methodType | String | 否     | 方法类型 |
 
 ***2）入参示例***
 
@@ -1536,13 +1550,11 @@ http://127.0.0.1:5009/WeBASE-Data-Collect/contract/addMethod
   "contractId": 2,
   "methodList": [
     {
-      "abiInfo": "{\"constant\":false,\"inputs\":[{\"name\":\"n\",\"type\":\"string\"}],\"name\":\"set\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}",
       "methodId": "0x3590b49f",
       "methodName": "set",
       "methodType": "function"
     }，
     {
-      "abiInfo": "{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}",
       "methodId": "0x9bd13510",
       "methodName": "get",
       "methodType": "function"
@@ -1582,5 +1594,3 @@ http://127.0.0.1:5009/WeBASE-Data-Collect/contract/addMethod
     "data": {}
 }
 ```
-
-### 

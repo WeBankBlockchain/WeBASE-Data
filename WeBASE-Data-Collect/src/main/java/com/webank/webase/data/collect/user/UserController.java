@@ -72,6 +72,8 @@ public class UserController extends BaseController {
     @GetMapping(value = "/list/{pageNumber}/{pageSize}")
     public BasePageResponse userList(@PathVariable("pageNumber") Integer pageNumber,
             @PathVariable("pageSize") Integer pageSize,
+            @RequestParam(value = "chainId", required = false) Integer chainId,
+            @RequestParam(value = "groupId", required = false) Integer groupId,
             @RequestParam(value = "userParam", required = false) String userParam)
             throws BaseException {
         log.info("start userList.");
@@ -79,6 +81,8 @@ public class UserController extends BaseController {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
 
         UserParam param = new UserParam();
+        param.setChainId(chainId);
+        param.setGroupId(groupId);
         param.setUserParam(userParam);
         Integer count = userService.countOfUser(param);
         if (count != null && count > 0) {
@@ -93,7 +97,7 @@ public class UserController extends BaseController {
         log.info("end userList useTime:{}", Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }
-    
+
     /**
      * delete by userId
      */

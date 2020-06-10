@@ -62,6 +62,12 @@
 		<if test="userId != null and userId != ''">
 			and user_id = #{userId}
 		</if>
+		<if test="chainId != null and chainId != ''">
+			and chain_id = #{chainId}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			and group_id = #{groupId}
+		</if>
 		<if test="userParam != null and userParam != ''">
 			and user_name like CONCAT(#{userParam},'%')
 			or address like CONCAT(#{userParam},'%')
@@ -75,6 +81,12 @@
 		<if test="userId != null and userId != ''">
 			and user_id = #{userId}
 		</if>
+		<if test="chainId != null and chainId != ''">
+			and chain_id = #{chainId}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			and group_id = #{groupId}
+		</if>
 		<if test="userParam != null and userParam != ''">
 			and user_name like CONCAT(#{userParam},'%')
 			or address like CONCAT(#{userParam},'%')
@@ -86,8 +98,7 @@
 	</select>
 
 	<delete id="deleteByUserId" parameterType="java.lang.Integer">
-		delete from tb_user
-		where user_id = #{userId}
+		delete from tb_user where user_id = #{userId}
 	</delete>
 
 </mapper>

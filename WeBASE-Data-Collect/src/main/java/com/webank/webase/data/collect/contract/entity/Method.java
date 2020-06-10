@@ -28,7 +28,5 @@ public class Method {
     @NotBlank
     private String methodName;
     @NotBlank
-    private String abiInfo;
-    @NotBlank
     private String methodType;
 }

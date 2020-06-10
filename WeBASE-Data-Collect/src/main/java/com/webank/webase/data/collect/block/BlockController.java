@@ -45,8 +45,7 @@ public class BlockController {
      * query block list.
      */
     @GetMapping(value = "/list/{chainId}/{groupId}/{pageNumber}/{pageSize}")
-    public BasePageResponse queryBlockList(
-            @RequestParam(value = "chainId", required = false) Integer chainId,
+    public BasePageResponse queryBlockList(@PathVariable("chainId") Integer chainId,
             @PathVariable("groupId") Integer groupId,
             @PathVariable("pageNumber") Integer pageNumber,
             @PathVariable("pageSize") Integer pageSize,
@@ -76,8 +75,7 @@ public class BlockController {
      * get block by number.
      */
     @GetMapping("/blockByNumber/{chainId}/{groupId}/{blockNumber}")
-    public BaseResponse getBlockByNumber(
-            @RequestParam(value = "chainId", required = false) Integer chainId,
+    public BaseResponse getBlockByNumber(@PathVariable("chainId") Integer chainId,
             @PathVariable("groupId") Integer groupId,
             @PathVariable("blockNumber") BigInteger blockNumber) throws BaseException {
         Instant startTime = Instant.now();

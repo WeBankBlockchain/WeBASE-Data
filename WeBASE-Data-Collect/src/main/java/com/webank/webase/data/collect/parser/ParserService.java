@@ -32,8 +32,6 @@ import com.webank.webase.data.collect.contract.entity.ContractParam;
 import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
-import com.webank.webase.data.collect.group.GroupService;
-import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.parser.entity.ContractParserResult;
 import com.webank.webase.data.collect.parser.entity.PageTransInfo;
 import com.webank.webase.data.collect.parser.entity.ResetInfo;
@@ -71,8 +69,6 @@ public class ParserService {
 
     @Autowired
     private ChainService chainService;
-    @Autowired
-    private GroupService groupService;
     @Autowired
     private ParserMapper parserMapper;
     @Lazy
