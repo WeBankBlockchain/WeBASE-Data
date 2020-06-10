@@ -193,6 +193,14 @@ public class TransactionService {
 
 
     /**
+     * getTbTransByHash.
+     */
+    public TbTransaction getTbTransByHash(int chainId, Integer groupId, String transHash) {
+        return transactionMapper.getByHash(TableName.TRANS.getTableName(chainId, groupId),
+                transHash);
+    }
+
+    /**
      * request front for transaction by hash.
      */
     public TbTransaction getTbTransFromFrontByHash(int chainId, Integer groupId, String transHash)

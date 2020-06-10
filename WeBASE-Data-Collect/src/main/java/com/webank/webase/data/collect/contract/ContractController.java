@@ -69,7 +69,6 @@ public class ContractController extends BaseController {
         return baseResponse;
     }
 
-
     /**
      * delete contract by id.
      */
@@ -79,8 +78,10 @@ public class ContractController extends BaseController {
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start deleteContract.contractId:{}", contractId);
-
-        contractService.deleteContract(contractId);
+        // delete contract
+        contractService.deleteByContractId(contractId);
+        // delete contract methods
+        methodService.removeByContractId(contractId);
 
         log.info("end deleteContract useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
@@ -129,7 +130,7 @@ public class ContractController extends BaseController {
         Instant startTime = Instant.now();
         log.info("start addMethod.");
         methodService.saveMethod(newMethodInput);
-        log.info("end addMethod. useTime:{} result:{}",
+        log.info("end addMethod. useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
     }

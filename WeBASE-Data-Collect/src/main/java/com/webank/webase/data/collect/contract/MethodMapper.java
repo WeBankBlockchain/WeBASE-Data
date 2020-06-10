@@ -23,6 +23,8 @@ import org.springframework.stereotype.Repository;
 public interface MethodMapper {
 
     void add(TbMethod tbMethod);
+    
+    void removeByContractId(@Param("contractId") Integer contractId);
 
     void removeByChainIdAndGroupId(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId);
 

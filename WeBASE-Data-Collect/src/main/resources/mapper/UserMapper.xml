@@ -8,6 +8,10 @@
 		type="com.webank.webase.data.collect.user.entity.TbUser">
 		<id column="user_id" javaType="java.lang.Integer" jdbcType="INTEGER"
 			property="userId" />
+		<result column="chain_id" javaType="java.lang.Integer"
+			jdbcType="INTEGER" property="chainId" />
+		<result column="group_id" javaType="java.lang.Integer"
+			jdbcType="INTEGER" property="groupId" />
 		<result column="user_name" javaType="java.lang.String"
 			jdbcType="VARCHAR" property="userName" />
 		<result column="address" javaType="java.lang.String" jdbcType="VARCHAR"
@@ -22,8 +26,8 @@
 
 	<insert id="addUserRow" parameterType="com.webank.webase.data.collect.user.entity.TbUser">
 		insert into
-		tb_user(user_name,address,description,create_time,modify_time)
-		values(#{userName},#{address},#{description},NOW(),NOW())
+		tb_user(chain_id,group_id,user_name,address,description,create_time,modify_time)
+		values(#{chainId},#{groupId},#{userName},#{address},#{description},NOW(),NOW())
 		<selectKey keyProperty="userId" order="AFTER" resultType="java.lang.Integer">
 			SELECT LAST_INSERT_ID()
 		</selectKey>
@@ -33,8 +37,14 @@
 		parameterType="com.webank.webase.data.collect.user.entity.UserParam"
 		resultMap="userMap">
 		select * from tb_user where 1=1
-		<if test="userId != null">
+		<if test="userId != null and userId != ''">
 			and user_id = #{userId}
+		</if>
+		<if test="chainId != null and chainId != ''">
+			and chain_id = #{chainId}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			and group_id = #{groupId}
 		</if>
 		<if test="userName != null and userName != ''">
 			and user_name = #{userName}
@@ -49,7 +59,7 @@
 		parameterType="com.webank.webase.data.collect.user.entity.UserParam"
 		resultType="java.lang.Integer">
 		select count(1) from tb_user where 1=1
-		<if test="userId != null">
+		<if test="userId != null and userId != ''">
 			and user_id = #{userId}
 		</if>
 		<if test="userParam != null and userParam != ''">
@@ -62,7 +72,7 @@
 		parameterType="com.webank.webase.data.collect.user.entity.UserParam"
 		resultMap="userMap">
 		select * from tb_user where 1=1
-		<if test="userId != null">
+		<if test="userId != null and userId != ''">
 			and user_id = #{userId}
 		</if>
 		<if test="userParam != null and userParam != ''">

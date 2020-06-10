@@ -33,6 +33,11 @@
 		${tableName}(trans_hash,contract_address,status,input,output,logs,block_number,create_time,modify_time)
 		values(#{trans.transHash},#{trans.contractAddress},#{trans.status},#{trans.input},#{trans.output},#{trans.logs},#{trans.blockNumber},NOW(),NOW())
 	</insert>
+	
+	<select id="getByHash" resultMap="receiptMap">
+		select * from ${tableName}
+		where trans_hash = #{transHash}
+	</select>
 
 	<select id="getCount"
 		parameterType="com.webank.webase.data.collect.transaction.entity.TransListParam"

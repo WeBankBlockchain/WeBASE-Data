@@ -3,7 +3,6 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.webank.webase.data.collect.table.TableMapper">
-
 	<update id="createTbChain">
 		CREATE TABLE IF NOT EXISTS tb_chain (
 		id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
@@ -67,13 +66,15 @@
 	<update id="createTbUser">
 		CREATE TABLE IF NOT EXISTS tb_user (
 	    user_id int(11) NOT NULL AUTO_INCREMENT COMMENT '用户编号',
+	    chain_id int(11) NOT NULL COMMENT '所属区块链编号',
+	    group_id int(11) NOT NULL COMMENT '所属群组编号',
 	    user_name varchar(64) binary NOT NULL COMMENT '用户名',
 	    address varchar(64) DEFAULT NULL COMMENT '链上地址',
 	    description varchar(250) DEFAULT NULL COMMENT '备注',
 	    create_time datetime DEFAULT NULL COMMENT '创建时间',
 	    modify_time datetime DEFAULT NULL COMMENT '修改时间',
 	    PRIMARY KEY (user_id),
-	    UNIQUE KEY uk_address (address)
+	    UNIQUE KEY uk_address (chain_id,group_id,address)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息表';
 	</update>
 	
@@ -101,7 +102,6 @@
 		CREATE TABLE IF NOT EXISTS tb_method (
 		id int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
 		contract_id int(11) NOT NULL COMMENT '所属合约编号',
-		contract_name varchar(120) binary NOT NULL COMMENT '合约名称',
 		chain_id int(11) NOT NULL COMMENT '所属区块链编号',
 	    group_id int(11) NOT NULL COMMENT '所属群组编号',
 		method_id varchar(128) COMMENT '方法id',
@@ -125,7 +125,7 @@
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
 		UNIQUE KEY uk_number (block_number),
-		KEY index_status (sync_status)
+		KEY idx_status (sync_status)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块拉取任务信息表';
 	</update>
 
@@ -159,8 +159,8 @@
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
 		UNIQUE KEY uk_hash (trans_hash),
-		KEY index_flag (audit_flag),
-		KEY index_number (block_number)
+		KEY idx_flag (audit_flag),
+		KEY idx_number (block_number)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易信息表';
 	</update>
 
@@ -178,7 +178,7 @@
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
 		UNIQUE KEY uk_hash (trans_hash),
-		KEY index_number (block_number)
+		KEY idx_number (block_number)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易回执信息表';
 	</update>
 
@@ -202,8 +202,9 @@
 		create_time datetime DEFAULT NULL COMMENT '创建时间',
 		modify_time datetime DEFAULT NULL COMMENT '修改时间',
 		PRIMARY KEY (id),
-		INDEX idx_ua (user_address),
-		INDEX idx_ca (contract_address)
+		UNIQUE KEY uk_hash (trans_hash),
+		KEY idx_ua (user_address),
+		KEY idx_ca (contract_address)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易解析信息表';
 	</update>
 
@@ -216,13 +217,11 @@
 	</select>
 
 	<delete id="deleteByTableName" parameterType="java.lang.String">
-		delete from
-		${tableName} limit 1000
+		delete from ${tableName} limit 1000
 	</delete>
 
 	<update id="dropTable" parameterType="java.lang.String">
-		drop table if exists
-		${tableName}
+		drop table if exists ${tableName}
 	</update>
 
 </mapper>

@@ -20,6 +20,7 @@ import lombok.Data;
  */
 @Data
 public class ContractParserResult {
+    private String transHash;
     private String contractName;
     private String contractAddress;
     private String interfaceName;

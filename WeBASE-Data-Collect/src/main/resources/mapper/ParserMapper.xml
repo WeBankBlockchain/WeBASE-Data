@@ -55,42 +55,21 @@
 		update ${tableName}
 		set user_name = #{userName},
 		user_type = 0
-		where user_name = #{address}
+		where user_address = #{address}
 		and user_type = 1
 	</update>
 
 	<update id="updateUnusualContract">
 		update ${tableName}
-		set contract_name =
-		#{contractName},
-		interface_name = #{interfaceName},
-		trans_unusual_type =
-		#{transUnusualType}
-		where contract_name = #{contractBin}
-		and
-		(trans_unusual_type = 1 or trans_unusual_type = 2)
+		set contract_name = #{result.contractName},
+		interface_name = #{result.interfaceName},
+		trans_unusual_type = #{result.transUnusualType},
+		input = #{result.input},
+		output = #{result.output},
+		logs = #{result.logs}
+		where trans_hash = #{result.transHash}
+		and (trans_unusual_type = 1 or trans_unusual_type = 2)
 	</update>
-
-	<select id="queryTbParser"
-		resultType="com.webank.webase.data.collect.parser.entity.TbParser">
-		select trans_count as transCount,trans_hashs as transHashs
-		from ${tableName}
-		where user_name = #{parser.userName}
-		and contract_name
-		= #{parser.contractName}
-		and DATE_FORMAT(create_time,'%Y-%m-%d
-		%H:%i:%s') =
-		DATE_FORMAT(#{parser.createTime},'%Y-%m-%d %H:%i:%s')
-		and
-		user_type = #{parser.userType}
-		and contract_address =
-		#{parser.contractAddress}
-		and interface_name = #{parser.interfaceName}
-		and trans_type = #{parser.transType}
-		and trans_unusual_type =
-		#{parser.transUnusualType}
-		limit 1
-	</select>
 
 	<select id="parserUserList"
 		resultType="com.webank.webase.data.collect.parser.entity.TbParser">
@@ -125,9 +104,8 @@
 
 	<select id="qureyTransCountList" parameterType="Map"
 		resultType="com.webank.webase.data.collect.parser.entity.PageTransInfo">
-		select
-		trans_count as transCount,
-		modify_time as time
+		select trans_count as transCount,
+			   modify_time as time
 		from ${tableName}
 		where 1=1
 		<if test="userName != null and userName != ''">
@@ -172,11 +150,9 @@
 	<select id="countOfUnusualContract" resultType="java.lang.Integer">
 		select count(distinct contract_address)
 		from ${tableName}
-		where
-		trans_unusual_type=1
+		where trans_unusual_type=1
 		<if test="contractAddress != null and contractAddress != ''">
-			and contract_address like
-			CONCAT('%',#{contractAddress},'%')
+			and contract_address like CONCAT('%',#{contractAddress},'%')
 		</if>
 	</select>
 
@@ -184,13 +160,11 @@
 		resultType="com.webank.webase.data.collect.parser.entity.UnusualContractInfo">
 		select contract_address as contractAddress,max(contract_name) as
 		contractName,sum(trans_count) as transCount,
-		max(trans_hashs) as
-		hashs,max(modify_time) as time
-		from ${tableName} where
-		trans_unusual_type=1
+		max(trans_hashs) as hashs,max(modify_time) as time
+		from ${tableName} 
+		where trans_unusual_type=1
 		<if test="contractAddress != null and contractAddress != ''">
-			and contract_address like
-			CONCAT('%',#{contractAddress},'%')
+			and contract_address like CONCAT('%',#{contractAddress},'%')
 		</if>
 		group by contract_address
 		<if test="start != null and pageSize != null">
@@ -198,10 +172,17 @@
 		</if>
 	</select>
 
-	<select id="queryUnusualTxhash" resultType="java.lang.String">
+	<select id="queryUnusualTxHashByBin" resultType="java.lang.String">
 		select trans_hash
 		from ${tableName}
 		where contract_name = #{contractBin}
+		and (trans_unusual_type = 1 or trans_unusual_type = 2)
+	</select>
+
+	<select id="queryUnusualTxHashMethodId" resultType="java.lang.String">
+		select trans_hash
+		from ${tableName}
+		where interface_name = #{methodId}
 		and (trans_unusual_type = 1 or trans_unusual_type = 2)
 	</select>
 	

@@ -22,7 +22,6 @@ import lombok.Data;
 public class MethodInfo {
     private String methodId;
     private String methodName;
-    private String abiInfo;
     private String methodType;
     private String contractName;
     private String contractAbi;

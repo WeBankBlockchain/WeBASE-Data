@@ -26,13 +26,11 @@
 			jdbcType="TIMESTAMP" property="modifyTime" />
 	</resultMap>
 
-
 	<insert id="add">
 		insert ignore into
 		${tableName}(trans_hash,trans_from,trans_to,block_number,block_timestamp,create_time,modify_time)
 		values(#{trans.transHash},#{trans.transFrom},#{trans.transTo},#{trans.blockNumber},#{trans.blockTimestamp},NOW(),NOW())
 	</insert>
-
 
 	<select id="getCount"
 		parameterType="com.webank.webase.data.collect.transaction.entity.TransListParam"
@@ -70,22 +68,23 @@
 		</if>
 	</select>
 
+	<select id="getByHash" resultMap="transactionMap">
+		select * from ${tableName}
+		where trans_hash = #{transHash}
+	</select>
+	
 	<select id="listOfUnStatTransaction" resultMap="transactionMap">
-		select * from
-		${tableName}
+		select * from ${tableName}
 		where audit_flag=1
 		order by block_number
 		limit 2000
 	</select>
 
 	<select id="listOfUnStatTransactionByJob" resultMap="transactionMap">
-		select *
-		from ${tableName}
+		select * from ${tableName}
 		where audit_flag=1 and
-		MOD(block_number,#{shardingTotalCount}) =
-		#{shardingItem}
-		order by
-		block_number
+		MOD(block_number,#{shardingTotalCount}) = #{shardingItem}
+		order by block_number
 		limit 0,10000
 	</select>
 

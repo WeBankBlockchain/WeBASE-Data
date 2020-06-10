@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 public class TbUser {
 
     private Integer userId;
+    private Integer chainId;
+    private Integer groupId;
     private String userName;
     private String address;
     private String description;
@@ -34,8 +36,11 @@ public class TbUser {
     /**
      * init TbUser.
      */
-    public TbUser(String userName, String address, String description) {
+    public TbUser(Integer chainId, Integer groupId, String userName, String address,
+            String description) {
         super();
+        this.chainId = chainId;
+        this.groupId = groupId;
         this.userName = userName;
         this.address = address;
         this.description = description;

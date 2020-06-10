@@ -45,27 +45,30 @@ public class UserService {
      */
     @Transactional
     public TbUser addUserInfo(UserInfo user) throws BaseException {
+        Integer chainId = user.getChainId();
+        Integer groupId = user.getGroupId();
         // check userName
-        if (checkUserName(user.getUserName())) {
+        if (checkUserName(chainId, groupId, user.getUserName())) {
             log.warn("fail addUserInfo. userName is already exists");
             throw new BaseException(ConstantCode.USER_NAME_EXISTS);
         }
         // check address
-        if (checkAddress(user.getAddress())) {
+        if (checkAddress(chainId, groupId, user.getAddress())) {
             log.warn("fail addUserInfo. address is already exists");
             throw new BaseException(ConstantCode.USER_ADDRESS_EXISTS);
         }
         // add row
-        TbUser newUser = new TbUser(user.getUserName(), user.getAddress(), user.getDescription());
+        TbUser newUser = new TbUser(chainId, groupId, user.getUserName(), user.getAddress(),
+                user.getDescription());
         Integer affectRow = userMapper.addUserRow(newUser);
         if (affectRow == 0) {
             log.warn("addUserInfo affect 0 rows of tb_user");
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
-        
+
         // update unusual user's info
-        parserService.updateUnusualUser(user.getUserName(), user.getAddress());
-        
+        parserService.updateUnusualUser(chainId, groupId, user.getUserName(), user.getAddress());
+
         return queryByUserId(newUser.getUserId());
     }
 
@@ -88,21 +91,21 @@ public class UserService {
      * query by userId.
      */
     public TbUser queryByUserId(Integer userId) {
-        return queryUser(userId, null, null);
+        return queryUser(null, null, userId, null, null);
     }
 
     /**
      * query by userName.
      */
-    public TbUser queryByName(String userName) {
-        return queryUser(null, userName, null);
+    public TbUser queryByName(Integer chainId, Integer groupId, String userName) {
+        return queryUser(chainId, groupId, null, userName, null);
     }
 
     /**
      * get by address.
      */
-    public TbUser queryByAddress(String address) {
-        return queryUser(null, null, address);
+    public TbUser queryByAddress(Integer chainId, Integer groupId, String address) {
+        return queryUser(chainId, groupId, null, null, address);
     }
 
     /**
@@ -115,8 +118,8 @@ public class UserService {
     /**
      * check userName exists.
      */
-    private boolean checkUserName(String userName) {
-        TbUser tbUser = queryByName(userName);
+    private boolean checkUserName(Integer chainId, Integer groupId, String userName) {
+        TbUser tbUser = queryByName(chainId, groupId, userName);
         if (Objects.isNull(tbUser)) {
             return false;
         }
@@ -126,8 +129,8 @@ public class UserService {
     /**
      * check address exists.
      */
-    private boolean checkAddress(String address) {
-        TbUser tbUser = queryByAddress(address);
+    private boolean checkAddress(Integer chainId, Integer groupId, String address) {
+        TbUser tbUser = queryByAddress(chainId, groupId, address);
         if (Objects.isNull(tbUser)) {
             return false;
         }
@@ -137,8 +140,11 @@ public class UserService {
     /**
      * get by address.
      */
-    private TbUser queryUser(Integer userId, String userName, String address) {
+    private TbUser queryUser(Integer chainId, Integer groupId, Integer userId, String userName,
+            String address) {
         UserParam userParam = new UserParam();
+        userParam.setChainId(chainId);
+        userParam.setGroupId(groupId);
         userParam.setUserId(userId);
         userParam.setUserName(userName);
         userParam.setAddress(address);

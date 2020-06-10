@@ -33,6 +33,8 @@ public interface TransactionMapper {
     Integer getCount(@Param("tableName") String tableName,@Param("param") TransListParam param);
 
     Integer getCountByMinMax(@Param("tableName") String tableName);
+    
+    TbTransaction getByHash(@Param("tableName") String tableName,@Param("transHash") String transHash);
 
     List<TbTransaction> getList(@Param("tableName") String tableName,@Param("param") TransListParam param);
 

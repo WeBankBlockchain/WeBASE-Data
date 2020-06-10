@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,6 +13,7 @@
  */
 package com.webank.webase.data.collect.parser;
 
+import com.webank.webase.data.collect.parser.entity.ContractParserResult;
 import com.webank.webase.data.collect.parser.entity.PageTransInfo;
 import com.webank.webase.data.collect.parser.entity.TbParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
@@ -30,38 +31,36 @@ public interface ParserMapper {
 
     void add(@Param("tableName") String tableName, @Param("parser") TbParser tbParser);
 
-    int updateUnusualUser(@Param("tableName") String tableName,
-        @Param("userName") String userName, @Param("address") String address);
+    int updateUnusualUser(@Param("tableName") String tableName, @Param("userName") String userName,
+            @Param("address") String address);
 
     void updateUnusualContract(@Param("tableName") String tableName,
-        @Param("contractName") String contractName,
-        @Param("contractBin") String contractBin, @Param("interfaceName") String interfaceName,
-        @Param("transUnusualType") int transUnusualType);
+            @Param("result") ContractParserResult result);
 
-    List<String> queryUnusualTxHash(@Param("tableName") String tableName,
-        @Param("contractBin") String contractBin);
+    List<String> queryUnusualTxHashByBin(@Param("tableName") String tableName,
+            @Param("contractBin") String contractBin);
 
-    TbParser queryTbParser(@Param("tableName") String tableName,
-        @Param("parser") TbParser tbParser);
+    List<String> queryUnusualTxHashMethodId(@Param("tableName") String tableName,
+            @Param("methodId") String methodId);
 
     List<TbParser> parserUserList(@Param("tableName") String tableName);
 
     List<TbParser> parserInterfaceList(@Param("tableName") String tableName,
-        @Param("userName") String userName);
+            @Param("userName") String userName);
 
     Integer countOfParserTrans(Map<String, Object> queryParam);
 
     List<PageTransInfo> qureyTransCountList(Map<String, Object> queryParam);
 
     Integer countOfUnusualUser(@Param("tableName") String tableName,
-        @Param("userName") String userName);
+            @Param("userName") String userName);
 
     List<UnusualUserInfo> listOfUnusualUser(Map<String, Object> queryParam);
 
     Integer countOfUnusualContract(@Param("tableName") String tableName,
-        @Param("contractAddress") String contractAddress);
+            @Param("contractAddress") String contractAddress);
 
     List<UnusualContractInfo> listOfUnusualContract(Map<String, Object> queryParam);
-    
+
     void rollback(@Param("tableName") String tableName, @Param("blockNumber") long blockNumber);
 }

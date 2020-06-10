@@ -53,9 +53,9 @@ public class ContractService {
         }
 
         if (Objects.nonNull(tbContract) && StringUtils.isNotBlank(tbContract.getContractBin())) {
-            // update monitor unusual deployInputParam's info
-            parserService.updateUnusualContract(tbContract.getChainId(), tbContract.getGroupId(),
-                    tbContract.getContractName(), tbContract.getContractBin());
+            // update parser unusual contract
+            parserService.parserUnusualContract(tbContract.getChainId(), tbContract.getGroupId(),
+                    tbContract.getContractBin());
         }
         return tbContract;
     }
@@ -94,7 +94,7 @@ public class ContractService {
     /**
      * delete contract by contractId.
      */
-    public void deleteContract(Integer contractId) {
+    public void deleteByContractId(Integer contractId) {
         contractMapper.remove(contractId);
     }
 

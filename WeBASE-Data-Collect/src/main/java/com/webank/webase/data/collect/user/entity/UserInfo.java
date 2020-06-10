@@ -14,6 +14,7 @@
 package com.webank.webase.data.collect.user.entity;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserInfo {
+    @NotNull
+    private Integer chainId;
+    @NotNull
+    private Integer groupId;
     @NotBlank
     private String userName;
     @NotBlank

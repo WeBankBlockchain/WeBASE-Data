@@ -22,7 +22,7 @@ import com.webank.webase.data.collect.base.enums.TransUnusualType;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
-import com.webank.webase.data.collect.base.tools.TxDecode;
+import com.webank.webase.data.collect.base.tools.TransactionDecoder;
 import com.webank.webase.data.collect.block.taskpool.BlockTaskPoolService;
 import com.webank.webase.data.collect.chain.ChainService;
 import com.webank.webase.data.collect.chain.entity.TbChain;
@@ -42,7 +42,9 @@ import com.webank.webase.data.collect.parser.entity.TransParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
 import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
 import com.webank.webase.data.collect.parser.entity.UserParserResult;
+import com.webank.webase.data.collect.receipt.ReceiptService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
+import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.user.UserService;
 import com.webank.webase.data.collect.user.entity.TbUser;
@@ -84,6 +86,10 @@ public class ParserService {
     @Autowired
     private MethodService methodService;
     @Autowired
+    private TransactionService transactionService;
+    @Autowired
+    private ReceiptService receiptService;
+    @Autowired
     private BlockTaskPoolService blockTaskPoolService;
 
     public void reset(ResetInfo resetInfo) {
@@ -97,42 +103,64 @@ public class ParserService {
         }
     }
 
-    public void updateUnusualUser(String userName, String address) {
+    public void updateUnusualUser(int chainId, int groupId, String userName, String address) {
         log.info("start updateUnusualUser address:{}", address);
-        List<TbGroup> groupList = groupService.getGroupList(null, null);
-        groupList.stream()
-                .forEach(g -> parserMapper.updateUnusualUser(
-                        TableName.PARSER.getTableName(g.getChainId(), g.getGroupId()), userName,
-                        address));
+        parserMapper.updateUnusualUser(TableName.PARSER.getTableName(chainId, groupId), userName,
+                address);
     }
 
     /**
-     * update unusual contract.
+     * parser unusual contract.
      */
-    public void updateUnusualContract(int chainId, int groupId, String contractName,
-            String contractBin) throws BaseException {
-        try {
-            log.info("start updateUnusualContract groupId:{} contractName:{} contractBin:{}",
-                    groupId, contractName, contractBin);
-            String tableName = TableName.PARSER.getTableName(chainId, groupId);
-            contractBin = removeBinFirstAndLast(contractBin);
-            String subContractBin = subContractBinForName(contractBin);
-            List<String> txHashList = parserMapper.queryUnusualTxHash(tableName, subContractBin);
-            if (CollectionUtils.isEmpty(txHashList)) {
-                return;
-            }
-            // TODO
-            TbTransaction trans = new TbTransaction();
-            if (trans == null) {
-                return;
-            }
-            ContractParserResult contractResult = parserContract(chainId, groupId, null, null);
+    public void parserUnusualContract(int chainId, int groupId, String contractBin) {
+        log.debug("start parserUnusualContract chainId:{} groupId:{} contractBin:{}", chainId,
+                groupId, contractBin);
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
+        contractBin = removeBinFirstAndLast(contractBin);
+        String subContractBin = subContractBinForName(contractBin);
+        List<String> txHashList = parserMapper.queryUnusualTxHashByBin(tableName, subContractBin);
+        if (CollectionUtils.isEmpty(txHashList)) {
+            return;
+        }
+        for (String transHash : txHashList) {
+            updateUnusualContract(chainId, groupId, transHash);
+        }
+    }
 
-            // update parser into
-            parserMapper.updateUnusualContract(tableName, contractName, subContractBin,
-                    contractResult.getInterfaceName(), contractResult.getTransUnusualType());
+    /**
+     * parser unusual methodId.
+     */
+    public void parserUnusualMethodId(int chainId, int groupId, String methodId) {
+        log.debug("start updateUnusualMethodId chainId:{} groupId:{} methodId:{}", chainId, groupId,
+                methodId);
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
+        List<String> txHashList = parserMapper.queryUnusualTxHashMethodId(tableName, methodId);
+        if (CollectionUtils.isEmpty(txHashList)) {
+            return;
+        }
+        for (String transHash : txHashList) {
+            updateUnusualContract(chainId, groupId, transHash);
+        }
+    }
+
+    /**
+     * parser unusual contract.
+     */
+    public void updateUnusualContract(int chainId, int groupId, String transHash) {
+        try {
+            TbTransaction tbTransaction =
+                    transactionService.getTbTransByHash(chainId, groupId, transHash);
+            TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId, transHash);
+            if (ObjectUtils.isEmpty(tbTransaction) || ObjectUtils.isEmpty(tbReceipt)) {
+                return;
+            }
+            ContractParserResult contractResult =
+                    parserContract(chainId, groupId, tbTransaction, tbReceipt);
+            // update parser info
+            parserMapper.updateUnusualContract(TableName.PARSER.getTableName(chainId, groupId),
+                    contractResult);
         } catch (Exception ex) {
-            log.error("fail updateUnusualContract", ex);
+            log.error("fail updateUnusualContract. transHash:{}", transHash, ex);
         }
     }
 
@@ -253,14 +281,8 @@ public class ParserService {
         BeanUtils.copyProperties(userResult, tbParser);
         BeanUtils.copyProperties(contractResult, tbParser);
         tbParser.setBlockNumber(tbTransaction.getBlockNumber());
-        tbParser.setTransHash(tbTransaction.getTransHash());
         tbParser.setBlockTimestamp(tbTransaction.getBlockTimestamp());
         addRow(chainId, groupId, tbParser);
-    }
-
-    public TbParser queryTbParser(int chainId, int groupId, TbParser tbParser) {
-        return parserMapper.queryTbParser(TableName.PARSER.getTableName(chainId, groupId),
-                tbParser);
     }
 
     public void addRow(int chainId, int groupId, TbParser tbParser) {
@@ -273,6 +295,7 @@ public class ParserService {
     private ContractParserResult parserContract(int chainId, int groupId,
             TbTransaction tbTransaction, TbReceipt tbReceipt) {
         ContractParserResult contractResult = new ContractParserResult();
+        contractResult.setTransHash(tbTransaction.getTransHash());
         contractResult.setInput(tbReceipt.getInput());
         contractResult.setOutput(tbReceipt.getOutput());
         contractResult.setLogs(tbReceipt.getLogs());
@@ -349,14 +372,13 @@ public class ParserService {
         return contractResult;
     }
 
-
     /**
      * parser user.
      */
     private UserParserResult parserUser(int chainId, int groupId, String userAddress) {
         String userName = userAddress;
         int userType = ParserUserType.ABNORMAL.getValue();
-        TbUser tbUser = userService.queryByAddress(userAddress);
+        TbUser tbUser = userService.queryByAddress(chainId, groupId, userAddress);
         if (Objects.nonNull(tbUser)) {
             userName = tbUser.getUserName();
             userType = ParserUserType.NORMAL.getValue();
@@ -374,14 +396,14 @@ public class ParserService {
         if (ObjectUtils.isEmpty(tbChain)) {
             return;
         }
-        TxDecode txDecode = new TxDecode(abi, tbChain.getChainType());
+        TransactionDecoder transactionDecoder = new TransactionDecoder(abi, tbChain.getChainType());
         String input = contractResult.getInput();
         String output = contractResult.getOutput();
         String logs = contractResult.getLogs();
         try {
-            input = txDecode.decodeInputReturnJson(input);
-            output = txDecode.decodeOutputReturnJson(input, output);
-            logs = txDecode.decodeEventReturnJson(logs);
+            input = transactionDecoder.decodeInputReturnJson(input);
+            output = transactionDecoder.decodeOutputReturnJson(input, output);
+            logs = transactionDecoder.decodeEventReturnJson(logs);
         } catch (Exception e) {
             log.error("parserInputOutputLogs error:", e);
         }

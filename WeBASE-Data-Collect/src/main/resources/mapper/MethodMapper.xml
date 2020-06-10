@@ -8,8 +8,6 @@
 			property="id" />
 		<result column="contract_id" javaType="java.lang.Integer"
 			jdbcType="INTEGER" property="contractId" />
-		<result column="contract_name" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="contractName" />
 		<result column="chain_id" javaType="java.lang.Integer"
 			jdbcType="INTEGER" property="chainId" />
 		<result column="group_id" javaType="java.lang.Integer"
@@ -29,9 +27,9 @@
 	<insert id="add"
 		parameterType="com.webank.webase.data.collect.contract.entity.TbMethod">
 		REPLACE INTO
-		tb_method(contract_id,contract_name,chain_id,group_id,method_id,method_name,method_type,create_time,modify_time)
+		tb_method(contract_id,chain_id,group_id,method_id,method_name,method_type,create_time,modify_time)
 		VALUES
-		(#{contractId},#{contractName},#{chainId},#{groupId},#{methodId},#{methodName},#{methodType},now(),now())
+		(#{contractId},#{chainId},#{groupId},#{methodId},#{methodName},#{methodType},now(),now())
 	</insert>
 
 	<select id="getMethodById" resultType="com.webank.webase.data.collect.contract.entity.MethodInfo">
@@ -53,9 +51,14 @@
 		limit 1
 	</select>
 
+	<delete id="removeByContractId">
+		delete from tb_method
+		where contract_id = #{contractId}
+	</delete>
+
 	<delete id="removeByChainIdAndGroupId">
 		delete from tb_method
-		where chain_id=#{chainId}
+		where chain_id = #{chainId}
 		<if test="groupId != null">
 			and group_id = #{groupId}
 		</if>

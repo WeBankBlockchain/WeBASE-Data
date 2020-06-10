@@ -22,7 +22,6 @@ import lombok.Data;
 @Data
 public class TbMethod {
     private Integer contractId;
-    private String contractName;
     private Integer chainId;
     private Integer groupId;
     private String methodId;

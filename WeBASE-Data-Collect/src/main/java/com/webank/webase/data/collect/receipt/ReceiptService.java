@@ -91,6 +91,13 @@ public class ReceiptService {
     }
 
     /**
+     * getTbReceipt.
+     */
+    public TbReceipt getTbReceiptByHash(int chainId, int groupId, String transHash) {
+        return receiptMapper.getByHash(TableName.RECEIPT.getTableName(chainId, groupId), transHash);
+    }
+
+    /**
      * get transaction receipt
      */
     public TransactionReceipt getTransReceipt(int chainId, int groupId, String transHash) {

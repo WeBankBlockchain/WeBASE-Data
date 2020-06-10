@@ -39,16 +39,16 @@ import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TxDecode {
+public class TransactionDecoder {
 
     public static final int ECDSA_TYPE = 0;
-    private static final Logger logger = LoggerFactory.getLogger(TxDecode.class);
+    private static final Logger logger = LoggerFactory.getLogger(TransactionDecoder.class);
 
     private String abi = "";
     private int encryptType = ECDSA_TYPE;
     private Map<String, AbiDefinition> methodIDMap;
 
-    public TxDecode(String abi, int encryptType) {
+    public TransactionDecoder(String abi, int encryptType) {
         this.abi = abi;
         this.encryptType = encryptType;
         methodIDMap = new HashMap<String, AbiDefinition>();

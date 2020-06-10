@@ -19,10 +19,12 @@ import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.contract.entity.NewMethodInput;
 import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.contract.entity.TbMethod;
+import com.webank.webase.data.collect.parser.ParserService;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +34,9 @@ public class MethodService {
     private MethodMapper methodMapper;
     @Autowired
     private ContractService contractService;
+    @Autowired
+    @Lazy
+    private ParserService parserService;
 
     /**
      * save method info.
@@ -46,6 +51,9 @@ public class MethodService {
         for (Method method : methodList) {
             BeanUtils.copyProperties(method, tbMethod);
             methodMapper.add(tbMethod);
+            // parser unusual methodId
+            parserService.parserUnusualMethodId(tbMethod.getChainId(), tbMethod.getGroupId(),
+                    method.getMethodId());
         }
     }
 
@@ -65,10 +73,16 @@ public class MethodService {
     }
 
     /**
+     * removeByContractId.
+     */
+    public void removeByContractId(Integer contractId) {
+        methodMapper.removeByContractId(contractId);
+    }
+    
+    /**
      * removeByChainIdAndGroupId.
      */
     public void removeByChainIdAndGroupId(Integer chainId, Integer groupId) {
         methodMapper.removeByChainIdAndGroupId(chainId, groupId);
     }
-
 }
