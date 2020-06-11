@@ -58,6 +58,7 @@ import org.fisco.bcos.web3j.tx.txdecode.InputAndOutputResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -111,6 +112,7 @@ public class ParserService {
     /**
      * parser unusual contract.
      */
+    @Async("asyncExecutor")
     public void parserUnusualContract(int chainId, int groupId, String contractBin) {
         log.debug("start parserUnusualContract chainId:{} groupId:{} contractBin:{}", chainId,
                 groupId, contractBin);
@@ -129,6 +131,7 @@ public class ParserService {
     /**
      * parser unusual methodId.
      */
+    @Async("asyncExecutor")
     public void parserUnusualMethodId(int chainId, int groupId, String methodId) {
         log.debug("start updateUnusualMethodId chainId:{} groupId:{} methodId:{}", chainId, groupId,
                 methodId);

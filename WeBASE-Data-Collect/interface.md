@@ -19,10 +19,10 @@
 
 | 序号 | 输入参数    | 类型   | 可为空 | 备注                       |
 | ---- | ----------- | ------ | ------ | -------------------------- |
-| 1    | chainId     | int    | 否     | 链编号                     |
-| 2    | chainName   | string | 否     | 链名称                     |
-| 3    | chainType   | int    | 否     | 链类型（0-非国密，1-国密） |
-| 4    | description | string | 是     | 备注                       |
+| 1    | chainId     | Int    | 否     | 链编号                     |
+| 2    | chainName   | String | 否     | 链名称                     |
+| 3    | chainType   | Int    | 否     | 链类型（0-非国密，1-国密） |
+| 4    | description | String | 是     | 备注                       |
 
 ***2）入参示例***
 
@@ -48,10 +48,10 @@ http://localhost:5009/WeBASE-Data-Collect/chain/new
 | 1    | code        | Int           | 否   | 返回码，0：成功 其它：失败 |
 | 2    | message     | String        | 否   | 描述                       |
 | 3    |             | Object        |      | 节点信息对象               |
-| 3.1  | chainId     | int           | 否   | 链编号                     |
-| 3.2  | chainName   | string        | 否   | 链名称                     |
-| 3.3  | chainType   | int           | 否   | 链类型（0-非国密，1-国密） |
-| 3.4  | description | string        | 是   | 备注                       |
+| 3.1  | chainId     | Int           | 否   | 链编号                     |
+| 3.2  | chainName   | String        | 否   | 链名称                     |
+| 3.3  | chainType   | Int           | 否   | 链类型（0-非国密，1-国密） |
+| 3.4  | description | String        | 是   | 备注                       |
 | 3.5  | createTime  | LocalDateTime | 否   | 落库时间                   |
 | 3.6  | modifyTime  | LocalDateTime | 否   | 修改时间                   |
 
@@ -116,10 +116,10 @@ http://localhost:5009/WeBASE-Data-Collect/chain/all
 | 3     | totalCount  | Int           | 否   | 总记录数                   |
 | 4     | data        | List          | 否   | 组织列表                   |
 | 4.1   |             | Object        |      | 节点信息对象               |
-| 4.1.1 | chainId     | int           | 否   | 链编号                     |
-| 4.1.2 | chainName   | string        | 否   | 链名称                     |
-| 4.1.3 | chainType   | int           | 否   | 链类型（0-非国密，1-国密） |
-| 4.1.4 | description | string        | 是   | 备注                       |
+| 4.1.1 | chainId     | Int           | 否   | 链编号                     |
+| 4.1.2 | chainName   | String        | 否   | 链名称                     |
+| 4.1.3 | chainType   | Int           | 否   | 链类型（0-非国密，1-国密） |
+| 4.1.4 | description | String        | 是   | 备注                       |
 | 4.1.5 | createTime  | LocalDateTime | 否   | 落库时间                   |
 | 4.1.6 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
 
@@ -171,7 +171,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/all
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注   |
 | ---- | -------- | ---- | ------ | ------ |
-| 1    | chainId  | int  | 否     | 链编号 |
+| 1    | chainId  | Int  | 否     | 链编号 |
 
 ***2）入参示例***
 
@@ -229,10 +229,10 @@ http://localhost:5009/WeBASE-Data-Collect/chain/1
 
 | 序号 | 输入参数  | 类型   | 可为空 | 备注         |
 | ---- | --------- | ------ | ------ | ------------ |
-| 1    | chainId   | int    | 否     | 链编号       |
-| 2    | frontIp   | string | 否     | 前置ip       |
-| 3    | frontPort | int    | 否     | 前置服务端口 |
-| 4    | agency    | int    | 否     | 所属机构     |
+| 1    | chainId   | Int    | 否     | 链编号       |
+| 2    | frontIp   | String | 否     | 前置ip       |
+| 3    | frontPort | Int    | 否     | 前置服务端口 |
+| 4    | agency    | Int    | 否     | 所属机构     |
 
 ***2）入参示例***
 
@@ -260,11 +260,11 @@ http://localhost:5009/WeBASE-Data-Collect/front/new
 | 2    | message    | String        | 否     | 描述                       |
 | 3    |            | Object        |        | 节点信息对象               |
 | 3.1  | frontId    | Int           | 否     | 前置编号                   |
-| 3.2  | chainId    | int           | 否     | 链编号                     |
-| 3.3  | frontIp    | string        | 否     | 前置ip                     |
+| 3.2  | chainId    | Int           | 否     | 链编号                     |
+| 3.3  | frontIp    | String        | 否     | 前置ip                     |
 | 3.4  | frontPort  | Int           | 否     | 前置端口                   |
-| 3.5  | nodeId     | string        | 否     | 节点编号                   |
-| 3.6  | agency     | string        | 否     | 所属机构                   |
+| 3.5  | nodeId     | String        | 否     | 节点编号                   |
+| 3.6  | agency     | String        | 否     | 所属机构                   |
 | 3.7  | createTime | LocalDateTime | 是     | 落库时间                   |
 | 3.8  | modifyTime | LocalDateTime | 是     | 修改时间                   |
 
@@ -336,11 +336,11 @@ http://localhost:5009/WeBASE-Data-Collect/front/list
 | 4     | data          | List          | 否     | 组织列表                   |
 | 4.1   |               | Object        |        | 节点信息对象               |
 | 4.1.1 | frontId       | Int           | 否     | 前置编号                   |
-| 4.1.2 | chainId | int | 否 | 链编号 |
-| 4.1.3 | frontIp       | string        | 否     | 前置ip                     |
+| 4.1.2 | chainId | Int | 否 | 链编号 |
+| 4.1.3 | frontIp       | String        | 否     | 前置ip                     |
 | 4.1.4 | frontPort     | Int           | 否     | 前置端口                   |
-| 4.1.5 | nodeId | string | 否 | 节点编号 |
-| 4.1.6 | agency | string | 否 | 所属机构 |
+| 4.1.5 | nodeId | String | 否 | 节点编号 |
+| 4.1.6 | agency | String | 否 | 所属机构 |
 | 4.1.7 | createTime    | LocalDateTime | 否     | 落库时间                   |
 | 4.1.8 | modifyTime    | LocalDateTime | 否     | 修改时间                   |
 
@@ -391,7 +391,7 @@ http://localhost:5009/WeBASE-Data-Collect/front/list
 
 | 序号 | 输入参数    | 类型          | 可为空 | 备注                                       |
 |------|-------------|---------------|--------|-------------------------------|
-| 1    | frontId    | int    | 否     | 前置编号                   |
+| 1    | frontId    | Int    | 否     | 前置编号                   |
 
 
 ***2）入参示例***
@@ -465,7 +465,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 | 3     | totalCount       | Int           | 否   | 总记录数                   |
 | 4     | data             | List          | 否   | 列表                       |
 | 4.1   |                  | Object        |      | 信息对象                   |
-| 4.1.1 | chainId          | int           | 否   | 链编号                     |
+| 4.1.1 | chainId          | Int           | 否   | 链编号                     |
 | 4.1.2 | groupId          | Int           | 否   | 群组编号                   |
 | 4.1.3 | groupName        | String        | 否   | 群组名称                   |
 | 4.1.4 | genesisBlockHash | String        | 否   | 创世块hash                 |
@@ -1048,9 +1048,9 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/receipt/1/1/0x4933b1e0a7d6
 | ---- | ----------- | ------ | ------ | -------- |
 | 1    | chainId     | Int    | 否     | 链编号   |
 | 2    | groupId     | Int    | 否     | 群组编号 |
-| 3    | userName    | string | 否     | 用户名   |
-| 4    | address     | string | 否     | 用户地址 |
-| 5    | description | int    | 否     | 描述     |
+| 3    | userName    | String | 否     | 用户名   |
+| 4    | address     | String | 否     | 用户地址 |
+| 5    | description | String | 是     | 描述     |
 
 ***2）入参示例***
 
@@ -1080,9 +1080,9 @@ http://localhost:5009/WeBASE-Data-Collect/user/add
 | 3.1  | userId      | Int           | 否     | 用户编号                   |
 | 3.2  | chainId     | Int           | 否     | 链编号                     |
 | 3.3  | groupId     | Int           | 否     | 群组编号                   |
-| 3.2  | userName    | string        | 否     | 用户名                     |
-| 3.3  | address     | string        | 否     | 用户地址                   |
-| 3.4  | description | string        | 否     | 描述                       |
+| 3.2  | userName    | String        | 否     | 用户名                     |
+| 3.3  | address     | String        | 否     | 用户地址                   |
+| 3.4  | description | String        | 是     | 描述                       |
 | 3.5  | createTime  | LocalDateTime | 是     | 落库时间                   |
 | 3.6  | modifyTime  | LocalDateTime | 是     | 修改时间                   |
 
@@ -1158,9 +1158,9 @@ http://localhost:5009/WeBASE-Data-Collect/user/list/1/2
 | 4.1.1 | userId      | Int           | 否   | 用户编号                   |
 | 4.1.2 | chainId     | Int           | 否   | 链编号                     |
 | 4.1.3 | groupId     | Int           | 否   | 群组编号                   |
-| 4.1.4 | userName    | string        | 否   | 用户名                     |
-| 4.1.5 | address     | string        | 否   | 用户地址                   |
-| 4.1.6 | description | string        | 否   | 描述                       |
+| 4.1.4 | userName    | String        | 否   | 用户名                     |
+| 4.1.5 | address     | String        | 否   | 用户地址                   |
+| 4.1.6 | description | String        | 是   | 描述                       |
 | 4.1.7 | createTime  | LocalDateTime | 否   | 落库时间                   |
 | 4.1.8 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
 
@@ -1214,7 +1214,7 @@ http://localhost:5009/WeBASE-Data-Collect/user/list/1/2
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注     |
 | ---- | -------- | ---- | ------ | -------- |
-| 1    | userId   | int  | 否     | 用户编号 |
+| 1    | userId   | Int  | 否     | 用户编号 |
 
 ***2）入参示例***
 
@@ -1407,10 +1407,10 @@ http://localhost:5009/WeBASE-Data-Collect/contract/list
 | 3      | totalCount     | Int           | 否   | 总记录数                          |
 | 4      | data           | List          | 是   | 列表                              |
 | 5.1    |                | Object        |      | 返回信息实体                      |
-| 5.1.1  | contractId     | int           | 否   | 合约编号                          |
+| 5.1.1  | contractId     | Int           | 否   | 合约编号                          |
 | 5.1.2  | contractPath   | String        | 否   | 合约所在目录                      |
 | 5.1.3  | contractName   | String        | 否   | 合约名称                          |
-| 5.1.4  | chainId        | int           | 否   | 链编号                            |
+| 5.1.4  | chainId        | Int           | 否   | 链编号                            |
 | 5.1.5  | groupId        | Int           | 否   | 群组编号                          |
 | 5.1.6  | contractType   | Int           | 否   | 合约类型(0-普通合约，1-系统合约)  |
 | 5.1.7  | contractSource | String        | 否   | 合约源码                          |
@@ -1476,7 +1476,7 @@ http://localhost:5009/WeBASE-Data-Collect/contract/list
 
 | 序号 | 输入参数   | 类型 | 可为空 | 备注     |
 | ---- | ---------- | ---- | ------ | -------- |
-| 1    | contractId | int  | 否     | 合约编号 |
+| 1    | contractId | Int  | 否     | 合约编号 |
 
 ***2）入参示例***
 
