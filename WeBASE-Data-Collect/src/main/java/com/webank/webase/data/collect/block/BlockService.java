@@ -20,9 +20,7 @@ import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.block.entity.BlockListParam;
 import com.webank.webase.data.collect.block.entity.TbBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
-import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
-import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import java.math.BigInteger;
@@ -52,8 +50,6 @@ public class BlockService {
     private TransactionService transactionService;
     @Autowired
     private ReceiptService receiptService;
-    @Autowired
-    private ParserService parserService;
 
     private static final Long SAVE_TRANS_SLEEP_TIME = 5L;
 
@@ -92,10 +88,7 @@ public class BlockService {
                     trans.getTo(), trans.getBlockNumber(), tbBlock.getBlockTimestamp());
             transactionService.addTransInfo(chainId, groupId, tbTransaction);
             // save receipt
-            TbReceipt tbReceipt =
-                    receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
-            // parserTransaction
-            parserService.parserTransaction(chainId, groupId, tbTransaction, tbReceipt);
+            receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);
             } catch (InterruptedException ex) {

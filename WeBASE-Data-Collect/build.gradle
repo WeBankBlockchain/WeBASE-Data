@@ -37,7 +37,7 @@ List jaxb = [
 ]
 
 List web3jsdk = [
-    "org.fisco-bcos:web3sdk:2.4.0"
+    "org.fisco-bcos:web3sdk:2.4.1-SNAPSHOT"
 ]
 
 List lombok = [
@@ -91,7 +91,7 @@ configurations {
     all*.exclude group: 'com.google.protobuf', module: 'protobuf-java'
     all*.exclude group: 'javax.annotation', module: 'javax.annotation-api'
     all*.exclude group: 'org.ethereum'
-    //all*.exclude group: 'com.alibaba', module: 'fastjson'
+    all*.exclude group: 'com.alibaba', module: 'fastjson'
 }
 
 sourceSets {

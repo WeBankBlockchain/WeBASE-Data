@@ -23,6 +23,7 @@ import com.webank.webase.data.collect.group.entity.TbGroup;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
@@ -37,7 +38,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Log4j2
 @Component
-public class PullAnalyzeDataTask {
+public class DataPullTask {
 
     @Autowired
     private BlockTaskPoolService blockTaskPoolService;
@@ -48,7 +49,7 @@ public class PullAnalyzeDataTask {
     @Autowired
     private GroupService groupService;
 
-    @Scheduled(fixedDelayString = "${constant.pullBlockTaskFixedDelay}", initialDelay = 1000)
+    @Scheduled(fixedDelayString = "${constant.dataPullTaskFixedDelay}", initialDelay = 1000)
     public void taskStart() {
         pullBlockStart();
     }
@@ -79,10 +80,7 @@ public class PullAnalyzeDataTask {
                 Duration.between(startTime, Instant.now()).toMillis());
     }
 
-    /**
-     * get block from chain by groupId
-     */
-    @Async(value = "asyncExecutor")
+    @Async("asyncExecutor")
     public void pullBlockProcess(CountDownLatch latch, int chainId, int groupId) {
         log.info("start pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
         try {
@@ -127,7 +125,9 @@ public class PullAnalyzeDataTask {
         } catch (Exception ex) {
             log.error("fail pullBlockProcess. chainId:{} groupId:{} ", chainId, groupId, ex);
         } finally {
-            latch.countDown();
+            if (Objects.nonNull(latch)) {
+                latch.countDown();
+            }
         }
         log.info("end pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
     }

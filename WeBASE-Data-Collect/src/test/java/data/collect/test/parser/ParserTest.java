@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -11,35 +11,25 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package data.collect.test.scheduler;
+package data.collect.test.parser;
 
 import com.webank.webase.data.collect.Application;
-import com.webank.webase.data.collect.scheduler.DataPullTask;
-import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
+import com.webank.webase.data.collect.parser.ParserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-public class SchedulerServiceTest {
+public class ParserTest {
 
     @Autowired
-    private DataPullTask dataPullTask;
-    @Autowired
-    private ResetGroupListTask resetGroupListTask;
+    private ParserService parserService;
 
     @Test
-    public void pullBlockInfoTaskTest() {
-        dataPullTask.pullBlockStart();
+    public void resetBetweenTest() {
+        parserService.resetBetween(1, 1, 0, 230);
     }
-
-    @Test
-    public void resetGroupListTest() {
-        resetGroupListTask.resetGroupList();
-    }
-
 }

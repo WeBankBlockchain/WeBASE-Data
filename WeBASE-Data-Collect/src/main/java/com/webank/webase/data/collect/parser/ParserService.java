@@ -57,6 +57,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -278,11 +279,13 @@ public class ParserService {
         BeanUtils.copyProperties(contractResult, tbParser);
         tbParser.setBlockNumber(tbTransaction.getBlockNumber());
         tbParser.setBlockTimestamp(tbTransaction.getBlockTimestamp());
-        addRow(chainId, groupId, tbParser);
+        dataAddAndUpdate(chainId, groupId, tbParser);
     }
 
-    public void addRow(int chainId, int groupId, TbParser tbParser) {
+    @Transactional
+    public void dataAddAndUpdate(int chainId, int groupId, TbParser tbParser) {
         parserMapper.add(TableName.PARSER.getTableName(chainId, groupId), tbParser);
+        transactionService.updateTransStatFlag(chainId, groupId, tbParser.getTransHash());
     }
 
     /**
