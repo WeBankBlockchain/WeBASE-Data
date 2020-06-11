@@ -38,7 +38,7 @@ public class JacksonUtils {
             return false;
         }
     }
-    
+
     public static JsonNode stringToJsonNode(String str) {
         try {
             return OBJECT_MAPPER.get().readTree(str);
@@ -54,7 +54,7 @@ public class JacksonUtils {
         }
         try {
             return obj instanceof String ? (String) obj
-                    : OBJECT_MAPPER.get().writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+                    : OBJECT_MAPPER.get().writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             log.error("Parse Object to String error : {}", e.getMessage());
             return null;

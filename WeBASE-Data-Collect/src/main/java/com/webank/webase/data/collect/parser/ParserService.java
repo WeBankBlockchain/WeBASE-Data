@@ -22,6 +22,7 @@ import com.webank.webase.data.collect.base.enums.TransUnusualType;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.base.tools.TransactionDecoder;
 import com.webank.webase.data.collect.block.taskpool.BlockTaskPoolService;
 import com.webank.webase.data.collect.chain.ChainService;
@@ -53,6 +54,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.fisco.bcos.web3j.tx.txdecode.InputAndOutputResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -343,8 +345,8 @@ public class ParserService {
             MethodInfo methodInfo = methodService.getByMethodId(methodId, chainId, groupId);
             if (Objects.nonNull(methodInfo)) {
                 contractName = methodInfo.getContractName();
-                interfaceName = methodInfo.getMethodName();
                 parserInputOutputLogs(chainId, contractResult, methodInfo.getContractAbi());
+                interfaceName = contractResult.getInterfaceName();
             } else {
                 interfaceName = methodId;
                 contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
@@ -399,15 +401,22 @@ public class ParserService {
         String input = contractResult.getInput();
         String output = contractResult.getOutput();
         String logs = contractResult.getLogs();
+        InputAndOutputResult inputResult = null;
+        InputAndOutputResult outputResult = null;
         try {
-            input = transactionDecoder.decodeInputReturnJson(input);
-            output = transactionDecoder.decodeOutputReturnJson(input, output);
+            inputResult = transactionDecoder.decodeInputReturnObject(input);
+            outputResult = transactionDecoder.decodeOutputReturnObject(input, output);
             logs = transactionDecoder.decodeEventReturnJson(logs);
         } catch (Exception e) {
             log.error("parserInputOutputLogs error:", e);
         }
-        contractResult.setInput(input);
-        contractResult.setOutput(output);
+        if (inputResult != null) {
+            contractResult.setInterfaceName(inputResult.getFunction());
+            contractResult.setInput(JacksonUtils.objToString(inputResult.getResult()));
+        }
+        if (outputResult != null && !CollectionUtils.isEmpty(outputResult.getResult())) {
+            contractResult.setOutput(JacksonUtils.objToString(outputResult.getResult()));
+        }
         contractResult.setLogs(logs);
     }
 
