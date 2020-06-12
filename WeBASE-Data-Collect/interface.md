@@ -19,7 +19,7 @@
 
 | 序号 | 输入参数    | 类型   | 可为空 | 备注                       |
 | ---- | ----------- | ------ | ------ | -------------------------- |
-| 1    | chainId     | Int    | 否     | 链编号                     |
+| 1    | chainId     | Int    | 否     | 链编号（1~9999）           |
 | 2    | chainName   | String | 否     | 链名称                     |
 | 3    | chainType   | Int    | 否     | 链类型（0-非国密，1-国密） |
 | 4    | description | String | 是     | 备注                       |
@@ -32,7 +32,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/new
 
 ```
 {
-    "chainId": 100001,
+    "chainId": 1,
     "chainName": "链一",
     "chainType": 0,
     "description": "test"
@@ -242,7 +242,7 @@ http://localhost:5009/WeBASE-Data-Collect/front/new
 
 ```
 {
-    "chainId": 100001,
+    "chainId": 1,
     "frontIp": "localhost",
     "frontPort": "5002",
     "agency": "test"

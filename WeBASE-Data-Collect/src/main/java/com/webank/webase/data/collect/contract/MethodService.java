@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.contract;
 
-import com.webank.webase.data.collect.base.enums.ContractType;
 import com.webank.webase.data.collect.contract.entity.Method;
 import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.contract.entity.NewMethodInput;
@@ -21,7 +20,6 @@ import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.contract.entity.TbMethod;
 import com.webank.webase.data.collect.parser.ParserService;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -58,18 +56,11 @@ public class MethodService {
     }
 
     /**
-     * query by methodId.
+     * getByMethodInfo.
      */
-    public MethodInfo getByMethodId(String methodId, Integer chainId, Integer groupId) {
-        MethodInfo methodInfo = methodMapper.getMethodById(methodId, null, null);
-        if (Objects.nonNull(methodInfo)) {
-            if (ContractType.SYSTEMCONTRACT.getValue() == methodInfo.getContractType().intValue()) {
-                return methodInfo;
-            } else {
-                return methodMapper.getMethodById(methodId, chainId, groupId);
-            }
-        }
-        return null;
+    public List<MethodInfo> getByMethodInfo(Integer chainId, Integer groupId, String methodId,
+            String contractAddress, String subBin) {
+        return methodMapper.getMethodInfo(chainId, groupId, methodId, contractAddress, subBin);
     }
 
     /**
@@ -78,7 +69,7 @@ public class MethodService {
     public void removeByContractId(Integer contractId) {
         methodMapper.removeByContractId(contractId);
     }
-    
+
     /**
      * removeByChainIdAndGroupId.
      */

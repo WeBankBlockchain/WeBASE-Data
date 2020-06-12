@@ -25,6 +25,4 @@ public class MethodInfo {
     private String methodType;
     private String contractName;
     private String contractAbi;
-    // general contract and precompiled contract
-    private Integer contractType;
 }

@@ -37,7 +37,7 @@ public interface ContractMapper {
 
     TbContract queryContract(ContractParam queryParam);
 
-    TbContract queryContractByBin(@Param("chainId") Integer chainId,
+    List<TbContract> queryContractByBin(@Param("chainId") Integer chainId,
             @Param("groupId") Integer groupId, @Param("contractBin") String contractBin);
 
     Integer remove(@Param("contractId") Integer contractId);

@@ -168,7 +168,6 @@
 		where chain_id = #{chainId}
 		and group_id = #{groupId}
 		and contract_bin like CONCAT(#{contractBin},'%')
-		limit 1
 	</select>
 
 </mapper>

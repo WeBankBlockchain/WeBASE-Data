@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS tb_contract (
 	contract_path varchar(24) binary NOT NULL COMMENT '合约所在目录',
 	contract_name varchar(120) binary NOT NULL COMMENT '合约名称',
 	contract_source text COMMENT '合约源码',
+	contract_address varchar(64) COMMENT '合约地址',
 	contract_abi text COMMENT '编译合约生成的abi文件内容',
 	contract_bin text COMMENT '合约运行时binary，用于合约解析',
 	bytecode_bin text COMMENT '合约bytecode binary，用于部署合约',
@@ -120,5 +121,5 @@ CREATE TABLE IF NOT EXISTS tb_method (
 	create_time datetime DEFAULT NULL COMMENT '创建时间',
 	modify_time datetime DEFAULT NULL COMMENT '修改时间',
 	PRIMARY KEY (id),
-	UNIQUE KEY uk_method (chain_id,group_id,method_id)
+	UNIQUE KEY uk_method (contract_id,method_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='方法解析信息表';

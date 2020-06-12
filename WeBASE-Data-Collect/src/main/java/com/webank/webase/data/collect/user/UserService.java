@@ -15,6 +15,7 @@ package com.webank.webase.data.collect.user;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.user.entity.TbUser;
 import com.webank.webase.data.collect.user.entity.UserInfo;
@@ -39,6 +40,8 @@ public class UserService {
     @Lazy
     @Autowired
     private ParserService parserService;
+    @Autowired
+    private GroupService groupService;
 
     /**
      * add user info.
@@ -47,6 +50,8 @@ public class UserService {
     public TbUser addUserInfo(UserInfo user) throws BaseException {
         Integer chainId = user.getChainId();
         Integer groupId = user.getGroupId();
+        // check groupId
+        groupService.checkGroupId(chainId, groupId);
         // check userName
         if (checkUserName(chainId, groupId, user.getUserName())) {
             log.warn("fail addUserInfo. userName is already exists");

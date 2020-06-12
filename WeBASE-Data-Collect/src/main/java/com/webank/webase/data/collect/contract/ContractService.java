@@ -18,6 +18,7 @@ import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.contract.entity.Contract;
 import com.webank.webase.data.collect.contract.entity.ContractParam;
 import com.webank.webase.data.collect.contract.entity.TbContract;
+import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.parser.ParserService;
 import java.util.List;
 import java.util.Objects;
@@ -40,11 +41,15 @@ public class ContractService {
     @Autowired
     @Lazy
     private ParserService parserService;
+    @Autowired
+    private GroupService groupService;
 
     /**
      * add new contract data.
      */
     public TbContract saveContract(Contract contract) throws BaseException {
+        // check groupId
+        groupService.checkGroupId(contract.getChainId(), contract.getGroupId());
         TbContract tbContract;
         if (contract.getContractId() == null) {
             tbContract = newContract(contract);// new
@@ -134,7 +139,7 @@ public class ContractService {
     /**
      * queryContractByBin.
      */
-    public TbContract queryContractByBin(Integer chainId, Integer groupId, String contractBin)
+    public List<TbContract> queryContractByBin(Integer chainId, Integer groupId, String contractBin)
             throws BaseException {
         try {
             return contractMapper.queryContractByBin(chainId, groupId, contractBin);

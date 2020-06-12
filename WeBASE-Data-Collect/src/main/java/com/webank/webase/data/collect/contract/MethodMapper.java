@@ -16,6 +16,7 @@ package com.webank.webase.data.collect.contract;
 
 import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.contract.entity.TbMethod;
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -23,11 +24,13 @@ import org.springframework.stereotype.Repository;
 public interface MethodMapper {
 
     void add(TbMethod tbMethod);
-    
+
     void removeByContractId(@Param("contractId") Integer contractId);
 
-    void removeByChainIdAndGroupId(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId);
-
-    MethodInfo getMethodById(@Param("methodId") String methodId, @Param("chainId") Integer chainId,
+    void removeByChainIdAndGroupId(@Param("chainId") Integer chainId,
             @Param("groupId") Integer groupId);
+
+    List<MethodInfo> getMethodInfo(@Param("chainId") Integer chainId,
+            @Param("groupId") Integer groupId, @Param("methodId") String methodId,
+            @Param("contractAddress") String contractAddress, @Param("subBin") String subBin);
 }
