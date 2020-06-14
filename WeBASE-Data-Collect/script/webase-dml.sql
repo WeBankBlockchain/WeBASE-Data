@@ -87,5 +87,5 @@ INSERT INTO tb_method (contract_id,chain_id,group_id,method_id,method_name,metho
 -- 3、init tb_solc
 -- ----------------------------
 INSERT INTO tb_solc (id,solc_name,encrypt_type,md5,file_size,description,create_time,modify_time) VALUES 
-(1,'soljson-v0.4.25-gm.js',1,'c0810103136fb9177df943346b2dcad4',8273598,'gm','2020-06-14 11:05:56','2020-06-14 11:05:56'),
-(2,'soljson-v0.4.25+commit.59dbf8f1.js',0,'e201c5913e0982cb90cdb2a711e36f63',8276063,'standard','2020-06-14 11:19:10','2020-06-14 11:19:10');
+(1,'soljson-v0.4.25-gm.js',1,'c0810103136fb9177df943346b2dcad4',8273598,'guomi','2020-06-14 11:05:56','2020-06-14 11:05:56'),
+(2,'soljson-v0.4.25+commit.59dbf8f1.js',0,'e201c5913e0982cb90cdb2a711e36f63',8276063,'ecdsa','2020-06-14 11:19:10','2020-06-14 11:19:10');

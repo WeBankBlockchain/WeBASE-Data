@@ -13,8 +13,6 @@
  */
 package com.webank.webase.data.collect.parser;
 
-import com.webank.webase.data.collect.base.code.ConstantCode;
-import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.enums.ParserUserType;
 import com.webank.webase.data.collect.base.enums.PrecompiledAddress;
 import com.webank.webase.data.collect.base.enums.TableName;
@@ -35,10 +33,8 @@ import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.parser.entity.ContractParserResult;
-import com.webank.webase.data.collect.parser.entity.PageTransInfo;
 import com.webank.webase.data.collect.parser.entity.ResetInfo;
 import com.webank.webase.data.collect.parser.entity.TbParser;
-import com.webank.webase.data.collect.parser.entity.TransParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
 import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
 import com.webank.webase.data.collect.parser.entity.UserParserResult;
@@ -170,8 +166,8 @@ public class ParserService {
     /**
      * query parser user list.
      */
-    public List<TbParser> qureyParserUserList(int chainId, int groupId) throws BaseException {
-        List<TbParser> parserUserList =
+    public List<String> qureyParserUserList(int chainId, int groupId) throws BaseException {
+        List<String> parserUserList =
                 parserMapper.parserUserList(TableName.PARSER.getTableName(chainId, groupId));
         return parserUserList;
     }
@@ -179,36 +175,12 @@ public class ParserService {
     /**
      * query parser interface list.
      */
-    public List<TbParser> qureyParserInterfaceList(int chainId, int groupId, String userName)
+    public List<String> qureyParserInterfaceList(int chainId, int groupId, String userName)
             throws BaseException {
 
-        List<TbParser> parserInterfaceList = parserMapper
+        List<String> parserInterfaceList = parserMapper
                 .parserInterfaceList(TableName.PARSER.getTableName(chainId, groupId), userName);
         return parserInterfaceList;
-    }
-
-    /**
-     * query parser trans list.
-     */
-    public BaseResponse qureyParserTransList(int chainId, int groupId, String userName,
-            String startDate, String endDate, String interfaceName) throws BaseException {
-        BaseResponse response = new BaseResponse(ConstantCode.SUCCESS);
-
-        // param
-        String tableName = TableName.PARSER.getTableName(chainId, groupId);
-        List<String> nameList = Arrays.asList("tableName", "groupId", "userName", "startDate",
-                "endDate", "interfaceName");
-        List<Object> valueList =
-                Arrays.asList(tableName, groupId, userName, startDate, endDate, interfaceName);
-        Map<String, Object> param = CommonTools.buidMap(nameList, valueList);
-
-        Integer count = parserMapper.countOfParserTrans(param);
-        List<PageTransInfo> transInfoList = parserMapper.qureyTransCountList(param);
-
-        TransParser transParser =
-                new TransParser(chainId, groupId, userName, interfaceName, count, transInfoList);
-        response.setData(transParser);
-        return response;
     }
 
     /**
@@ -319,94 +291,110 @@ public class ParserService {
             TbTransaction tbTransaction, TbReceipt tbReceipt) {
         ContractParserResult contractResult = new ContractParserResult();
         contractResult.setTransHash(tbTransaction.getTransHash());
-
-        String transInput = tbReceipt.getInput();
-        String contractAddress, contractName, interfaceName = "", contractBin;
-        int transType = TransType.DEPLOY.getValue();
-        int transUnusualType = TransUnusualType.NORMAL.getValue();
-
+        contractResult.setTransType(TransType.DEPLOY.getValue());
+        contractResult.setTransUnusualType(TransUnusualType.NORMAL.getValue());
+        // deploy
         if (isDeploy(tbTransaction.getTransTo())) {
-            contractAddress = tbReceipt.getContractAddress();
-            if (ConstantProperties.ADDRESS_DEPLOY.equals(contractAddress)) {
-                contractBin = StringUtils.removeStart(transInput, "0x");
-                ContractParam param = new ContractParam();
-                param.setChainId(chainId);
-                param.setGroupId(groupId);
-                param.setPartOfBytecodeBin(contractBin);
-                TbContract tbContract = contractService.queryContract(param);
-                if (Objects.nonNull(tbContract)) {
-                    contractName = tbContract.getContractName();
-                    parserInputOutputLogs(chainId, contractResult, tbReceipt,
-                            tbContract.getContractAbi());
-                } else {
-                    contractName = getNameFromContractBin(chainId, groupId, contractBin);
-                    transUnusualType = TransUnusualType.CONTRACT.getValue();
-                }
-            } else {
-                contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
-                        tbTransaction.getBlockNumber());
-                contractBin = removeBinFirstAndLast(contractBin);
-                List<TbContract> tbContract =
-                        contractService.queryContractByBin(chainId, groupId, contractBin);
-                if (!CollectionUtils.isEmpty(tbContract)) {
-                    contractName = tbContract.get(0).getContractName();
-                    parserInputOutputLogs(chainId, contractResult, tbReceipt,
-                            tbContract.get(0).getContractAbi());
-                } else {
-                    contractName = subContractBinForName(contractBin);
-                    transUnusualType = TransUnusualType.CONTRACT.getValue();
-                }
-            }
-            interfaceName = contractName;
+            parserDeploy(chainId, groupId, contractResult, tbReceipt,
+                    tbReceipt.getContractAddress());
         } else { // function call
-            transType = TransType.CALL.getValue();
-            String methodId = transInput.substring(0, 10);
-            contractAddress = tbTransaction.getTransTo();
-            if (PrecompiledAddress.isInclude(contractAddress)) {
-                List<MethodInfo> methodInfoList =
-                        methodService.getByMethodInfo(0, 0, methodId, contractAddress, null);
-                if (!CollectionUtils.isEmpty(methodInfoList)) {
-                    contractName = methodInfoList.get(0).getContractName();
-                    parserInputOutputLogs(chainId, contractResult, tbReceipt,
-                            methodInfoList.get(0).getContractAbi());
-                    interfaceName = contractResult.getInterfaceName();
-                } else {
-                    interfaceName = methodId;
-                    contractName = contractAddress;
-                }
+            parserFunction(chainId, groupId, contractResult, tbReceipt, tbTransaction.getTransTo());
+        }
+        return contractResult;
+    }
+
+    /**
+     * parserDeploy.
+     * 
+     */
+    private void parserDeploy(int chainId, int groupId, ContractParserResult contractResult,
+            TbReceipt tbReceipt, String contractAddress) {
+        String contractBin, contractName;
+        if (ConstantProperties.ADDRESS_DEPLOY.equals(contractAddress)) {
+            contractBin = StringUtils.removeStart(tbReceipt.getInput(), "0x");
+            ContractParam param = new ContractParam();
+            param.setChainId(chainId);
+            param.setGroupId(groupId);
+            param.setPartOfBytecodeBin(contractBin);
+            TbContract tbContract = contractService.queryContract(param);
+            if (Objects.nonNull(tbContract)) {
+                contractName = tbContract.getContractName();
+                parserInputOutputLogs(chainId, contractResult, tbReceipt,
+                        tbContract.getContractAbi());
             } else {
-                contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
-                        tbTransaction.getBlockNumber());
-                contractBin = removeBinFirstAndLast(contractBin);
-                List<MethodInfo> methodInfoList = methodService.getByMethodInfo(chainId, groupId,
-                        methodId, null, contractBin);
-                if (!CollectionUtils.isEmpty(methodInfoList)) {
-                    contractName = methodInfoList.get(0).getContractName();
-                    parserInputOutputLogs(chainId, contractResult, tbReceipt,
-                            methodInfoList.get(0).getContractAbi());
-                    interfaceName = contractResult.getInterfaceName();
-                } else {
-                    interfaceName = methodId;
-                    contractName = subContractBinForName(contractBin);
-                    transUnusualType = TransUnusualType.CONTRACT.getValue();
-                    if (StringUtils.isNoneBlank(contractBin)) {
-                        List<TbContract> contractRow =
-                                contractService.queryContractByBin(chainId, groupId, contractBin);
-                        if (!CollectionUtils.isEmpty(contractRow)) {
-                            contractName = contractRow.get(0).getContractName();
-                            transUnusualType = TransUnusualType.FUNCTION.getValue();
-                        }
+                contractName = getNameFromContractBin(chainId, groupId, contractBin);
+                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+            }
+        } else {
+            contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
+                    tbReceipt.getBlockNumber());
+            contractBin = removeBinFirstAndLast(contractBin);
+            List<TbContract> tbContract =
+                    contractService.queryContractByBin(chainId, groupId, contractBin);
+            if (!CollectionUtils.isEmpty(tbContract)) {
+                contractName = tbContract.get(0).getContractName();
+                parserInputOutputLogs(chainId, contractResult, tbReceipt,
+                        tbContract.get(0).getContractAbi());
+            } else {
+                contractName = subContractBinForName(contractBin);
+                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+            }
+        }
+        contractResult.setContractName(contractName);
+        contractResult.setContractAddress(contractAddress);
+        contractResult.setInterfaceName(contractName);
+    }
+
+    /**
+     * parserFunction.
+     * 
+     */
+    private void parserFunction(int chainId, int groupId, ContractParserResult contractResult,
+            TbReceipt tbReceipt, String contractAddress) {
+        String contractBin, contractName, interfaceName;
+        String methodId = tbReceipt.getInput().substring(0, 10);
+        // Precompiled contract
+        if (PrecompiledAddress.isInclude(contractAddress)) {
+            List<MethodInfo> methodInfoList =
+                    methodService.getByMethodInfo(0, 0, methodId, contractAddress, null);
+            if (!CollectionUtils.isEmpty(methodInfoList)) {
+                contractName = methodInfoList.get(0).getContractName();
+                parserInputOutputLogs(chainId, contractResult, tbReceipt,
+                        methodInfoList.get(0).getContractAbi());
+                interfaceName = contractResult.getInterfaceName();
+            } else {
+                interfaceName = methodId;
+                contractName = contractAddress;
+            }
+        } else {  // normal contract
+            contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
+                    tbReceipt.getBlockNumber());
+            contractBin = removeBinFirstAndLast(contractBin);
+            List<MethodInfo> methodInfoList =
+                    methodService.getByMethodInfo(chainId, groupId, methodId, null, contractBin);
+            if (!CollectionUtils.isEmpty(methodInfoList)) {
+                contractName = methodInfoList.get(0).getContractName();
+                parserInputOutputLogs(chainId, contractResult, tbReceipt,
+                        methodInfoList.get(0).getContractAbi());
+                interfaceName = contractResult.getInterfaceName();
+            } else {
+                interfaceName = methodId;
+                contractName = subContractBinForName(contractBin);
+                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+                if (StringUtils.isNoneBlank(contractBin)) {
+                    List<TbContract> contractRow =
+                            contractService.queryContractByBin(chainId, groupId, contractBin);
+                    if (!CollectionUtils.isEmpty(contractRow)) {
+                        contractName = contractRow.get(0).getContractName();
+                        contractResult.setTransUnusualType(TransUnusualType.FUNCTION.getValue());
                     }
                 }
             }
         }
-        // set result
         contractResult.setContractName(contractName);
         contractResult.setContractAddress(contractAddress);
         contractResult.setInterfaceName(interfaceName);
-        contractResult.setTransType(transType);
-        contractResult.setTransUnusualType(transUnusualType);
-        return contractResult;
+        contractResult.setTransType(TransType.CALL.getValue());
     }
 
     /**

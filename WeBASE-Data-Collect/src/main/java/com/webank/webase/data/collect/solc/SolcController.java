@@ -98,15 +98,15 @@ public class SolcController {
     /**
      * download Solc js file.
      * 
-     * @param fileName
+     * @param solcName
      * @return
      */
     @PostMapping("/download")
     public ResponseEntity<InputStreamResource> downloadSolcFile(
-            @RequestParam(value = "fileName", required = true) String fileName) {
-        log.info("downloadSolcFile start. fileName:{}", fileName);
-        RspDownload rspDownload = solcService.getSolcFile(fileName);
-        return ResponseEntity.ok().headers(HttpRequestTools.headers(rspDownload.getFileName()))
+            @RequestParam(value = "solcName", required = true) String solcName) {
+        log.info("downloadSolcFile start. solcName:{}", solcName);
+        RspDownload rspDownload = solcService.getSolcFile(solcName);
+        return ResponseEntity.ok().headers(HttpRequestTools.headers(rspDownload.getSolcName()))
                 .body(new InputStreamResource(rspDownload.getInputStream()));
     }
 

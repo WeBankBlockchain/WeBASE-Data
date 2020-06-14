@@ -1594,3 +1594,106 @@ http://127.0.0.1:5009/WeBASE-Data-Collect/contract/addMethod
     "data": {}
 }
 ```
+
+## 8. 编译器管理模块
+
+### 8.1. 查询编译器列表
+
+#### 8.1.1 传输协议规范
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/solc/list?encryptType={encryptType}**
+- 请求方式：POST
+- 返回格式：JSON
+
+#### 8.1.2 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数    | 类型 | 可为空 | 备注                     |
+| ---- | ----------- | ---- | ------ | ------------------------ |
+| 1    | encryptType | Int  | 是     | 类型（0-ecdsa；1-guomi） |
+
+***2）入参示例***
+
+```
+http://localhost:5009/WeBASE-Data-Collect/solc/list
+```
+
+#### 8.1.3 返回参数 
+
+***1）出参表***
+
+| 序号  | 输出参数    | 类型          |      | 备注                       |
+| ----- | ----------- | ------------- | ---- | -------------------------- |
+| 1     | code        | Int           | 否   | 返回码，0：成功 其它：失败 |
+| 2     | message     | String        | 否   | 描述                       |
+| 3     | totalCount  | Int           | 否   | 总记录数                   |
+| 4     | data        | List          | 否   | 列表                       |
+| 4.1   |             | Object        |      | 对象                       |
+| 4.1.1 | id          | Int           | 否   | 编号                       |
+| 4.1.2 | solcName    | Int           | 否   | 编译器文件名               |
+| 4.1.3 | encryptType | Int           | 否   | 类型                       |
+| 4.1.4 | md5         | String        | 否   | md5值                      |
+| 4.1.5 | fileSize    | Long          | 否   | 文件长度                   |
+| 4.1.6 | description | String        | 是   | 描述                       |
+| 4.1.7 | createTime  | LocalDateTime | 否   | 落库时间                   |
+| 4.1.8 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
+
+***2）出参示例***
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "solcName": "soljson-v0.4.25-gm.js",
+      "encryptType": 1,
+      "md5": "c0810103136fb9177df943346b2dcad4",
+      "fileSize": 8273598,
+      "description": "guomi",
+      "createTime": "2020-06-14 11:05:56",
+      "modifyTime": "2020-06-14 11:05:56"
+    },
+    {
+      "id": 2,
+      "solcName": "soljson-v0.4.25+commit.59dbf8f1.js",
+      "encryptType": 0,
+      "md5": "e201c5913e0982cb90cdb2a711e36f63",
+      "fileSize": 8276063,
+      "description": "ecdsa",
+      "createTime": "2020-06-14 11:19:10",
+      "modifyTime": "2020-06-14 11:19:10"
+    }
+  ]
+}
+```
+
+### 8.2. 编译器下载
+
+#### 8.2.1 传输协议规范
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/solc/download?solcName={solcName}**
+- 请求方式：POST
+- 返回格式：JSON
+
+#### 8.2.2 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型   | 可为空 | 备注         |
+| ---- | -------- | ------ | ------ | ------------ |
+| 1    | solcName | String | 否     | 编译器文件名 |
+
+***2）入参示例***
+
+```
+http://localhost:5009/WeBASE-Data-Collect/solc/download?solcName=soljson-v0.4.25-gm.js
+```
+
+#### 8.2.3 返回参数 
+
+文件流

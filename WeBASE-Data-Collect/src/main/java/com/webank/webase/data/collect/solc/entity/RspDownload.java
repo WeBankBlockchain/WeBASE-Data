@@ -21,6 +21,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RspDownload {
-    private String fileName;
+    private String solcName;
     private InputStream inputStream;
 }

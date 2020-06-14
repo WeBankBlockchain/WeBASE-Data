@@ -23,7 +23,6 @@ public class UnusualContractInfo {
 
     private String contractName;
     private String contractAddress;
-    private int transCount;
-    private String hashs;
+    private String transHash;
     private LocalDateTime time;
 }

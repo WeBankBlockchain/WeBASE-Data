@@ -14,7 +14,6 @@
 package com.webank.webase.data.collect.parser;
 
 import com.webank.webase.data.collect.parser.entity.ContractParserResult;
-import com.webank.webase.data.collect.parser.entity.PageTransInfo;
 import com.webank.webase.data.collect.parser.entity.TbParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
 import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
@@ -43,14 +42,10 @@ public interface ParserMapper {
     List<String> queryUnusualTxHashMethodId(@Param("tableName") String tableName,
             @Param("methodId") String methodId);
 
-    List<TbParser> parserUserList(@Param("tableName") String tableName);
+    List<String> parserUserList(@Param("tableName") String tableName);
 
-    List<TbParser> parserInterfaceList(@Param("tableName") String tableName,
+    List<String> parserInterfaceList(@Param("tableName") String tableName,
             @Param("userName") String userName);
-
-    Integer countOfParserTrans(Map<String, Object> queryParam);
-
-    List<PageTransInfo> qureyTransCountList(Map<String, Object> queryParam);
 
     Integer countOfUnusualUser(@Param("tableName") String tableName,
             @Param("userName") String userName);

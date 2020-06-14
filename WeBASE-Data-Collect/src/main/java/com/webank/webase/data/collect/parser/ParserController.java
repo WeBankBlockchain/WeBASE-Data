@@ -55,8 +55,7 @@ public class ParserController extends BaseController {
         Instant startTime = Instant.now();
         log.info("start reset. blockNumber:{} ", resetInfo.getBlockNumber());
         parserService.reset(resetInfo);
-        log.info("end reset. useTime:{}",
-                Duration.between(startTime, Instant.now()).toMillis());
+        log.info("end reset. useTime:{}", Duration.between(startTime, Instant.now()).toMillis());
         return response;
     }
 
@@ -71,7 +70,7 @@ public class ParserController extends BaseController {
         log.info("start parserUserList startTime:{} groupId:{} ", startTime.toEpochMilli(),
                 groupId);
 
-        List<TbParser> listOfUser = parserService.qureyParserUserList(chainId, groupId);
+        List<String> listOfUser = parserService.qureyParserUserList(chainId, groupId);
         response.setData(listOfUser);
 
         log.info("end parserUserList useTime:{}",
@@ -91,36 +90,11 @@ public class ParserController extends BaseController {
         log.info("start parserInterfaceList startTime:{} groupId:{} ", startTime.toEpochMilli(),
                 groupId);
 
-        List<TbParser> listOfInterface =
+        List<String> listOfInterface =
                 parserService.qureyParserInterfaceList(chainId, groupId, userName);
         response.setData(listOfInterface);
 
         log.info("end parserInterfaceList useTime:{}",
-                Duration.between(startTime, Instant.now()).toMillis());
-        return response;
-    }
-
-    /**
-     * parser trans list.
-     */
-    @GetMapping(value = "/transList/{chainId}/{groupId}")
-    public BaseResponse parserTransList(@PathVariable("chainId") Integer chainId,
-            @PathVariable("groupId") Integer groupId,
-            @RequestParam(value = "userName", required = false) String userName,
-            @RequestParam(value = "startDate", required = false) String startDate,
-            @RequestParam(value = "endDate", required = false) String endDate,
-            @RequestParam(value = "interfaceName", required = false) String interfaceName)
-            throws BaseException {
-        Instant startTime = Instant.now();
-        log.info(
-                "start parserTransList startTime:{} groupId:{} userName:{} startDate:{}"
-                        + " endDate:{} interfaceName:{}",
-                startTime.toEpochMilli(), groupId, userName, startDate, endDate, interfaceName);
-
-        BaseResponse response = parserService.qureyParserTransList(chainId, groupId, userName,
-                startDate, endDate, interfaceName);
-
-        log.info("end parserTransList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return response;
     }

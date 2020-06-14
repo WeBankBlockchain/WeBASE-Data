@@ -128,6 +128,10 @@ jar {
             into 'dist/script'
         }
         copy {
+            from file('solcjs/')
+            into 'dist/solcjs'
+        }
+        copy {
             from configurations.runtime
             into 'dist/lib'
         }

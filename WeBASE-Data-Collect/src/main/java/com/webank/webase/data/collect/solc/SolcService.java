@@ -47,36 +47,36 @@ public class SolcService {
     /**
      * saveSolcFile.
      * 
-     * @param fileNameParam
+     * @param solcNameParam
      * @param encryptType
      * @param solcFileParam
      * @param fileDesc
      */
-    public TbSolc saveSolcFile(String fileNameParam, Integer encryptType, MultipartFile solcFileParam,
+    public TbSolc saveSolcFile(String solcNameParam, Integer encryptType, MultipartFile solcFileParam,
             String fileDesc) {
         // format filename end with js
-        String fileName = formatFileName(fileNameParam);
+        String solcName = formatSolcName(solcNameParam);
         Long fileSize = solcFileParam.getSize();
         if (StringUtils.isBlank(fileDesc)) {
             fileDesc = solcFileParam.getOriginalFilename();
         }
         try {
             // check name and md5 not repeat
-            checkSolcInfoNotExist(fileName);
+            checkSolcInfoNotExist(solcName);
             String md5 = DigestUtils.md5Hex(solcFileParam.getInputStream());
             checkSolcMd5NotExist(md5);
             // save file info db
-            TbSolc tbSolc = saveSolcInfo(fileName, encryptType, fileDesc, fileSize, md5);
+            TbSolc tbSolc = saveSolcInfo(solcName, encryptType, fileDesc, fileSize, md5);
 
             // get solcjs dir and save file
             File solcDir = getSolcDir();
-            File newFile = new File(solcDir.getAbsolutePath() + File.separator + fileName);
+            File newFile = new File(solcDir.getAbsolutePath() + File.separator + solcName);
             solcFileParam.transferTo(newFile);
             
-            log.info("saveSolcFile success, fileName:{}", fileName);
+            log.info("saveSolcFile success, solcName:{}", solcName);
             return querySolc(tbSolc.getId(), null, null);
         } catch (IOException e) {
-            log.error("saveSolcFile fileName:{} error.", fileName, e);
+            log.error("saveSolcFile solcName:{} error.", solcName, e);
             throw new BaseException(ConstantCode.SAVE_SOLC_FILE_ERROR.getCode(), e.getMessage());
         }
     }
@@ -94,18 +94,18 @@ public class SolcService {
      * download file.
      * 
      */
-    public RspDownload getSolcFile(String fileNameParam) {
+    public RspDownload getSolcFile(String nameParam) {
         // format filename end with js
-        String fileName = formatFileName(fileNameParam);
-        checkSolcInfoExist(fileName);
+        String solcName = formatSolcName(nameParam);
+        checkSolcInfoExist(solcName);
         File solcDir = getSolcDir();
         try {
-            String solcLocate = solcDir.getAbsolutePath() + File.separator + fileName;
+            String solcLocate = solcDir.getAbsolutePath() + File.separator + solcName;
             File file = new File(solcLocate);
             InputStream targetStream = Files.newInputStream(Paths.get(file.getPath()));
-            return new RspDownload(fileName, targetStream);
+            return new RspDownload(solcName, targetStream);
         } catch (FileNotFoundException e) {
-            log.error("getSolcFile: file not found:{}, e:{}", fileName, e.getMessage());
+            log.error("getSolcFile: file not found:{}, e:{}", solcName, e.getMessage());
             throw new BaseException(ConstantCode.READ_SOLC_FILE_ERROR);
         } catch (IOException e) {
             log.error("getSolcFile: file not found:{}", e.getMessage());
@@ -127,9 +127,9 @@ public class SolcService {
         // delete db
         removeSolcInfo(id);
         // delete file
-        String fileName = tbSolc.getSolcName();
+        String solcName = tbSolc.getSolcName();
         File solcDir = getSolcDir();
-        String solcLocate = solcDir.getAbsolutePath() + File.separator + fileName;
+        String solcLocate = solcDir.getAbsolutePath() + File.separator + solcName;
         File file = new File(solcLocate);
         if (!file.exists()) {
             throw new BaseException(ConstantCode.SOLC_NOT_EXISTS);
@@ -152,10 +152,10 @@ public class SolcService {
     /**
      * check file's name not exists.
      * 
-     * @param fileName
+     * @param solcName
      */
-    private void checkSolcInfoNotExist(String fileName) {
-        TbSolc checkExist = querySolc(null, fileName, null);
+    private void checkSolcInfoNotExist(String solcName) {
+        TbSolc checkExist = querySolc(null, solcName, null);
         if (Objects.nonNull(checkExist)) {
             throw new BaseException(ConstantCode.SOLC_EXISTS);
         }
@@ -164,10 +164,10 @@ public class SolcService {
     /**
      * check file's name exists.
      * 
-     * @param fileName
+     * @param solcName
      */
-    private void checkSolcInfoExist(String fileName) {
-        TbSolc checkExist = querySolc(null, fileName, null);
+    private void checkSolcInfoExist(String solcName) {
+        TbSolc checkExist = querySolc(null, solcName, null);
         if (Objects.isNull(checkExist)) {
             throw new BaseException(ConstantCode.SOLC_NOT_EXISTS);
         }
@@ -176,16 +176,16 @@ public class SolcService {
     /**
      * saveSolcInfo.
      * 
-     * @param fileName
+     * @param solcName
      * @param encryptType
      * @param description
      * @param fileSize
      * @param md5
      */
-    private TbSolc saveSolcInfo(String fileName, Integer encryptType, String description,
+    private TbSolc saveSolcInfo(String solcName, Integer encryptType, String description,
             Long fileSize, String md5) {
         TbSolc tbSolc = new TbSolc();
-        tbSolc.setSolcName(fileName);
+        tbSolc.setSolcName(solcName);
         tbSolc.setEncryptType(encryptType);
         tbSolc.setMd5(md5);
         tbSolc.setDescription(description);
@@ -198,23 +198,23 @@ public class SolcService {
      * querySolc.
      * 
      * @param id
-     * @param fileName
+     * @param solcName
      * @param md5
      * @return
      */
-    private TbSolc querySolc(Integer id, String fileName, String md5) {
-        SolcParam solcParam = new SolcParam(id, fileName, md5);
+    private TbSolc querySolc(Integer id, String solcName, String md5) {
+        SolcParam solcParam = new SolcParam(id, solcName, md5);
         return solcMapper.querySolc(solcParam);
     }
 
     /**
-     * formatFileName。
+     * formatSolcName。
      * 
-     * @param fileName
+     * @param solcName
      * @return
      */
-    private String formatFileName(String fileName) {
-        return fileName.endsWith(SOLC_JS_SUFFIX) ? fileName : (fileName + SOLC_JS_SUFFIX);
+    private String formatSolcName(String solcName) {
+        return solcName.endsWith(SOLC_JS_SUFFIX) ? solcName : (solcName + SOLC_JS_SUFFIX);
     }
 
     /**

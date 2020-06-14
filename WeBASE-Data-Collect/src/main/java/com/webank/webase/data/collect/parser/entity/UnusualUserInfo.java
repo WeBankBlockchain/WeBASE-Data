@@ -22,7 +22,6 @@ import lombok.Data;
 public class UnusualUserInfo {
 
     private String userName;
-    private int transCount;
-    private String hashs;
+    private String transHash;
     private LocalDateTime time;
 }
