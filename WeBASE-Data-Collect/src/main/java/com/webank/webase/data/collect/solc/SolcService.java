@@ -17,6 +17,7 @@ package com.webank.webase.data.collect.solc;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.solc.entity.RspDownload;
+import com.webank.webase.data.collect.solc.entity.SolcParam;
 import com.webank.webase.data.collect.solc.entity.TbSolc;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,21 +32,27 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 public class SolcService {
 
-    public static final String SOLC_DIR_PATH = "./solcjs";
+    public static final String SOLC_DIR_PATH = "solcjs";
     private static final String SOLC_JS_SUFFIX = ".js";
 
     @Autowired
     private SolcMapper solcMapper;
 
-    @Transactional
-    public void saveSolcFile(String fileNameParam, Integer encryptType, MultipartFile solcFileParam,
+    /**
+     * saveSolcFile.
+     * 
+     * @param fileNameParam
+     * @param encryptType
+     * @param solcFileParam
+     * @param fileDesc
+     */
+    public TbSolc saveSolcFile(String fileNameParam, Integer encryptType, MultipartFile solcFileParam,
             String fileDesc) {
         // format filename end with js
         String fileName = formatFileName(fileNameParam);
@@ -59,13 +66,15 @@ public class SolcService {
             String md5 = DigestUtils.md5Hex(solcFileParam.getInputStream());
             checkSolcMd5NotExist(md5);
             // save file info db
-            saveSolcInfo(fileName, encryptType, fileDesc, fileSize, md5);
+            TbSolc tbSolc = saveSolcInfo(fileName, encryptType, fileDesc, fileSize, md5);
 
             // get solcjs dir and save file
             File solcDir = getSolcDir();
             File newFile = new File(solcDir.getAbsolutePath() + File.separator + fileName);
             solcFileParam.transferTo(newFile);
+            
             log.info("saveSolcFile success, fileName:{}", fileName);
+            return querySolc(tbSolc.getId(), null, null);
         } catch (IOException e) {
             log.error("saveSolcFile fileName:{} error.", fileName, e);
             throw new BaseException(ConstantCode.SAVE_SOLC_FILE_ERROR.getCode(), e.getMessage());
@@ -73,14 +82,14 @@ public class SolcService {
     }
 
     /**
-     * getAllSolcInfo.
+     * getSolcList.
      * 
      * @return
      */
-    public List<TbSolc> getAllSolcInfo(Integer encryptType) {
-        return solcMapper.getAll(encryptType);
+    public List<TbSolc> getSolcList(Integer encryptType) {
+        return solcMapper.getSolcList(encryptType);
     }
-    
+
     /**
      * download file.
      * 
@@ -104,8 +113,14 @@ public class SolcService {
         }
     }
 
+    /**
+     * deleteFile.
+     * 
+     * @param id
+     * @return
+     */
     public boolean deleteFile(Integer id) {
-        TbSolc tbSolc = solcMapper.findById(id);
+        TbSolc tbSolc = querySolc(id, null, null);
         if (Objects.isNull(tbSolc)) {
             throw new BaseException(ConstantCode.SOLC_NOT_EXISTS);
         }
@@ -128,7 +143,7 @@ public class SolcService {
      * @param md5
      */
     private void checkSolcMd5NotExist(String md5) {
-        TbSolc checkExist = solcMapper.findByMd5(md5);
+        TbSolc checkExist = querySolc(null, null, md5);
         if (Objects.nonNull(checkExist)) {
             throw new BaseException(ConstantCode.SOLC_EXISTS);
         }
@@ -140,7 +155,7 @@ public class SolcService {
      * @param fileName
      */
     private void checkSolcInfoNotExist(String fileName) {
-        TbSolc checkExist = solcMapper.findBySolcName(fileName);
+        TbSolc checkExist = querySolc(null, fileName, null);
         if (Objects.nonNull(checkExist)) {
             throw new BaseException(ConstantCode.SOLC_EXISTS);
         }
@@ -152,13 +167,22 @@ public class SolcService {
      * @param fileName
      */
     private void checkSolcInfoExist(String fileName) {
-        TbSolc checkExist = solcMapper.findBySolcName(fileName);
+        TbSolc checkExist = querySolc(null, fileName, null);
         if (Objects.isNull(checkExist)) {
             throw new BaseException(ConstantCode.SOLC_NOT_EXISTS);
         }
     }
 
-    private void saveSolcInfo(String fileName, Integer encryptType, String description,
+    /**
+     * saveSolcInfo.
+     * 
+     * @param fileName
+     * @param encryptType
+     * @param description
+     * @param fileSize
+     * @param md5
+     */
+    private TbSolc saveSolcInfo(String fileName, Integer encryptType, String description,
             Long fileSize, String md5) {
         TbSolc tbSolc = new TbSolc();
         tbSolc.setSolcName(fileName);
@@ -167,8 +191,28 @@ public class SolcService {
         tbSolc.setDescription(description);
         tbSolc.setFileSize(fileSize);
         solcMapper.save(tbSolc);
+        return tbSolc;
     }
 
+    /**
+     * querySolc.
+     * 
+     * @param id
+     * @param fileName
+     * @param md5
+     * @return
+     */
+    private TbSolc querySolc(Integer id, String fileName, String md5) {
+        SolcParam solcParam = new SolcParam(id, fileName, md5);
+        return solcMapper.querySolc(solcParam);
+    }
+
+    /**
+     * formatFileName。
+     * 
+     * @param fileName
+     * @return
+     */
     private String formatFileName(String fileName) {
         return fileName.endsWith(SOLC_JS_SUFFIX) ? fileName : (fileName + SOLC_JS_SUFFIX);
     }
@@ -178,7 +222,6 @@ public class SolcService {
      * 
      */
     private File getSolcDir() {
-
         File fileDir = new File(SOLC_DIR_PATH);
         // check parent path
         if (!fileDir.exists()) {
@@ -187,6 +230,11 @@ public class SolcService {
         return fileDir;
     }
 
+    /**
+     * removeSolcInfo。
+     * 
+     * @param id
+     */
     private void removeSolcInfo(Integer id) {
         solcMapper.delete(id);
     }

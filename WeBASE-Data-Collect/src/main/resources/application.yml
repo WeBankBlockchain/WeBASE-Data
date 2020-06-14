@@ -11,6 +11,10 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/webasedatacollect?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
     username: "defaultAccount"
     password: "defaultPassword"
+  servlet:
+    multipart:
+      max-request-size: 30MB # request max size
+      max-file-size: 20MB # single file size
 
 # constants
 constant:

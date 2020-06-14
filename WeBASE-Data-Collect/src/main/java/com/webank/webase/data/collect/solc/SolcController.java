@@ -20,7 +20,6 @@ import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.tools.HttpRequestTools;
 import com.webank.webase.data.collect.solc.entity.RspDownload;
 import com.webank.webase.data.collect.solc.entity.TbSolc;
-import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
  * upload and download solc js file
  */
 @Slf4j
-@Api(value = "/solc", tags = "upload/download solc js controller")
 @RestController
 @RequestMapping("solc")
 public class SolcController {
@@ -56,18 +54,19 @@ public class SolcController {
      * @param description
      * @return
      */
-    @PostMapping("/upload")
+//    @PostMapping("/upload")
     public BaseResponse upload(@RequestParam(value = "fileName", required = true) String fileName,
             @RequestParam(value = "encryptType", required = true,
                     defaultValue = "0") Integer encryptType,
             @RequestParam("solcFile") MultipartFile solcFile,
-            @RequestParam("description") String description) throws IOException {
+            @RequestParam(value = "description", required = false) String description)
+            throws IOException {
         log.info("upload start. fileName:{}", fileName);
         if (solcFile.getSize() == 0L) {
             throw new BaseException(ConstantCode.SOLC_FILE_EMPTY);
         }
-        solcService.saveSolcFile(fileName, encryptType, solcFile, description);
-        return new BaseResponse(ConstantCode.SUCCESS);
+        TbSolc tbSolc = solcService.saveSolcFile(fileName, encryptType, solcFile, description);
+        return new BaseResponse(ConstantCode.SUCCESS, tbSolc);
     }
 
     /**
@@ -76,9 +75,9 @@ public class SolcController {
      * @return
      */
     @GetMapping("/list")
-    public BaseResponse getSolcList(@RequestParam(value = "encryptType") Integer encryptType) {
+    public BaseResponse getSolcList(@RequestParam(value = "encryptType", required = false) Integer encryptType) {
         log.info("getSolcList start.");
-        List<TbSolc> resList = solcService.getAllSolcInfo(encryptType);
+        List<TbSolc> resList = solcService.getSolcList(encryptType);
         return new BaseResponse(ConstantCode.SUCCESS, resList);
     }
 
@@ -88,7 +87,7 @@ public class SolcController {
      * @param id
      * @return
      */
-    @DeleteMapping("/{id}")
+//    @DeleteMapping("/{id}")
     public BaseResponse deleteSolcFile(@PathVariable("id") Integer id) {
         log.info("deleteSolcFile start. id:{}", id);
         solcService.deleteFile(id);

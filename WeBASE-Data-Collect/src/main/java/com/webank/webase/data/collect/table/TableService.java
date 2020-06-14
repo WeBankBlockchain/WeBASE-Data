@@ -35,11 +35,25 @@ public class TableService {
     private TableMapper tableMapper;
     @Value("${spring.datasource.url}")
     private String dbUrl;
-
+    
     /**
-     * create table by groupId
+     * create common table.
      */
-    public void newTable(int chainId, int groupId) {
+    public void newCommonTable() {
+        tableMapper.createTbChain();
+        tableMapper.createTbFront();
+        tableMapper.createTbGroup();
+        tableMapper.createTbFrontGroupMap();
+        tableMapper.createTbUser();
+        tableMapper.createTbContract();
+        tableMapper.createTbMethod();
+        tableMapper.createTbSolc();
+    }
+    
+    /**
+     * create sub table.
+     */
+    public void newSubTable(int chainId, int groupId) {
         tableMapper.createTbTaskPool(TableName.TASK.getTableName(chainId, groupId));
         tableMapper.createTbBlock(TableName.BLOCK.getTableName(chainId, groupId));
         tableMapper.createTbTransaction(TableName.TRANS.getTableName(chainId, groupId));

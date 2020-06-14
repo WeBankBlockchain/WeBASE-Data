@@ -33,6 +33,8 @@ public interface TableMapper {
     int createTbContract();
     
     int createTbMethod();
+    
+    int createTbSolc();
 
     int createTbTaskPool(@Param("tableName") String tableName);
 

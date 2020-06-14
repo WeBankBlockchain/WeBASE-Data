@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS tb_method (
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS tb_solc (
 	id int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
-	solc_name varchar(128) COMMENT '名称',
+	solc_name varchar(128) COMMENT '编译名称',
 	encrypt_type tinyint(4) DEFAULT '0' COMMENT '类型（ 0-非国密 1-国密）',
 	md5 varchar(128) COMMENT 'md5',
 	file_size bigint(25)COMMENT '文件长度',
@@ -137,4 +137,4 @@ CREATE TABLE IF NOT EXISTS tb_solc (
 	create_time datetime DEFAULT NULL COMMENT '创建时间',
 	modify_time datetime DEFAULT NULL COMMENT '修改时间',
 	PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='前置群组映射表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='编译器信息表';

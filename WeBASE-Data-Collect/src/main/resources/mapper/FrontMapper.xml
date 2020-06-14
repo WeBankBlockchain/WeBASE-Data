@@ -61,7 +61,6 @@
 		</if>
 	</select>
 
-
 	<select id="getList" resultMap="frontMap"
 		parameterType="com.webank.webase.data.collect.front.entity.FrontParam">
 		select * from tb_front

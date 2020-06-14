@@ -38,9 +38,9 @@
 		parameterType="com.webank.webase.data.collect.frontgroupmap.entity.MapListParam">
 		select count(1) from tb_front_group_map where 1=1
 		<if test="mapId != null and mapId != ''">
-			and map_id = #{param.mapId}
+			and map_id = #{mapId}
 		</if>
-		<if test="chainId != null">
+		<if test="chainId != null and chainId != ''">
 			and a.chain_id = #{chainId}
 		</if>
 		<if test="frontId != null and frontId != ''">
@@ -63,9 +63,9 @@
 		left join tb_chain d on(a.chain_id=d.chain_id)
 		where 1=1
 		<if test="mapId != null and mapId != ''">
-			and a.map_id = #{param.mapId}
+			and a.map_id = #{mapId}
 		</if>
-		<if test="chainId != null">
+		<if test="chainId != null and chainId != ''">
 			and a.chain_id = #{chainId}
 		</if>
 		<if test="frontId != null and frontId != ''">
@@ -88,8 +88,7 @@
 
 	<delete id="removeByGroupId">
 		delete from tb_front_group_map
-		where chain_id =
-		#{chainId}
+		where chain_id = #{chainId}
 		and group_id = #{groupId}
 	</delete>
 

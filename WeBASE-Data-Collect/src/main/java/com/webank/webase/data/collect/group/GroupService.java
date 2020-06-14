@@ -81,7 +81,7 @@ public class GroupService {
         TbGroup tbGroup = new TbGroup(groupId, chainId, groupName, nodeCount, genesisBlockHash);
         groupMapper.save(tbGroup);
         // create table by group id
-        tableService.newTable(chainId, groupId);
+        tableService.newSubTable(chainId, groupId);
     }
 
     /**

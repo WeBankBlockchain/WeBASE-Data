@@ -13,6 +13,7 @@
  */
 package com.webank.webase.data.collect.solc;
 
+import com.webank.webase.data.collect.solc.entity.SolcParam;
 import com.webank.webase.data.collect.solc.entity.TbSolc;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -26,13 +27,9 @@ public interface SolcMapper {
 
     int save(TbSolc tbSolc);
 
-    List<TbSolc> getAll(@Param("encryptType") Integer encryptType);
+    List<TbSolc> getSolcList(@Param("encryptType") Integer encryptType);
 
-    TbSolc findById(@Param("id") Integer id);
-
-    TbSolc findBySolcName(@Param("fileName") String fileName);
-
-    TbSolc findByMd5(@Param("md5") String md5);
+    TbSolc querySolc(SolcParam solcParam);
 
     void delete(@Param("id") Integer id);
 }

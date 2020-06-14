@@ -14,7 +14,7 @@
 
 package com.webank.webase.data.collect.base.config;
 
-import com.webank.webase.data.collect.table.TableMapper;
+import com.webank.webase.data.collect.table.TableService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -26,16 +26,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TableInitConfig implements InitializingBean {
     @Autowired
-    private TableMapper tableMapper;
+    private TableService tableService;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        tableMapper.createTbChain();
-        tableMapper.createTbFront();
-        tableMapper.createTbGroup();
-        tableMapper.createTbFrontGroupMap();
-        tableMapper.createTbUser();
-        tableMapper.createTbContract();
-        tableMapper.createTbMethod();
+        tableService.newCommonTable();
     }
 }

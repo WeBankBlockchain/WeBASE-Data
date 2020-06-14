@@ -92,7 +92,7 @@
 		<if test="contractId != null and contractId != ''">
 			and contract_id = #{contractId}
 		</if>
-		<if test="chainId != null">
+		<if test="chainId != null and chainId != ''">
 			and chain_id = #{chainId}
 		</if>
 		<if test="groupId != null and groupId != ''">
@@ -113,7 +113,7 @@
 		<if test="contractId != null and contractId != ''">
 			and contract_id = #{contractId}
 		</if>
-		<if test="chainId != null">
+		<if test="chainId != null and chainId != ''">
 			and chain_id = #{chainId}
 		</if>
 		<if test="groupId != null and groupId != ''">
@@ -142,13 +142,13 @@
 		parameterType="com.webank.webase.data.collect.contract.entity.ContractParam"
 		resultMap="contractMap">
 		select * from tb_contract where 1=1
-		<if test="contractId != null">
+		<if test="contractId != null and contractId != ''">
 			and contract_id = #{contractId}
 		</if>
-		<if test="chainId != null">
+		<if test="chainId != null and chainId != ''">
 			and chain_id = #{chainId}
 		</if>
-		<if test="groupId != null">
+		<if test="groupId != null and groupId != ''">
 			and group_id = #{groupId}
 		</if>
 		<if test="contractName != null and contractName != ''">

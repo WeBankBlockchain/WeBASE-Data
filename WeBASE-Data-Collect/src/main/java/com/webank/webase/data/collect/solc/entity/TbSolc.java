@@ -14,6 +14,7 @@
 
 package com.webank.webase.data.collect.solc.entity;
 
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
@@ -24,4 +25,6 @@ public class TbSolc {
     private String md5;
     private Long fileSize;
     private String description;
+    private LocalDateTime createTime;
+    private LocalDateTime modifyTime;
 }
