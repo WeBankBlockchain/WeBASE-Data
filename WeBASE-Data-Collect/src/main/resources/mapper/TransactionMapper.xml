@@ -14,8 +14,6 @@
 			jdbcType="VARCHAR" property="transFrom" />
 		<result column="trans_to" javaType="java.lang.String" jdbcType="VARCHAR"
 			property="transTo" />
-		<result column="input" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="input" />
 		<result column="block_number" javaType="java.math.BigInteger"
 			jdbcType="INTEGER" property="blockNumber" />
 		<result column="block_timestamp" javaType="java.time.LocalDateTime"
@@ -28,13 +26,11 @@
 			jdbcType="TIMESTAMP" property="modifyTime" />
 	</resultMap>
 
-
 	<insert id="add">
 		insert ignore into
-		${tableName}(trans_hash,trans_from,trans_to,input,block_number,block_timestamp,create_time,modify_time)
-		values(#{trans.transHash},#{trans.transFrom},#{trans.transTo},#{trans.input},#{trans.blockNumber},#{trans.blockTimestamp},NOW(),NOW())
+		${tableName}(trans_hash,trans_from,trans_to,block_number,block_timestamp,create_time,modify_time)
+		values(#{trans.transHash},#{trans.transFrom},#{trans.transTo},#{trans.blockNumber},#{trans.blockTimestamp},NOW(),NOW())
 	</insert>
-
 
 	<select id="getCount"
 		parameterType="com.webank.webase.data.collect.transaction.entity.TransListParam"
@@ -72,22 +68,23 @@
 		</if>
 	</select>
 
+	<select id="getByHash" resultMap="transactionMap">
+		select * from ${tableName}
+		where trans_hash = #{transHash}
+	</select>
+	
 	<select id="listOfUnStatTransaction" resultMap="transactionMap">
-		select * from
-		${tableName}
+		select * from ${tableName}
 		where audit_flag=1
 		order by block_number
 		limit 2000
 	</select>
 
 	<select id="listOfUnStatTransactionByJob" resultMap="transactionMap">
-		select *
-		from ${tableName}
+		select * from ${tableName}
 		where audit_flag=1 and
-		MOD(block_number,#{shardingTotalCount}) =
-		#{shardingItem}
-		order by
-		block_number
+		MOD(block_number,#{shardingTotalCount}) = #{shardingItem}
+		order by block_number
 		limit 0,10000
 	</select>
 
@@ -95,8 +92,7 @@
 		resultType="com.webank.webase.data.collect.block.entity.MinMaxBlock">
 		select
 		max(block_number) as maxBlockNumber,min(block_number)
-		as
-		minBLockNumber
+		as minBLockNumber
 		from ${tableName}
 	</select>
 
@@ -107,18 +103,16 @@
 		block_number &lt;= (select max(block_number) blockNumber from
 		tb_trans_daily where group_id = #{groupId})
 		order by block_number
-		limit
-		${subTransNum}
+		limit ${subTransNum}
 	</delete>
 
 	<update id="updateTransStatFlag">
 		update ${tableName}
 		set audit_flag = 2
-		where
-		trans_hash = #{transHash}
+		where trans_hash = #{transHash}
 	</update>
 	
 	<delete id="rollback">
-		DELETE from tb_block_${groupId} where block_number = ${blockNumber}
+		DELETE from ${tableName} where block_number = ${blockNumber}
 	</delete>
 </mapper>

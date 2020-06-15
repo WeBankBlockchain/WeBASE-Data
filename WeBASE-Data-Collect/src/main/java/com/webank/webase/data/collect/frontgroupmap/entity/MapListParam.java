@@ -18,6 +18,7 @@ import lombok.Data;
 @Data
 public class MapListParam {
     private int mapId;
+    private int chainId;
     private int frontId;
     private int groupId;
 }

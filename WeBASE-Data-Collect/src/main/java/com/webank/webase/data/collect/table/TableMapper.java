@@ -19,12 +19,22 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TableMapper {
+    
+    int createTbChain();
 
     int createTbFront();
 
     int createTbGroup();
 
     int createTbFrontGroupMap();
+    
+    int createTbUser();
+    
+    int createTbContract();
+    
+    int createTbMethod();
+    
+    int createTbSolc();
 
     int createTbTaskPool(@Param("tableName") String tableName);
 
@@ -34,7 +44,7 @@ public interface TableMapper {
 
     int createTbReceipt(@Param("tableName") String tableName);
 
-    int createTbAudit(@Param("tableName") String tableName);
+    int createTbParser(@Param("tableName") String tableName);
 
     List<String> queryTables(@Param("dbName") String dbName, @Param("tableName") String tableName);
 

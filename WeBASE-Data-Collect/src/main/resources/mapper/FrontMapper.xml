@@ -7,6 +7,8 @@
 		type="com.webank.webase.data.collect.front.entity.TbFront">
 		<id column="front_id" javaType="java.lang.Integer" jdbcType="INTEGER"
 			property="frontId" />
+		<result column="chain_id" javaType="java.lang.Integer"
+			jdbcType="INTEGER" property="chainId" />
 		<result column="node_id" javaType="java.lang.String" jdbcType="VARCHAR"
 			property="nodeId" />
 		<result column="front_ip" javaType="java.lang.String" jdbcType="VARCHAR"
@@ -22,9 +24,9 @@
 	</resultMap>
 
 	<insert id="add">
-		insert ignore into tb_front
-		(node_id,front_ip,front_port,agency,create_time,modify_time)
-		values(#{nodeId},#{frontIp},#{frontPort},#{agency},NOW(),NOW())
+		insert into tb_front
+		(chain_id,node_id,front_ip,front_port,agency,create_time,modify_time)
+		values(#{chainId},#{nodeId},#{frontIp},#{frontPort},#{agency},NOW(),NOW())
 		<selectKey keyProperty="frontId" order="AFTER" resultType="java.lang.Integer">
 			SELECT LAST_INSERT_ID()
 		</selectKey>
@@ -35,10 +37,16 @@
 		select count(1) from tb_front
 		where front_id in(select front_id from
 		tb_front_group_map where 1=1
+		<if test="chainId != null">
+			and chain_id = #{chainId}
+		</if>
 		<if test="groupId != null">
 			and group_id = #{groupId}
 		</if>
 		group by front_id)
+		<if test="chainId != null">
+			and chain_id = #{chainId}
+		</if>
 		<if test="frontId != null">
 			and front_id = #{frontId}
 		</if>
@@ -53,16 +61,21 @@
 		</if>
 	</select>
 
-
 	<select id="getList" resultMap="frontMap"
 		parameterType="com.webank.webase.data.collect.front.entity.FrontParam">
 		select * from tb_front
 		where front_id in(select front_id from
 		tb_front_group_map where 1=1
+		<if test="chainId != null">
+			and chain_id = #{chainId}
+		</if>
 		<if test="groupId != null">
 			and group_id = #{groupId}
 		</if>
 		group by front_id)
+		<if test="chainId != null">
+			and chain_id = #{chainId}
+		</if>
 		<if test="frontId != null">
 			and front_id = #{frontId}
 		</if>
@@ -82,9 +95,16 @@
 		from tb_front where front_id = #{frontId}
 	</select>
 
-	<delete id="remove" parameterType="java.lang.Integer">
-		delete from tb_front where
-		front_id=#{frontId}
+	<select id="getByChainIdAndNodeId" resultMap="frontMap">
+		select * from tb_front where chain_id = #{chainId} and node_id = #{nodeId}
+	</select>
+
+	<delete id="removeById">
+		delete from tb_front where front_id=#{frontId}
+	</delete>
+
+	<delete id="removeByChainId">
+		delete from tb_front where chain_id=#{chainId}
 	</delete>
 
 </mapper>

@@ -30,11 +30,13 @@ public interface ReceiptMapper {
     int add(@Param("tableName") String tableName,@Param("trans")TbReceipt tbReceipt);
 
     int getCount(@Param("tableName") String tableName,@Param("param") TransListParam param);
+    
+    TbReceipt getByHash(@Param("tableName") String tableName,@Param("transHash") String transHash);
 
     List<TbReceipt> getList(@Param("tableName") String tableName,@Param("param") TransListParam param);
 
     int remove(@Param("tableName") String tableName,
         @Param("subTransNum") Integer subTransNum,@Param("groupId") Integer groupId);
     
-    void rollback(@Param("groupId") int groupId, @Param("blockNumber") long blockNumber);
+    void rollback(@Param("tableName") String tableName, @Param("blockNumber") long blockNumber);
 }

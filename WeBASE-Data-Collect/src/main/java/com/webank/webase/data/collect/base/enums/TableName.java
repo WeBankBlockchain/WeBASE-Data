@@ -17,14 +17,11 @@ package com.webank.webase.data.collect.base.enums;
  * table name.
  */
 public enum TableName {
-    FRONT("tb_front"), 
-    GROUP("tb_group"), 
-    FRONTGROUPMAP("tb_front_group_map"), 
     TASK("tb_task_pool_"), 
     BLOCK("tb_block_"), 
     TRANS("tb_transaction_"), 
     RECEIPT("tb_receipt_"), 
-    AUDIT("tb_audit_");
+    PARSER("tb_parser_");
 
     String value;
 
@@ -36,7 +33,7 @@ public enum TableName {
         return value;
     }
 
-    public String getTableName(int i) {
-        return value + i;
+    public String getTableName(int chainId, int groupId) {
+        return value + chainId + "_" + groupId;
     }
 }

@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.base.exception;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.code.RetCode;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
@@ -43,9 +42,7 @@ public class ExceptionsHandler {
         log.warn("catch business exception", baseException);
         RetCode retCode = Optional.ofNullable(baseException).map(BaseException::getRetCode)
             .orElse(ConstantCode.SYSTEM_EXCEPTION);
-
         BaseResponse bre = new BaseResponse(retCode);
-        log.warn("business exception return:{}", JSON.toJSONString(bre));
         return bre;
     }
 
@@ -59,9 +56,7 @@ public class ExceptionsHandler {
         log.warn("catch param exception", paramException);
         RetCode retCode = Optional.ofNullable(paramException).map(ParamException::getRetCode)
             .orElse(ConstantCode.SYSTEM_EXCEPTION);
-
         BaseResponse bre = new BaseResponse(retCode);
-        log.warn("param exception return:{}", JSON.toJSONString(bre));
         return bre;
     }
 
@@ -73,10 +68,8 @@ public class ExceptionsHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse typeMismatchExceptionHandler(TypeMismatchException ex) {
         log.warn("catch typeMismatchException", ex);
-
         RetCode retCode = new RetCode(ConstantCode.PARAM_EXCEPTION.getCode(), ex.getMessage());
         BaseResponse bre = new BaseResponse(retCode);
-        log.warn("typeMismatchException return:{}", JSON.toJSONString(bre));
         return bre;
     }
 
@@ -88,11 +81,7 @@ public class ExceptionsHandler {
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public BaseResponse exceptionHandler(RuntimeException exc) {
         log.warn("catch RuntimeException", exc);
-        // 默认系统异常
-        RetCode retCode = ConstantCode.SYSTEM_EXCEPTION;
-
-        BaseResponse bre = new BaseResponse(retCode);
-        log.warn("system RuntimeException return:{}", JSON.toJSONString(bre));
+        BaseResponse bre = new BaseResponse(ConstantCode.SYSTEM_EXCEPTION);
         return bre;
     }
 }

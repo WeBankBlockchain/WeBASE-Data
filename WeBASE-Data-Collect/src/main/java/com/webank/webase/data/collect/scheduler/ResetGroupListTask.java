@@ -37,7 +37,7 @@ public class ResetGroupListTask {
     /**
      * async reset groupList.
      */
-    @Async(value = "mgrAsyncExecutor")
+    @Async("asyncExecutor")
     public void asyncResetGroupList() {
         resetGroupList();
     }

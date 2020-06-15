@@ -3,11 +3,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--对应mapper接口 -->
-<mapper namespace="com.webank.webase.data.collect.frontgroupmap.FrontGroupMapMapper">
+<mapper
+	namespace="com.webank.webase.data.collect.frontgroupmap.FrontGroupMapMapper">
 	<resultMap id="frontGroupMap"
 		type="com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup">
 		<id column="map_id" javaType="java.lang.Integer" jdbcType="INTEGER"
 			property="mapId" />
+		<result column="chain_id" javaType="java.lang.Integer"
+			jdbcType="INTEGER" property="chainId" />
 		<result column="group_id" javaType="java.lang.Integer"
 			jdbcType="INTEGER" property="groupId" />
 		<result column="group_name" javaType="java.lang.String"
@@ -18,13 +21,14 @@
 			property="frontIp" />
 		<result column="front_port" javaType="java.lang.Integer"
 			jdbcType="INTEGER" property="frontPort" />
+		<result column="group_status" javaType="java.lang.Integer" jdbcType="INTEGER"
+			property="groupStatus" />
 	</resultMap>
-
 
 	<insert id="add"
 		parameterType="com.webank.webase.data.collect.frontgroupmap.entity.TbFrontGroupMap">
 		insert ignore into tb_front_group_map
-		(front_id,group_id,create_time,modify_time)values(#{frontId},#{groupId},NOW(),NOW())
+		(chain_id,front_id,group_id,create_time,modify_time)values(#{chainId},#{frontId},#{groupId},NOW(),NOW())
 		<selectKey keyProperty="mapId" order="AFTER" resultType="java.lang.Integer">
 			SELECT LAST_INSERT_ID()
 		</selectKey>
@@ -34,7 +38,10 @@
 		parameterType="com.webank.webase.data.collect.frontgroupmap.entity.MapListParam">
 		select count(1) from tb_front_group_map where 1=1
 		<if test="mapId != null and mapId != ''">
-			and map_id = #{param.mapId}
+			and map_id = #{mapId}
+		</if>
+		<if test="chainId != null and chainId != ''">
+			and a.chain_id = #{chainId}
 		</if>
 		<if test="frontId != null and frontId != ''">
 			and front_id = #{frontId}
@@ -46,14 +53,20 @@
 
 	<select id="getList" resultMap="frontGroupMap"
 		parameterType="com.webank.webase.data.collect.frontgroupmap.entity.MapListParam">
-		select
-		a.map_id,a.front_id,a.group_id,b.front_ip,b.front_port,c.group_name
+		select a.map_id,a.chain_id,a.group_id,a.front_id,b.front_ip,b.front_port,c.group_status
 		from tb_front_group_map a
 		left join tb_front b on(a.front_id=b.front_id)
-		left join tb_group c on(a.group_id=c.group_id)
+		left join tb_group c on(
+		a.chain_id=c.chain_id
+		and a.group_id=c.group_id
+		)
+		left join tb_chain d on(a.chain_id=d.chain_id)
 		where 1=1
 		<if test="mapId != null and mapId != ''">
-			and a.map_id = #{param.mapId}
+			and a.map_id = #{mapId}
+		</if>
+		<if test="chainId != null and chainId != ''">
+			and a.chain_id = #{chainId}
 		</if>
 		<if test="frontId != null and frontId != ''">
 			and a.front_id = #{frontId}
@@ -63,17 +76,27 @@
 		</if>
 	</select>
 
-	<delete id="removeByGroupId" parameterType="java.lang.Integer">
-		delete from tb_front_group_map where group_id = #{groupId}
+	<delete id="removeByChainId">
+		delete from tb_front_group_map where chain_id =
+		#{chainId}
 	</delete>
 
-	<delete id="removeByFrontId" parameterType="java.lang.Integer">
-		delete from tb_front_group_map where front_id = #{frontId}
+	<delete id="removeByFrontId">
+		delete from tb_front_group_map where front_id =
+		#{frontId}
+	</delete>
+
+	<delete id="removeByGroupId">
+		delete from tb_front_group_map
+		where chain_id = #{chainId}
+		and group_id = #{groupId}
 	</delete>
 
 	<delete id="removeInvalidMap">
 		delete a.* from tb_front_group_map a
-		where NOT EXISTS(select * from tb_front b where a.front_id=b.front_id)
-		or NOT EXISTS(select * from tb_group c where a.group_id=c.group_id)
+		where NOT
+		EXISTS(select * from tb_front b where a.front_id=b.front_id)
+		or NOT
+		EXISTS(select * from tb_group c where a.group_id=c.group_id)
 	</delete>
 </mapper>

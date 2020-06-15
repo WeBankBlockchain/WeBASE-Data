@@ -14,7 +14,6 @@
 package com.webank.webase.data.collect.front;
 
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
@@ -57,7 +56,7 @@ public class FrontController extends BaseController {
     public BaseResponse newFront(@RequestBody @Valid FrontInfo frontInfo, BindingResult result) {
         checkBindResult(result);
         Instant startTime = Instant.now();
-        log.info("start newFront. frontInfo:{}", JSON.toJSONString(frontInfo));
+        log.info("start newFront. frontInfo:{}", frontInfo);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         TbFront tbFront = frontService.newFront(frontInfo);
         baseResponse.setData(tbFront);
@@ -71,6 +70,7 @@ public class FrontController extends BaseController {
      */
     @GetMapping(value = "/list")
     public BasePageResponse queryFrontList(
+            @RequestParam(value = "chainId", required = false) Integer chainId,
             @RequestParam(value = "frontId", required = false) Integer frontId,
             @RequestParam(value = "groupId", required = false) Integer groupId)
             throws BaseException {
@@ -80,6 +80,7 @@ public class FrontController extends BaseController {
 
         // param
         FrontParam param = new FrontParam();
+        param.setChainId(chainId);
         param.setFrontId(frontId);
         param.setGroupId(groupId);
 
@@ -105,7 +106,7 @@ public class FrontController extends BaseController {
         log.info("start removeFront. frontId:{}", frontId);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
         // remove
-        frontService.removeFront(frontId);
+        frontService.removeByFrontId(frontId);
 
         log.info("end removeFront. useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());

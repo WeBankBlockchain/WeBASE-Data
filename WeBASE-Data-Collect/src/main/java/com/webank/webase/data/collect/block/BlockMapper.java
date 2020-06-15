@@ -67,5 +67,5 @@ public interface BlockMapper {
     Integer remove(@Param("tableName") String tableName,
             @Param("blockRetainMax") BigInteger blockRetainMax);
 
-    void rollback(@Param("groupId") int groupId, @Param("blockNumber") long blockNumber);
+    void rollback(@Param("tableName") String tableName, @Param("blockNumber") long blockNumber);
 }

@@ -13,15 +13,16 @@
  */
 package com.webank.webase.data.collect.front;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.tools.CommonTools;
+import com.webank.webase.data.collect.chain.ChainService;
+import com.webank.webase.data.collect.chain.entity.TbChain;
 import com.webank.webase.data.collect.front.entity.FrontInfo;
 import com.webank.webase.data.collect.front.entity.FrontParam;
 import com.webank.webase.data.collect.front.entity.TbFront;
+import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
-import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.frontinterface.entity.SyncStatus;
 import com.webank.webase.data.collect.group.GroupService;
@@ -29,7 +30,6 @@ import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
 import java.math.BigInteger;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
-import org.fisco.bcos.web3j.crypto.EncryptType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class FrontService {
 
+    @Autowired
+    private ChainService chainService;
     @Autowired
     private GroupService groupService;
     @Autowired
@@ -61,6 +63,12 @@ public class FrontService {
     @Transactional
     public TbFront newFront(FrontInfo frontInfo) {
         log.debug("start newFront frontInfo:{}", frontInfo);
+        // check chainId
+        Integer chainId = frontInfo.getChainId();
+        TbChain tbChain = chainService.getChainById(chainId);
+        if (tbChain == null) {
+            throw new BaseException(ConstantCode.INVALID_CHAIN_ID);
+        }
         String frontIp = frontInfo.getFrontIp();
         Integer frontPort = frontInfo.getFrontPort();
         // check front ip and port
@@ -73,19 +81,20 @@ public class FrontService {
             log.error("fail newFront, frontIp:{},frontPort:{}", frontIp, frontPort);
             throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL);
         }
-        // check front's encrypt type same as nodemgr(guomi or standard)
+        // check front's encrypt type
         int encryptType = frontInterface.getEncryptTypeFromSpecificFront(frontIp, frontPort);
-        if (encryptType != EncryptType.encryptType) {
+        if (encryptType != tbChain.getChainType()) {
             log.error(
                     "fail newFront, frontIp:{},frontPort:{},front's encryptType:{},"
                             + "local encryptType not match:{}",
-                    frontIp, frontPort, encryptType, EncryptType.encryptType);
+                    frontIp, frontPort, encryptType, tbChain.getChainType());
             throw new BaseException(ConstantCode.ENCRYPT_TYPE_NOT_MATCH);
         }
         // check front not exist
         SyncStatus syncStatus = frontInterface.getSyncStatusFromSpecificFront(frontIp, frontPort,
                 Integer.valueOf(groupIdList.get(0)));
         FrontParam param = new FrontParam();
+        param.setChainId(chainId);
         param.setNodeId(syncStatus.getNodeId());
         int count = getFrontCount(param);
         if (count > 0) {
@@ -98,24 +107,24 @@ public class FrontService {
         // save front info
         frontMapper.add(tbFront);
         if (tbFront.getFrontId() == null || tbFront.getFrontId() == 0) {
-            log.warn("fail newFront, after save, tbFront:{}", JSON.toJSONString(tbFront));
+            log.warn("fail newFront, after save, tbFront:{}", tbFront);
             throw new BaseException(ConstantCode.SAVE_FRONT_FAIL);
         }
         for (String groupId : groupIdList) {
             Integer gId = Integer.valueOf(groupId);
             // peer in group
             List<String> groupPeerList =
-                    frontInterface.getNodeIDListFromSpecificFront(frontIp, frontPort, gId);
+                    frontInterface.getGroupPeersFromSpecificFront(frontIp, frontPort, gId);
             String genesisBlockHash = frontInterface
                     .getBlockByNumberFromSpecificFront(frontIp, frontPort, gId, BigInteger.ZERO)
                     .getHash();
             // add group
-            groupService.saveGroup(gId, groupPeerList.size(), genesisBlockHash);
+            groupService.saveGroup(chainId, gId, groupPeerList.size(), genesisBlockHash);
             // save front group map
-            frontGroupMapService.newFrontGroup(tbFront.getFrontId(), gId);
+            frontGroupMapService.newFrontGroup(chainId, tbFront.getFrontId(), gId);
         }
         // clear cache
-        frontGroupMapCache.clearMapList();
+        frontGroupMapCache.clearMapList(chainId);
         return tbFront;
     }
 
@@ -143,11 +152,21 @@ public class FrontService {
         }
         return frontMapper.getById(frontId);
     }
+    
+    /**
+     * query front by nodeId.
+     */
+    public TbFront getByChainIdAndNodeId(Integer chainId, String nodeId) {
+        if (chainId == null || nodeId == null) {
+            return null;
+        }
+        return frontMapper.getByChainIdAndNodeId(chainId, nodeId);
+    }
 
     /**
-     * remove front
+     * remove front by frontId
      */
-    public void removeFront(int frontId) {
+    public void removeByFrontId(int frontId) {
         // check frontId
         TbFront tbFront = getById(frontId);
         if (tbFront == null) {
@@ -155,12 +174,23 @@ public class FrontService {
         }
 
         // remove front
-        frontMapper.remove(frontId);
+        frontMapper.removeById(frontId);
         // remove map
         frontGroupMapService.removeByFrontId(frontId);
         // reset group list
         resetGroupListTask.asyncResetGroupList();
         // clear cache
-        frontGroupMapCache.clearMapList();
+        frontGroupMapCache.clearMapList(tbFront.getChainId());
+    }
+    
+    /**
+     * remove front by chainId
+     */
+    public void removeByChainId(int chainId) {
+        if (chainId == 0) {
+            return;
+        }
+        // remove front
+        frontMapper.removeByChainId(chainId);
     }
 }

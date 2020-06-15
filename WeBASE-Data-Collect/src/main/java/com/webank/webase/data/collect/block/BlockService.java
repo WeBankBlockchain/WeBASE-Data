@@ -13,24 +13,24 @@
  */
 package com.webank.webase.data.collect.block;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.tools.CommonTools;
-import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.block.entity.BlockListParam;
 import com.webank.webase.data.collect.block.entity.TbBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
-import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 @Service
 public class BlockService {
-    
+
     @Autowired
     private FrontInterfaceService frontInterface;
     @Autowired
@@ -50,25 +50,22 @@ public class BlockService {
     private TransactionService transactionService;
     @Autowired
     private ReceiptService receiptService;
+
     private static final Long SAVE_TRANS_SLEEP_TIME = 5L;
 
     /**
      * copy chainBlock properties;
      */
-    public static TbBlock chainBlock2TbBlock(BlockInfo blockInfo) {
-        if (blockInfo == null) {
+    public static TbBlock chainBlock2TbBlock(Block block) {
+        if (block == null) {
             return null;
         }
-        BigInteger bigIntegerNumber = blockInfo.getNumber();
         LocalDateTime blockTimestamp =
-                CommonTools.timestamp2LocalDateTime(Long.valueOf(blockInfo.getTimestamp()));
-        int sealerIndex = Integer.parseInt(blockInfo.getSealer().substring(2), 16);
-
-        List<TransactionInfo> transList = blockInfo.getTransactions();
-
+                CommonTools.timestamp2LocalDateTime(block.getTimestamp().longValue());
+        int sealerIndex = Integer.parseInt(block.getSealer().substring(2), 16);
         // save block info
-        TbBlock tbBlock = new TbBlock(blockInfo.getHash(), bigIntegerNumber, blockTimestamp,
-                transList.size(), sealerIndex);
+        TbBlock tbBlock = new TbBlock(block.getHash(), block.getNumber(), blockTimestamp,
+                block.getTransactions().size(), sealerIndex);
         return tbBlock;
     }
 
@@ -76,21 +73,22 @@ public class BlockService {
      * save report block info.
      */
     @Transactional
-    public void saveBlockInfo(BlockInfo blockInfo, Integer groupId) throws BaseException {
+    @SuppressWarnings("rawtypes")
+    public void saveBlockInfo(Block block, int chainId, int groupId) throws BaseException {
         // save block info
-        TbBlock tbBlock = chainBlock2TbBlock(blockInfo);
-        addBlockInfo(tbBlock, groupId);
+        TbBlock tbBlock = chainBlock2TbBlock(block);
+        addBlockInfo(tbBlock, chainId, groupId);
 
         // save trans hash
-        List<TransactionInfo> transList = blockInfo.getTransactions();
-        for (TransactionInfo trans : transList) {
+        List<TransactionResult> transList = block.getTransactions();
+        for (TransactionResult result : transList) {
+            // save trans
+            Transaction trans = (Transaction) result.get();
             TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getFrom(),
-                    trans.getTo(), trans.getInput(), tbBlock.getBlockNumber(),
-                    tbBlock.getBlockTimestamp());
-            transactionService.addTransInfo(groupId, tbTransaction);
-
+                    trans.getTo(), trans.getBlockNumber(), tbBlock.getBlockTimestamp());
+            transactionService.addTransInfo(chainId, groupId, tbTransaction);
             // save receipt
-            receiptService.handleReceiptInfo(groupId, trans.getHash());
+            receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);
             } catch (InterruptedException ex) {
@@ -103,10 +101,8 @@ public class BlockService {
     /**
      * add block info to db.
      */
-    @Transactional
-    public void addBlockInfo(TbBlock tbBlock, int groupId) throws BaseException {
-        log.debug("start addBlockInfo tbBlock:{}", JSON.toJSONString(tbBlock));
-        String tableName = TableName.BLOCK.getTableName(groupId);
+    public void addBlockInfo(TbBlock tbBlock, int chainId, int groupId) throws BaseException {
+        String tableName = TableName.BLOCK.getTableName(chainId, groupId);
         // save block info
         blockMapper.add(tableName, tbBlock);
     }
@@ -114,29 +110,25 @@ public class BlockService {
     /**
      * query block info list.
      */
-    public List<TbBlock> queryBlockList(int groupId, BlockListParam queryParam)
+    public List<TbBlock> queryBlockList(int chainId, int groupId, BlockListParam queryParam)
             throws BaseException {
-        log.debug("start queryBlockList groupId:{},queryParam:{}", groupId,
-                JSON.toJSONString(queryParam));
-
         List<TbBlock> listOfBlock =
-                blockMapper.getList(TableName.BLOCK.getTableName(groupId), queryParam);
+                blockMapper.getList(TableName.BLOCK.getTableName(chainId, groupId), queryParam);
         // check sealer
-        listOfBlock.stream().forEach(block -> checkSearlerOfBlock(groupId, block));
-
-        log.debug("end queryBlockList listOfBlockSize:{}", listOfBlock.size());
+        listOfBlock.stream().forEach(block -> checkSearlerOfBlock(chainId, groupId, block));
         return listOfBlock;
     }
 
     /**
      * query count of block.
      */
-    public Integer queryCountOfBlock(Integer groupId, String blockHash, BigInteger blockNumber)
-            throws BaseException {
+    public Integer queryCountOfBlock(int chainId, int groupId, String blockHash,
+            BigInteger blockNumber) throws BaseException {
         try {
-            Integer count = blockMapper.getCount(TableName.BLOCK.getTableName(groupId), blockHash,
-                    blockNumber);
-            log.info("end countOfBlock groupId:{} blockHash:{} count:{}", groupId, blockHash, count);
+            Integer count = blockMapper.getCount(TableName.BLOCK.getTableName(chainId, groupId),
+                    blockHash, blockNumber);
+            log.info("end countOfBlock groupId:{} blockHash:{} count:{}", groupId, blockHash,
+                    count);
             if (count == null) {
                 return 0;
             }
@@ -147,14 +139,15 @@ public class BlockService {
         }
     }
 
-    public TbBlock getBlockByBlockNumber(int groupId, long blockNumber) {
-        return blockMapper.findByBlockNumber(TableName.BLOCK.getTableName(groupId), blockNumber);
+    public TbBlock getBlockByBlockNumber(int chainId, int groupId, long blockNumber) {
+        return blockMapper.findByBlockNumber(TableName.BLOCK.getTableName(chainId, groupId),
+                blockNumber);
     }
 
-    public Integer queryCountOfBlockByMinus(Integer groupId) {
+    public Integer queryCountOfBlockByMinus(int chainId, int groupId) {
         try {
-            Integer count =
-                    blockMapper.getBlockCountByMinMax(TableName.BLOCK.getTableName(groupId));
+            Integer count = blockMapper
+                    .getBlockCountByMinMax(TableName.BLOCK.getTableName(chainId, groupId));
             log.info("end queryCountOfBlockByMinus groupId:{} count:{}", groupId, count);
             if (count == null) {
                 return 0;
@@ -169,13 +162,13 @@ public class BlockService {
     /**
      * get sealer by index.
      */
-    public void checkSearlerOfBlock(int groupId, TbBlock tbBlock) {
+    public void checkSearlerOfBlock(int chainId, int groupId, TbBlock tbBlock) {
         if (StringUtils.isNotBlank(tbBlock.getSealer())) {
             return;
         }
 
         // get sealer from chain.
-        List<String> sealerList = frontInterface.getSealerList(groupId);
+        List<String> sealerList = frontInterface.getSealerList(chainId, groupId);
         String sealer = "0x0";
         if (sealerList != null && sealerList.size() > 0) {
             if (tbBlock.getSealerIndex() < sealerList.size()) {
@@ -187,15 +180,16 @@ public class BlockService {
         tbBlock.setSealer(sealer);
 
         // save sealer
-        blockMapper.update(TableName.BLOCK.getTableName(groupId), tbBlock);
+        blockMapper.update(TableName.BLOCK.getTableName(chainId, groupId), tbBlock);
     }
 
 
     /**
      * remove block into.
      */
-    public Integer remove(Integer groupId, BigInteger blockRetainMax) throws BaseException {
-        String tableName = TableName.BLOCK.getTableName(groupId);
+    public Integer remove(int chainId, int groupId, BigInteger blockRetainMax)
+            throws BaseException {
+        String tableName = TableName.BLOCK.getTableName(chainId, groupId);
         Integer affectRow = blockMapper.remove(tableName, blockRetainMax);
         return affectRow;
     }
@@ -203,21 +197,21 @@ public class BlockService {
     /**
      * get latest block number
      */
-    public BigInteger getLatestBlockNumber(int groupId) {
-        return blockMapper.getLatestBlockNumber(TableName.BLOCK.getTableName(groupId));
+    public BigInteger getLatestBlockNumber(int chainId, int groupId) {
+        return blockMapper.getLatestBlockNumber(TableName.BLOCK.getTableName(chainId, groupId));
     }
 
     /**
      * get block by block from front server
      */
-    public BlockInfo getBlockFromFrontByNumber(int groupId, BigInteger blockNumber) {
-        return frontInterface.getBlockByNumber(groupId, blockNumber);
+    public Block getBlockFromFrontByNumber(int chainId, int groupId, BigInteger blockNumber) {
+        return frontInterface.getBlockByNumber(chainId, groupId, blockNumber);
     }
 
     /**
      * get block by block from front server
      */
-    public BlockInfo getblockFromFrontByHash(int groupId, String blockHash) {
-        return frontInterface.getblockByHash(groupId, blockHash);
+    public Block getblockFromFrontByHash(int chainId, int groupId, String blockHash) {
+        return frontInterface.getblockByHash(chainId, groupId, blockHash);
     }
 }

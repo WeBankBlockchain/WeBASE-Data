@@ -65,6 +65,11 @@
 		block_number limit ${limit}
 	</select>
 
+	<select id="findByBlockNumber" resultMap="taskPoolMap">
+		select * from
+		${tableName} where block_number = ${blockNumber}
+	</select>
+	
 	<select id="findByCertainty" resultMap="taskPoolMap">
 		select * from
 		${tableName} where certainty = ${certainty}

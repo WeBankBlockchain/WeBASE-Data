@@ -16,7 +16,6 @@
 
 package com.webank.webase.data.collect.base.exception;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.RetCode;
 
 /**
@@ -40,7 +39,7 @@ public class BaseException extends RuntimeException {
      */
     public BaseException(RetCode retCode, Throwable cause) {
         super(retCode.getMessage(), cause);
-        retCode.setMessage(JSON.toJSONString(cause.getMessage()));
+        retCode.setMessage(cause.getMessage());
         this.retCode = retCode;
     }
 

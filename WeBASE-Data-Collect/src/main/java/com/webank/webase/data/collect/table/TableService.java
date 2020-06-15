@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,7 +16,6 @@ package com.webank.webase.data.collect.table;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
-import java.time.Instant;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -36,32 +35,38 @@ public class TableService {
     private TableMapper tableMapper;
     @Value("${spring.datasource.url}")
     private String dbUrl;
-
+    
     /**
-     * create table by groupId
+     * create common table.
      */
-    public void newTableByGroupId(int groupId) {
-        if (groupId == 0) {
-            return;
-        }
-        tableMapper.createTbTaskPool(TableName.TASK.getTableName(groupId));
-        tableMapper.createTbBlock(TableName.BLOCK.getTableName(groupId));
-        tableMapper.createTbTransaction(TableName.TRANS.getTableName(groupId));
-        tableMapper.createTbReceipt(TableName.RECEIPT.getTableName(groupId));
-//        tableMapper.createTbAudit(TableName.AUDIT.getTableName(groupId));
+    public void newCommonTable() {
+        tableMapper.createTbChain();
+        tableMapper.createTbFront();
+        tableMapper.createTbGroup();
+        tableMapper.createTbFrontGroupMap();
+        tableMapper.createTbUser();
+        tableMapper.createTbContract();
+        tableMapper.createTbMethod();
+        tableMapper.createTbSolc();
+    }
+    
+    /**
+     * create sub table.
+     */
+    public void newSubTable(int chainId, int groupId) {
+        tableMapper.createTbTaskPool(TableName.TASK.getTableName(chainId, groupId));
+        tableMapper.createTbBlock(TableName.BLOCK.getTableName(chainId, groupId));
+        tableMapper.createTbTransaction(TableName.TRANS.getTableName(chainId, groupId));
+        tableMapper.createTbReceipt(TableName.RECEIPT.getTableName(chainId, groupId));
+        tableMapper.createTbParser(TableName.PARSER.getTableName(chainId, groupId));
     }
 
     /**
      * drop table.
      */
-    public void dropTableByGroupId(int groupId) {
-        Instant startTime = Instant.now();
-        log.info("start dropTableByGroupId. startTime:{}", startTime.toEpochMilli());
-        if (groupId == 0) {
-            return;
-        }
+    public void dropTable(int chainId, int groupId) {
         for (TableName enumName : TableName.values()) {
-            dropTableByName(enumName.getTableName(groupId));
+            dropTableByName(enumName.getTableName(chainId, groupId));
         }
     }
 
@@ -69,7 +74,7 @@ public class TableService {
      * drop table by tableName.
      */
     private void dropTableByName(String tableName) {
-        log.info("start drop table. name:{}", tableName);
+        log.info("start drop table. tableName:{}", tableName);
         if (StringUtils.isBlank(tableName)) {
             return;
         }
@@ -84,9 +89,9 @@ public class TableService {
             log.debug("delete table:{} affectedRow:{}", tableName, affectedRow);
         }
 
-        //drop table
+        // drop table
         tableMapper.dropTable(getDbName(), tableName);
-        log.info("end dropTableByName. name:{}", tableName);
+        log.info("end dropTableByName. tableName:{}", tableName);
     }
 
     /**
@@ -98,7 +103,7 @@ public class TableService {
             throw new BaseException(ConstantCode.SYSTEM_EXCEPTION);
         }
         String subUrl = dbUrl.substring(0, dbUrl.indexOf("?"));
-        String dbName = subUrl.substring(subUrl.lastIndexOf("/")+1);
+        String dbName = subUrl.substring(subUrl.lastIndexOf("/") + 1);
         return dbName;
     }
 }

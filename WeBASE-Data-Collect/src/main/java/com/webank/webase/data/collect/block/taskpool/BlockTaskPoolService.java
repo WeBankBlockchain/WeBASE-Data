@@ -14,11 +14,12 @@
 package com.webank.webase.data.collect.block.taskpool;
 
 import com.google.common.collect.Lists;
+import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
+import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.BlockConstants;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.block.BlockService;
-import com.webank.webase.data.collect.block.entity.BlockInfo;
 import com.webank.webase.data.collect.block.entity.TbBlockTaskPool;
 import com.webank.webase.data.collect.block.enums.BlockCertaintyEnum;
 import com.webank.webase.data.collect.block.enums.TxInfoStatusEnum;
@@ -32,6 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -59,10 +61,10 @@ public class BlockTaskPoolService {
     @Autowired
     private ConstantProperties cProperties;
 
-    public long getTaskPoolHeight(int groupId) {
+    public long getTaskPoolHeight(int chainId, int groupId) {
         long height = 0;
         BigInteger localMaxBlockNumber =
-                taskPoolMapper.getLatestBlockNumber(TableName.TASK.getTableName(groupId));
+                taskPoolMapper.getLatestBlockNumber(TableName.TASK.getTableName(chainId, groupId));
         if (Objects.nonNull(localMaxBlockNumber)) {
             height = localMaxBlockNumber.longValue() + 1;
         }
@@ -70,8 +72,8 @@ public class BlockTaskPoolService {
     }
 
     @Transactional
-    public void prepareTask(int groupId, long begin, long end, boolean certainty) {
-        log.info("Begin to prepare sync blocks from {} to {}", begin, end);
+    public void prepareTask(int chainId, int groupId, long begin, long end, boolean certainty) {
+        log.debug("Begin to prepare sync blocks from {} to {}", begin, end);
         List<TbBlockTaskPool> list = Lists.newArrayList();
         for (long i = begin; i <= end; i++) {
             TbBlockTaskPool pool = new TbBlockTaskPool().setBlockNumber(i)
@@ -87,72 +89,93 @@ public class BlockTaskPoolService {
             }
             list.add(pool);
         }
-        taskPoolMapper.saveAll(TableName.TASK.getTableName(groupId), list);
-        log.info("Sync blocks from {} to {} are prepared.", begin, end);
+        taskPoolMapper.saveAll(TableName.TASK.getTableName(chainId, groupId), list);
+        log.debug("Sync blocks from {} to {} are prepared.", begin, end);
     }
 
-    public List<BlockInfo> fetchData(int groupId, int count) {
+    public List<Block> fetchData(int chainId, int groupId, int count) {
         List<TbBlockTaskPool> tasks = taskPoolMapper.findBySyncStatusOrderByBlockHeightLimit(
-                TableName.TASK.getTableName(groupId), TxInfoStatusEnum.INIT.getStatus(), count);
+                TableName.TASK.getTableName(chainId, groupId), TxInfoStatusEnum.INIT.getStatus(),
+                count);
         if (CollectionUtils.isEmpty(tasks)) {
             return new ArrayList<>();
         } else {
-            return getTasks(groupId, tasks);
+            return getTasks(chainId, groupId, tasks);
         }
     }
 
-    public List<BlockInfo> getTasks(int groupId, List<TbBlockTaskPool> tasks) {
-        List<BlockInfo> result = new ArrayList<>();
+    public List<Block> getTasks(int chainId, int groupId, List<TbBlockTaskPool> tasks) {
+        List<Block> result = new ArrayList<>();
         List<TbBlockTaskPool> pools = new ArrayList<>();
         for (TbBlockTaskPool task : tasks) {
             task.setSyncStatus(TxInfoStatusEnum.DOING.getStatus());
             BigInteger bigBlockHeight = new BigInteger(Long.toString(task.getBlockNumber()));
-            BlockInfo block;
+            Block block;
             try {
-                block = frontInterface.getBlockByNumber(groupId, bigBlockHeight);
+                block = frontInterface.getBlockByNumber(chainId, groupId, bigBlockHeight);
                 result.add(block);
                 pools.add(task);
             } catch (Exception e) {
                 log.error("Block {},  exception occur in job processing: {}", task.getBlockNumber(),
                         e.getMessage());
-                taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(groupId),
+                taskPoolMapper.setSyncStatusByBlockHeight(
+                        TableName.TASK.getTableName(chainId, groupId),
                         TxInfoStatusEnum.ERROR.getStatus(), task.getBlockNumber());
             }
         }
-        taskPoolMapper.saveAll(TableName.TASK.getTableName(groupId), pools);
-        log.info("Successful fetch {} Blocks.", result.size());
+        taskPoolMapper.saveAll(TableName.TASK.getTableName(chainId, groupId), pools);
+        log.debug("Successful fetch {} Blocks.", result.size());
         return result;
     }
 
-    @Async("mgrAsyncExecutor")
-    public void handleSingleBlock(int groupId, BlockInfo b, long total) {
-        process(groupId, b, total);
+    @Async("asyncExecutor")
+    public void handleSingleBlock(int chainId, int groupId, Block b, long total) {
+        process(chainId, groupId, b, total);
     }
 
-    public void processDataSequence(int groupId, List<BlockInfo> data, long total) {
-        for (BlockInfo b : data) {
-            process(groupId, b, total);
+    public void processDataSequence(int chainId, int groupId, List<Block> data, long total) {
+        for (Block b : data) {
+            process(chainId, groupId, b, total);
         }
     }
 
-    public void process(int groupId, BlockInfo b, long total) {
+    public void process(int chainId, int groupId, Block b, long total) {
         try {
-            blockService.saveBlockInfo(b, groupId);
-            taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(groupId),
+            log.info("process chainId:{} groupId:{} number:{}.", chainId, groupId, b.getNumber());
+            blockService.saveBlockInfo(b, chainId, groupId);
+            taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(chainId, groupId),
                     TxInfoStatusEnum.DONE.getStatus(), b.getNumber().longValue());
-            log.info("Block {} of {} sync block succeed.", b.getNumber().longValue(), total);
+            log.debug("Block {} of {} sync block succeed.", b.getNumber().longValue(), total);
         } catch (Exception e) {
             log.error("block {}, exception occur in job processing: {}", b.getNumber().longValue(),
                     e.getMessage());
-            taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(groupId),
+            taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(chainId, groupId),
                     TxInfoStatusEnum.ERROR.getStatus(), b.getNumber().longValue());
         }
     }
 
-    public void checkForks(int groupId, long currentBlockHeight) throws IOException {
-        log.info("current block height is {}, and begin to check forks", currentBlockHeight);
-        List<TbBlockTaskPool> uncertainBlocks = taskPoolMapper.findByCertainty(
-                TableName.TASK.getTableName(groupId), BlockCertaintyEnum.UNCERTAIN.getCertainty());
+    public void resetDataByBlockNumber(int chainId, int groupId, long blockNumber) {
+        String tableName = TableName.TASK.getTableName(chainId, groupId);
+        TbBlockTaskPool blockTaskPool = taskPoolMapper.findByBlockNumber(tableName, blockNumber);
+        if (Objects.isNull(blockTaskPool)) {
+            throw new BaseException(ConstantCode.INVALID_BLOCK_NUMBER);
+        }
+        if (blockTaskPool.getSyncStatus() == TxInfoStatusEnum.DOING.getStatus()) {
+            throw new BaseException(ConstantCode.TASK_RUNNING);
+        }
+        if (blockTaskPool.getSyncStatus() == TxInfoStatusEnum.INIT.getStatus()) {
+            throw new BaseException(ConstantCode.BLOCK_BEEN_RESET);
+        }
+        rollBackService.rollback(chainId, groupId, blockNumber);
+        taskPoolMapper.setSyncStatusByBlockHeight(tableName, TxInfoStatusEnum.INIT.getStatus(),
+                blockNumber);
+    }
+
+    public void checkForks(int chainId, int groupId, long currentBlockHeight) throws IOException {
+        log.debug("current block height is {}, and begin to check forks", currentBlockHeight);
+        List<TbBlockTaskPool> uncertainBlocks =
+                taskPoolMapper.findByCertainty(TableName.TASK.getTableName(chainId, groupId),
+                        BlockCertaintyEnum.UNCERTAIN.getCertainty());
         for (TbBlockTaskPool pool : uncertainBlocks) {
             if (pool.getBlockNumber() <= currentBlockHeight
                     - BlockConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER) {
@@ -162,32 +185,37 @@ public class BlockTaskPoolService {
                 }
                 if (pool.getSyncStatus() == TxInfoStatusEnum.INIT.getStatus()) {
                     log.error("block {} is not sync!", pool.getBlockNumber());
-                    taskPoolMapper.setCertaintyByBlockHeight(TableName.TASK.getTableName(groupId),
+                    taskPoolMapper.setCertaintyByBlockHeight(
+                            TableName.TASK.getTableName(chainId, groupId),
                             BlockCertaintyEnum.FIXED.getCertainty(), pool.getBlockNumber());
                     continue;
                 }
-                BlockInfo block = frontInterface.getBlockByNumber(groupId,
+                Block block = frontInterface.getBlockByNumber(chainId, groupId,
                         BigInteger.valueOf(pool.getBlockNumber()));
                 String newHash = block.getHash();
-                if (!StringUtils.equals(newHash, blockService
-                        .getBlockByBlockNumber(groupId, pool.getBlockNumber()).getBlockHash())) {
-                    log.info("Block {} is forked!!! ready to resync", pool.getBlockNumber());
-                    rollBackService.rollback(groupId, pool.getBlockNumber());
+                if (!StringUtils.equals(newHash,
+                        blockService.getBlockByBlockNumber(chainId, groupId, pool.getBlockNumber())
+                                .getBlockHash())) {
+                    log.debug("Block {} is forked!!! ready to resync", pool.getBlockNumber());
+                    rollBackService.rollback(chainId, groupId, pool.getBlockNumber());
                     taskPoolMapper.setSyncStatusAndCertaintyByBlockHeight(
-                            TableName.TASK.getTableName(groupId), TxInfoStatusEnum.INIT.getStatus(),
+                            TableName.TASK.getTableName(chainId, groupId),
+                            TxInfoStatusEnum.INIT.getStatus(),
                             BlockCertaintyEnum.FIXED.getCertainty(), pool.getBlockNumber());
                 } else {
-                    log.info("Block {} is not forked!", pool.getBlockNumber());
-                    taskPoolMapper.setCertaintyByBlockHeight(TableName.TASK.getTableName(groupId),
+                    log.debug("Block {} is not forked!", pool.getBlockNumber());
+                    taskPoolMapper.setCertaintyByBlockHeight(
+                            TableName.TASK.getTableName(chainId, groupId),
                             BlockCertaintyEnum.FIXED.getCertainty(), pool.getBlockNumber());
                 }
             }
         }
     }
 
-    public void checkTaskCount(int groupId, long startBlockNumber, long currentMaxTaskPoolNumber) {
-        log.info("Check task count from {} to {}", startBlockNumber, currentMaxTaskPoolNumber);
-        if (isComplete(groupId, startBlockNumber, currentMaxTaskPoolNumber)) {
+    public void checkTaskCount(int chainId, int groupId, long startBlockNumber,
+            long currentMaxTaskPoolNumber) {
+        log.debug("Check task count from {} to {}", startBlockNumber, currentMaxTaskPoolNumber);
+        if (isComplete(chainId, groupId, startBlockNumber, currentMaxTaskPoolNumber)) {
             return;
         }
         List<TbBlockTaskPool> supplements = new ArrayList<>();
@@ -195,71 +223,74 @@ public class BlockTaskPoolService {
         for (long i = startBlockNumber; i <= currentMaxTaskPoolNumber
                 - cProperties.getCrawlBatchUnit(); i += cProperties.getCrawlBatchUnit()) {
             long j = i + cProperties.getCrawlBatchUnit() - 1;
-            Optional<List<TbBlockTaskPool>> optional = findMissingPoolRecords(groupId, i, j);
+            Optional<List<TbBlockTaskPool>> optional =
+                    findMissingPoolRecords(chainId, groupId, i, j);
             if (optional.isPresent()) {
                 supplements.addAll(optional.get());
             }
             t = j + 1;
         }
         Optional<List<TbBlockTaskPool>> optional =
-                findMissingPoolRecords(groupId, t, currentMaxTaskPoolNumber);
+                findMissingPoolRecords(chainId, groupId, t, currentMaxTaskPoolNumber);
         if (optional.isPresent()) {
             supplements.addAll(optional.get());
         }
-        log.info("Find {} missing pool numbers", supplements.size());
-        taskPoolMapper.saveAll(TableName.TASK.getTableName(groupId), supplements);
+        log.debug("Find {} missing pool numbers", supplements.size());
+        taskPoolMapper.saveAll(TableName.TASK.getTableName(chainId, groupId), supplements);
     }
 
-    public void checkTimeOut(int groupId) {
+    public void checkTimeOut(int chainId, int groupId) {
         DateTime offsetDate =
                 DateUtil.offsetSecond(DateUtil.date(), 0 - BlockConstants.DEPOT_TIME_OUT);
-        log.info("Begin to check timeout transactions which is ealier than {}", offsetDate);
+        log.debug("Begin to check timeout transactions which is ealier than {}", offsetDate);
         List<TbBlockTaskPool> list = taskPoolMapper.findBySyncStatusAndDepotUpdatetimeLessThan(
-                TableName.TASK.getTableName(groupId), TxInfoStatusEnum.DOING.getStatus(),
+                TableName.TASK.getTableName(chainId, groupId), TxInfoStatusEnum.DOING.getStatus(),
                 offsetDate);
         if (!CollectionUtils.isEmpty(list)) {
-            log.info("Detect {} timeout transactions.", list.size());
+            log.debug("Detect {} timeout transactions.", list.size());
         }
         list.forEach(p -> {
             log.error(
                     "Block {} sync block timeout!!, the depot_time is {}, and the threshold time is {}",
                     p.getBlockNumber(), p.getModifyTime(), offsetDate);
-            taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(groupId),
+            taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(chainId, groupId),
                     TxInfoStatusEnum.TIMEOUT.getStatus(), p.getBlockNumber());
         });
     }
 
-    public void processErrors(int groupId) {
-        log.info("Begin to check error records");
+    public void processErrors(int chainId, int groupId) {
+        log.debug("Begin to check error records");
         List<TbBlockTaskPool> unnormalRecords =
-                taskPoolMapper.findUnNormalRecords(TableName.TASK.getTableName(groupId));
+                taskPoolMapper.findUnNormalRecords(TableName.TASK.getTableName(chainId, groupId));
         if (CollectionUtils.isEmpty(unnormalRecords)) {
             return;
         } else {
-            log.info("sync block detect {} error transactions.", unnormalRecords.size());
+            log.debug("sync block detect {} error transactions.", unnormalRecords.size());
             unnormalRecords.parallelStream().map(b -> b.getBlockNumber()).forEach(e -> {
                 log.error("Block {} sync error, and begin to rollback.", e);
-                rollBackService.rollback(groupId, e);
-                taskPoolMapper.setSyncStatusByBlockHeight(TableName.TASK.getTableName(groupId),
+                rollBackService.rollback(chainId, groupId, e);
+                taskPoolMapper.setSyncStatusByBlockHeight(
+                        TableName.TASK.getTableName(chainId, groupId),
                         TxInfoStatusEnum.INIT.getStatus(), e);
             });
         }
     }
 
-    private Optional<List<TbBlockTaskPool>> findMissingPoolRecords(int groupId, long startIndex,
-            long endIndex) {
-        if (isComplete(groupId, startIndex, endIndex)) {
+    private Optional<List<TbBlockTaskPool>> findMissingPoolRecords(int chainId, int groupId,
+            long startIndex, long endIndex) {
+        if (isComplete(chainId, groupId, startIndex, endIndex)) {
             return Optional.empty();
         }
-        List<TbBlockTaskPool> list = taskPoolMapper
-                .findByBlockHeightRange(TableName.TASK.getTableName(groupId), startIndex, endIndex);
+        List<TbBlockTaskPool> list = taskPoolMapper.findByBlockHeightRange(
+                TableName.TASK.getTableName(chainId, groupId), startIndex, endIndex);
         List<Long> ids = list.stream().map(p -> p.getBlockNumber()).collect(Collectors.toList());
         List<TbBlockTaskPool> supplements = new ArrayList<>();
         for (long tmpIndex = startIndex; tmpIndex <= endIndex; tmpIndex++) {
             if (ids.indexOf(tmpIndex) >= 0) {
                 continue;
             }
-            log.info("Successfully detect block {} is missing. Try to sync block again.", tmpIndex);
+            log.debug("Successfully detect block {} is missing. Try to sync block again.",
+                    tmpIndex);
             TbBlockTaskPool pool = new TbBlockTaskPool().setBlockNumber(tmpIndex)
                     .setSyncStatus(TxInfoStatusEnum.ERROR.getStatus())
                     .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
@@ -268,11 +299,13 @@ public class BlockTaskPoolService {
         return Optional.of(supplements);
     }
 
-    private boolean isComplete(int groupId, long startBlockNumber, long currentMaxTaskPoolNumber) {
+    private boolean isComplete(int chainId, int groupId, long startBlockNumber,
+            long currentMaxTaskPoolNumber) {
         long deserveCount = currentMaxTaskPoolNumber - startBlockNumber + 1;
         long actualCount = taskPoolMapper.countByBlockHeightRange(
-                TableName.TASK.getTableName(groupId), startBlockNumber, currentMaxTaskPoolNumber);
-        log.info(
+                TableName.TASK.getTableName(chainId, groupId), startBlockNumber,
+                currentMaxTaskPoolNumber);
+        log.debug(
                 "Check task count from block {} to {}, deserve count is {}, and actual count is {}",
                 startBlockNumber, currentMaxTaskPoolNumber, deserveCount, actualCount);
         if (deserveCount == actualCount) {

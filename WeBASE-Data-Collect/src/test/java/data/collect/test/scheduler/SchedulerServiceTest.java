@@ -14,9 +14,8 @@
 package data.collect.test.scheduler;
 
 import com.webank.webase.data.collect.Application;
-import com.webank.webase.data.collect.scheduler.PullBlockTask;
+import com.webank.webase.data.collect.scheduler.DataPullTask;
 import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
-import com.webank.webase.data.collect.scheduler.TransMonitorTask;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,25 +28,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class SchedulerServiceTest {
 
     @Autowired
-    private PullBlockTask pullBlockTask;
+    private DataPullTask dataPullTask;
     @Autowired
     private ResetGroupListTask resetGroupListTask;
-    @Autowired
-    private TransMonitorTask transMonitorTask;
 
     @Test
     public void pullBlockInfoTaskTest() {
-        pullBlockTask.pullBlockStart();
+        dataPullTask.pullBlockStart();
     }
 
     @Test
     public void resetGroupListTest() {
         resetGroupListTask.resetGroupList();
-    }
-
-    @Test
-    public void transMonitorTest() {
-        transMonitorTask.monitorStart();
     }
 
 }

@@ -13,21 +13,21 @@
  */
 package com.webank.webase.data.collect.transaction;
 
-import com.alibaba.fastjson.JSON;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.block.entity.MinMaxBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
-import com.webank.webase.data.collect.receipt.entity.TransReceipt;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
-import com.webank.webase.data.collect.transaction.entity.TransactionInfo;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
+import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
+import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
@@ -47,45 +47,39 @@ public class TransactionService {
     /**
      * add trans hash info.
      */
-    public void addTransInfo(int groupId, TbTransaction tbTransaction) throws BaseException {
-        log.debug("start addTransInfo groupId:{} tbTransHash:{}", groupId,
-                JSON.toJSONString(tbTransaction));
-        String tableName = TableName.TRANS.getTableName(groupId);
+    public void addTransInfo(int chainId, int groupId, TbTransaction tbTransaction)
+            throws BaseException {
+        String tableName = TableName.TRANS.getTableName(chainId, groupId);
         transactionMapper.add(tableName, tbTransaction);
-        log.debug("end addTransInfo");
     }
 
     /**
      * query trans list.
      */
-    public List<TbTransaction> queryTransList(int groupId, TransListParam param)
+    public List<TbTransaction> queryTransList(int chainId, int groupId, TransListParam param)
             throws BaseException {
-        log.debug("start queryTransList. TransListParam:{}", JSON.toJSONString(param));
-        String tableName = TableName.TRANS.getTableName(groupId);
+        String tableName = TableName.TRANS.getTableName(chainId, groupId);
         List<TbTransaction> listOfTran = null;
         try {
             listOfTran = transactionMapper.getList(tableName, param);
         } catch (RuntimeException ex) {
-            log.error("fail queryBlockList. TransListParam:{} ", JSON.toJSONString(param), ex);
+            log.error("fail queryBlockList.", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
-
-        log.debug("end queryBlockList. listOfTran:{}", JSON.toJSONString(listOfTran));
         return listOfTran;
     }
 
     /**
      * query count of trans hash.
      */
-    public Integer queryCountOfTran(int groupId, TransListParam queryParam) throws BaseException {
-        String tableName = TableName.TRANS.getTableName(groupId);
+    public Integer queryCountOfTran(int chainId, int groupId, TransListParam queryParam)
+            throws BaseException {
+        String tableName = TableName.TRANS.getTableName(chainId, groupId);
         try {
             Integer count = transactionMapper.getCount(tableName, queryParam);
-            log.info("end queryCountOfTran. queryParam:{} count:{}", JSON.toJSONString(queryParam),
-                    count);
             return count;
         } catch (RuntimeException ex) {
-            log.error("fail queryCountOfTran. queryParam:{}", JSON.toJSONString(queryParam), ex);
+            log.error("fail queryCountOfTran.", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
@@ -93,8 +87,8 @@ public class TransactionService {
     /**
      * query count of trans by minus max and min trans_number
      */
-    public Integer queryCountOfTranByMinus(int groupId) throws BaseException {
-        String tableName = TableName.TRANS.getTableName(groupId);
+    public Integer queryCountOfTranByMinus(int chainId, int groupId) throws BaseException {
+        String tableName = TableName.TRANS.getTableName(chainId, groupId);
         try {
             Integer count = transactionMapper.getCountByMinMax(tableName);
             log.info("end queryCountOfTranByMinus. count:{}", count);
@@ -105,7 +99,7 @@ public class TransactionService {
         } catch (BadSqlGrammarException ex) {
             log.info("restart from queryCountOfTranByMinus to queryCountOfTran: []", ex.getCause());
             TransListParam queryParam = new TransListParam(null, null);
-            Integer count = queryCountOfTran(groupId, queryParam);
+            Integer count = queryCountOfTran(chainId, groupId, queryParam);
             return count;
         } catch (RuntimeException ex) {
             log.error("fail queryCountOfTranByMinus. ", ex);
@@ -116,9 +110,9 @@ public class TransactionService {
     /**
      * query min and max block number.
      */
-    public List<MinMaxBlock> queryMinMaxBlock(int groupId) throws BaseException {
+    public List<MinMaxBlock> queryMinMaxBlock(int chainId, int groupId) throws BaseException {
         log.debug("start queryMinMaxBlock");
-        String tableName = TableName.TRANS.getTableName(groupId);
+        String tableName = TableName.TRANS.getTableName(chainId, groupId);
         try {
             List<MinMaxBlock> listMinMaxBlock = transactionMapper.queryMinMaxBlock(tableName);
             int listSize = Optional.ofNullable(listMinMaxBlock).map(list -> list.size()).orElse(0);
@@ -133,8 +127,8 @@ public class TransactionService {
     /**
      * Remove trans info.
      */
-    public Integer remove(Integer groupId, Integer subTransNum) {
-        String tableName = TableName.TRANS.getTableName(groupId);
+    public Integer remove(int chainId, Integer groupId, Integer subTransNum) {
+        String tableName = TableName.TRANS.getTableName(chainId, groupId);
         Integer affectRow = transactionMapper.remove(tableName, subTransNum, groupId);
         return affectRow;
     }
@@ -143,18 +137,18 @@ public class TransactionService {
     /**
      * query un statistics transaction list.
      */
-    public List<TbTransaction> qureyUnStatTransactionList(int groupId) {
-        List<TbTransaction> list =
-                transactionMapper.listOfUnStatTransaction(TableName.TRANS.getTableName(groupId));
+    public List<TbTransaction> qureyUnStatTransactionList(int chainId, int groupId) {
+        List<TbTransaction> list = transactionMapper
+                .listOfUnStatTransaction(TableName.TRANS.getTableName(chainId, groupId));
         return list;
     }
 
     /**
      * query un statistic transaction list by job.
      */
-    public List<TbTransaction> qureyUnStatTransactionListByJob(int groupId,
+    public List<TbTransaction> qureyUnStatTransactionListByJob(int chainId, int groupId,
             Integer shardingTotalCount, Integer shardingItem) {
-        String tableName = TableName.TRANS.getTableName(groupId);
+        String tableName = TableName.TRANS.getTableName(chainId, groupId);
         List<TbTransaction> list = transactionMapper.listOfUnStatTransactionByJob(tableName,
                 shardingTotalCount, shardingItem);
         return list;
@@ -163,69 +157,74 @@ public class TransactionService {
     /**
      * update trans statistic flag.
      */
-    public void updateTransStatFlag(int groupId, String transHash) {
-        String tableName = TableName.TRANS.getTableName(groupId);
+    public void updateTransStatFlag(int chainId, int groupId, String transHash) {
+        String tableName = TableName.TRANS.getTableName(chainId, groupId);
         transactionMapper.updateTransStatFlag(tableName, transHash);
     }
 
     /**
      * get tbTransInfo from chain
      */
-    public List<TbTransaction> getTransListFromChain(Integer groupId, String transHash,
+    public List<TbTransaction> getTransListFromChain(int chainId, Integer groupId, String transHash,
             BigInteger blockNumber) {
-        log.debug("start getTransListFromChain.");
         List<TbTransaction> transList = new ArrayList<>();
         // find by transHash
         if (transHash != null) {
-            TbTransaction tbTransaction = getTbTransFromFrontByHash(groupId, transHash);
+            TbTransaction tbTransaction = getTbTransFromFrontByHash(chainId, groupId, transHash);
             if (tbTransaction != null) {
                 transList.add(tbTransaction);
             }
         }
         // find trans by block number
         if (transList.size() == 0 && blockNumber != null) {
-            List<TransactionInfo> transInBlock =
-                    frontInterface.getTransByBlockNumber(groupId, blockNumber);
+            List<TransactionResult> transInBlock =
+                    frontInterface.getTransByBlockNumber(chainId, groupId, blockNumber);
             if (transInBlock != null && transInBlock.size() != 0) {
-                transInBlock.stream().forEach(tran -> {
+                transInBlock.stream().forEach(result -> {
+                    Transaction tran = (Transaction) result.get();
                     TbTransaction tbTransaction = new TbTransaction(tran.getHash(), tran.getFrom(),
-                            tran.getTo(), tran.getInput(), tran.getBlockNumber(), null);
+                            tran.getTo(), tran.getBlockNumber(), null);
                     transList.add(tbTransaction);
                 });
             }
         }
-        log.debug("end getTransListFromChain.");
         return transList;
     }
 
 
     /**
+     * getTbTransByHash.
+     */
+    public TbTransaction getTbTransByHash(int chainId, Integer groupId, String transHash) {
+        return transactionMapper.getByHash(TableName.TRANS.getTableName(chainId, groupId),
+                transHash);
+    }
+
+    /**
      * request front for transaction by hash.
      */
-    public TbTransaction getTbTransFromFrontByHash(Integer groupId, String transHash)
+    public TbTransaction getTbTransFromFrontByHash(int chainId, Integer groupId, String transHash)
             throws BaseException {
-        log.info("start getTransFromFrontByHash. groupId:{}  transaction:{}", groupId, transHash);
-        TransactionInfo trans = frontInterface.getTransaction(groupId, transHash);
+        Transaction trans = frontInterface.getTransaction(chainId, groupId, transHash);
         TbTransaction tbTransaction = null;
         if (trans != null) {
             tbTransaction = new TbTransaction(transHash, trans.getFrom(), trans.getTo(),
-                    trans.getInput(), trans.getBlockNumber(), null);
+                    trans.getBlockNumber(), null);
         }
-        log.info("end getTransFromFrontByHash. tbTransHash:{}", JSON.toJSONString(tbTransaction));
         return tbTransaction;
     }
 
     /**
      * get transaction info
      */
-    public TransactionInfo getTransaction(int groupId, String transHash) {
-        return frontInterface.getTransaction(groupId, transHash);
+    public Transaction getTransaction(int chainId, int groupId, String transHash) {
+        return frontInterface.getTransaction(chainId, groupId, transHash);
     }
-    
+
     /**
      * get transaction receipt
      */
-    public TransReceipt getTransReceipt(int groupId, String transHash) {
-        return frontInterface.getTransReceipt(groupId, transHash);
+    public TransactionReceipt getTransReceipt(int chainId, int groupId, String transHash) {
+        return frontInterface.getTransReceipt(chainId, groupId, transHash);
     }
 }

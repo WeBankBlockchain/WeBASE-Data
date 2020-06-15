@@ -14,13 +14,13 @@
 
 package com.webank.webase.data.collect.frontinterface;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
+import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup;
-import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontinterface.entity.FailInfo;
 import java.time.Duration;
 import java.time.Instant;
@@ -41,6 +41,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -84,33 +85,81 @@ public class FrontRestTools {
     private FrontGroupMapCache frontGroupMapCache;
 
     /**
+     * get from specific front.
+     */
+    public <T> T getFromSpecificFront(int groupId, String frontIp, Integer frontPort, String uri,
+            Class<T> clazz) {
+        return requestSpecificFront(groupId, frontIp, frontPort, HttpMethod.GET, uri, null, clazz);
+    }
+
+    /**
+     * post to specific front.
+     */
+    public <T> T postToSpecificFront(Integer groupId, String frontIp, Integer frontPort, String uri,
+            Object param, Class<T> clazz) {
+        return requestSpecificFront(groupId, frontIp, frontPort, HttpMethod.POST, uri, param,
+                clazz);
+    }
+
+    /**
+     * delete to specific front.
+     */
+    public <T> T deleteToSpecificFront(Integer groupId, String frontIp, Integer frontPort,
+            String uri, Object param, Class<T> clazz) {
+        return requestSpecificFront(groupId, frontIp, frontPort, HttpMethod.DELETE, uri, param,
+                clazz);
+    }
+
+    /**
      * get from front for entity.
      */
-    public <T> T getForEntity(Integer groupId, String uri, Class<T> clazz) {
-        return restTemplateExchange(groupId, uri, HttpMethod.GET, null, clazz);
+    public <T> T getForEntity(Integer chainId, Integer groupId, String uri, Class<T> clazz) {
+        return restTemplateExchange(chainId, groupId, uri, HttpMethod.GET, null, clazz);
     }
 
     /**
      * post from front for entity.
      */
-    public <T> T postForEntity(Integer groupId, String uri, Object params, Class<T> clazz) {
-        return restTemplateExchange(groupId, uri, HttpMethod.POST, params, clazz);
+    public <T> T postForEntity(Integer chainId, Integer groupId, String uri, Object params,
+            Class<T> clazz) {
+        return restTemplateExchange(chainId, groupId, uri, HttpMethod.POST, params, clazz);
     }
 
     /**
      * delete from front for entity.
      */
-    public <T> T deleteForEntity(Integer groupId, String uri, Object params, Class<T> clazz) {
-        return restTemplateExchange(groupId, uri, HttpMethod.DELETE, params, clazz);
+    public <T> T deleteForEntity(Integer chainId, Integer groupId, String uri, Object params,
+            Class<T> clazz) {
+        return restTemplateExchange(chainId, groupId, uri, HttpMethod.DELETE, params, clazz);
     }
 
     /**
-     * restTemplate exchange.
+     * request from specific front.
+     */
+    private <T> T requestSpecificFront(int groupId, String frontIp, Integer frontPort,
+            HttpMethod method, String uri, Object param, Class<T> clazz) {
+        uri = uriAddGroupId(groupId, uri);
+        String url = String.format(FRONT_URL, frontIp, frontPort, uri);
+        try {
+            HttpEntity<?> entity = buildHttpEntity(param);// build entity
+            ResponseEntity<T> response = restTemplate.exchange(url, method, entity, clazz);
+            return response.getBody();
+        } catch (ResourceAccessException e) {
+            log.error("requestSpecificFront. ResourceAccessException:", e);
+            throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL);
+        } catch (HttpStatusCodeException e) {
+            errorFormat(e.getResponseBodyAsString());
+        }
+        throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL);
+    }
+
+    /**
+     * request exchange.
      */
     @SuppressWarnings("rawtypes")
-    private <T> T restTemplateExchange(int groupId, String uri, HttpMethod method, Object param,
-            Class<T> clazz) {
-        List<FrontGroup> frontList = frontGroupMapCache.getMapListByGroupId(groupId);
+    private <T> T restTemplateExchange(int chainId, int groupId, String uri, HttpMethod method,
+            Object param, Class<T> clazz) {
+        List<FrontGroup> frontList = frontGroupMapCache.getMapListByChainId(chainId, groupId);
         if (frontList == null || frontList.size() == 0) {
             log.error("fail restTemplateExchange. frontList is empty");
             throw new BaseException(ConstantCode.FRONT_LIST_NOT_FOUNT);
@@ -128,25 +177,46 @@ public class FrontRestTools {
                 if (isServiceSleep(url, method.toString())) {
                     throw ex;
                 }
-                log.info("continue next front", ex);
+                log.info("continue next front");
                 continue;
             } catch (HttpStatusCodeException ex) {
-                JSONObject error = JSONObject.parseObject(ex.getResponseBodyAsString());
-                log.error("http request fail. error:{}", JSON.toJSONString(error));
-                if (error.containsKey("code") && error.containsKey("errorMessage")) {
-                    throw new BaseException(error.getInteger("code"),
-                            error.getString("errorMessage"), ex);
-                }
-                throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL, ex);
+                errorFormat(ex.getResponseBodyAsString());
             }
         }
         throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL);
     }
-    
+
+    /**
+     * build url of front service.
+     */
+    private String buildFrontUrl(ArrayList<FrontGroup> list, String uri, HttpMethod httpMethod) {
+        Collections.shuffle(list);// random one
+        log.debug("====================map list:{}", JacksonUtils.objToString(list));
+        Iterator<FrontGroup> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            FrontGroup frontGroup = iterator.next();
+            log.debug("============frontGroup:{}", JacksonUtils.objToString(frontGroup));
+
+            uri = uriAddGroupId(frontGroup.getGroupId(), uri);// append groupId to uri
+            String url = String
+                    .format(FRONT_URL, frontGroup.getFrontIp(), frontGroup.getFrontPort(), uri)
+                    .replaceAll(" ", "");
+            iterator.remove();
+
+            if (isServiceSleep(url, httpMethod.toString())) {
+                log.warn("front url[{}] is sleep,jump over", url);
+                continue;
+            }
+            return url;
+        }
+        log.info("end buildFrontUrl. url is null");
+        return null;
+    }
+
     /**
      * append groupId to uri.
      */
-    public static String uriAddGroupId(Integer groupId, String uri) {
+    private static String uriAddGroupId(Integer groupId, String uri) {
         if (groupId == null || StringUtils.isBlank(uri)) {
             return null;
         }
@@ -158,6 +228,22 @@ public class FrontRestTools {
             return uri;
         }
         return groupId + "/" + uri;
+    }
+
+
+    /**
+     * build httpEntity.
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static HttpEntity buildHttpEntity(Object param) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        String paramStr = null;
+        if (Objects.nonNull(param)) {
+            paramStr = JacksonUtils.objToString(param);
+        }
+        HttpEntity requestEntity = new HttpEntity(paramStr, headers);
+        return requestEntity;
     }
 
     /**
@@ -201,7 +287,7 @@ public class FrontRestTools {
         failInfo.setLatestTime(Instant.now());
         failInfo.setFailCount(failInfo.getFailCount() + 1);
         failRequestMap.put(key, failInfo);
-        log.info("the latest failInfo:{}", JSON.toJSONString(failRequestMap));
+        log.info("the latest failInfo:{}", JacksonUtils.objToString(failRequestMap));
     }
 
 
@@ -217,7 +303,7 @@ public class FrontRestTools {
      * delete key of map.
      */
     private static void deleteKeyOfMap(Map<String, FailInfo> map, String rkey) {
-        log.info("start deleteKeyOfMap. rkey:{} map:{}", rkey, JSON.toJSONString(map));
+        log.debug("start deleteKeyOfMap. rkey:{} map:{}", rkey, JacksonUtils.objToString(map));
         Iterator<String> iter = map.keySet().iterator();
         while (iter.hasNext()) {
             String key = iter.next();
@@ -225,49 +311,25 @@ public class FrontRestTools {
                 iter.remove();
             }
         }
-        log.info("end deleteKeyOfMap. rkey:{} map:{}", rkey, JSON.toJSONString(map));
-    }
-
-
-    /**
-     * build url of front service.
-     */
-    private String buildFrontUrl(ArrayList<FrontGroup> list, String uri, HttpMethod httpMethod) {
-        Collections.shuffle(list);// random one
-        log.debug("====================map list:{}", JSON.toJSONString(list));
-        Iterator<FrontGroup> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            FrontGroup frontGroup = iterator.next();
-            log.debug("============frontGroup:{}", JSON.toJSONString(frontGroup));
-
-            uri = uriAddGroupId(frontGroup.getGroupId(), uri);// append groupId to uri
-            String url = String
-                    .format(FRONT_URL, frontGroup.getFrontIp(), frontGroup.getFrontPort(), uri)
-                    .replaceAll(" ", "");
-            iterator.remove();
-
-            if (isServiceSleep(url, httpMethod.toString())) {
-                log.warn("front url[{}] is sleep,jump over", url);
-                continue;
-            }
-            return url;
-        }
-        log.info("end buildFrontUrl. url is null");
-        return null;
     }
 
     /**
-     * build httpEntity.
+     * front error format
+     * 
+     * @param error
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static HttpEntity buildHttpEntity(Object param) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        String paramStr = null;
-        if (Objects.nonNull(param)) {
-            paramStr = JSON.toJSONString(param);
+    private static void errorFormat(String str) {
+        JsonNode error = JacksonUtils.stringToJsonNode(str);
+        log.error("requestFront fail. error:{}", error);
+        if (ObjectUtils.isEmpty(error.get("errorMessage"))) {
+            throw new BaseException(ConstantCode.REQUEST_NODE_EXCEPTION);
         }
-        HttpEntity requestEntity = new HttpEntity(paramStr, headers);
-        return requestEntity;
+        String errorMessage = error.get("errorMessage").asText();
+        if (errorMessage.contains("code")) {
+            JsonNode errorInside = JacksonUtils.stringToJsonNode(error.get("errorMessage").asText()).get("error");
+            throw new BaseException(errorInside.get("code").asInt(),
+                    errorInside.get("message").asText());
+        }
+        throw new BaseException(error.get("code").asInt(), errorMessage);
     }
 }

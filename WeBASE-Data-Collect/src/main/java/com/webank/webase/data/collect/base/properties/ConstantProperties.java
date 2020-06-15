@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.base.properties;
 
-import java.math.BigInteger;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -29,29 +28,21 @@ public class ConstantProperties {
     public static final String CONSTANT_PREFIX = "constant";
     public static final String CONTRACT_NAME_ZERO = "0x00000000";
     public static final String ADDRESS_DEPLOY = "0x0000000000000000000000000000000000000000";
-    public static final int PUBLICKEY_LENGTH = 130;
-    public static final int ADDRESS_LENGTH = 42;
 
-    private BigInteger transRetainMax = new BigInteger("10000");
+    // group info
     private String groupInvalidGrayscaleValue = "1M";  //y:year, M:month, d:day of month, h:hour, m:minute, n:forever valid
 
-    //block info
+    // data pull
     private long startBlockNumber = 0;
     private int crawlBatchUnit = 100;
     private Long pullBlockSleepTime1 = 20L; //20 mills
-    private BigInteger blockRetainMax = new BigInteger("10000");
 
-    //front http request
+    // front http request
     private Integer httpTimeOut = 5000;
     private Integer maxRequestFail = 3;
     private Long sleepWhenHttpMaxFail = 60000L;  //default 1min
 
-    //transaction monitor
-    private Long transMonitorTaskFixedRate = 60000L; //second
-    private Integer monitorInfoRetainMax = 10000;
-    private Long analysisSleepTime = 200L;
-    private Integer monitorUnusualMaxCount = 20;
-    private Boolean isMonitorIgnoreUser = false;
-    private Boolean isMonitorIgnoreContract = false;
+    // data parser
+    private Long dataParserTaskFixedDelay = 60000L; //default 1min
 
 }

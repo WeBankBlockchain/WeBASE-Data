@@ -1,4 +1,4 @@
-#server config
+# server config
 server:
   port: 5009
   servlet:
@@ -11,25 +11,29 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/webasedatacollect?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
     username: "defaultAccount"
     password: "defaultPassword"
+  servlet:
+    multipart:
+      max-request-size: 30MB # request max size
+      max-file-size: 20MB # single file size
 
-sdk:
-  encryptType: 1 # 1:guomi, 0:standard
-
-#constants
+# constants
 constant:
-  ###front http request
+  ## front http request
   httpTimeOut: 5000
   maxRequestFail: 3
-  sleepWhenHttpMaxFail: 60000
+  sleepWhenHttpMaxFail: 30000
 
-  ###common
+  ## group update
   resetGroupListCycle: 300000
   groupInvalidGrayscaleValue: 1m    # y:year, M:month, d:day of month, h:hour, m:minute, n:forever valid
 
-  ###block info (pulling data from chain)
+  ## data pull
   startBlockNumber: 0
   crawlBatchUnit: 50
-  pullBlockTaskFixedDelay: 10000
+  dataPullTaskFixedDelay: 10000
+  
+  ## data parser
+  dataParserTaskFixedDelay: 10000
 
 # executor config for pulling data
 executor:
@@ -38,12 +42,12 @@ executor:
   queueSize: 50
   threadNamePrefix: "custom-async-"
 
-#mybatis config
+# mybatis config
 mybatis:
   typeAliasesPackage: com.webank.webase.data.collect
   mapperLocations: classpath:mapper/*.xml
  
-#log config
+# log config
 logging:
   config: classpath:log/log4j2.xml
   level:
