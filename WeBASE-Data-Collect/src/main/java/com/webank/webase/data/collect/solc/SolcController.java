@@ -21,6 +21,8 @@ import com.webank.webase.data.collect.base.tools.HttpRequestTools;
 import com.webank.webase.data.collect.solc.entity.RspDownload;
 import com.webank.webase.data.collect.solc.entity.TbSolc;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,17 +57,20 @@ public class SolcController {
      * @return
      */
     @PostMapping("/upload")
-    public BaseResponse upload(@RequestParam(value = "fileName", required = true) String fileName,
+    public synchronized BaseResponse upload(
+            @RequestParam(value = "fileName", required = true) String fileName,
             @RequestParam(value = "encryptType", required = true,
                     defaultValue = "0") Integer encryptType,
             @RequestParam("solcFile") MultipartFile solcFile,
             @RequestParam(value = "description", required = false) String description)
             throws IOException {
+        Instant startTime = Instant.now();
         log.info("upload start. fileName:{}", fileName);
         if (solcFile.getSize() == 0L) {
             throw new BaseException(ConstantCode.SOLC_FILE_EMPTY);
         }
         TbSolc tbSolc = solcService.saveSolcFile(fileName, encryptType, solcFile, description);
+        log.info("end upload useTime:{}", Duration.between(startTime, Instant.now()).toMillis());
         return new BaseResponse(ConstantCode.SUCCESS, tbSolc);
     }
 
@@ -75,7 +80,8 @@ public class SolcController {
      * @return
      */
     @GetMapping("/list")
-    public BaseResponse getSolcList(@RequestParam(value = "encryptType", required = false) Integer encryptType) {
+    public BaseResponse getSolcList(
+            @RequestParam(value = "encryptType", required = false) Integer encryptType) {
         log.info("getSolcList start.");
         List<TbSolc> resList = solcService.getSolcList(encryptType);
         return new BaseResponse(ConstantCode.SUCCESS, resList);
@@ -94,7 +100,6 @@ public class SolcController {
         return new BaseResponse(ConstantCode.SUCCESS);
     }
 
-
     /**
      * download Solc js file.
      * 
@@ -102,12 +107,16 @@ public class SolcController {
      * @return
      */
     @GetMapping("/download")
-    public ResponseEntity<InputStreamResource> downloadSolcFile(
+    public synchronized ResponseEntity<InputStreamResource> downloadSolcFile(
             @RequestParam(value = "solcName", required = true) String solcName) {
+        Instant startTime = Instant.now();
         log.info("downloadSolcFile start. solcName:{}", solcName);
         RspDownload rspDownload = solcService.getSolcFile(solcName);
-        return ResponseEntity.ok().headers(HttpRequestTools.headers(rspDownload.getSolcName()))
-                .body(new InputStreamResource(rspDownload.getInputStream()));
+        ResponseEntity<InputStreamResource> result =
+                ResponseEntity.ok().headers(HttpRequestTools.headers(rspDownload.getSolcName()))
+                        .body(new InputStreamResource(rspDownload.getInputStream()));
+        log.info("end download useTime:{}", Duration.between(startTime, Instant.now()).toMillis());
+        return result;
     }
 
 }

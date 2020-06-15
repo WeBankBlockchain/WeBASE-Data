@@ -1603,7 +1603,7 @@ http://127.0.0.1:5009/WeBASE-Data-Collect/contract/addMethod
 
 - 网络传输协议：使用HTTP协议
 - 请求地址：**/solc/list?encryptType={encryptType}**
-- 请求方式：POST
+- 请求方式：GET
 - 返回格式：JSON
 
 #### 8.1.2 请求参数
@@ -1677,7 +1677,7 @@ http://localhost:5009/WeBASE-Data-Collect/solc/list
 
 - 网络传输协议：使用HTTP协议
 - 请求地址：**/solc/download?solcName={solcName}**
-- 请求方式：POST
+- 请求方式：GET
 - 返回格式：JSON
 
 #### 8.2.2 请求参数
