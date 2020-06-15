@@ -68,7 +68,7 @@ public class ConstantCode {
     /* upload solc js file*/
     public static final RetCode SOLC_FILE_EMPTY = RetCode.mark(202601, "solc js file cannot be empty");
     public static final RetCode SOLC_EXISTS = RetCode.mark(202602, "solc js file already exist");
-    public static final RetCode SOLC_NOT_EXISTS = RetCode.mark(202603, "solc file not exist");
+    public static final RetCode SOLC_NOT_EXISTS = RetCode.mark(202603, "solc js file not exist");
     public static final RetCode SAVE_SOLC_FILE_ERROR = RetCode.mark(202604, "save solc js file error");
     public static final RetCode READ_SOLC_FILE_ERROR = RetCode.mark(202605, "read solc js file error");
 }
