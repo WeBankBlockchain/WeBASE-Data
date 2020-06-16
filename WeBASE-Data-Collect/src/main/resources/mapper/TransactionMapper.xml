@@ -10,14 +10,12 @@
 			property="id" />
 		<result column="trans_hash" javaType="java.lang.String" jdbcType="VARCHAR"
 			property="transHash" />
-		<result column="trans_from" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="transFrom" />
-		<result column="trans_to" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="transTo" />
 		<result column="block_number" javaType="java.math.BigInteger"
 			jdbcType="INTEGER" property="blockNumber" />
 		<result column="block_timestamp" javaType="java.time.LocalDateTime"
 			jdbcType="TIMESTAMP" property="blockTimestamp" />
+		<result column="trans_detail" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="transDetail" />
 		<result column="audit_flag" javaType="java.lang.Integer"
 			jdbcType="INTEGER" property="auditFlag" />
 		<result column="create_time" javaType="java.time.LocalDateTime"
@@ -28,8 +26,8 @@
 
 	<insert id="add">
 		insert ignore into
-		${tableName}(trans_hash,trans_from,trans_to,block_number,block_timestamp,create_time,modify_time)
-		values(#{trans.transHash},#{trans.transFrom},#{trans.transTo},#{trans.blockNumber},#{trans.blockTimestamp},NOW(),NOW())
+		${tableName}(trans_hash,block_number,block_timestamp,trans_detail,create_time,modify_time)
+		values(#{trans.transHash},#{trans.blockNumber},#{trans.blockTimestamp},#{trans.transDetail},NOW(),NOW())
 	</insert>
 
 	<select id="getCount"
@@ -45,8 +43,7 @@
 	</select>
 
 	<select id="getCountByMinMax" resultType="java.lang.Integer">
-		select
-		max(trans_number) - min(trans_number) + 1 from ${tableName}
+		select max(trans_number) - min(trans_number) + 1 from ${tableName}
 	</select>
 
 	<select id="getList"
@@ -59,8 +56,7 @@
 		<if test="param.blockNumber != null">
 			and block_number = #{param.blockNumber}
 		</if>
-		<if
-			test="param.flagSortedByBlock != null and param.flagSortedByBlock != ''">
+		<if test="param.flagSortedByBlock != null and param.flagSortedByBlock != ''">
 			order by block_number ${param.flagSortedByBlock}
 		</if>
 		<if test="param.start != null and param.pageSize != null">
@@ -73,8 +69,8 @@
 		where trans_hash = #{transHash}
 	</select>
 	
-	<select id="listOfUnStatTransaction" resultMap="transactionMap">
-		select * from ${tableName}
+	<select id="listOfUnStatTransHash" resultType="java.lang.String">
+		select trans_hash from ${tableName}
 		where audit_flag=1
 		order by block_number
 		limit 2000
@@ -99,8 +95,7 @@
 	<delete id="remove">
 		DELETE from ${tableName}
 		where audit_flag = 2
-		and
-		block_number &lt;= (select max(block_number) blockNumber from
+		and block_number &lt;= (select max(block_number) blockNumber from
 		tb_trans_daily where group_id = #{groupId})
 		order by block_number
 		limit ${subTransNum}

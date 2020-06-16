@@ -45,9 +45,7 @@ public class ReceiptService {
         TransactionReceipt transReceipt =
                 frontInterface.getTransReceipt(chainId, groupId, transHash);
         TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
-                transReceipt.getContractAddress(), transReceipt.getStatus(),
-                transReceipt.getInput(), transReceipt.getOutput(),
-                JacksonUtils.objToString(transReceipt.getLogs()), transReceipt.getBlockNumber());
+                transReceipt.getBlockNumber(), JacksonUtils.objToString(transReceipt));
         addReceiptInfo(chainId, groupId, tbReceipt);
         return tbReceipt;
     }

@@ -28,16 +28,10 @@
 
 	<insert id="add">
 		insert ignore into ${tableName}
-		(block_hash,block_number,block_timestamp,trans_count,sealer_index,create_time,modify_time)
+		(block_hash,block_number,block_timestamp,trans_count,sealer_index,sealer,create_time,modify_time)
 		values
-		(#{block.blockHash},#{block.blockNumber},#{block.blockTimestamp},#{block.transCount},#{block.sealerIndex},NOW(),NOW())
+		(#{block.blockHash},#{block.blockNumber},#{block.blockTimestamp},#{block.transCount},#{block.sealerIndex},#{block.sealer},NOW(),NOW())
 	</insert>
-
-	<update id="update">
-		update ${tableName} set sealer = #{block.sealer}
-		where
-		block_hash=#{block.blockHash};
-	</update>
 
 	<select id="findByBlockHash" resultMap="blockMap">
 		select * from
@@ -85,8 +79,7 @@
 	</select>
 	
 	<select id="getLatestBlockNumber" resultType="java.math.BigInteger">
-		select
-		max(block_number) from ${tableName}
+		select max(block_number) from ${tableName}
 	</select>
 
 	<select id="getBlockCountByMinMax" resultType="java.lang.Integer">
@@ -98,8 +91,7 @@
 		DELETE tb from ${tableName} as tb,(SELECT
 		max(block_number) maxBlock FROM
 		${tableName}) AS tmp
-		where
-		tb.block_number &lt;= tmp.maxBlock - ${blockRetainMax}
+		where tb.block_number &lt;= tmp.maxBlock - ${blockRetainMax}
 	</delete>
 
 	<delete id="rollback">

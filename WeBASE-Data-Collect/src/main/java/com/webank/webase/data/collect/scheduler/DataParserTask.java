@@ -15,6 +15,7 @@ package com.webank.webase.data.collect.scheduler;
 
 import com.webank.webase.data.collect.base.enums.DataStatus;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.parser.ParserService;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -90,15 +92,14 @@ public class DataParserTask {
             Instant startTimem = Instant.now();
             Long useTimeSum = 0L;
             do {
-                List<TbTransaction> transList =
-                        transactionService.qureyUnStatTransactionList(chainId, groupId);
-                if (CollectionUtils.isEmpty(transList)) {
+                List<String> transHashList =
+                        transactionService.qureyUnStatTransHashList(chainId, groupId);
+                if (CollectionUtils.isEmpty(transHashList)) {
                     return;
                 }
                 // parser
-                for (TbTransaction tbTransaction : transList) {
-                    parserTransaction(chainId, groupId, tbTransaction);
-                }
+                transHashList.stream()
+                        .forEach(transHash -> parserTransaction(chainId, groupId, transHash));
 
                 // parser useTime
                 useTimeSum = Duration.between(startTimem, Instant.now()).getSeconds();
@@ -113,14 +114,15 @@ public class DataParserTask {
         log.info("end parserProcess. chainId:{} groupId:{}", chainId, groupId);
     }
 
-    private void parserTransaction(int chainId, int groupId, TbTransaction tbTransaction) {
+    private void parserTransaction(int chainId, int groupId, String transHash) {
         try {
-            TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId,
-                    tbTransaction.getTransHash());
-            if (ObjectUtils.isEmpty(tbTransaction) || ObjectUtils.isEmpty(tbReceipt)) {
+            TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId, transHash);
+            if (ObjectUtils.isEmpty(tbReceipt)) {
                 return;
             }
-            parserService.parserTransaction(chainId, groupId, tbTransaction, tbReceipt);
+            TransactionReceipt receipt = JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(),
+                    TransactionReceipt.class);
+            parserService.parserTransaction(chainId, groupId, receipt);
         } catch (Exception ex) {
             log.error("fail parserTransaction chainId:{} groupId:{} ", chainId, groupId, ex);
         }

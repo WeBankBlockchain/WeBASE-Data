@@ -39,15 +39,8 @@ public interface TransactionMapper {
     List<TbTransaction> getList(@Param("tableName") String tableName,@Param("param") TransListParam param);
 
     List<MinMaxBlock> queryMinMaxBlock(@Param("tableName") String tableName);
-
-    Integer remove(@Param("tableName") String tableName,
-        @Param("subTransNum") Integer subTransNum,@Param("groupId") Integer groupId);
-
-    List<TbTransaction> listOfUnStatTransaction(@Param("tableName") String tableName);
-
-    List<TbTransaction> listOfUnStatTransactionByJob(@Param("tableName") String tableName,
-        @Param("shardingTotalCount") Integer shardingTotalCount,
-        @Param("shardingItem") Integer shardingItem);
+    
+    List<String> listOfUnStatTransHash(@Param("tableName") String tableName);
 
     void updateTransStatFlag(@Param("tableName") String tableName,@Param("transHash") String transHash);
 

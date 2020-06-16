@@ -138,6 +138,22 @@ public class SolcService {
     }
 
     /**
+     * check id exists.
+     * 
+     * @param id
+     */
+    public boolean checkSolcIdExist(Integer id) {
+        if (id == null) {
+            return false;
+        }
+        TbSolc tbSolc = querySolc(id, null, null);
+        if (Objects.isNull(tbSolc)) {
+            throw new BaseException(ConstantCode.SOLC_NOT_EXISTS);
+        }
+        return true;
+    }
+
+    /**
      * check file's md5 exists.
      * 
      * @param md5

@@ -43,12 +43,11 @@
 	<insert id="add">
 		insert into ${tableName}
 		(trans_hash,block_number,user_name,user_address,user_type,contract_name,contract_address,interface_name,trans_type,
-		trans_unusual_type,input,output,logs,block_timestamp,create_time,modify_time)
+		trans_unusual_type,input,output,logs,create_time,modify_time)
 		values
 		(#{parser.transHash},#{parser.blockNumber},#{parser.userName},#{parser.userAddress},#{parser.userType},
 		#{parser.contractName},#{parser.contractAddress},#{parser.interfaceName},#{parser.transType},
-		#{parser.transUnusualType},#{parser.input},#{parser.output},#{parser.logs},
-		#{parser.blockTimestamp},now(),now())
+		#{parser.transUnusualType},#{parser.input},#{parser.output},#{parser.logs},now(),now())
 	</insert>
 
 	<update id="updateUnusualUser">

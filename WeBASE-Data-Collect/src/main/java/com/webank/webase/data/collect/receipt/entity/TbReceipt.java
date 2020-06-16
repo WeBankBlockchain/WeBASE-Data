@@ -27,23 +27,14 @@ public class TbReceipt {
 
     private long id;
     private String transHash;
-    private String contractAddress;
-    private String status;
-    private String input;
-    private String output;
-    private String logs;
     private BigInteger blockNumber;
+    private String receiptDetail;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
-    public TbReceipt(String transHash, String contractAddress, String status, String input,
-            String output, String logs, BigInteger blockNumber) {
+    public TbReceipt(String transHash, BigInteger blockNumber, String receiptDetail) {
         this.transHash = transHash;
-        this.contractAddress = contractAddress;
-        this.status = status;
-        this.input = input;
-        this.output = output;
-        this.logs = logs;
         this.blockNumber = blockNumber;
+        this.receiptDetail = receiptDetail;
     }
 }

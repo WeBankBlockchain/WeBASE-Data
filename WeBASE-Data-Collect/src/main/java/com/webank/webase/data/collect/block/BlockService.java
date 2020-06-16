@@ -17,6 +17,7 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.tools.CommonTools;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.block.entity.BlockListParam;
 import com.webank.webase.data.collect.block.entity.TbBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
@@ -27,13 +28,13 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * services for block data. including pull block from chain and block service
@@ -54,22 +55,6 @@ public class BlockService {
     private static final Long SAVE_TRANS_SLEEP_TIME = 5L;
 
     /**
-     * copy chainBlock properties;
-     */
-    public static TbBlock chainBlock2TbBlock(Block block) {
-        if (block == null) {
-            return null;
-        }
-        LocalDateTime blockTimestamp =
-                CommonTools.timestamp2LocalDateTime(block.getTimestamp().longValue());
-        int sealerIndex = Integer.parseInt(block.getSealer().substring(2), 16);
-        // save block info
-        TbBlock tbBlock = new TbBlock(block.getHash(), block.getNumber(), blockTimestamp,
-                block.getTransactions().size(), sealerIndex);
-        return tbBlock;
-    }
-
-    /**
      * save report block info.
      */
     @Transactional
@@ -84,8 +69,8 @@ public class BlockService {
         for (TransactionResult result : transList) {
             // save trans
             Transaction trans = (Transaction) result.get();
-            TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getFrom(),
-                    trans.getTo(), trans.getBlockNumber(), tbBlock.getBlockTimestamp());
+            TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getBlockNumber(),
+                    tbBlock.getBlockTimestamp(), JacksonUtils.objToString(trans));
             transactionService.addTransInfo(chainId, groupId, tbTransaction);
             // save receipt
             receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
@@ -114,8 +99,6 @@ public class BlockService {
             throws BaseException {
         List<TbBlock> listOfBlock =
                 blockMapper.getList(TableName.BLOCK.getTableName(chainId, groupId), queryParam);
-        // check sealer
-        listOfBlock.stream().forEach(block -> checkSearlerOfBlock(chainId, groupId, block));
         return listOfBlock;
     }
 
@@ -160,31 +143,6 @@ public class BlockService {
     }
 
     /**
-     * get sealer by index.
-     */
-    public void checkSearlerOfBlock(int chainId, int groupId, TbBlock tbBlock) {
-        if (StringUtils.isNotBlank(tbBlock.getSealer())) {
-            return;
-        }
-
-        // get sealer from chain.
-        List<String> sealerList = frontInterface.getSealerList(chainId, groupId);
-        String sealer = "0x0";
-        if (sealerList != null && sealerList.size() > 0) {
-            if (tbBlock.getSealerIndex() < sealerList.size()) {
-                sealer = sealerList.get(tbBlock.getSealerIndex());
-            } else {
-                sealer = sealerList.get(0);
-            }
-        }
-        tbBlock.setSealer(sealer);
-
-        // save sealer
-        blockMapper.update(TableName.BLOCK.getTableName(chainId, groupId), tbBlock);
-    }
-
-
-    /**
      * remove block into.
      */
     public Integer remove(int chainId, int groupId, BigInteger blockRetainMax)
@@ -213,5 +171,30 @@ public class BlockService {
      */
     public Block getblockFromFrontByHash(int chainId, int groupId, String blockHash) {
         return frontInterface.getblockByHash(chainId, groupId, blockHash);
+    }
+
+    /**
+     * copy chainBlock properties;
+     */
+    private static TbBlock chainBlock2TbBlock(Block block) {
+        if (block == null) {
+            return null;
+        }
+        LocalDateTime blockTimestamp =
+                CommonTools.timestamp2LocalDateTime(block.getTimestamp().longValue());
+        int sealerIndex = Integer.parseInt(block.getSealer().substring(2), 16);
+        List<String> sealerList = block.getSealerList();
+        String sealer = "0x0";
+        if (!CollectionUtils.isEmpty(sealerList)) {
+            if (sealerIndex < sealerList.size()) {
+                sealer = sealerList.get(sealerIndex);
+            } else {
+                sealer = sealerList.get(0);
+            }
+        }
+        // save block info
+        TbBlock tbBlock = new TbBlock(block.getHash(), block.getNumber(), blockTimestamp,
+                block.getTransactions().size(), sealerIndex, sealer);
+        return tbBlock;
     }
 }

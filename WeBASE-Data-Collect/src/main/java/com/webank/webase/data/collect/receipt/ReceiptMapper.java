@@ -32,6 +32,8 @@ public interface ReceiptMapper {
     int getCount(@Param("tableName") String tableName,@Param("param") TransListParam param);
     
     TbReceipt getByHash(@Param("tableName") String tableName,@Param("transHash") String transHash);
+    
+    List<String> listOfUnStatTransHash(@Param("tableName") String tableName);
 
     List<TbReceipt> getList(@Param("tableName") String tableName,@Param("param") TransListParam param);
 
