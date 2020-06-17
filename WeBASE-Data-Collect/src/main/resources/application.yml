@@ -22,18 +22,17 @@ constant:
   httpTimeOut: 5000
   maxRequestFail: 3
   sleepWhenHttpMaxFail: 30000
-
   ## group update
   resetGroupListCycle: 300000
   groupInvalidGrayscaleValue: 1m    # y:year, M:month, d:day of month, h:hour, m:minute, n:forever valid
-
   ## data pull
   startBlockNumber: 0
   crawlBatchUnit: 50
   dataPullTaskFixedDelay: 10000
-  
   ## data parser
   dataParserTaskFixedDelay: 10000
+  ## stat txn daily
+  statTxnDailyTaskFixedDelay: 60000
 
 # executor config for pulling data
 executor:

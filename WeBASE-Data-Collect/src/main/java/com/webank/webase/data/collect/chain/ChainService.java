@@ -25,6 +25,7 @@ import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
+import com.webank.webase.data.collect.node.NodeService;
 import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
 import com.webank.webase.data.collect.table.TableService;
 import java.util.List;
@@ -52,6 +53,8 @@ public class ChainService {
     private TableService tableService;
     @Autowired
     private FrontGroupMapService frontGroupMapService;
+    @Autowired
+    private NodeService nodeService;
     @Autowired
     private ContractService contractService;
     @Autowired
@@ -139,6 +142,8 @@ public class ChainService {
         groupService.removeByChainId(chainId);
         // remove map
         frontGroupMapService.removeByChainId(chainId);
+        // remove node
+        nodeService.deleteByChainId(chainId);
         // remove contract
         contractService.deleteContractByChainId(chainId);
         // remove method

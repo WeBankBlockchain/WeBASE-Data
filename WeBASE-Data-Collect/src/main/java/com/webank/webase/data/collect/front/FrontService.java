@@ -16,6 +16,7 @@ package com.webank.webase.data.collect.front;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.tools.CommonTools;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.chain.ChainService;
 import com.webank.webase.data.collect.chain.entity.TbChain;
 import com.webank.webase.data.collect.front.entity.FrontInfo;
@@ -24,10 +25,15 @@ import com.webank.webase.data.collect.front.entity.TbFront;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
+import com.webank.webase.data.collect.frontinterface.entity.PeerInfo;
 import com.webank.webase.data.collect.frontinterface.entity.SyncStatus;
 import com.webank.webase.data.collect.group.GroupService;
+import com.webank.webase.data.collect.node.NodeService;
+import com.webank.webase.data.collect.node.entity.NodeParam;
 import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -48,6 +54,8 @@ public class FrontService {
     private GroupService groupService;
     @Autowired
     private FrontMapper frontMapper;
+    @Autowired
+    private NodeService nodeService;
     @Autowired
     private FrontGroupMapService frontGroupMapService;
     @Autowired
@@ -115,6 +123,9 @@ public class FrontService {
             // peer in group
             List<String> groupPeerList =
                     frontInterface.getGroupPeersFromSpecificFront(frontIp, frontPort, gId);
+            // get peers on chain
+            PeerInfo[] peerArr = frontInterface.getPeersFromSpecificFront(frontIp, frontPort, gId);
+            List<PeerInfo> peerList = Arrays.asList(peerArr);
             String genesisBlockHash = frontInterface
                     .getBlockByNumberFromSpecificFront(frontIp, frontPort, gId, BigInteger.ZERO)
                     .getHash();
@@ -122,6 +133,17 @@ public class FrontService {
             groupService.saveGroup(chainId, gId, groupPeerList.size(), genesisBlockHash);
             // save front group map
             frontGroupMapService.newFrontGroup(chainId, tbFront.getFrontId(), gId);
+            // save nodes
+            for (String nodeId : groupPeerList) {
+                PeerInfo newPeer = peerList.stream()
+                        .map(p -> JacksonUtils.stringToObj(JacksonUtils.objToString(p),
+                                PeerInfo.class))
+                        .filter(peer -> nodeId.equals(peer.getNodeId())).findFirst()
+                        .orElseGet(() -> new PeerInfo(nodeId));
+                nodeService.addNodeInfo(chainId, gId, newPeer);
+            }
+            // add sealer(consensus node) and observer in nodeList
+            refreshSealerAndObserverInNodeList(frontIp, frontPort, chainId, gId);
         }
         // clear cache
         frontGroupMapCache.clearMapList(chainId);
@@ -152,7 +174,7 @@ public class FrontService {
         }
         return frontMapper.getById(frontId);
     }
-    
+
     /**
      * query front by nodeId.
      */
@@ -182,7 +204,7 @@ public class FrontService {
         // clear cache
         frontGroupMapCache.clearMapList(tbFront.getChainId());
     }
-    
+
     /**
      * remove front by chainId
      */
@@ -192,5 +214,38 @@ public class FrontService {
         }
         // remove front
         frontMapper.removeByChainId(chainId);
+    }
+
+    /**
+     * add sealer(consensus node) and observer in nodeList
+     * 
+     * @param groupId
+     */
+    public void refreshSealerAndObserverInNodeList(String frontIp, int frontPort, int chainId,
+            int groupId) {
+        log.debug("start refreshSealerAndObserverInNodeList frontIp:{}, frontPort:{}, groupId:{}",
+                frontIp, frontPort, groupId);
+        List<String> sealerList =
+                frontInterface.getSealerListFromSpecificFront(frontIp, frontPort, groupId);
+        List<String> observerList =
+                frontInterface.getObserverListFromSpecificFront(frontIp, frontPort, groupId);
+        List<PeerInfo> sealerAndObserverList = new ArrayList<>();
+        sealerList.stream().forEach(nodeId -> sealerAndObserverList.add(new PeerInfo(nodeId)));
+        observerList.stream().forEach(nodeId -> sealerAndObserverList.add(new PeerInfo(nodeId)));
+        log.debug("refreshSealerAndObserverInNodeList sealerList:{},observerList:{}", sealerList,
+                observerList);
+        sealerAndObserverList.stream().forEach(peerInfo -> {
+            NodeParam checkParam = new NodeParam();
+            checkParam.setChainId(chainId);
+            checkParam.setGroupId(groupId);
+            checkParam.setNodeId(peerInfo.getNodeId());
+            int existedNodeCount = nodeService.countOfNode(checkParam);
+            log.debug("addSealerAndObserver peerInfo:{},existedNodeCount:{}", peerInfo,
+                    existedNodeCount);
+            if (existedNodeCount == 0) {
+                nodeService.addNodeInfo(chainId, groupId, peerInfo);
+            }
+        });
+        log.debug("end addSealerAndObserver");
     }
 }

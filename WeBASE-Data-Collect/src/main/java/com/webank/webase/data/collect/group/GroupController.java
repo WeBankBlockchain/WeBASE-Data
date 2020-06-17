@@ -22,6 +22,8 @@ import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.group.entity.GroupGeneral;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
+import com.webank.webase.data.collect.txndaily.TxnDailyService;
+import com.webank.webase.data.collect.txndaily.entity.TbTxnDaily;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -43,12 +45,14 @@ public class GroupController extends BaseController {
     @Autowired
     private GroupService groupService;
     @Autowired
+    private TxnDailyService txnDailyService;
+    @Autowired
     private ResetGroupListTask resetGroupListTask;
 
     /**
      * get group general.
      */
-    // @GetMapping("/general/{chainId}/{groupId}")
+    @GetMapping("/general/{chainId}/{groupId}")
     public BaseResponse getGroupGeneral(@PathVariable("chainId") Integer chainId,
             @PathVariable("groupId") Integer groupId) throws BaseException {
         Instant startTime = Instant.now();
@@ -85,6 +89,25 @@ public class GroupController extends BaseController {
         resetGroupListTask.asyncResetGroupList();
 
         log.info("end getGroupList useTime:{} result:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return pagesponse;
+    }
+
+    /**
+     * get trans daily.
+     */
+    @GetMapping("/txnDaily/{chainId}/{groupId}")
+    public BaseResponse getTransDaily(@PathVariable("chainId") Integer chainId,
+            @PathVariable("groupId") Integer groupId) {
+        BaseResponse pagesponse = new BaseResponse(ConstantCode.SUCCESS);
+        Instant startTime = Instant.now();
+        log.info("start getTransDaily.");
+
+        // query txn daily
+        List<TbTxnDaily> listTrans = txnDailyService.listSeventDayOfTrans(chainId, groupId);
+        pagesponse.setData(listTrans);
+
+        log.info("end getTransDaily useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }

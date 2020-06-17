@@ -28,6 +28,10 @@ public interface TableMapper {
 
     int createTbFrontGroupMap();
     
+    int createTbNode();
+    
+    int createTbTxnDaily();
+    
     int createTbUser();
     
     int createTbContract();

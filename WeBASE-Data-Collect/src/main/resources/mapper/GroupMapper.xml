@@ -29,8 +29,8 @@
 		insert into tb_group
 		(group_id,chain_id,genesis_block_hash,group_name,node_count,create_time,modify_time)
 		values(#{groupId},#{chainId},#{genesisBlockHash},#{groupName},#{nodeCount},NOW(),NOW())
-		ON DUPLICATE KEY
-		UPDATE node_count=#{nodeCount},modify_time=NOW()
+		ON DUPLICATE KEY UPDATE 
+		node_count=#{nodeCount},modify_time=NOW()
 	</insert>
 
 	<delete id="remove">
@@ -79,23 +79,13 @@
 
 	<select id="getGeneral"
 		resultType="com.webank.webase.data.collect.group.entity.GroupGeneral">
-		SELECT a.group_id groupId,a.chain_id chainId,a.node_count
-		nodeCount,b.contractCount
-		FROM tb_group a
-		LEFT JOIN
-		(
-		select
-		group_id,count(1) contractCount
-		from tb_contract
-		where contract_type= 0
-		and contract_status=2
-		and chain_id = #{chainId}
-		GROUP BY group_id
-		)b
-		on(a.group_id = b.group_id)
-		where a.group_id =
-		#{groupId}
-		and a.chain_id
-		= #{chainId}
+		SELECT a.chain_id chainId,
+			   a.group_id groupId,
+			   a.node_count nodeCount,
+			   count(distinct(b.user_address)) userCount,
+			   count(distinct(b.contract_address)) contractCount
+		FROM tb_group a, tb_parser_#{chainId}_#{groupId} b
+		WHERE a.chain_id = #{chainId}
+		  AND a.group_id = #{groupId}
 	</select>
 </mapper>

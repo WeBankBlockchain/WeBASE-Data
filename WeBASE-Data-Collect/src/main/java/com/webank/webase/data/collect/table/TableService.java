@@ -44,6 +44,8 @@ public class TableService {
         tableMapper.createTbFront();
         tableMapper.createTbGroup();
         tableMapper.createTbFrontGroupMap();
+        tableMapper.createTbNode();
+        tableMapper.createTbTxnDaily();
         tableMapper.createTbUser();
         tableMapper.createTbContract();
         tableMapper.createTbMethod();

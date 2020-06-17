@@ -21,10 +21,11 @@ import lombok.Data;
 @Data
 public class GroupGeneral {
 
-    private Integer groupId;
     private Integer chainId;
+    private Integer groupId;
     private int nodeCount;
     private int contractCount;
+    private int userCount;
     private BigInteger transactionCount = BigInteger.ZERO;
     private BigInteger latestBlock = BigInteger.ZERO;
 

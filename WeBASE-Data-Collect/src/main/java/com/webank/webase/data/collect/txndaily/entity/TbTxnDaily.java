@@ -11,13 +11,20 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.front.entity;
+package com.webank.webase.data.collect.txndaily.entity;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import lombok.Data;
 
+/**
+ * Entity class of table tb_trans_daily.
+ */
 @Data
-public class TotalTransCountInfo {
-    private BigInteger txSum;
+public class TbTxnDaily {
+    private Integer chainId;
+    private Integer groupId;
+    private LocalDate statDate;
+    private Integer txn;
     private BigInteger blockNumber;
 }
