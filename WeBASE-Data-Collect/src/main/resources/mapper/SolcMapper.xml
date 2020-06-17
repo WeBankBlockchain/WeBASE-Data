@@ -4,59 +4,59 @@
 
 <!--对应mapper接口 -->
 <mapper namespace="com.webank.webase.data.collect.solc.SolcMapper">
-	<resultMap id="solcMap"
-		type="com.webank.webase.data.collect.solc.entity.TbSolc">
-		<id column="id" javaType="java.lang.Integer" jdbcType="INTEGER"
-			property="id" />
-		<result column="solc_name" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="solcName" />
-		<result column="encrypt_type" javaType="java.lang.Integer"
-			jdbcType="INTEGER" property="encryptType" />
-		<result column="md5" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="md5" />
-		<result column="file_size" javaType="java.lang.Long" jdbcType="BIGINT"
-			property="fileSize" />
-		<result column="description" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="description" />
-		<result column="create_time" javaType="java.time.LocalDateTime"
-			jdbcType="TIMESTAMP" property="createTime" />
-		<result column="modify_time" javaType="java.time.LocalDateTime"
-			jdbcType="TIMESTAMP" property="modifyTime" />
-	</resultMap>
+    <resultMap id="solcMap"
+        type="com.webank.webase.data.collect.solc.entity.TbSolc">
+        <id column="id" javaType="java.lang.Integer" jdbcType="INTEGER"
+            property="id" />
+        <result column="solc_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="solcName" />
+        <result column="encrypt_type" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="encryptType" />
+        <result column="md5" javaType="java.lang.String" jdbcType="VARCHAR"
+            property="md5" />
+        <result column="file_size" javaType="java.lang.Long" jdbcType="BIGINT"
+            property="fileSize" />
+        <result column="description" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="description" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
 
-	<insert id="save" parameterType="com.webank.webase.data.collect.solc.entity.TbSolc">
-		insert into
-		tb_solc(solc_name,encrypt_type,md5,file_size,description,create_time,modify_time)
-		values(#{solcName},#{encryptType},#{md5},#{fileSize},#{description},NOW(),NOW())
-		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
-			SELECT LAST_INSERT_ID()
-		</selectKey>
-	</insert>
+    <insert id="save" parameterType="com.webank.webase.data.collect.solc.entity.TbSolc">
+        insert into
+        tb_solc(solc_name,encrypt_type,md5,file_size,description,create_time,modify_time)
+        values(#{solcName},#{encryptType},#{md5},#{fileSize},#{description},NOW(),NOW())
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
 
-	<select id="querySolc"
-		parameterType="com.webank.webase.data.collect.solc.entity.SolcParam"
-		resultMap="solcMap">
-		select * from tb_solc where 1=1
-		<if test="id != null">
-			and id = #{id}
-		</if>
-		<if test="solcName != null and solcName != ''">
-			and solc_name = #{solcName}
-		</if>
-		<if test="md5 != null and md5 != ''">
-			and md5 = #{md5}
-		</if>
-	</select>
+    <select id="querySolc"
+        parameterType="com.webank.webase.data.collect.solc.entity.SolcParam"
+        resultMap="solcMap">
+        select * from tb_solc where 1=1
+        <if test="id != null">
+            and id = #{id}
+        </if>
+        <if test="solcName != null and solcName != ''">
+            and solc_name = #{solcName}
+        </if>
+        <if test="md5 != null and md5 != ''">
+            and md5 = #{md5}
+        </if>
+    </select>
 
-	<select id="getSolcList" resultMap="solcMap">
-		select * from tb_solc where 1=1
-		<if test="encryptType != null">
-			and encrypt_type = #{encryptType}
-		</if>
-	</select>
+    <select id="getSolcList" resultMap="solcMap">
+        select * from tb_solc where 1=1
+        <if test="encryptType != null">
+            and encrypt_type = #{encryptType}
+        </if>
+    </select>
 
-	<delete id="delete" parameterType="java.lang.Integer">
-		delete from tb_solc where id = #{id}
-	</delete>
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_solc where id = #{id}
+    </delete>
 
 </mapper>

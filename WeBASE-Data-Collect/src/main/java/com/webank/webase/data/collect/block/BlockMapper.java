@@ -30,7 +30,7 @@ public interface BlockMapper {
      * Add new block data.
      */
     Integer add(@Param("tableName") String tableName, @Param("block") TbBlock tbBlock);
-    
+
     /**
      * query latest block number
      */

@@ -164,7 +164,7 @@ public class TransactionDecoder {
         if (abiDefinition == null) {
             return null;
         }
-        
+
         // decode output
         List<NamedType> outputTypes = abiDefinition.getOutputs();
         List<TypeReference<?>> outputTypeReference = ContractAbiUtil.paramFormat(outputTypes);
@@ -377,9 +377,9 @@ public class TransactionDecoder {
         }
         String methodID = input.substring(0, 10);
         AbiDefinition abiDefinition = methodIDMap.get(methodID);
-//        if (abiDefinition == null) {
-//            throw new TransactionException("The method is not included in the contract abi.");
-//        }
+        // if (abiDefinition == null) {
+        // throw new TransactionException("The method is not included in the contract abi.");
+        // }
         return abiDefinition;
     }
 
@@ -394,9 +394,9 @@ public class TransactionDecoder {
         methodSign.append(")");
         return methodSign.toString();
     }
-    
-    private <T extends Type> String buildMethodSignature(
-            String methodName, List<TypeReference<T>> parameters) {
+
+    private <T extends Type> String buildMethodSignature(String methodName,
+            List<TypeReference<T>> parameters) {
         StringBuilder result = new StringBuilder();
         result.append(methodName);
         result.append("(");
@@ -433,9 +433,8 @@ public class TransactionDecoder {
             return md;
         }
     }
-    
-    private EventValues decodeEvent(Log log, AbiDefinition abiDefinition)
-            throws BaseException {
+
+    private EventValues decodeEvent(Log log, AbiDefinition abiDefinition) throws BaseException {
 
         List<TypeReference<?>> finalOutputs = paramFormat(abiDefinition.getInputs());
         Event event = new Event(abiDefinition.getName(), finalOutputs);
@@ -443,9 +442,8 @@ public class TransactionDecoder {
         EventValues eventValues = staticExtractEventParameters(event, log);
         return eventValues;
     }
-    
-    private List<TypeReference<?>> paramFormat(List<NamedType> paramTypes)
-            throws BaseException {
+
+    private List<TypeReference<?>> paramFormat(List<NamedType> paramTypes) throws BaseException {
         List<TypeReference<?>> finalOutputs = new ArrayList<>();
 
         for (int i = 0; i < paramTypes.size(); i++) {
@@ -454,26 +452,20 @@ public class TransactionDecoder {
                     new AbiDefinition.NamedType.Type(paramTypes.get(i).getType());
             // nested array , not support now.
             if (type.getDepth() > 1) {
-                throw new BaseException(
-                        201202,
+                throw new BaseException(201202,
                         String.format("type:%s unsupported array decoding", type.getName()));
             }
 
             TypeReference<?> typeReference = null;
             if (type.dynamicArray()) {
-                typeReference =
-                        DynamicArrayReference.create(
-                                type.getBaseName(), paramTypes.get(i).isIndexed());
+                typeReference = DynamicArrayReference.create(type.getBaseName(),
+                        paramTypes.get(i).isIndexed());
             } else if (type.staticArray()) {
-                typeReference =
-                        StaticArrayReference.create(
-                                type.getBaseName(),
-                                type.getDimensions(),
-                                paramTypes.get(i).isIndexed());
+                typeReference = StaticArrayReference.create(type.getBaseName(),
+                        type.getDimensions(), paramTypes.get(i).isIndexed());
             } else {
                 typeReference =
-                        TypeReference.create(
-                                ContractTypeUtil.getType(paramTypes.get(i).getType()),
+                        TypeReference.create(ContractTypeUtil.getType(paramTypes.get(i).getType()),
                                 paramTypes.get(i).isIndexed());
             }
 
@@ -481,7 +473,7 @@ public class TransactionDecoder {
         }
         return finalOutputs;
     }
-    
+
     private EventValues staticExtractEventParameters(Event event, Log log) {
 
         List<String> topics = log.getTopics();
@@ -496,14 +488,13 @@ public class TransactionDecoder {
 
         List<TypeReference<Type>> indexedParameters = event.getIndexedParameters();
         for (int i = 0; i < indexedParameters.size(); i++) {
-            Type value =
-                    FunctionReturnDecoder.decodeIndexedValue(
-                            topics.get(i + 1), indexedParameters.get(i));
+            Type value = FunctionReturnDecoder.decodeIndexedValue(topics.get(i + 1),
+                    indexedParameters.get(i));
             indexedValues.add(value);
         }
         return new EventValues(indexedValues, nonIndexedValues);
     }
-    
+
     private String encode(Event event) {
 
         String methodSignature = buildMethodSignature(event.getName(), event.getParameters());

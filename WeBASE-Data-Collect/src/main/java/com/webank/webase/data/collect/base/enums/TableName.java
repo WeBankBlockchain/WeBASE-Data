@@ -17,11 +17,8 @@ package com.webank.webase.data.collect.base.enums;
  * table name.
  */
 public enum TableName {
-    TASK("tb_task_pool_"), 
-    BLOCK("tb_block_"), 
-    TRANS("tb_transaction_"), 
-    RECEIPT("tb_receipt_"), 
-    PARSER("tb_parser_");
+    TASK("tb_task_pool_"), BLOCK("tb_block_"), TRANS("tb_transaction_"), RECEIPT(
+            "tb_receipt_"), PARSER("tb_parser_");
 
     String value;
 

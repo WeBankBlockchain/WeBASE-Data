@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TableMapper {
-    
+
     int createTbChain();
 
     int createTbFront();
@@ -27,17 +27,17 @@ public interface TableMapper {
     int createTbGroup();
 
     int createTbFrontGroupMap();
-    
+
     int createTbNode();
-    
+
     int createTbTxnDaily();
-    
+
     int createTbUser();
-    
+
     int createTbContract();
-    
+
     int createTbMethod();
-    
+
     int createTbSolc();
 
     int createTbTaskPool(@Param("tableName") String tableName);

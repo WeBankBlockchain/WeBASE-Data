@@ -138,6 +138,9 @@ public class GroupService {
      * query group overview information.
      */
     public GroupGeneral queryGroupGeneral(Integer chainId, Integer groupId) throws BaseException {
+        // check groupId
+        checkGroupId(chainId, groupId);
+        // getGeneral
         GroupGeneral generalInfo = groupMapper.getGeneral(chainId, groupId);
         if (generalInfo != null) {
             TotalTransCountInfo transCountInfo =

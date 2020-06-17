@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -30,19 +30,20 @@ public class ConstantProperties {
     public static final String ADDRESS_DEPLOY = "0x0000000000000000000000000000000000000000";
 
     // group info
-    private String groupInvalidGrayscaleValue = "1M";  //y:year, M:month, d:day of month, h:hour, m:minute, n:forever valid
+    private String groupInvalidGrayscaleValue = "1M"; // y:year, M:month, d:day of month, h:hour,
+                                                      // m:minute, n:forever valid
 
     // data pull
     private long startBlockNumber = 0;
     private int crawlBatchUnit = 100;
-    private Long pullBlockSleepTime1 = 20L; //20 mills
+    private Long pullBlockSleepTime1 = 20L; // 20 mills
 
     // front http request
     private Integer httpTimeOut = 5000;
     private Integer maxRequestFail = 3;
-    private Long sleepWhenHttpMaxFail = 60000L;  //default 1min
+    private Long sleepWhenHttpMaxFail = 60000L; // default 1min
 
     // data parser
-    private Long dataParserTaskFixedDelay = 60000L; //default 1min
+    private Long dataParserTaskFixedDelay = 60000L; // default 1min
 
 }

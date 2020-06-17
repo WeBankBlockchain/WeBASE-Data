@@ -52,8 +52,8 @@ public class SolcService {
      * @param solcFileParam
      * @param fileDesc
      */
-    public TbSolc saveSolcFile(String solcNameParam, Integer encryptType, MultipartFile solcFileParam,
-            String fileDesc) {
+    public TbSolc saveSolcFile(String solcNameParam, Integer encryptType,
+            MultipartFile solcFileParam, String fileDesc) {
         // format filename end with js
         String solcName = formatSolcName(solcNameParam);
         Long fileSize = solcFileParam.getSize();
@@ -72,7 +72,7 @@ public class SolcService {
             File solcDir = getSolcDir();
             File newFile = new File(solcDir.getAbsolutePath() + File.separator + solcName);
             solcFileParam.transferTo(newFile);
-            
+
             log.info("saveSolcFile success, solcName:{}", solcName);
             return querySolc(tbSolc.getId(), null, null);
         } catch (IOException e) {

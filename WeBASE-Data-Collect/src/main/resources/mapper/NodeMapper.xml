@@ -79,11 +79,11 @@
   </select>
 
   <select id="queryNodeByIpAndP2pPort" resultMap="nodeMap">
-		select * from tb_node where node_ip = #{nodeIp} and p2p_port = #{p2pPort}
+        select * from tb_node where node_ip = #{nodeIp} and p2p_port = #{p2pPort}
   </select>
 
   <select id="queryByNodeId" resultMap="nodeMap">
-		select * from tb_node where node_id = #{nodeId}
+        select * from tb_node where node_id = #{nodeId}
   </select>
 
   <update id="update" parameterType="com.webank.webase.data.collect.node.entity.TbNode">
@@ -125,16 +125,16 @@
   </select>
 
   <delete id="deleteByNodeAndGroup">
-	delete from tb_node where node_id=#{nodeId} and group_id = #{groupId}
+    delete from tb_node where node_id=#{nodeId} and group_id = #{groupId}
   </delete>
 
   <delete id="deleteByGroupId">
-	delete from tb_node 
-	where chain_id = #{chainId}
+    delete from tb_node 
+    where chain_id = #{chainId}
       and group_id = #{groupId}
   </delete>
 
   <delete id="deleteByChainId">
-	delete from tb_node where chain_id = #{chainId}
+    delete from tb_node where chain_id = #{chainId}
   </delete>
 </mapper>

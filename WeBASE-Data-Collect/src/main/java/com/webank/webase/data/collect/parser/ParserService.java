@@ -244,8 +244,8 @@ public class ParserService {
      * parserTransaction.
      */
     public void parserTransaction(int chainId, int groupId, TbReceipt tbReceipt) {
-        TransactionReceipt receipt = JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(),
-                TransactionReceipt.class);
+        TransactionReceipt receipt =
+                JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(), TransactionReceipt.class);
         // parser user
         UserParserResult userResult = parserUser(chainId, groupId, receipt.getFrom());
         // parser contract

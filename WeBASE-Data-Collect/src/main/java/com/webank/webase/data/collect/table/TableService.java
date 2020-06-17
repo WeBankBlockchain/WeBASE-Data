@@ -35,7 +35,7 @@ public class TableService {
     private TableMapper tableMapper;
     @Value("${spring.datasource.url}")
     private String dbUrl;
-    
+
     /**
      * create common table.
      */
@@ -51,7 +51,7 @@ public class TableService {
         tableMapper.createTbMethod();
         tableMapper.createTbSolc();
     }
-    
+
     /**
      * create sub table.
      */

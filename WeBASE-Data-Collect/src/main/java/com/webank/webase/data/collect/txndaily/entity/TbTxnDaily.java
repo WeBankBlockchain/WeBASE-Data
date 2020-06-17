@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 /**
- * Entity class of table tb_trans_daily.
+ * Entity class of table tb_txn_daily.
  */
 @Data
 public class TbTxnDaily {

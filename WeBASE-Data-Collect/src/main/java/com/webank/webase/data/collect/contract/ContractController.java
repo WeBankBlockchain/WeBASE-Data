@@ -50,7 +50,7 @@ public class ContractController extends BaseController {
     @Autowired
     private MethodService methodService;
 
-    /** 
+    /**
      * add new contract info.
      */
     @PostMapping(value = "/save")
@@ -118,7 +118,7 @@ public class ContractController extends BaseController {
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }
-    
+
     /**
      * add method info.
      */

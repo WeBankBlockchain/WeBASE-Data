@@ -2,69 +2,69 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.webank.webase.data.collect.contract.MethodMapper">
-	<resultMap id="tbMethodMap"
-		type="com.webank.webase.data.collect.contract.entity.TbMethod">
-		<id column="id" javaType="java.lang.Integer" jdbcType="INTEGER"
-			property="id" />
-		<result column="contract_id" javaType="java.lang.Integer"
-			jdbcType="INTEGER" property="contractId" />
-		<result column="chain_id" javaType="java.lang.Integer"
-			jdbcType="INTEGER" property="chainId" />
-		<result column="group_id" javaType="java.lang.Integer"
-			jdbcType="INTEGER" property="groupId" />
-		<result column="method_id" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="methodId" />
-		<result column="method_name" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="methodName" />
-		<result column="method_type" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="methodType" />
-		<result column="create_time" javaType="java.time.LocalDateTime"
-			jdbcType="TIMESTAMP" property="createTime" />
-		<result column="modify_time" javaType="java.time.LocalDateTime"
-			jdbcType="TIMESTAMP" property="modifyTime" />
-	</resultMap>
+    <resultMap id="tbMethodMap"
+        type="com.webank.webase.data.collect.contract.entity.TbMethod">
+        <id column="id" javaType="java.lang.Integer" jdbcType="INTEGER"
+            property="id" />
+        <result column="contract_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="contractId" />
+        <result column="chain_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="chainId" />
+        <result column="group_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="groupId" />
+        <result column="method_id" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="methodId" />
+        <result column="method_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="methodName" />
+        <result column="method_type" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="methodType" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
 
-	<insert id="add"
-		parameterType="com.webank.webase.data.collect.contract.entity.TbMethod">
-		REPLACE INTO
-		tb_method(contract_id,chain_id,group_id,method_id,method_name,method_type,create_time,modify_time)
-		VALUES
-		(#{contractId},#{chainId},#{groupId},#{methodId},#{methodName},#{methodType},now(),now())
-	</insert>
+    <insert id="add"
+        parameterType="com.webank.webase.data.collect.contract.entity.TbMethod">
+        REPLACE INTO
+        tb_method(contract_id,chain_id,group_id,method_id,method_name,method_type,create_time,modify_time)
+        VALUES
+        (#{contractId},#{chainId},#{groupId},#{methodId},#{methodName},#{methodType},now(),now())
+    </insert>
 
-	<select id="getMethodInfo" resultType="com.webank.webase.data.collect.contract.entity.MethodInfo">
-		SELECT t1.method_id as methodId,
-			   t1.method_name as methodName,
-			   t1.method_type as methodType,
-			   t2.contract_name as contractName,
-			   t2.contract_abi as contractAbi
-		FROM tb_method t1,tb_contract t2
-		WHERE t1.contract_id = t2.contract_id
-		  AND t1.method_id = #{methodId}
-		<if test="chainId != null">
-			and t1.chain_id = #{chainId}
-		</if>
-		<if test="groupId != null">
-			and t1.group_id = #{groupId}
-		</if>
-		<if test="contractAddress != null and contractAddress != ''">
-			and t2.contract_address = #{contractAddress}
-		</if>
-		<if test="subBin != null and subBin != ''">
-			and t2.contract_bin like CONCAT(#{subBin},'%')
-		</if>
-	</select>
+    <select id="getMethodInfo" resultType="com.webank.webase.data.collect.contract.entity.MethodInfo">
+        SELECT t1.method_id as methodId,
+               t1.method_name as methodName,
+               t1.method_type as methodType,
+               t2.contract_name as contractName,
+               t2.contract_abi as contractAbi
+        FROM tb_method t1,tb_contract t2
+        WHERE t1.contract_id = t2.contract_id
+          AND t1.method_id = #{methodId}
+        <if test="chainId != null">
+            and t1.chain_id = #{chainId}
+        </if>
+        <if test="groupId != null">
+            and t1.group_id = #{groupId}
+        </if>
+        <if test="contractAddress != null and contractAddress != ''">
+            and t2.contract_address = #{contractAddress}
+        </if>
+        <if test="subBin != null and subBin != ''">
+            and t2.contract_bin like CONCAT(#{subBin},'%')
+        </if>
+    </select>
 
-	<delete id="removeByContractId">
-		delete from tb_method
-		where contract_id = #{contractId}
-	</delete>
+    <delete id="removeByContractId">
+        delete from tb_method
+        where contract_id = #{contractId}
+    </delete>
 
-	<delete id="removeByChainIdAndGroupId">
-		delete from tb_method
-		where chain_id = #{chainId}
-		<if test="groupId != null">
-			and group_id = #{groupId}
-		</if>
-	</delete>
+    <delete id="removeByChainIdAndGroupId">
+        delete from tb_method
+        where chain_id = #{chainId}
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+    </delete>
 </mapper>
