@@ -73,11 +73,12 @@ public class BlockService {
                     tbBlock.getBlockTimestamp(), JacksonUtils.objToString(trans));
             transactionService.addTransInfo(chainId, groupId, tbTransaction);
             // save receipt
-            receiptService.handleReceiptInfo(chainId, groupId, trans.getHash());
+            receiptService.handleReceiptInfo(chainId, groupId, trans.getHash(),
+                    tbBlock.getBlockTimestamp());
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);
             } catch (InterruptedException ex) {
-                log.error("saveBLockInfo", ex);
+                log.error("saveBLockInfo error.", ex);
                 Thread.currentThread().interrupt();
             }
         }

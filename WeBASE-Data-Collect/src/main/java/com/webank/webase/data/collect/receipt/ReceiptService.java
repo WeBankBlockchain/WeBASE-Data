@@ -20,6 +20,7 @@ import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -41,11 +42,13 @@ public class ReceiptService {
     /**
      * handle receipt info.
      */
-    public TbReceipt handleReceiptInfo(int chainId, int groupId, String transHash) {
+    public TbReceipt handleReceiptInfo(int chainId, int groupId, String transHash,
+            LocalDateTime blockTimestamp) {
         TransactionReceipt transReceipt =
                 frontInterface.getTransReceipt(chainId, groupId, transHash);
-        TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
-                transReceipt.getBlockNumber(), JacksonUtils.objToString(transReceipt));
+        TbReceipt tbReceipt =
+                new TbReceipt(transReceipt.getTransactionHash(), transReceipt.getBlockNumber(),
+                        JacksonUtils.objToString(transReceipt), blockTimestamp);
         addReceiptInfo(chainId, groupId, tbReceipt);
         return tbReceipt;
     }

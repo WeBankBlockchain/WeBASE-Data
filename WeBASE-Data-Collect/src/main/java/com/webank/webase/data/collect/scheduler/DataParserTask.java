@@ -120,9 +120,7 @@ public class DataParserTask {
             if (ObjectUtils.isEmpty(tbReceipt)) {
                 return;
             }
-            TransactionReceipt receipt = JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(),
-                    TransactionReceipt.class);
-            parserService.parserTransaction(chainId, groupId, receipt);
+            parserService.parserTransaction(chainId, groupId, tbReceipt);
         } catch (Exception ex) {
             log.error("fail parserTransaction chainId:{} groupId:{} ", chainId, groupId, ex);
         }

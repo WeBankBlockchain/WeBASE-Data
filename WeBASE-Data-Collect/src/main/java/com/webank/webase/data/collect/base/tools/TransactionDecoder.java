@@ -38,6 +38,7 @@ import org.fisco.bcos.web3j.tx.txdecode.StaticArrayReference;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 public class TransactionDecoder {
 
@@ -195,12 +196,13 @@ public class TransactionDecoder {
                 mapper.getTypeFactory().constructCollectionType(ArrayList.class, Log.class);
         @SuppressWarnings("unchecked")
         List<Log> logList = (List<Log>) mapper.readValue(logs, listType);
-
+        if (CollectionUtils.isEmpty(logList)) {
+            return null;
+        }
         // decode event
         Map<String, List<List<EventResultEntity>>> resultEntityMap =
                 decodeEventReturnObject(logList);
         String result = mapper.writeValueAsString(resultEntityMap);
-
         return result;
     }
 
@@ -211,13 +213,15 @@ public class TransactionDecoder {
      * @throws IOException
      */
     public String decodeEventReturnJson(List<Log> logList) throws BaseException, IOException {
+        if (CollectionUtils.isEmpty(logList)) {
+            return null;
+        }
         // log json trans to list log
         ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
         // decode event
         Map<String, List<List<EventResultEntity>>> resultEntityMap =
                 decodeEventReturnObject(logList);
         String result = mapper.writeValueAsString(resultEntityMap);
-
         return result;
     }
 
@@ -229,7 +233,9 @@ public class TransactionDecoder {
      */
     public Map<String, List<List<EventResultEntity>>> decodeEventReturnObject(List<Log> logList)
             throws BaseException, IOException {
-
+        if (CollectionUtils.isEmpty(logList)) {
+            return null;
+        }
         // set result to java bean
         Map<String, List<List<EventResultEntity>>> resultEntityMap = new LinkedHashMap<>();
 

@@ -29,12 +29,15 @@ public class TbReceipt {
     private String transHash;
     private BigInteger blockNumber;
     private String receiptDetail;
+    private LocalDateTime blockTimestamp;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
-    public TbReceipt(String transHash, BigInteger blockNumber, String receiptDetail) {
+    public TbReceipt(String transHash, BigInteger blockNumber, String receiptDetail,
+            LocalDateTime blockTimestamp) {
         this.transHash = transHash;
         this.blockNumber = blockNumber;
         this.receiptDetail = receiptDetail;
+        this.blockTimestamp = blockTimestamp;
     }
 }

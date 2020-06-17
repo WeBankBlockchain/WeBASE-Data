@@ -243,7 +243,9 @@ public class ParserService {
     /**
      * parserTransaction.
      */
-    public void parserTransaction(int chainId, int groupId, TransactionReceipt receipt) {
+    public void parserTransaction(int chainId, int groupId, TbReceipt tbReceipt) {
+        TransactionReceipt receipt = JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(),
+                TransactionReceipt.class);
         // parser user
         UserParserResult userResult = parserUser(chainId, groupId, receipt.getFrom());
         // parser contract
@@ -252,7 +254,8 @@ public class ParserService {
         TbParser tbParser = new TbParser();
         BeanUtils.copyProperties(userResult, tbParser);
         BeanUtils.copyProperties(contractResult, tbParser);
-        tbParser.setBlockNumber(receipt.getBlockNumber());
+        tbParser.setBlockNumber(tbReceipt.getBlockNumber());
+        tbParser.setBlockTimestamp(tbReceipt.getBlockTimestamp());
         dataAddAndUpdate(chainId, groupId, tbParser);
     }
 
