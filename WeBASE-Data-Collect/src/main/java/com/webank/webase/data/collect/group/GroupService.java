@@ -35,6 +35,7 @@ import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.node.NodeService;
 import com.webank.webase.data.collect.node.entity.TbNode;
 import com.webank.webase.data.collect.table.TableService;
+import com.webank.webase.data.collect.txndaily.TxnDailyService;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.time.Instant;
@@ -75,6 +76,8 @@ public class GroupService {
     private ContractService contractService;
     @Autowired
     private MethodService methodService;
+    @Autowired
+    private TxnDailyService txnDailyService;
     @Autowired
     private ConstantProperties constants;
 
@@ -172,10 +175,12 @@ public class GroupService {
             Set<Integer> allGroupSet = new HashSet<>();
 
             // get all front
-            List<TbFront> frontList = frontService.getFrontList(new FrontParam());
+            FrontParam frontParam = new FrontParam();
+            frontParam.setChainId(chainId);
+            List<TbFront> frontList = frontService.getFrontList(frontParam);
             if (frontList == null || frontList.size() == 0) {
-                log.info("not fount any front.");
-                return;
+                log.info("chain {} not fount any front.", chainId);
+                continue;
             }
             // get group from chain
             for (TbFront front : frontList) {
@@ -253,7 +258,7 @@ public class GroupService {
             long count = allGroupOnChain.stream().filter(id -> id == localGroupId).count();
             try {
                 if (count > 0) {
-                    log.info("group is valid, localGroupId:{}", localGroupId);
+                    log.info("group is valid, chainId:{} groupId:{}", chainId, localGroupId);
                     // update NORMAL
                     updateGroupStatus(chainId, localGroupId, DataStatus.NORMAL.getValue());
                     continue;
@@ -261,20 +266,22 @@ public class GroupService {
 
                 if (!CommonTools.isDateTimeInValid(localGroup.getModifyTime(),
                         constants.getGroupInvalidGrayscaleValue())) {
-                    log.warn("remove group, localGroup:{}", localGroup.getGroupId());
+                    log.warn("remove group, chainId:{} groupId:{}", chainId,
+                            localGroup.getGroupId());
                     // remove group
                     removeByGroupId(chainId, localGroupId);
                     continue;
                 }
 
-                log.warn("group is invalid, localGroupId:{}", localGroupId);
+                log.warn("group is invalid, chainId:{} groupId:{}", chainId, localGroupId);
                 if (DataStatus.NORMAL.getValue() == localGroup.getGroupStatus()) {
                     // update invalid
                     updateGroupStatus(chainId, localGroupId, DataStatus.INVALID.getValue());
                     continue;
                 }
             } catch (Exception ex) {
-                log.info("fail check group. localGroup:{}", localGroup.getGroupId());
+                log.info("fail check group. chainId:{} groupId:{}", chainId,
+                        localGroup.getGroupId());
                 continue;
             }
 
@@ -298,6 +305,8 @@ public class GroupService {
         contractService.deleteByGroupId(chainId, groupId);
         // remove method
         methodService.removeByChainIdAndGroupId(chainId, groupId);
+        //remove txnDaily
+        txnDailyService.deleteByGroupId(chainId, groupId);
         // drop table.
         tableService.dropTable(chainId, groupId);
     }

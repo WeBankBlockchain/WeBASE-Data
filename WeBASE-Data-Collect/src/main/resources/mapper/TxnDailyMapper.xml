@@ -49,5 +49,13 @@
         ]]>
         ORDER BY stat_date DESC
     </select>
+    
+    <delete id="deleteByChainId">
+		delete from tb_txn_daily where chain_id = #{chainId}
+	</delete>
+	
+	<delete id="deleteByGroupId">
+		delete from tb_txn_daily where chain_id = #{chainId} AND group_id = #{groupId}
+	</delete>
 
 </mapper>

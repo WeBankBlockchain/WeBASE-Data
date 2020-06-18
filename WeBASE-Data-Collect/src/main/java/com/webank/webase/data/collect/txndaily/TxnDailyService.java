@@ -81,14 +81,24 @@ public class TxnDailyService {
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
+    
+    /**
+     * delete by chainId.
+     */
+    public void deleteByChainId(int chainId) {
+        if (chainId == 0) {
+            return;
+        }
+        txnDailyMapper.deleteByChainId(chainId);
+    }
 
     /**
      * delete by groupId.
      */
-    public void deleteByGroupId(int groupId) {
-        if (groupId == 0) {
+    public void deleteByGroupId(int chainId, int groupId) {
+        if (chainId == 0 || groupId == 0) {
             return;
         }
-        txnDailyMapper.deleteByGroupId(groupId);
+        txnDailyMapper.deleteByGroupId(chainId, groupId);
     }
 }

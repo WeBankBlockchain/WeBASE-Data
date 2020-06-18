@@ -28,6 +28,7 @@ import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.node.NodeService;
 import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
 import com.webank.webase.data.collect.table.TableService;
+import com.webank.webase.data.collect.txndaily.TxnDailyService;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -59,6 +60,8 @@ public class ChainService {
     private ContractService contractService;
     @Autowired
     private MethodService methodService;
+    @Autowired
+    private TxnDailyService txnDailyService;
     @Autowired
     private FrontGroupMapCache frontGroupMapCache;
     @Autowired
@@ -148,6 +151,8 @@ public class ChainService {
         contractService.deleteContractByChainId(chainId);
         // remove method
         methodService.removeByChainIdAndGroupId(chainId, null);
+        //remove txnDaily
+        txnDailyService.deleteByChainId(chainId);
         // clear cache
         frontGroupMapCache.clearMapList(chainId);
         // drop sub tables
