@@ -73,7 +73,6 @@ public class TxnDailyService {
      */
     public List<TbTxnDaily> listSeventDayOfTrans(int chainId, int groupId) throws BaseException {
         try {
-            // qurey
             List<TbTxnDaily> transList = txnDailyMapper.listSeventDayOfTransDaily(chainId, groupId);
             return transList;
         } catch (RuntimeException ex) {

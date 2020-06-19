@@ -90,7 +90,7 @@ public class NodeService {
     /**
      * query node list by page.
      */
-    public List<TbNode> qureyNodeList(NodeParam queryParam) throws BaseException {
+    public List<TbNode> queryNodeList(NodeParam queryParam) throws BaseException {
         // query node list
         List<TbNode> listOfNode = nodeMapper.getList(queryParam);
         return listOfNode;
@@ -103,14 +103,14 @@ public class NodeService {
         NodeParam nodeParam = new NodeParam();
         nodeParam.setChainId(chainId);
         nodeParam.setGroupId(groupId);
-        return qureyNodeList(nodeParam);
+        return queryNodeList(nodeParam);
     }
 
     /**
      * query all node list
      */
     public List<TbNode> getAll() {
-        return qureyNodeList(new NodeParam());
+        return queryNodeList(new NodeParam());
     }
 
     /**
@@ -226,9 +226,6 @@ public class NodeService {
 
             if (nodeType == 0) { // 0-consensus;1-observer
                 if (localBlockNumber.equals(latestNumber) && localPbftView.equals(latestView)) {
-                    log.warn(
-                            "node[{}] is invalid. localNumber:{} chainNumber:{} localView:{} chainView:{}",
-                            nodeId, localBlockNumber, latestNumber, localPbftView, latestView);
                     tbNode.setNodeActive(DataStatus.INVALID.getValue());
                 } else {
                     tbNode.setBlockNumber(latestNumber);
@@ -237,9 +234,6 @@ public class NodeService {
                 }
             } else { // observer
                 if (!latestNumber.equals(frontInterface.getLatestBlockNumber(chainId, groupId))) {
-                    log.warn(
-                            "node[{}] is invalid. localNumber:{} chainNumber:{} localView:{} chainView:{}",
-                            nodeId, localBlockNumber, latestNumber, localPbftView, latestView);
                     tbNode.setNodeActive(DataStatus.INVALID.getValue());
                 } else {
                     tbNode.setBlockNumber(latestNumber);
@@ -247,7 +241,6 @@ public class NodeService {
                     tbNode.setNodeActive(DataStatus.NORMAL.getValue());
                 }
             }
-
             // update node
             updateNode(tbNode);
         }

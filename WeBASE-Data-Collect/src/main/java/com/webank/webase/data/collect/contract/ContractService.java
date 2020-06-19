@@ -106,7 +106,7 @@ public class ContractService {
     /**
      * query contract list.
      */
-    public List<TbContract> qureyContractList(ContractParam param) {
+    public List<TbContract> queryContractList(ContractParam param) {
         List<TbContract> listOfContract = contractMapper.listOfContract(param);
         return listOfContract;
     }

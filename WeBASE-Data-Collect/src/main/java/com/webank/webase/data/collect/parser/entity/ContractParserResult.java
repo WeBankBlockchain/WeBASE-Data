@@ -25,7 +25,7 @@ public class ContractParserResult {
     private String contractAddress;
     private String interfaceName;
     private Integer transType;
-    private Integer transUnusualType;
+    private Integer transParserType;
     private String input;
     private String output;
     private String logs;

@@ -66,7 +66,7 @@ public class FrontController extends BaseController {
 
 
     /**
-     * qurey front info list.
+     * query front info list.
      */
     @GetMapping(value = "/list")
     public BasePageResponse queryFrontList(

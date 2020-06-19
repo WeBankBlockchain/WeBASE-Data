@@ -15,12 +15,13 @@
         <result column="txn" javaType="java.lang.Integer" jdbcType="INTEGER"
             property="txn" />
     </resultMap>
-    
-    <insert id="addTransDaily" parameterType="com.webank.webase.data.collect.txndaily.entity.TbTxnDaily">
+
+    <insert id="addTransDaily"
+        parameterType="com.webank.webase.data.collect.txndaily.entity.TbTxnDaily">
         INSERT INTO tb_txn_daily
         (chain_id,group_id,stat_date,txn,block_number,create_time,modify_time)
         VALUES(#{chainId},#{groupId},#{statDate},#{txn},#{blockNumber},now(),now())
-        ON DUPLICATE KEY UPDATE 
+        ON DUPLICATE KEY UPDATE
         txn=#{txn},
         block_number=#{blockNumber},
         modify_time=NOW()
@@ -29,8 +30,8 @@
     <select id="queryLatestTransCount"
         resultType="com.webank.webase.data.collect.txndaily.entity.LatestTransCount">
         SELECT max(block_number) blockNumber,
-               count(block_number) txn,
-               DATE_FORMAT(block_timestamp,'%Y-%m-%d') statDate
+        count(block_number) txn,
+        DATE_FORMAT(block_timestamp,'%Y-%m-%d') statDate
         FROM ${tableName}
         WHERE 
         <![CDATA[ block_timestamp >=
@@ -43,19 +44,22 @@
     <select id="listSeventDayOfTransDaily" resultMap="txnDailyMap">
         SELECT * FROM tb_txn_daily
         WHERE chain_id = #{chainId}
-          AND group_id = #{groupId}
+        AND group_id = #{groupId}
         <![CDATA[
           AND stat_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
         ]]>
         ORDER BY stat_date DESC
     </select>
-    
+
     <delete id="deleteByChainId">
-		delete from tb_txn_daily where chain_id = #{chainId}
-	</delete>
-	
-	<delete id="deleteByGroupId">
-		delete from tb_txn_daily where chain_id = #{chainId} AND group_id = #{groupId}
-	</delete>
+        DELETE FROM tb_txn_daily 
+        WHERE chain_id = #{chainId}
+    </delete>
+
+    <delete id="deleteByGroupId">
+        DELETE FROM tb_txn_daily 
+        WHERE chain_id = #{chainId}
+        AND group_id = #{groupId}
+    </delete>
 
 </mapper>

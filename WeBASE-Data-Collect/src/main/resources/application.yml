@@ -31,6 +31,8 @@ constant:
   dataPullTaskFixedDelay: 10000
   ## data parser
   dataParserTaskFixedDelay: 10000
+  ## update node status 
+  nodeStatusTaskFixedDelay: 30000
   ## stat txn daily
   statTxnDailyTaskFixedDelay: 60000
 

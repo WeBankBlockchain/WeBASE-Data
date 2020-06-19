@@ -15,7 +15,7 @@ package com.webank.webase.data.collect.parser.entity;
 
 import com.webank.webase.data.collect.base.enums.ParserUserType;
 import com.webank.webase.data.collect.base.enums.TransType;
-import com.webank.webase.data.collect.base.enums.TransUnusualType;
+import com.webank.webase.data.collect.base.enums.TransParserType;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -31,7 +31,7 @@ public class TbParser {
     private String contractAddress;
     private String interfaceName;
     private Integer transType = TransType.DEPLOY.getValue();
-    private Integer transUnusualType = TransUnusualType.NORMAL.getValue();
+    private Integer transParserType = TransParserType.NORMAL.getValue();
     private String input;
     private String output;
     private String logs;

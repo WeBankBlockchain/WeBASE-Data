@@ -89,7 +89,7 @@ public class ContractController extends BaseController {
     }
 
     /**
-     * qurey contract info list.
+     * query contract info list.
      */
     @PostMapping(value = "/list")
     public BasePageResponse queryContractList(@RequestBody QueryContractParam inputParam)
@@ -109,7 +109,7 @@ public class ContractController extends BaseController {
             queryParam.setStart(start);
             queryParam.setFlagSortedByTime(SqlSortType.DESC.getValue());
             // query list
-            List<TbContract> listOfContract = contractService.qureyContractList(queryParam);
+            List<TbContract> listOfContract = contractService.queryContractList(queryParam);
             pagesponse.setData(listOfContract);
             pagesponse.setTotalCount(count);
         }

@@ -43,7 +43,7 @@ public class NodeController extends BaseController {
     private NodeService nodeService;
 
     /**
-     * qurey node info list.
+     * query node info list.
      */
     @GetMapping(value = "/nodeList/{chainId}/{groupId}/{pageNumber}/{pageSize}")
     public BasePageResponse queryNodeList(@PathVariable("chainId") Integer chainId,
@@ -54,9 +54,6 @@ public class NodeController extends BaseController {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start queryNodeList.");
-
-        // check node status before query
-        nodeService.checkAndUpdateNodeStatus(chainId, groupId);
 
         // param
         NodeParam queryParam = new NodeParam();
@@ -70,7 +67,7 @@ public class NodeController extends BaseController {
                     Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
             queryParam.setStart(start);
 
-            List<TbNode> listOfnode = nodeService.qureyNodeList(queryParam);
+            List<TbNode> listOfnode = nodeService.queryNodeList(queryParam);
             pagesponse.setData(listOfnode);
             pagesponse.setTotalCount(count);
         }

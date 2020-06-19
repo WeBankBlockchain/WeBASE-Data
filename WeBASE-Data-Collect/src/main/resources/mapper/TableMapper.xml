@@ -238,7 +238,7 @@
         contract_address varchar(64) NOT NULL COMMENT '合约地址',
         interface_name varchar(256) NOT NULL COMMENT '合约接口名',
         trans_type tinyint(4) DEFAULT '0' COMMENT '交易类型(0-合约部署，1-接口调用)',
-        trans_unusual_type tinyint(4) DEFAULT '0' COMMENT '交易异常类型(0-正常，1-异常合约，2-异常接口)',
+        trans_parser_type tinyint(4) DEFAULT '0' COMMENT '交易解析类型(0-正常，1-异常合约，2-异常接口)',
         input text COMMENT '输入信息',
         output text COMMENT '输出信息',
         logs text COMMENT '日志信息',
@@ -247,7 +247,9 @@
         modify_time datetime DEFAULT NULL COMMENT '修改时间',
         PRIMARY KEY (id),
         UNIQUE KEY uk_hash (trans_hash),
+        KEY idx_un (user_name),
         KEY idx_ua (user_address),
+        KEY idx_cn (contract_name),
         KEY idx_ca (contract_address)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易解析信息表';
     </update>

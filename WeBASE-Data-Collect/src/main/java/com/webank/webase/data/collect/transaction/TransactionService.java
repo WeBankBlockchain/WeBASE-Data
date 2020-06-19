@@ -125,7 +125,7 @@ public class TransactionService {
     /**
      * query un statistics transaction hash list.
      */
-    public List<String> qureyUnStatTransHashList(int chainId, int groupId) {
+    public List<String> queryUnStatTransHashList(int chainId, int groupId) {
         List<String> list = transactionMapper
                 .listOfUnStatTransHash(TableName.TRANS.getTableName(chainId, groupId));
         return list;

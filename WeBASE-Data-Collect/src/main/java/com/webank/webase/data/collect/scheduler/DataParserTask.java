@@ -90,7 +90,7 @@ public class DataParserTask {
             Long useTimeSum = 0L;
             do {
                 List<String> transHashList =
-                        transactionService.qureyUnStatTransHashList(chainId, groupId);
+                        transactionService.queryUnStatTransHashList(chainId, groupId);
                 if (CollectionUtils.isEmpty(transHashList)) {
                     return;
                 }

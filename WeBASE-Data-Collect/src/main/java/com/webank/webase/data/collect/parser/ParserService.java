@@ -17,7 +17,7 @@ import com.webank.webase.data.collect.base.enums.ParserUserType;
 import com.webank.webase.data.collect.base.enums.PrecompiledAddress;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.enums.TransType;
-import com.webank.webase.data.collect.base.enums.TransUnusualType;
+import com.webank.webase.data.collect.base.enums.TransParserType;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
@@ -165,7 +165,7 @@ public class ParserService {
     /**
      * query parser user list.
      */
-    public List<String> qureyParserUserList(int chainId, int groupId) throws BaseException {
+    public List<String> queryParserUserList(int chainId, int groupId) throws BaseException {
         List<String> parserUserList =
                 parserMapper.parserUserList(TableName.PARSER.getTableName(chainId, groupId));
         return parserUserList;
@@ -174,7 +174,7 @@ public class ParserService {
     /**
      * query parser interface list.
      */
-    public List<String> qureyParserInterfaceList(int chainId, int groupId, String userName)
+    public List<String> queryParserInterfaceList(int chainId, int groupId, String userName)
             throws BaseException {
 
         List<String> parserInterfaceList = parserMapper
@@ -193,9 +193,9 @@ public class ParserService {
     /**
      * query unusual user list.
      */
-    public List<UnusualUserInfo> qureyUnusualUserList(int chainId, int groupId, String userName,
+    public List<UnusualUserInfo> queryUnusualUserList(int chainId, int groupId, String userName,
             Integer pageNumber, Integer pageSize) throws BaseException {
-        log.debug("start qureyUnusualUserList groupId:{} userName:{} pageNumber:{} pageSize:{}",
+        log.debug("start queryUnusualUserList groupId:{} userName:{} pageNumber:{} pageSize:{}",
                 groupId, userName, pageNumber, pageSize);
 
         Integer start =
@@ -221,9 +221,9 @@ public class ParserService {
     /**
      * query unusual contract list.
      */
-    public List<UnusualContractInfo> qureyUnusualContractList(int chainId, int groupId,
+    public List<UnusualContractInfo> queryUnusualContractList(int chainId, int groupId,
             String contractAddress, Integer pageNumber, Integer pageSize) throws BaseException {
-        log.debug("start qureyUnusualContractList groupId:{} userName:{} pageNumber:{} pageSize:{}",
+        log.debug("start queryUnusualContractList groupId:{} userName:{} pageNumber:{} pageSize:{}",
                 groupId, contractAddress, pageNumber, pageSize);
 
         String tableName = TableName.PARSER.getTableName(chainId, groupId);
@@ -291,7 +291,7 @@ public class ParserService {
         ContractParserResult contractResult = new ContractParserResult();
         contractResult.setTransHash(receipt.getTransactionHash());
         contractResult.setTransType(TransType.DEPLOY.getValue());
-        contractResult.setTransUnusualType(TransUnusualType.NORMAL.getValue());
+        contractResult.setTransParserType(TransParserType.NORMAL.getValue());
         // deploy
         if (isDeploy(receipt.getTo())) {
             parserDeploy(chainId, groupId, contractResult, receipt, receipt.getContractAddress());
@@ -321,7 +321,7 @@ public class ParserService {
                         tbContract.getContractAbi());
             } else {
                 contractName = getNameFromContractBin(chainId, groupId, contractBin);
-                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+                contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
             }
         } else {
             contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
@@ -335,7 +335,7 @@ public class ParserService {
                         tbContract.get(0).getContractAbi());
             } else {
                 contractName = subContractBinForName(contractBin);
-                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+                contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
             }
         }
         contractResult.setContractName(contractName);
@@ -378,13 +378,13 @@ public class ParserService {
             } else {
                 interfaceName = methodId;
                 contractName = subContractBinForName(contractBin);
-                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+                contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
                 if (StringUtils.isNoneBlank(contractBin)) {
                     List<TbContract> contractRow =
                             contractService.queryContractByBin(chainId, groupId, contractBin);
                     if (!CollectionUtils.isEmpty(contractRow)) {
                         contractName = contractRow.get(0).getContractName();
-                        contractResult.setTransUnusualType(TransUnusualType.FUNCTION.getValue());
+                        contractResult.setTransParserType(TransParserType.FUNCTION.getValue());
                     }
                 }
             }

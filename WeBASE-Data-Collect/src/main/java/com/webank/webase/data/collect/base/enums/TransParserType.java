@@ -18,12 +18,12 @@ package com.webank.webase.data.collect.base.enums;
  *
  * 0:normal, 1:abnormal contract, 2:abnormal function.
  */
-public enum TransUnusualType {
+public enum TransParserType {
     NORMAL(0), CONTRACT(1), FUNCTION(2);
 
     private int value;
 
-    TransUnusualType(Integer type) {
+    TransParserType(Integer type) {
         this.value = type;
     }
 
