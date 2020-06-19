@@ -1,0 +1,43 @@
+/**
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package com.webank.webase.data.fetcher.base.code;
+
+/**
+ * A-BB-CCC A:error level. <br/>
+ * 1:system exception <br/>
+ * 2:business exception <br/>
+ * B:project number <br/>
+ * WeBASE-Node-Manager:02 <br/>
+ * C: error code <br/>
+ */
+public class ConstantCode {
+
+    /* return success */
+    public static final RetCode SUCCESS = RetCode.mark(0, "success");
+
+    /* common exception */
+    public static final RetCode SYSTEM_EXCEPTION = RetCode.mark(102000, "system exception");
+    public static final RetCode PARAM_EXCEPTION = RetCode.mark(102001, "param exception");
+    public static final RetCode DB_EXCEPTION = RetCode.mark(102002, "database exception");
+
+    /* chain code */
+    public static final RetCode CHAIN_ID_EXISTS = RetCode.mark(202001, "chain id already exists");
+    public static final RetCode CHAIN_NAME_EXISTS = RetCode.mark(202002, "chain name already exists");
+    public static final RetCode SAVE_CHAIN_FAIL = RetCode.mark(202003, "save chain fail");
+    public static final RetCode INVALID_CHAIN_ID = RetCode.mark(202004, "invalid chain id");
+
+    /* group code */
+    public static final RetCode INVALID_GROUP_ID = RetCode.mark(202201, "invalid group id");
+
+}
