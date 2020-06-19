@@ -24,28 +24,33 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher;
+package com.webank.webase.data.fetcher.base.enums;
 
-import lombok.extern.slf4j.Slf4j;
-import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+/**
+ * Enumeration of search type.
+ */
+public enum SearchType {
+    BLOCK(1), TRANS(2), USER(3), CONTRACT(4);
 
-@Slf4j
-@EnableAsync
-@EnableSwagger2
-@EnableScheduling
-@SpringBootApplication
-@EnableTransactionManagement
-@MapperScan("com.webank.webase.data.fetcher")
-public class Application {
+    private int value;
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-        log.info("main run success...");
+    private SearchType(Integer dataStatus) {
+        this.value = dataStatus;
+    }
+
+    public int getValue() {
+        return this.value;
+    }
+    
+    public static boolean isInclude(int key) {
+        boolean include = false;
+        for (SearchType e : SearchType.values()) {
+            if (e.getValue() == key) {
+                include = true;
+                break;
+            }
+        }
+        return include;
     }
 }
+

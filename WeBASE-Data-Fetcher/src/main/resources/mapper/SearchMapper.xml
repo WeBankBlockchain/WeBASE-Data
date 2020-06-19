@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--对应mapper接口 -->
+<mapper namespace="com.webank.webase.data.fetcher.search.GroupMapper">
+	<resultMap id="parserMap"
+		type="com.webank.webase.data.fetcher.search.entity.NormalSearchDto">
+		<result column="trans_hash" javaType="java.lang.String"
+			jdbcType="VARCHAR" property="transHash" />
+		<result column="block_number" javaType="java.math.BigInteger"
+			jdbcType="INTEGER" property="blockNumber" />
+		<result column="user_name" javaType="java.lang.String"
+			jdbcType="VARCHAR" property="userName" />
+		<result column="user_address" javaType="java.lang.String"
+			jdbcType="VARCHAR" property="userAddress" />
+		<result column="user_type" javaType="java.lang.Integer"
+			jdbcType="INTEGER" property="userType" />
+		<result column="contract_name" javaType="java.lang.String"
+			jdbcType="VARCHAR" property="contractName" />
+		<result column="contract_address" javaType="java.lang.String"
+			jdbcType="VARCHAR" property="contractAddress" />
+		<result column="interface_name" javaType="java.lang.String"
+			jdbcType="VARCHAR" property="interfaceName" />
+		<result column="trans_type" javaType="java.lang.Integer"
+			jdbcType="INTEGER" property="transType" />
+		<result column="trans_parser_type" javaType="java.lang.Integer"
+			jdbcType="INTEGER" property="transParserType" />
+		<result column="input" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="input" />
+		<result column="output" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="output" />
+		<result column="logs" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="logs" />
+		<result column="trans_detail" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="transDetail" />
+		<result column="receipt_detail" javaType="java.lang.String" jdbcType="VARCHAR"
+			property="receiptDetail" />
+		<result column="block_timestamp" javaType="java.time.LocalDateTime"
+			jdbcType="TIMESTAMP" property="blockTimestamp" />
+		<result column="create_time" javaType="java.time.LocalDateTime"
+			jdbcType="TIMESTAMP" property="createTime" />
+		<result column="modify_time" javaType="java.time.LocalDateTime"
+			jdbcType="TIMESTAMP" property="modifyTime" />
+	</resultMap>
+
+	<select id="countOfBlock" resultType="java.lang.Integer">
+		select count(1) from ${tableName} where 1=1
+		<if test="param.blockHash != null and param.blockHash != ''">
+			and block_hash = #{param.blockHash}
+		</if>
+		<if test="param.blockNumber != null">
+			and block_number = #{param.blockNumber}
+		</if>
+	</select>
+
+	<select id="queryBlockList" resultMap="blockMap">
+		select a.*,b.trans_detail,c.receipt_detail 
+		from ${tableParser} a
+        left join ${tableTrans} b on (a.trans_hash = b.trans_hash)
+		left join ${tableReceipt} c on (a.trans_hash = c.trans_hash)
+		where 1=1
+		<if test="param.blockHash != null and param.blockHash != ''">
+			and a.block_hash = #{param.blockHash}
+		</if>
+		<if test="param.blockNumber != null">
+			and a.block_number = #{param.blockNumber}
+		</if>
+		order by a.block_number desc
+		<if test="param.start != null and param.pageSize != null">
+			limit #{param.start},#{param.pageSize}
+		</if>
+	</select>
+
+</mapper>

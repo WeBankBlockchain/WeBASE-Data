@@ -211,17 +211,17 @@
     </select>
 
     <select id="queryTransList" resultMap="transactionMap">
-        select t1.*,t2.receipt_detail
-        from ${tableTrans} t1 
-        left join ${tableReceipt} t2 on (t1.trans_hash = t2.trans_hash)
+        select a.*,b.receipt_detail
+        from ${tableTrans} a 
+        left join ${tableReceipt} b on (a.trans_hash = b.trans_hash)
         where 1=1
         <if test="param.transHash != null and param.transHash != ''">
-            and t1.trans_hash = #{param.transHash}
+            and a.trans_hash = #{param.transHash}
         </if>
         <if test="param.blockNumber != null">
-            and t1.block_number = #{param.blockNumber}
+            and a.block_number = #{param.blockNumber}
         </if>
-        order by t1.block_number desc
+        order by a.block_number desc
         <if test="param.start != null and param.pageSize != null">
             limit #{param.start},#{param.pageSize}
         </if>

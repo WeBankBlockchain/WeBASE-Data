@@ -77,7 +77,7 @@ public class GroupController extends BaseController {
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }
-    
+
     /**
      * get group general.
      */
@@ -86,7 +86,7 @@ public class GroupController extends BaseController {
             @PathVariable("groupId") Integer groupId) throws BaseException {
         Instant startTime = Instant.now();
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        log.info("start getGroupGeneral. {}");
+        log.info("start getGroupGeneral.");
         GroupGeneral groupGeneral = groupService.queryGroupGeneral(chainId, groupId);
 
         baseResponse.setData(groupGeneral);
@@ -165,7 +165,7 @@ public class GroupController extends BaseController {
             throws BaseException {
         BasePageResponse pageResponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
-        log.info("start queryBlockList.}");
+        log.info("start queryBlockList.");
 
         // check groupId
         groupService.checkGroupId(chainId, groupId);
