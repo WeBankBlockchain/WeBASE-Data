@@ -87,5 +87,9 @@ INSERT INTO tb_method (contract_id,chain_id,group_id,method_id,method_name,metho
 -- 3、init tb_solc
 -- ----------------------------
 INSERT INTO tb_solc (id,solc_name,encrypt_type,md5,file_size,description,create_time,modify_time) VALUES 
-(1,'soljson-v0.4.25-gm.js',1,'c0810103136fb9177df943346b2dcad4',8273598,'guomi','2020-06-14 11:05:56','2020-06-14 11:05:56'),
-(2,'soljson-v0.4.25+commit.59dbf8f1.js',0,'e201c5913e0982cb90cdb2a711e36f63',8276063,'ecdsa','2020-06-14 11:19:10','2020-06-14 11:19:10');
+(1,'soljson-v0.4.25-gm.js',1,'c0810103136fb9177df943346b2dcad4',8273598,'guomi','2020-06-19 11:05:56','2020-06-19 11:05:56')
+,(2,'soljson-v0.4.25+commit.59dbf8f1.js',0,'e201c5913e0982cb90cdb2a711e36f63',8276063,'ecdsa','2020-06-19 11:19:10','2020-06-19 11:19:10')
+,(3,'soljson-v0.5.1.js',0,'6b99bd0cc1a470bfda4a540d1e2f2b44',9083012,'ecdsa','2020-06-19 18:56:27','2020-06-19 18:56:27')
+,(4,'soljson-v0.5.1-gm.js',1,'4a41dd17d82d8047744a184d98abf54a',9232616,'gm','2020-06-19 18:59:32','2020-06-19 18:59:32')
+,(5,'soljson-v0.5.10.js',0,'2019c21672436e4e0391271090dccf94',13668994,'ecdsa','2020-06-19 18:57:48','2020-06-19 18:57:48')
+,(6,'soljson-v0.5.16.js',0,'de4684e68e8b3551214500ace7db759e',12394706,'ecdsa','2020-06-19 18:58:08','2020-06-19 18:58:08');

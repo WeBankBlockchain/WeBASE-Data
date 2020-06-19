@@ -24,8 +24,8 @@
             jdbcType="VARCHAR" property="interfaceName" />
         <result column="trans_type" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="transType" />
-        <result column="trans_unusual_type" javaType="java.lang.Integer"
-            jdbcType="INTEGER" property="transUnusualType" />
+        <result column="trans_parser_type" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="transParserType" />
         <result column="input" javaType="java.lang.String" jdbcType="VARCHAR"
             property="input" />
         <result column="output" javaType="java.lang.String" jdbcType="VARCHAR"
@@ -43,11 +43,11 @@
     <insert id="add">
         insert into ${tableName}
         (trans_hash,block_number,user_name,user_address,user_type,contract_name,contract_address,interface_name,trans_type,
-        trans_unusual_type,input,output,logs,block_timestamp,create_time,modify_time)
+        trans_parser_type,input,output,logs,block_timestamp,create_time,modify_time)
         values
         (#{parser.transHash},#{parser.blockNumber},#{parser.userName},#{parser.userAddress},#{parser.userType},
         #{parser.contractName},#{parser.contractAddress},#{parser.interfaceName},#{parser.transType},
-        #{parser.transUnusualType},#{parser.input},#{parser.output},#{parser.logs},#{parser.blockTimestamp},now(),now())
+        #{parser.transParserType},#{parser.input},#{parser.output},#{parser.logs},#{parser.blockTimestamp},now(),now())
     </insert>
 
     <update id="updateUnusualUser">
@@ -62,12 +62,12 @@
         update ${tableName}
         set contract_name = #{result.contractName},
         interface_name = #{result.interfaceName},
-        trans_unusual_type = #{result.transUnusualType},
+        trans_parser_type = #{result.transParserType},
         input = #{result.input},
         output = #{result.output},
         logs = #{result.logs}
         where trans_hash = #{result.transHash}
-        and (trans_unusual_type = 1 or trans_unusual_type = 2)
+        and (trans_parser_type = 1 or trans_parser_type = 2)
     </update>
 
     <select id="parserUserList" resultType="java.lang.String">
@@ -104,7 +104,7 @@
 
     <select id="countOfUnusualContract" resultType="java.lang.Integer">
         select count(1) from ${tableName}
-        where trans_unusual_type=1
+        where trans_parser_type=1
         <if test="contractAddress != null and contractAddress != ''">
             and contract_address like CONCAT('%',#{contractAddress},'%')
         </if>
@@ -115,7 +115,7 @@
         select contract_address as contractAddress,contract_name as
         contractName,trans_hash as transHash, block_timestamp as time
         from ${tableName} 
-        where trans_unusual_type=1
+        where trans_parser_type=1
         <if test="contractAddress != null and contractAddress != ''">
             and contract_address like CONCAT('%',#{contractAddress},'%')
         </if>
@@ -128,14 +128,14 @@
         select trans_hash
         from ${tableName}
         where contract_name = #{contractBin}
-        and (trans_unusual_type = 1 or trans_unusual_type = 2)
+        and (trans_parser_type = 1 or trans_parser_type = 2)
     </select>
 
     <select id="queryUnusualTxHashMethodId" resultType="java.lang.String">
         select trans_hash
         from ${tableName}
         where interface_name = #{methodId}
-        and (trans_unusual_type = 1 or trans_unusual_type = 2)
+        and (trans_parser_type = 1 or trans_parser_type = 2)
     </select>
     
     <delete id="rollback">
