@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -36,8 +36,8 @@ public class ErrorController extends BasicErrorController {
     @Override
     @RequestMapping
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-        Map<String, Object> body = getErrorAttributes(request,
-            isIncludeStackTrace(request, MediaType.ALL));
+        Map<String, Object> body =
+                getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
         String mesage = body.get("message").toString();
         if (StringUtils.isBlank(mesage)) {
             throw new BaseException(ConstantCode.SYSTEM_EXCEPTION);

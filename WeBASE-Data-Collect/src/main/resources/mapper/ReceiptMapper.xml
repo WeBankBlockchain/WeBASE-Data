@@ -4,84 +4,75 @@
 
 <!--对应mapper接口 -->
 <mapper namespace="com.webank.webase.data.collect.receipt.ReceiptMapper">
-	<resultMap id="receiptMap"
-		type="com.webank.webase.data.collect.receipt.entity.TbReceipt">
-		<id column="id" javaType="java.lang.Long" jdbcType="BIGINT"
-			property="id" />
-		<result column="trans_hash" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="transHash" />
-		<result column="contract_address" javaType="java.lang.String"
-			jdbcType="VARCHAR" property="contractAddress" />
-		<result column="status" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="status" />
-		<result column="input" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="input" />
-		<result column="output" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="output" />
-		<result column="logs" javaType="java.lang.String" jdbcType="VARCHAR"
-			property="logs" />
-		<result column="block_number" javaType="java.math.BigInteger"
-			jdbcType="INTEGER" property="blockNumber" />
-		<result column="create_time" javaType="java.time.LocalDateTime"
-			jdbcType="TIMESTAMP" property="createTime" />
-		<result column="modify_time" javaType="java.time.LocalDateTime"
-			jdbcType="TIMESTAMP" property="modifyTime" />
-	</resultMap>
+    <resultMap id="receiptMap"
+        type="com.webank.webase.data.collect.receipt.entity.TbReceipt">
+        <id column="id" javaType="java.lang.Long" jdbcType="BIGINT"
+            property="id" />
+        <result column="trans_hash" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="transHash" />
+        <result column="block_number" javaType="java.math.BigInteger"
+            jdbcType="INTEGER" property="blockNumber" />
+        <result column="receipt_detail" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="receiptDetail" />
+        <result column="block_timestamp" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="blockTimestamp" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
 
-	<insert id="add">
-		insert ignore into
-		${tableName}(trans_hash,contract_address,status,input,output,logs,block_number,create_time,modify_time)
-		values(#{trans.transHash},#{trans.contractAddress},#{trans.status},#{trans.input},#{trans.output},#{trans.logs},#{trans.blockNumber},NOW(),NOW())
-	</insert>
-	
-	<select id="getByHash" resultMap="receiptMap">
-		select * from ${tableName}
-		where trans_hash = #{transHash}
-	</select>
+    <insert id="add">
+        insert ignore into
+        ${tableName}(trans_hash,block_number,receipt_detail,block_timestamp,create_time,modify_time)
+        values(#{trans.transHash},#{trans.blockNumber},#{trans.receiptDetail},#{trans.blockTimestamp},NOW(),NOW())
+    </insert>
+    
+    <select id="getByHash" resultMap="receiptMap">
+        select * from ${tableName}
+        where trans_hash = #{transHash}
+    </select>
 
-	<select id="getCount"
-		parameterType="com.webank.webase.data.collect.transaction.entity.TransListParam"
-		resultType="java.lang.Integer">
-		select count(1) from ${tableName} where 1=1
-		<if test="param.transHash != null and param.transHash != ''">
-			and trans_hash = #{param.transHash}
-		</if>
-		<if test="param.blockNumber != null">
-			and block_number = #{param.blockNumber}
-		</if>
-	</select>
+    <select id="getCount"
+        parameterType="com.webank.webase.data.collect.transaction.entity.TransListParam"
+        resultType="java.lang.Integer">
+        select count(1) from ${tableName} where 1=1
+        <if test="param.transHash != null and param.transHash != ''">
+            and trans_hash = #{param.transHash}
+        </if>
+        <if test="param.blockNumber != null">
+            and block_number = #{param.blockNumber}
+        </if>
+    </select>
 
-	<select id="getList"
-		parameterType="com.webank.webase.data.collect.transaction.entity.TransListParam"
-		resultMap="receiptMap">
-		select * from ${tableName} where 1=1
-		<if test="param.transHash != null and param.transHash != ''">
-			and trans_hash = #{param.transHash}
-		</if>
-		<if test="param.blockNumber != null">
-			and block_number = #{param.blockNumber}
-		</if>
-		<if
-			test="param.flagSortedByBlock != null and param.flagSortedByBlock != ''">
-			order by block_number ${param.flagSortedByBlock}
-		</if>
-		<if test="param.start != null and param.pageSize != null">
-			limit #{param.start},#{param.pageSize}
-		</if>
-	</select>
+    <select id="getList"
+        parameterType="com.webank.webase.data.collect.transaction.entity.TransListParam"
+        resultMap="receiptMap">
+        select * from ${tableName} where 1=1
+        <if test="param.transHash != null and param.transHash != ''">
+            and trans_hash = #{param.transHash}
+        </if>
+        <if test="param.blockNumber != null">
+            and block_number = #{param.blockNumber}
+        </if>
+        <if test="param.flagSortedByBlock != null and param.flagSortedByBlock != ''">
+            order by block_number ${param.flagSortedByBlock}
+        </if>
+        <if test="param.start != null and param.pageSize != null">
+            limit #{param.start},#{param.pageSize}
+        </if>
+    </select>
 
-	<delete id="remove">
-		DELETE from ${tableName}
-		where audit_flag = 2
-		and
-		block_number &lt;= (select max(block_number) blockNumber from
-		tb_trans_daily where group_id = #{groupId})
-		order by block_number
-		limit
-		${subTransNum}
-	</delete>
-	
-	<delete id="rollback">
-		DELETE from ${tableName} where block_number = ${blockNumber}
-	</delete>
+    <delete id="remove">
+        DELETE from ${tableName}
+        where audit_flag = 2
+        and block_number &lt;= (select max(block_number) blockNumber from
+        tb_trans_daily where group_id = #{groupId})
+        order by block_number
+        limit ${subTransNum}
+    </delete>
+    
+    <delete id="rollback">
+        DELETE from ${tableName} where block_number = ${blockNumber}
+    </delete>
 </mapper>

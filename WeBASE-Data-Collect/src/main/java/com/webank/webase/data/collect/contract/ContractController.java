@@ -50,7 +50,7 @@ public class ContractController extends BaseController {
     @Autowired
     private MethodService methodService;
 
-    /** 
+    /**
      * add new contract info.
      */
     @PostMapping(value = "/save")
@@ -89,7 +89,7 @@ public class ContractController extends BaseController {
     }
 
     /**
-     * qurey contract info list.
+     * query contract info list.
      */
     @PostMapping(value = "/list")
     public BasePageResponse queryContractList(@RequestBody QueryContractParam inputParam)
@@ -109,7 +109,7 @@ public class ContractController extends BaseController {
             queryParam.setStart(start);
             queryParam.setFlagSortedByTime(SqlSortType.DESC.getValue());
             // query list
-            List<TbContract> listOfContract = contractService.qureyContractList(queryParam);
+            List<TbContract> listOfContract = contractService.queryContractList(queryParam);
             pagesponse.setData(listOfContract);
             pagesponse.setTotalCount(count);
         }
@@ -118,7 +118,7 @@ public class ContractController extends BaseController {
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }
-    
+
     /**
      * add method info.
      */

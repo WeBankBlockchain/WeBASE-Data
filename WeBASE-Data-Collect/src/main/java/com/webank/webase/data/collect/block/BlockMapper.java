@@ -27,20 +27,18 @@ import org.springframework.stereotype.Repository;
 public interface BlockMapper {
 
     /**
-     * query latest block number
-     */
-    BigInteger getLatestBlockNumber(@Param("tableName") String tableName);
-
-    /**
      * Add new block data.
      */
     Integer add(@Param("tableName") String tableName, @Param("block") TbBlock tbBlock);
 
     /**
-     * update sealer.
+     * query latest block number
      */
-    Integer update(@Param("tableName") String tableName, @Param("block") TbBlock tbBlock);
+    BigInteger getLatestBlockNumber(@Param("tableName") String tableName);
 
+    /**
+     * findByBlockNumber.
+     */
     TbBlock findByBlockNumber(@Param("tableName") String tableName,
             @Param("blockNumber") long blockNumber);
 
@@ -67,5 +65,8 @@ public interface BlockMapper {
     Integer remove(@Param("tableName") String tableName,
             @Param("blockRetainMax") BigInteger blockRetainMax);
 
+    /**
+     * rollback.
+     */
     void rollback(@Param("tableName") String tableName, @Param("blockNumber") long blockNumber);
 }

@@ -16,16 +16,14 @@ package com.webank.webase.data.collect.transaction;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.block.entity.MinMaxBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
-import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,32 +123,11 @@ public class TransactionService {
     }
 
     /**
-     * Remove trans info.
+     * query un statistics transaction hash list.
      */
-    public Integer remove(int chainId, Integer groupId, Integer subTransNum) {
-        String tableName = TableName.TRANS.getTableName(chainId, groupId);
-        Integer affectRow = transactionMapper.remove(tableName, subTransNum, groupId);
-        return affectRow;
-    }
-
-
-    /**
-     * query un statistics transaction list.
-     */
-    public List<TbTransaction> qureyUnStatTransactionList(int chainId, int groupId) {
-        List<TbTransaction> list = transactionMapper
-                .listOfUnStatTransaction(TableName.TRANS.getTableName(chainId, groupId));
-        return list;
-    }
-
-    /**
-     * query un statistic transaction list by job.
-     */
-    public List<TbTransaction> qureyUnStatTransactionListByJob(int chainId, int groupId,
-            Integer shardingTotalCount, Integer shardingItem) {
-        String tableName = TableName.TRANS.getTableName(chainId, groupId);
-        List<TbTransaction> list = transactionMapper.listOfUnStatTransactionByJob(tableName,
-                shardingTotalCount, shardingItem);
+    public List<String> queryUnStatTransHashList(int chainId, int groupId) {
+        List<String> list = transactionMapper
+                .listOfUnStatTransHash(TableName.TRANS.getTableName(chainId, groupId));
         return list;
     }
 
@@ -161,36 +138,6 @@ public class TransactionService {
         String tableName = TableName.TRANS.getTableName(chainId, groupId);
         transactionMapper.updateTransStatFlag(tableName, transHash);
     }
-
-    /**
-     * get tbTransInfo from chain
-     */
-    public List<TbTransaction> getTransListFromChain(int chainId, Integer groupId, String transHash,
-            BigInteger blockNumber) {
-        List<TbTransaction> transList = new ArrayList<>();
-        // find by transHash
-        if (transHash != null) {
-            TbTransaction tbTransaction = getTbTransFromFrontByHash(chainId, groupId, transHash);
-            if (tbTransaction != null) {
-                transList.add(tbTransaction);
-            }
-        }
-        // find trans by block number
-        if (transList.size() == 0 && blockNumber != null) {
-            List<TransactionResult> transInBlock =
-                    frontInterface.getTransByBlockNumber(chainId, groupId, blockNumber);
-            if (transInBlock != null && transInBlock.size() != 0) {
-                transInBlock.stream().forEach(result -> {
-                    Transaction tran = (Transaction) result.get();
-                    TbTransaction tbTransaction = new TbTransaction(tran.getHash(), tran.getFrom(),
-                            tran.getTo(), tran.getBlockNumber(), null);
-                    transList.add(tbTransaction);
-                });
-            }
-        }
-        return transList;
-    }
-
 
     /**
      * getTbTransByHash.
@@ -208,8 +155,8 @@ public class TransactionService {
         Transaction trans = frontInterface.getTransaction(chainId, groupId, transHash);
         TbTransaction tbTransaction = null;
         if (trans != null) {
-            tbTransaction = new TbTransaction(transHash, trans.getFrom(), trans.getTo(),
-                    trans.getBlockNumber(), null);
+            tbTransaction = new TbTransaction(transHash, trans.getBlockNumber(), null,
+                    JacksonUtils.objToString(trans));
         }
         return tbTransaction;
     }

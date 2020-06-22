@@ -87,7 +87,7 @@ public class UserService {
     /**
      * query user list by page.
      */
-    public List<TbUser> qureyUserList(UserParam userParam) {
+    public List<TbUser> queryUserList(UserParam userParam) {
         List<TbUser> listOfUser = userMapper.listOfUser(userParam);
         return listOfUser;
     }

@@ -22,7 +22,7 @@ repositories {
     mavenCentral()
 }
 
-def springboot_version="2.1.10.RELEASE"
+def springboot_version="2.1.15.RELEASE"
 List springboot = [
      "org.springframework.boot:spring-boot-starter-web:$springboot_version",
      "org.springframework.boot:spring-boot-starter-log4j2:$springboot_version",
@@ -37,7 +37,7 @@ List jaxb = [
 ]
 
 List web3jsdk = [
-    "org.fisco-bcos:web3sdk:2.4.1-SNAPSHOT"
+    "org.fisco-bcos:web3sdk:2.4.1"
 ]
 
 List lombok = [
@@ -67,9 +67,16 @@ List test = [
     "org.springframework.boot:spring-boot-starter-test:$springboot_version"
 ]
 
+def log4j_version="2.13.3"
+List log4j = [
+        "org.apache.logging.log4j:log4j-api:$log4j_version",
+        "org.apache.logging.log4j:log4j-core:$log4j_version",
+        "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
+        "org.apache.logging.log4j:log4j-web:$log4j_version"
+]
 
 dependencies {
-    compile springboot,jaxb,web3jsdk,swagger,jackson,mysql
+    compile springboot,jaxb,web3jsdk,swagger,jackson,mysql,log4j
     compile "org.apache.commons:commons-lang3:3.8.1"
     compile "cn.hutool:hutool-all:4.1.19"
     compile "com.zaxxer:HikariCP:3.2.0"

@@ -70,7 +70,7 @@ public class ParserController extends BaseController {
         log.info("start parserUserList startTime:{} groupId:{} ", startTime.toEpochMilli(),
                 groupId);
 
-        List<String> listOfUser = parserService.qureyParserUserList(chainId, groupId);
+        List<String> listOfUser = parserService.queryParserUserList(chainId, groupId);
         response.setData(listOfUser);
 
         log.info("end parserUserList useTime:{}",
@@ -91,7 +91,7 @@ public class ParserController extends BaseController {
                 groupId);
 
         List<String> listOfInterface =
-                parserService.qureyParserInterfaceList(chainId, groupId, userName);
+                parserService.queryParserInterfaceList(chainId, groupId, userName);
         response.setData(listOfInterface);
 
         log.info("end parserInterfaceList useTime:{}",
@@ -118,7 +118,7 @@ public class ParserController extends BaseController {
 
         Integer count = parserService.countOfUnusualUser(chainId, groupId, userName);
         if (count != null && count > 0) {
-            List<UnusualUserInfo> listOfUnusualUser = parserService.qureyUnusualUserList(chainId,
+            List<UnusualUserInfo> listOfUnusualUser = parserService.queryUnusualUserList(chainId,
                     groupId, userName, pageNumber, pageSize);
             pagesponse.setData(listOfUnusualUser);
             pagesponse.setTotalCount(count);
@@ -149,7 +149,7 @@ public class ParserController extends BaseController {
         Integer count = parserService.countOfUnusualContract(chainId, groupId, contractAddress);
         if (count != null && count > 0) {
             List<UnusualContractInfo> listOfUnusualContract =
-                    parserService.qureyUnusualContractList(chainId, groupId, contractAddress,
+                    parserService.queryUnusualContractList(chainId, groupId, contractAddress,
                             pageNumber, pageSize);
             pagesponse.setData(listOfUnusualContract);
             pagesponse.setTotalCount(count);

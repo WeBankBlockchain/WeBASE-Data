@@ -90,7 +90,7 @@ public class UserController extends BaseController {
                     Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
             param.setStart(start);
             param.setPageSize(pageSize);
-            List<TbUser> listOfUser = userService.qureyUserList(param);
+            List<TbUser> listOfUser = userService.queryUserList(param);
             pagesponse.setData(listOfUser);
             pagesponse.setTotalCount(count);
         }

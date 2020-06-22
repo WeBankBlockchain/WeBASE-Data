@@ -800,9 +800,10 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/list/1/1/1/2?transHash=0x4
 | 4.1.3 | transTo | String | 否 | 接收方 |
 | 4.1.4 | blockNumber     | BigInteger    | 否     | 所属块高                   |
 | 4.1.5 | blockTimestamp | LocalDateTime | 否 | 所属块出块时间 |
-| 4.1.6 | auditFlag | Int           | 否     | 是否已统计（1-未审计，2-已审计） |
-| 4.1.7 | createTime      | LocalDateTime | 否     | 落库时间                   |
-| 4.1.8 | modifyTime      | LocalDateTime | 否     | 修改时间                   |
+| 4.1.6 | transDetail | String | 否 | 交易详情 |
+| 4.1.7 | auditFlag | Int           | 否     | 是否已统计（1-未审计，2-已审计） |
+| 4.1.8 | createTime      | LocalDateTime | 否     | 落库时间                   |
+| 4.1.9 | modifyTime      | LocalDateTime | 否     | 修改时间                   |
 
 
 ***2）出参示例***
@@ -819,6 +820,7 @@ http://localhost:5009/WeBASE-Data-Collect/transaction/list/1/1/1/2?transHash=0x4
       "transTo": "0xd221da074ac2f34d6b453d3d456576c45e3f0843",
       "blockNumber": 35,
       "blockTimestamp": "2020-05-13 19:47:37",
+      "transDetail": "{}",
       "auditFlag": 1,
       "createTime": "2020-05-20 20:22:41",
       "modifyTime": "2020-05-20 20:22:41"
@@ -1134,8 +1136,8 @@ http://localhost:5009/WeBASE-Data-Collect/user/add
 | ---- | ---------- | ------ | ------ | ------------------ |
 | 1    | pageNumber | Int    | 否     | 当前页码           |
 | 2    | pageSize   | Int    | 否     | 每页记录数         |
-| 3    | chainId    | Int    | 否     | 链编号             |
-| 4    | groupId    | Int    | 否     | 群组编号           |
+| 3    | chainId    | Int    | 是     | 链编号             |
+| 4    | groupId    | Int    | 是     | 群组编号           |
 | 5    | userParam  | String | 是     | 参数，用户名或地址 |
 
 ***2）入参示例***
@@ -1603,7 +1605,7 @@ http://127.0.0.1:5009/WeBASE-Data-Collect/contract/addMethod
 
 - 网络传输协议：使用HTTP协议
 - 请求地址：**/solc/list?encryptType={encryptType}**
-- 请求方式：POST
+- 请求方式：GET
 - 返回格式：JSON
 
 #### 8.1.2 请求参数
@@ -1670,30 +1672,3 @@ http://localhost:5009/WeBASE-Data-Collect/solc/list
   ]
 }
 ```
-
-### 8.2. 编译器下载
-
-#### 8.2.1 传输协议规范
-
-- 网络传输协议：使用HTTP协议
-- 请求地址：**/solc/download?solcName={solcName}**
-- 请求方式：POST
-- 返回格式：JSON
-
-#### 8.2.2 请求参数
-
-***1）入参表***
-
-| 序号 | 输入参数 | 类型   | 可为空 | 备注         |
-| ---- | -------- | ------ | ------ | ------------ |
-| 1    | solcName | String | 否     | 编译器文件名 |
-
-***2）入参示例***
-
-```
-http://localhost:5009/WeBASE-Data-Collect/solc/download?solcName=soljson-v0.4.25-gm.js
-```
-
-#### 8.2.3 返回参数 
-
-文件流

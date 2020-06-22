@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--对应mapper接口 -->
+<mapper namespace="com.webank.webase.data.fetcher.group.GroupMapper">
+    <resultMap id="groupMap"
+        type="com.webank.webase.data.fetcher.group.entity.GroupInfoDto">
+        <result column="group_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="groupId" />
+        <result column="chain_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="chainId" />
+        <result column="genesis_block_hash" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="genesisBlockHash" />
+        <result column="group_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="groupName" />
+        <result column="group_status" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="groupStatus" />
+        <result column="node_count" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="nodeCount" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <resultMap id="txnDailyMap"
+        type="com.webank.webase.data.fetcher.group.entity.TxnDailyDto">
+        <result column="chain_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="chainId" />
+        <result column="group_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="groupId" />
+        <result column="stat_date" javaType="java.time.LocalDate"
+            jdbcType="TIMESTAMP" property="statDate" />
+        <result column="txn" javaType="java.lang.Integer" jdbcType="INTEGER"
+            property="txn" />
+    </resultMap>
+
+    <resultMap id="nodeMap"
+        type="com.webank.webase.data.fetcher.group.entity.NodeInfoDto">
+        <result column="node_id" javaType="java.lang.String" jdbcType="VARCHAR"
+            property="nodeId" />
+        <result column="chain_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="chainId" />
+        <result column="group_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="groupId" />
+        <result column="node_ip" javaType="java.lang.String" jdbcType="VARCHAR"
+            property="nodeIp" />
+        <result column="p2p_port" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="p2pPort" />
+        <result column="block_number" javaType="java.math.BigInteger"
+            jdbcType="INTEGER" property="blockNumber" />
+        <result column="pbft_view" javaType="java.math.BigInteger"
+            jdbcType="INTEGER" property="pbftView" />
+        <result column="node_active" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="nodeActive" />
+        <result column="description" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="description" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <resultMap id="blockMap"
+        type="com.webank.webase.data.fetcher.group.entity.BlockInfoDto">
+        <result column="block_hash" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="blockHash" />
+        <result column="block_number" javaType="java.math.BigInteger"
+            jdbcType="INTEGER" property="blockNumber" />
+        <result column="block_timestamp" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="blockTimestamp" />
+        <result column="trans_count" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="transCount" />
+        <result column="sealer_index" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="sealerIndex" />
+        <result column="sealer" javaType="java.lang.String" jdbcType="VARCHAR"
+            property="sealer" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <resultMap id="transactionMap"
+        type="com.webank.webase.data.fetcher.group.entity.TransactionInfoDto">
+        <result column="trans_hash" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="transHash" />
+        <result column="block_number" javaType="java.math.BigInteger"
+            jdbcType="INTEGER" property="blockNumber" />
+        <result column="block_timestamp" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="blockTimestamp" />
+        <result column="trans_detail" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="transDetail" />
+        <result column="receipt_detail" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="receiptDetail" />
+        <result column="audit_flag" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="auditFlag" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <select id="countOfGroup" parameterType="java.lang.Integer"
+        resultType="java.lang.Integer">
+        select count(1) from tb_group where 1 = 1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="groupId != null and groupId !=''">
+            and group_id = #{groupId}
+        </if>
+        <if test="groupStatus != null and groupStatus !=''">
+            and group_status = #{groupStatus}
+        </if>
+    </select>
+
+    <select id="getGroupList" resultMap="groupMap">
+        select * from tb_group where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+        <if test="groupStatus != null and groupStatus !=''">
+            and group_status = #{groupStatus}
+        </if>
+        order by group_id asc
+    </select>
+
+    <select id="getGeneral"
+        resultType="com.webank.webase.data.fetcher.group.entity.GroupGeneral">
+        SELECT a.chain_id chainId,
+               a.group_id groupId,
+               a.node_count nodeCount,
+               sum(txn) txnCount,
+               max(block_number) blockNumber
+        FROM tb_group a
+        left join tb_txn_daily b on (a.chain_id = b.chain_id and a.group_id = b.group_id)
+        WHERE a.chain_id = #{chainId}
+          AND a.group_id = #{groupId}
+    </select>
+
+    <select id="listSeventDayOfTransDaily" resultMap="txnDailyMap">
+        SELECT * FROM tb_txn_daily
+        WHERE chain_id = #{chainId}
+        AND group_id = #{groupId}
+        <![CDATA[
+          AND stat_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        ]]>
+        ORDER BY stat_date DESC
+    </select>
+
+    <select id="countOfNode" resultType="java.lang.Integer">
+        select count(1) from tb_node where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+    </select>
+
+    <select id="queryNodeList" resultMap="nodeMap">
+        select * from tb_node where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="countOfBlock" resultType="java.lang.Integer">
+        select count(1) from ${tableName} where 1=1
+        <if test="param.blockHash != null and param.blockHash != ''">
+            and block_hash = #{param.blockHash}
+        </if>
+        <if test="param.blockNumber != null">
+            and block_number = #{param.blockNumber}
+        </if>
+    </select>
+
+    <select id="queryBlockList" resultMap="blockMap">
+        select * from ${tableName} where 1=1
+        <if test="param.blockHash != null and param.blockHash != ''">
+            and block_hash = #{param.blockHash}
+        </if>
+        <if test="param.blockNumber != null">
+            and block_number = #{param.blockNumber}
+        </if>
+        order by block_number desc
+        <if test="param.start != null and param.pageSize != null">
+            limit #{param.start},#{param.pageSize}
+        </if>
+    </select>
+
+    <select id="countOfTrans" resultType="java.lang.Integer">
+        select count(1) from ${tableName} where 1=1
+        <if test="param.transHash != null and param.transHash != ''">
+            and trans_hash = #{param.transHash}
+        </if>
+        <if test="param.blockNumber != null">
+            and block_number = #{param.blockNumber}
+        </if>
+    </select>
+
+    <select id="queryTransList" resultMap="transactionMap">
+        select a.*,b.receipt_detail
+        from ${tableTrans} a 
+        left join ${tableReceipt} b on (a.trans_hash = b.trans_hash)
+        where 1=1
+        <if test="param.transHash != null and param.transHash != ''">
+            and a.trans_hash = #{param.transHash}
+        </if>
+        <if test="param.blockNumber != null">
+            and a.block_number = #{param.blockNumber}
+        </if>
+        order by a.block_number desc
+        <if test="param.start != null and param.pageSize != null">
+            limit #{param.start},#{param.pageSize}
+        </if>
+    </select>
+
+    <select id="countOfUser" resultType="java.lang.Integer">
+        select count(distinct(user_address)) 
+        from ${tableName} 
+        where 1=1
+        <if test="param.comVariable != null and param.comVariable != ''">
+            and user_name = #{param.comVariable}
+            or user_address = #{param.comVariable}
+        </if>
+    </select>
+
+    <select id="queryUserList" resultType="com.webank.webase.data.fetcher.group.entity.UserInfoDto">
+        select user_name as userName,user_address as userAddress
+        from ${tableName} 
+        where 1=1
+        <if test="param.comVariable != null and param.comVariable != ''">
+            and user_name = #{param.comVariable}
+            or user_address = #{param.comVariable}
+        </if>
+        group by user_address
+        <if test="param.start != null and param.pageSize != null">
+            limit #{param.start},#{param.pageSize}
+        </if>
+    </select>
+
+    <select id="countOfContract" resultType="java.lang.Integer">
+        select count(distinct(contract_address)) 
+        from ${tableName} 
+        where 1=1
+        <if test="param.comVariable != null and param.comVariable != ''">
+            and contrac_name = #{param.comVariable}
+            or contract_address = #{param.comVariable}
+        </if>
+    </select>
+
+    <select id="queryContractList" resultType="com.webank.webase.data.fetcher.group.entity.ContractInfoDto">
+        select contract_name as contractName,contract_address as contractAddress
+        from ${tableName} 
+        where 1=1
+        <if test="param.comVariable != null and param.comVariable != ''">
+            and contract_name = #{param.comVariable}
+            or contract_address = #{param.comVariable}
+        </if>
+        group by contract_address
+        <if test="param.start != null and param.pageSize != null">
+            limit #{param.start},#{param.pageSize}
+        </if>
+    </select>
+</mapper>

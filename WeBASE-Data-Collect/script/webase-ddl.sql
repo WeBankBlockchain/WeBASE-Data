@@ -68,6 +68,43 @@ CREATE TABLE IF NOT EXISTS tb_front_group_map (
 
 
 -- ----------------------------
+-- Table structure for tb_node
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS tb_node (
+	id int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+    node_id varchar(250) NOT NULL  COMMENT '节点编号',
+    chain_id int(11) NOT NULL COMMENT '所属区块链编号',
+    group_id int(11) NOT NULL COMMENT '所属群组编号',
+    node_ip varchar(16) DEFAULT NULL COMMENT '节点ip',
+    p2p_port int(11) DEFAULT NULL COMMENT '节点p2p端口',
+    block_number bigint(20) DEFAULT '0' COMMENT '节点块高',
+    pbft_view bigint(20) DEFAULT '0' COMMENT 'pbft_view',
+    node_active tinyint(4) DEFAULT '2' COMMENT '节点存活标识(1存活，2不存活)',
+    description varchar(1024) COMMENT '描述',
+    create_time datetime DEFAULT NULL COMMENT '创建时间',
+    modify_time datetime DEFAULT NULL COMMENT '修改时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_node (node_id,chain_id,group_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='节点信息表';
+
+
+-- ----------------------------
+-- Table structure for tb_txn_daily
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS tb_txn_daily (
+	id int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+	chain_id int(11) NOT NULL COMMENT '所属区块链编号',
+	group_id int(11) NOT NULL COMMENT '所属群组编号',
+	stat_date date NOT NULL COMMENT '统计日期',
+	txn int(11) COMMENT '交易量',
+	block_number int(11) DEFAULT '0' COMMENT '当前统计到的块高',
+	create_time datetime DEFAULT NULL COMMENT '创建时间',
+	modify_time datetime DEFAULT NULL COMMENT '修改时间',
+	PRIMARY KEY (id),
+	UNIQUE KEY uk_data (chain_id,group_id,stat_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='每日交易量记录表';
+
+-- ----------------------------
 -- Table structure for tb_user
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS tb_user (

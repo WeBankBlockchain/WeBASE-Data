@@ -326,7 +326,8 @@ public class FrontRestTools {
         }
         String errorMessage = error.get("errorMessage").asText();
         if (errorMessage.contains("code")) {
-            JsonNode errorInside = JacksonUtils.stringToJsonNode(error.get("errorMessage").asText()).get("error");
+            JsonNode errorInside =
+                    JacksonUtils.stringToJsonNode(error.get("errorMessage").asText()).get("error");
             throw new BaseException(errorInside.get("code").asInt(),
                     errorInside.get("message").asText());
         }

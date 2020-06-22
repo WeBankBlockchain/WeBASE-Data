@@ -21,7 +21,6 @@ import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.TransactionService;
-import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -90,15 +89,14 @@ public class DataParserTask {
             Instant startTimem = Instant.now();
             Long useTimeSum = 0L;
             do {
-                List<TbTransaction> transList =
-                        transactionService.qureyUnStatTransactionList(chainId, groupId);
-                if (CollectionUtils.isEmpty(transList)) {
+                List<String> transHashList =
+                        transactionService.queryUnStatTransHashList(chainId, groupId);
+                if (CollectionUtils.isEmpty(transHashList)) {
                     return;
                 }
                 // parser
-                for (TbTransaction tbTransaction : transList) {
-                    parserTransaction(chainId, groupId, tbTransaction);
-                }
+                transHashList.stream()
+                        .forEach(transHash -> parserTransaction(chainId, groupId, transHash));
 
                 // parser useTime
                 useTimeSum = Duration.between(startTimem, Instant.now()).getSeconds();
@@ -113,14 +111,13 @@ public class DataParserTask {
         log.info("end parserProcess. chainId:{} groupId:{}", chainId, groupId);
     }
 
-    private void parserTransaction(int chainId, int groupId, TbTransaction tbTransaction) {
+    private void parserTransaction(int chainId, int groupId, String transHash) {
         try {
-            TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId,
-                    tbTransaction.getTransHash());
-            if (ObjectUtils.isEmpty(tbTransaction) || ObjectUtils.isEmpty(tbReceipt)) {
+            TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId, transHash);
+            if (ObjectUtils.isEmpty(tbReceipt)) {
                 return;
             }
-            parserService.parserTransaction(chainId, groupId, tbTransaction, tbReceipt);
+            parserService.parserTransaction(chainId, groupId, tbReceipt);
         } catch (Exception ex) {
             log.error("fail parserTransaction chainId:{} groupId:{} ", chainId, groupId, ex);
         }

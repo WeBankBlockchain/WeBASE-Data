@@ -30,6 +30,6 @@ public class ParserTest {
 
     @Test
     public void resetBetweenTest() {
-        parserService.resetBetween(1, 1, 0, 230);
+        parserService.resetBetween(1, 1, 0, 232);
     }
 }

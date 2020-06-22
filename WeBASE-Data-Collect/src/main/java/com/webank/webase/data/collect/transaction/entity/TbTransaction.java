@@ -27,21 +27,19 @@ public class TbTransaction {
 
     private long id;
     private String transHash;
-    private String transFrom;
-    private String transTo;
     private BigInteger blockNumber;
     private LocalDateTime blockTimestamp;
+    private String transDetail;
     private Integer auditFlag;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
-    public TbTransaction(String transHash, String transFrom, String transTo, BigInteger blockNumber,
-            LocalDateTime blockTimestamp) {
+    public TbTransaction(String transHash, BigInteger blockNumber, LocalDateTime blockTimestamp,
+            String transDetail) {
         this.transHash = transHash;
-        this.transFrom = transFrom;
-        this.transTo = transTo;
         this.blockNumber = blockNumber;
         this.blockTimestamp = blockTimestamp;
+        this.transDetail = transDetail;
     }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -25,8 +25,10 @@ import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
+import com.webank.webase.data.collect.node.NodeService;
 import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
 import com.webank.webase.data.collect.table.TableService;
+import com.webank.webase.data.collect.txndaily.TxnDailyService;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -53,9 +55,13 @@ public class ChainService {
     @Autowired
     private FrontGroupMapService frontGroupMapService;
     @Autowired
+    private NodeService nodeService;
+    @Autowired
     private ContractService contractService;
     @Autowired
     private MethodService methodService;
+    @Autowired
+    private TxnDailyService txnDailyService;
     @Autowired
     private FrontGroupMapCache frontGroupMapCache;
     @Autowired
@@ -139,10 +145,14 @@ public class ChainService {
         groupService.removeByChainId(chainId);
         // remove map
         frontGroupMapService.removeByChainId(chainId);
+        // remove node
+        nodeService.deleteByChainId(chainId);
         // remove contract
         contractService.deleteContractByChainId(chainId);
         // remove method
         methodService.removeByChainIdAndGroupId(chainId, null);
+        //remove txnDaily
+        txnDailyService.deleteByChainId(chainId);
         // clear cache
         frontGroupMapCache.clearMapList(chainId);
         // drop sub tables

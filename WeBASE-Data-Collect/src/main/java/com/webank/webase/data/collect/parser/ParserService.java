@@ -17,7 +17,7 @@ import com.webank.webase.data.collect.base.enums.ParserUserType;
 import com.webank.webase.data.collect.base.enums.PrecompiledAddress;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.enums.TransType;
-import com.webank.webase.data.collect.base.enums.TransUnusualType;
+import com.webank.webase.data.collect.base.enums.TransParserType;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
@@ -41,7 +41,6 @@ import com.webank.webase.data.collect.parser.entity.UserParserResult;
 import com.webank.webase.data.collect.receipt.ReceiptService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.TransactionService;
-import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.user.UserService;
 import com.webank.webase.data.collect.user.entity.TbUser;
 import java.util.Arrays;
@@ -51,6 +50,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.tx.txdecode.InputAndOutputResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,14 +147,13 @@ public class ParserService {
      */
     public void updateUnusualContract(int chainId, int groupId, String transHash) {
         try {
-            TbTransaction tbTransaction =
-                    transactionService.getTbTransByHash(chainId, groupId, transHash);
             TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId, transHash);
-            if (ObjectUtils.isEmpty(tbTransaction) || ObjectUtils.isEmpty(tbReceipt)) {
+            if (ObjectUtils.isEmpty(tbReceipt)) {
                 return;
             }
-            ContractParserResult contractResult =
-                    parserContract(chainId, groupId, tbTransaction, tbReceipt);
+            TransactionReceipt receipt = JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(),
+                    TransactionReceipt.class);
+            ContractParserResult contractResult = parserContract(chainId, groupId, receipt);
             // update parser info
             parserMapper.updateUnusualContract(TableName.PARSER.getTableName(chainId, groupId),
                     contractResult);
@@ -166,7 +165,7 @@ public class ParserService {
     /**
      * query parser user list.
      */
-    public List<String> qureyParserUserList(int chainId, int groupId) throws BaseException {
+    public List<String> queryParserUserList(int chainId, int groupId) throws BaseException {
         List<String> parserUserList =
                 parserMapper.parserUserList(TableName.PARSER.getTableName(chainId, groupId));
         return parserUserList;
@@ -175,7 +174,7 @@ public class ParserService {
     /**
      * query parser interface list.
      */
-    public List<String> qureyParserInterfaceList(int chainId, int groupId, String userName)
+    public List<String> queryParserInterfaceList(int chainId, int groupId, String userName)
             throws BaseException {
 
         List<String> parserInterfaceList = parserMapper
@@ -194,9 +193,9 @@ public class ParserService {
     /**
      * query unusual user list.
      */
-    public List<UnusualUserInfo> qureyUnusualUserList(int chainId, int groupId, String userName,
+    public List<UnusualUserInfo> queryUnusualUserList(int chainId, int groupId, String userName,
             Integer pageNumber, Integer pageSize) throws BaseException {
-        log.debug("start qureyUnusualUserList groupId:{} userName:{} pageNumber:{} pageSize:{}",
+        log.debug("start queryUnusualUserList groupId:{} userName:{} pageNumber:{} pageSize:{}",
                 groupId, userName, pageNumber, pageSize);
 
         Integer start =
@@ -222,9 +221,9 @@ public class ParserService {
     /**
      * query unusual contract list.
      */
-    public List<UnusualContractInfo> qureyUnusualContractList(int chainId, int groupId,
+    public List<UnusualContractInfo> queryUnusualContractList(int chainId, int groupId,
             String contractAddress, Integer pageNumber, Integer pageSize) throws BaseException {
-        log.debug("start qureyUnusualContractList groupId:{} userName:{} pageNumber:{} pageSize:{}",
+        log.debug("start queryUnusualContractList groupId:{} userName:{} pageNumber:{} pageSize:{}",
                 groupId, contractAddress, pageNumber, pageSize);
 
         String tableName = TableName.PARSER.getTableName(chainId, groupId);
@@ -244,19 +243,19 @@ public class ParserService {
     /**
      * parserTransaction.
      */
-    public void parserTransaction(int chainId, int groupId, TbTransaction tbTransaction,
-            TbReceipt tbReceipt) {
+    public void parserTransaction(int chainId, int groupId, TbReceipt tbReceipt) {
+        TransactionReceipt receipt =
+                JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(), TransactionReceipt.class);
         // parser user
-        UserParserResult userResult = parserUser(chainId, groupId, tbTransaction.getTransFrom());
+        UserParserResult userResult = parserUser(chainId, groupId, receipt.getFrom());
         // parser contract
-        ContractParserResult contractResult =
-                parserContract(chainId, groupId, tbTransaction, tbReceipt);
+        ContractParserResult contractResult = parserContract(chainId, groupId, receipt);
 
         TbParser tbParser = new TbParser();
         BeanUtils.copyProperties(userResult, tbParser);
         BeanUtils.copyProperties(contractResult, tbParser);
-        tbParser.setBlockNumber(tbTransaction.getBlockNumber());
-        tbParser.setBlockTimestamp(tbTransaction.getBlockTimestamp());
+        tbParser.setBlockNumber(tbReceipt.getBlockNumber());
+        tbParser.setBlockTimestamp(tbReceipt.getBlockTimestamp());
         dataAddAndUpdate(chainId, groupId, tbParser);
     }
 
@@ -288,17 +287,16 @@ public class ParserService {
      * parser contract.
      */
     private ContractParserResult parserContract(int chainId, int groupId,
-            TbTransaction tbTransaction, TbReceipt tbReceipt) {
+            TransactionReceipt receipt) {
         ContractParserResult contractResult = new ContractParserResult();
-        contractResult.setTransHash(tbTransaction.getTransHash());
+        contractResult.setTransHash(receipt.getTransactionHash());
         contractResult.setTransType(TransType.DEPLOY.getValue());
-        contractResult.setTransUnusualType(TransUnusualType.NORMAL.getValue());
+        contractResult.setTransParserType(TransParserType.NORMAL.getValue());
         // deploy
-        if (isDeploy(tbTransaction.getTransTo())) {
-            parserDeploy(chainId, groupId, contractResult, tbReceipt,
-                    tbReceipt.getContractAddress());
+        if (isDeploy(receipt.getTo())) {
+            parserDeploy(chainId, groupId, contractResult, receipt, receipt.getContractAddress());
         } else { // function call
-            parserFunction(chainId, groupId, contractResult, tbReceipt, tbTransaction.getTransTo());
+            parserFunction(chainId, groupId, contractResult, receipt, receipt.getTo());
         }
         return contractResult;
     }
@@ -308,10 +306,10 @@ public class ParserService {
      * 
      */
     private void parserDeploy(int chainId, int groupId, ContractParserResult contractResult,
-            TbReceipt tbReceipt, String contractAddress) {
+            TransactionReceipt receipt, String contractAddress) {
         String contractBin, contractName;
         if (ConstantProperties.ADDRESS_DEPLOY.equals(contractAddress)) {
-            contractBin = StringUtils.removeStart(tbReceipt.getInput(), "0x");
+            contractBin = StringUtils.removeStart(receipt.getInput(), "0x");
             ContractParam param = new ContractParam();
             param.setChainId(chainId);
             param.setGroupId(groupId);
@@ -319,25 +317,25 @@ public class ParserService {
             TbContract tbContract = contractService.queryContract(param);
             if (Objects.nonNull(tbContract)) {
                 contractName = tbContract.getContractName();
-                parserInputOutputLogs(chainId, contractResult, tbReceipt,
+                parserInputOutputLogs(chainId, contractResult, receipt,
                         tbContract.getContractAbi());
             } else {
                 contractName = getNameFromContractBin(chainId, groupId, contractBin);
-                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+                contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
             }
         } else {
             contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
-                    tbReceipt.getBlockNumber());
+                    receipt.getBlockNumber());
             contractBin = removeBinFirstAndLast(contractBin);
             List<TbContract> tbContract =
                     contractService.queryContractByBin(chainId, groupId, contractBin);
             if (!CollectionUtils.isEmpty(tbContract)) {
                 contractName = tbContract.get(0).getContractName();
-                parserInputOutputLogs(chainId, contractResult, tbReceipt,
+                parserInputOutputLogs(chainId, contractResult, receipt,
                         tbContract.get(0).getContractAbi());
             } else {
                 contractName = subContractBinForName(contractBin);
-                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+                contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
             }
         }
         contractResult.setContractName(contractName);
@@ -350,43 +348,43 @@ public class ParserService {
      * 
      */
     private void parserFunction(int chainId, int groupId, ContractParserResult contractResult,
-            TbReceipt tbReceipt, String contractAddress) {
+            TransactionReceipt receipt, String contractAddress) {
         String contractBin, contractName, interfaceName;
-        String methodId = tbReceipt.getInput().substring(0, 10);
+        String methodId = receipt.getInput().substring(0, 10);
         // Precompiled contract
         if (PrecompiledAddress.isInclude(contractAddress)) {
             List<MethodInfo> methodInfoList =
                     methodService.getByMethodInfo(0, 0, methodId, contractAddress, null);
             if (!CollectionUtils.isEmpty(methodInfoList)) {
                 contractName = methodInfoList.get(0).getContractName();
-                parserInputOutputLogs(chainId, contractResult, tbReceipt,
+                parserInputOutputLogs(chainId, contractResult, receipt,
                         methodInfoList.get(0).getContractAbi());
                 interfaceName = contractResult.getInterfaceName();
             } else {
                 interfaceName = methodId;
                 contractName = contractAddress;
             }
-        } else {  // normal contract
+        } else { // normal contract
             contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
-                    tbReceipt.getBlockNumber());
+                    receipt.getBlockNumber());
             contractBin = removeBinFirstAndLast(contractBin);
             List<MethodInfo> methodInfoList =
                     methodService.getByMethodInfo(chainId, groupId, methodId, null, contractBin);
             if (!CollectionUtils.isEmpty(methodInfoList)) {
                 contractName = methodInfoList.get(0).getContractName();
-                parserInputOutputLogs(chainId, contractResult, tbReceipt,
+                parserInputOutputLogs(chainId, contractResult, receipt,
                         methodInfoList.get(0).getContractAbi());
                 interfaceName = contractResult.getInterfaceName();
             } else {
                 interfaceName = methodId;
                 contractName = subContractBinForName(contractBin);
-                contractResult.setTransUnusualType(TransUnusualType.CONTRACT.getValue());
+                contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
                 if (StringUtils.isNoneBlank(contractBin)) {
                     List<TbContract> contractRow =
                             contractService.queryContractByBin(chainId, groupId, contractBin);
                     if (!CollectionUtils.isEmpty(contractRow)) {
                         contractName = contractRow.get(0).getContractName();
-                        contractResult.setTransUnusualType(TransUnusualType.FUNCTION.getValue());
+                        contractResult.setTransParserType(TransParserType.FUNCTION.getValue());
                     }
                 }
             }
@@ -402,7 +400,7 @@ public class ParserService {
      * 
      */
     private void parserInputOutputLogs(int chainId, ContractParserResult contractResult,
-            TbReceipt tbReceipt, String abi) {
+            TransactionReceipt receipt, String abi) {
         TbChain tbChain = chainService.getChainById(chainId);
         if (ObjectUtils.isEmpty(tbChain)) {
             return;
@@ -412,10 +410,10 @@ public class ParserService {
         InputAndOutputResult outputResult = null;
         String logs = null;
         try {
-            inputResult = transactionDecoder.decodeInputReturnObject(tbReceipt.getInput());
-            outputResult = transactionDecoder.decodeOutputReturnObject(tbReceipt.getInput(),
-                    tbReceipt.getOutput());
-            logs = transactionDecoder.decodeEventReturnJson(tbReceipt.getLogs());
+            inputResult = transactionDecoder.decodeInputReturnObject(receipt.getInput());
+            outputResult = transactionDecoder.decodeOutputReturnObject(receipt.getInput(),
+                    receipt.getOutput());
+            logs = transactionDecoder.decodeEventReturnJson(receipt.getLogs());
         } catch (Exception e) {
             log.error("parserInputOutputLogs error:", e);
         }

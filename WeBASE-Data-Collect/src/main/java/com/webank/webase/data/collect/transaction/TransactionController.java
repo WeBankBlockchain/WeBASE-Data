@@ -103,7 +103,8 @@ public class TransactionController {
         Instant startTime = Instant.now();
         log.info("start getTransReceipt transHash:{}", transHash);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        TransactionReceipt transReceipt = transactionService.getTransReceipt(chainId, groupId, transHash);
+        TransactionReceipt transReceipt =
+                transactionService.getTransReceipt(chainId, groupId, transHash);
         baseResponse.setData(transReceipt);
         log.info("end getTransReceipt useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());

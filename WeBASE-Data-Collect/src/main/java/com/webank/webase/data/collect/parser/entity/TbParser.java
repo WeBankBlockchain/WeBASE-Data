@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2020  the original author or authors.
+ * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,7 +15,7 @@ package com.webank.webase.data.collect.parser.entity;
 
 import com.webank.webase.data.collect.base.enums.ParserUserType;
 import com.webank.webase.data.collect.base.enums.TransType;
-import com.webank.webase.data.collect.base.enums.TransUnusualType;
+import com.webank.webase.data.collect.base.enums.TransParserType;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -31,7 +31,7 @@ public class TbParser {
     private String contractAddress;
     private String interfaceName;
     private Integer transType = TransType.DEPLOY.getValue();
-    private Integer transUnusualType = TransUnusualType.NORMAL.getValue();
+    private Integer transParserType = TransParserType.NORMAL.getValue();
     private String input;
     private String output;
     private String logs;
