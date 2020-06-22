@@ -72,15 +72,15 @@
 			and a.block_number = #{param.blockNumber}
 		</if>
 		<if test="param.transHash != null and param.transHash != ''">
-            and trans_hash = #{param.transHash}
+            and a.trans_hash = #{param.transHash}
         </if>
         <if test="param.userParam != null and param.userParam != ''">
-            and (user_name = #{param.userParam}
-            or user_address = #{param.userParam})
+            and (a.user_name = #{param.userParam}
+            or a.user_address = #{param.userParam})
         </if>
         <if test="param.contractParam != null and param.contractParam != ''">
-            and (contrac_name = #{param.contractParam}
-            or contract_address = #{param.contractParam})
+            and (a.contrac_name = #{param.contractParam}
+            or a.contract_address = #{param.contractParam})
         </if>
 		order by a.block_number desc
 		<if test="param.pageNumber != null and param.pageSize != null">

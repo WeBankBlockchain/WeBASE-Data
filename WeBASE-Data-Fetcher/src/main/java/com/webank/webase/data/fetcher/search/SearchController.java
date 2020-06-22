@@ -47,7 +47,7 @@ public class SearchController extends BaseController {
             BindingResult result) throws BaseException {
         checkBindResult(result);
         Instant startTime = Instant.now();
-        log.info("start normalList.}");
+        log.info("start normalList.");
 
         BasePageResponse pageResponse = searchService.normalList(queryParam);
 
