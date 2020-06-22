@@ -122,11 +122,18 @@ bash webase.sh 127.0.0.1 3306
 
 ## 7. 访问
 
-可以通过swagger查看调用接口：
+配置页面：
+
+```
+http://{deployIP}:{deployPort}/WeBASE-Data-Collect
+示例：http://localhost:5009/WeBASE-Data-Collect
+```
+
+如果只调用接口，可以通过swagger查看调用接口：
 
 ```
 http://{deployIP}:{deployPort}/WeBASE-Data-Collect/swagger-ui.html
-示例：http://localhost:5008/WeBASE-Data-Collect/swagger-ui.html
+示例：http://localhost:5009/WeBASE-Data-Collect/swagger-ui.html
 ```
 
 **备注：** 

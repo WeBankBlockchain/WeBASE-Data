@@ -129,14 +129,15 @@ jar {
         copy {
             from file('src/main/resources/')
             into 'dist/conf_template'
+            exclude '**/static'
         }
+        copy {
+			from file('src/main/resources/static')
+			into 'dist/static'
+		}
         copy {
             from file('script/')
             into 'dist/script'
-        }
-        copy {
-            from file('solcjs/')
-            into 'dist/solcjs'
         }
         copy {
             from configurations.runtime
