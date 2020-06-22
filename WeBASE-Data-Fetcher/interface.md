@@ -734,23 +734,22 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/contractList/1/1/1/2
 
 ***1）入参表***
 
-| 序号 | 输入参数        | 类型       | 可为空 | 备注                                     |
-| ---- | --------------- | ---------- | ------ | ---------------------------------------- |
-| 1    | chainId         | Int        | 否     | 链编号                                   |
-| 2    | groupId         | Int        | 否     | 群组编号                                 |
-| 3    | pageSize        | Int        | 否     | 每页记录数                               |
-| 4    | pageNumber      | Int        | 否     | 当前页码                                 |
-| 5    | searchType      | Int        | 否     | 检索类型：1-区块；2-交易；3-用户；4-合约 |
-| 6    | blockNumber     | BigInteger | 是     | 块高，检索类型为1时必填                  |
-| 7    | transHash       | String     | 是     | 交易Hash，检索类型为2时必填              |
-| 8    | userAddress     | String     | 是     | 用户地址，检索类型为3时必填              |
-| 9    | contractAddress | String     | 是     | 合约地址，检索类型为4时必填              |
-| 10   | keyword         | String     | 是     | 关键字，检索类型为5时必填                |
+| 序号 | 输入参数      | 类型       | 可为空 | 备注                                     |
+| ---- | ------------- | ---------- | ------ | ---------------------------------------- |
+| 1    | chainId       | Int        | 否     | 链编号                                   |
+| 2    | groupId       | Int        | 否     | 群组编号                                 |
+| 3    | pageSize      | Int        | 否     | 每页记录数                               |
+| 4    | pageNumber    | Int        | 否     | 当前页码                                 |
+| 5    | searchType    | Int        | 否     | 检索类型：1-区块；2-交易；3-用户；4-合约 |
+| 6    | blockNumber   | BigInteger | 是     | 块高，检索类型为1时必填                  |
+| 7    | transHash     | String     | 是     | 交易Hash，检索类型为2时必填              |
+| 8    | userParam     | String     | 是     | 用户名称或地址，检索类型为3时必填        |
+| 9    | contractParam | String     | 是     | 合约名称或地址，检索类型为4时必填        |
 
 ***2）入参示例***
 
 ```
-http://localhost:5010/WeBASE-Data-Fetcher/search
+http://localhost:5010/WeBASE-Data-Fetcher/search/normal
 ```
 
 ```
@@ -760,10 +759,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/search
     "pageSize": 1,
     "pageNumber": 1,
     "searchType": 2,
-    "blockNumber": 0,
-    "transHash": "0x16dafe7f879f13d5fca6046e87022cdf71c9076b90c90b12403b82e1b68d3a22",
-    "userAddress": "",
-    "contractAddress": ""
+    "transHash": "0x16dafe7f879f13d5fca6046e87022cdf71c9076b90c90b12403b82e1b68d3a22"
 }
 ```
 
@@ -792,8 +788,10 @@ http://localhost:5010/WeBASE-Data-Fetcher/search
 | 4.1.12 | input            | String        | 是   | 交易输入信息                                 |
 | 4.1.13 | output           | String        | 是   | 交易输出信息                                 |
 | 4.1.14 | logs             | String        | 是   | 交易event信息                                |
-| 4.1.15 | createTime       | LocalDateTime | 否   | 创建时间                                     |
-| 4.1.16 | modifyTime       | LocalDateTime | 否   | 修改时间                                     |
+| 4.1.15 | transDetail      | String        | 是   | 交易详情                                     |
+| 4.1.16 | receiptDetail    | String        | 是   | 交易回执详情                                 |
+| 4.1.17 | createTime       | LocalDateTime | 否   | 创建时间                                     |
+| 4.1.18 | modifyTime       | LocalDateTime | 否   | 修改时间                                     |
 
 ***2）出参示例***
 
@@ -819,6 +817,8 @@ http://localhost:5010/WeBASE-Data-Fetcher/search
       "input":"[{\"name\":\"n\",\"type\":\"string\",\"data\":\"test\"}]",
       "output":"",
       "logs":"{\"SetName(string)\":[[{\"name\":\"name\",\"type\":\"string\",\"data\":\"test\",\"indexed\":false}]]}",
+      "transDetail":"{}",
+      "receiptDetail":"{}",
       "createTime": "2020-05-20 20:22:41",
       "modifyTime": "2020-05-20 20:22:41"
     }
@@ -836,5 +836,3 @@ http://localhost:5010/WeBASE-Data-Fetcher/search
     "data": {}
 }
 ```
-
-### 

@@ -38,6 +38,6 @@ public class NormalSearchParam {
     private Integer searchType;
     private BigInteger blockNumber;
     private String transHash;
-    private String userAddress;
-    private String contractAddress;
+    private String userParam;
+    private String contractParam;
 }

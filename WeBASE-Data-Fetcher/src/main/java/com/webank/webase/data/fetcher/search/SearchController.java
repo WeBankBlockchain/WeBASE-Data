@@ -43,15 +43,15 @@ public class SearchController extends BaseController {
      * normal search.
      */
     @PostMapping(value = "/normal")
-    public BasePageResponse searchList(@RequestBody @Valid NormalSearchParam queryParam,
+    public BasePageResponse normalList(@RequestBody @Valid NormalSearchParam queryParam,
             BindingResult result) throws BaseException {
         checkBindResult(result);
         Instant startTime = Instant.now();
-        log.info("start searchList.}");
+        log.info("start normalList.}");
 
-        BasePageResponse pageResponse = searchService.searchList(queryParam);
+        BasePageResponse pageResponse = searchService.normalList(queryParam);
 
-        log.info("end searchList useTime:{}.",
+        log.info("end normalList useTime:{}.",
                 Duration.between(startTime, Instant.now()).toMillis());
         return pageResponse;
     }

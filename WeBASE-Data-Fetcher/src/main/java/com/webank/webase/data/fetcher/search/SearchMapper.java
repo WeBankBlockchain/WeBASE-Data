@@ -28,13 +28,14 @@ public interface SearchMapper {
     /**
      * query search count.
      */
-    Integer countOfSearch(@Param("tableName") String tableName,
+    Integer countOfNormal(@Param("tableName") String tableName,
             @Param("param") NormalSearchParam param);
 
     /**
      * query list of search by page.
      */
-    List<NormalSearchDto> querySearchList(@Param("tableName") String tableName,
+    List<NormalSearchDto> queryNormalList(@Param("tableParser") String tableParser,
+            @Param("tableTrans") String tableTrans, @Param("tableReceipt") String tableReceipt,
             @Param("param") NormalSearchParam param);
 
 }
