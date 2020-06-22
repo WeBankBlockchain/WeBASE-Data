@@ -56,7 +56,7 @@ public class SolcController {
      * @param description
      * @return
      */
-    @PostMapping("/upload")
+//    @PostMapping("/upload")
     public synchronized BaseResponse upload(
             @RequestParam(value = "fileName", required = true) String fileName,
             @RequestParam(value = "encryptType", required = true,
@@ -93,7 +93,7 @@ public class SolcController {
      * @param id
      * @return
      */
-    @DeleteMapping("/{id}")
+//    @DeleteMapping("/{id}")
     public BaseResponse deleteSolcFile(@PathVariable("id") Integer id) {
         log.info("deleteSolcFile start. id:{}", id);
         solcService.deleteFile(id);
@@ -106,7 +106,7 @@ public class SolcController {
      * @param solcName
      * @return
      */
-    @GetMapping("/download")
+//    @GetMapping("/download")
     public synchronized ResponseEntity<InputStreamResource> downloadSolcFile(
             @RequestParam(value = "solcName", required = true) String solcName) {
         Instant startTime = Instant.now();

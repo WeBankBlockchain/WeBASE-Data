@@ -66,7 +66,7 @@ cd  dist/script
 修改数据库连接信息：
 
 ```shell
-修改数据库名称：sed -i "s/webasedatacollect/${your_db_name}/g" webase.sh
+修改数据库名称：sed -i "s/webasedata/${your_db_name}/g" webase.sh
 修改数据库用户名：sed -i "s/defaultAccount/${your_db_account}/g" webase.sh
 修改数据库密码：sed -i "s/defaultPassword/${your_db_password}/g" webase.sh
 ```
@@ -101,7 +101,7 @@ bash webase.sh 127.0.0.1 3306
 修改服务端口：sed -i "s/5009/${your_server_port}/g" conf/application.yml
 修改数据库IP：sed -i "s/127.0.0.1/${your_db_ip}/g" conf/application.yml
 修改数据库端口：sed -i "s/3306/${your_db_port}/g" conf/application.yml
-修改数据库名称：sed -i "s/webasedatacollect/${your_db_name}/g" conf/application.yml
+修改数据库名称：sed -i "s/webasedata/${your_db_name}/g" conf/application.yml
 修改数据库用户：sed -i "s/defaultAccount/${your_db_account}/g" conf/application.yml
 修改数据库密码：sed -i "s/defaultPassword/${your_db_password}/g" conf/application.yml
 ```
