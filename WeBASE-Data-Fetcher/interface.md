@@ -202,7 +202,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/general/1/1
 | 2.4  | userCount     | int    | 否   | 用户数量                   |
 | 2.5  | contractCount | int    | 否   | 已部署智能合约数量         |
 | 2.6  | txnCount      | int    | 否   | 交易数量                   |
-| 2.7b | blockNumber   | int    | 否   | 当前块高                   |
+| 2.7  | blockNumber   | int    | 否   | 当前块高                   |
 
 ***2）出参示例***
 
@@ -836,3 +836,17 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/normal
     "data": {}
 }
 ```
+
+## 附录 
+
+### 1. 返回码信息列表
+
+| Code   | message                         | 描述             |
+| ------ | ------------------------------- | ---------------- |
+| 0      | success                         | 正常             |
+| 102000 | system exception                | 系统异常         |
+| 102001 | system exception                | 无效的前置编号   |
+| 102002 | database exception              | 数据库异常       |
+| 202101 | invalid group id                | 无效群组编号     |
+| 202201 | searchType not exists           | 搜索类型不存在   |
+| 202202 | search content can not be empty | 搜索内容不能为空 |

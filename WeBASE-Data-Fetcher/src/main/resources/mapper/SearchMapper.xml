@@ -57,7 +57,7 @@
             or user_address = #{param.userParam}
         </if>
         <if test="param.contractParam != null and param.contractParam != ''">
-            and contrac_name = #{param.contractParam}
+            and contract_name = #{param.contractParam}
             or contract_address = #{param.contractParam}
         </if>
 	</select>
@@ -79,7 +79,7 @@
             or a.user_address = #{param.userParam})
         </if>
         <if test="param.contractParam != null and param.contractParam != ''">
-            and (a.contrac_name = #{param.contractParam}
+            and (a.contract_name = #{param.contractParam}
             or a.contract_address = #{param.contractParam})
         </if>
 		order by a.block_number desc

@@ -1672,3 +1672,40 @@ http://localhost:5009/WeBASE-Data-Collect/solc/list
   ]
 }
 ```
+
+## 附录 
+
+### 1. 返回码信息列表
+
+| Code   | message                          | 描述               |
+| ------ | -------------------------------- | ------------------ |
+| 0      | success                          | 正常               |
+| 102000 | system exception                 | 系统异常           |
+| 102001 | system exception                 | 无效的前置编号     |
+| 102002 | database exception               | 数据库异常         |
+| 202001 | chain id already exists          | 链编号已经存在     |
+| 202002 | chain name already exists        | 链名称已经存在     |
+| 202003 | save chain fail                  | 链保存失败         |
+| 202004 | invalid chain id                 | 无效链编号         |
+| 202101 | wrong host or port               | ip或端口错误       |
+| 202102 | invalid front id                 | 无效前置编号       |
+| 202103 | not found any front              | 找不到前置         |
+| 202104 | front already exists             | 前置已经存在       |
+| 202105 | save front fail                  | 前置保存失败       |
+| 202106 | request front fail               | 前置请求失败       |
+| 202107 | request node exception           | 前置节点请求失败   |
+| 202108 | front's encrypt type not matches | 前置类型不匹配     |
+| 202109 | invalid block number             | 无效块高           |
+| 202201 | invalid group id                 | 无效群组编号       |
+| 202301 | user name already exists         | 用户名已存在       |
+| 202302 | user address already exists      | 用户地址已存在     |
+| 202401 | contract already exists          | 合约已存在         |
+| 202402 | invalid contract id              | 无效合约编号       |
+| 202403 | contract name cannot be repeated | 合约名重复         |
+| 202501 | task is still running            | 任务正在执行       |
+| 202502 | block has been reset             | 区块已重置         |
+| 202601 | solc js file cannot be empty     | 编译器文件不能为空 |
+| 202602 | solc js file already exist       | 编译器文件已存在   |
+| 202603 | solc js file not exist           | 编译器文件不存在   |
+| 202604 | save solc js file error          | 编译器文件保存失败 |
+| 202605 | read solc js file error          | 编译器文件读取失败 |
