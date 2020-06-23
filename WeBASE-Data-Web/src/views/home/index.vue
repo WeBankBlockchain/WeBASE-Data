@@ -260,6 +260,6 @@ export default {
     display: flex;
 }
 .search-result {
-    padding-top: 30px;
+    padding: 30px 29px 0 30px;
 }
 </style>
