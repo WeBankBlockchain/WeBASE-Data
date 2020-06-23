@@ -1,41 +1,46 @@
 <template>
     <div class="app-container">
-        <div></div>
-        <el-row>
-            <el-col :xs='24' :sm="24" :md="11" :lg="10" :xl="8">
-                <div class="overview-item" :style="{'cursor': index===3||4 ? 'pointer': 'default'}" v-for="(item,index) in detailsList" @click="goDetailRouter(item)" :key='item.label' :class="item.bg">
-                    <div class="overview-item-img">
-                        <svg class="overview-item-svg" aria-hidden="true" v-if='item.icon == "#wbs-icon-node1"'>
-                            <use xlink:href="#wbs-icon-node1"></use>
-                        </svg>
-                        <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-contract"'>
-                            <use xlink:href="#wbs-icon-contract"></use>
-                        </svg>
-                        <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-block"'>
-                            <use xlink:href="#wbs-icon-block"></use>
-                        </svg>
-                        <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-transation"'>
-                            <use xlink:href="#wbs-icon-transation"></use>
-                        </svg>
-                    </div>
-                    <div class="overview-item-content">
-                        <div class="overview-item-number">{{item.value}}</div>
-                        <div class="overview-item-title">{{item.label}}</div>
-                    </div>
-                </div>
-            </el-col>
-            <el-col :xs='24' :sm="24" :md="13" :lg="14" :xl="16">
-                <div style="margin: 8px 0px 0 0px;" class="module-box-shadow bg-fff">
-                    <div class="part2-title">
-                        <span class="part2-title-left">关键监控指标</span>
-                        <span class="part2-title-right">最近有交易的7天交易量（笔）</span>
-                    </div>
-                    <div class="chart" ref="chart">
-                        <chart :size="size" />
-                    </div>
-                </div>
-            </el-col>
-        </el-row>
+        <content-head :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}`" :icon="true"></content-head>
+        <div style="margin: 5px;">
+            <div style="margin:10px 10px 6px 10px;">
+                <el-row>
+                    <el-col :xs='24' :sm="24" :md="11" :lg="10" :xl="8">
+                        <div class="overview-item" style="font-size:0" v-for="item in detailsList" :key='item.label' @click="goDetailRouter(item)" :class="item.bg">
+                            <div class="overview-item-img">
+                                <svg class="overview-item-svg" aria-hidden="true" v-if='item.icon == "#wbs-icon-node1"'>
+                                    <use xlink:href="#wbs-icon-node1"></use>
+                                </svg>
+                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-contract"'>
+                                    <use xlink:href="#wbs-icon-contract"></use>
+                                </svg>
+                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-block"'>
+                                    <use xlink:href="#wbs-icon-block"></use>
+                                </svg>
+                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-transation"'>
+                                    <use xlink:href="#wbs-icon-transation"></use>
+                                </svg>
+                            </div>
+                            <div class="overview-item-content">
+                                <div class="overview-item-number">{{item.value}}</div>
+                                <div class="overview-item-title">{{item.label}}</div>
+                            </div>
+                        </div>
+                    </el-col>
+                    <el-col :xs='24' :sm="24" :md="13" :lg="14" :xl="16">
+                        <div style="margin: 8px 0px 0 0px;" class="module-box-shadow bg-fff">
+                            <div class="part2-title">
+                                <span class="part2-title-left">关键监控指标</span>
+                                <span class="part2-title-right">最近有交易的7天交易量（笔）</span>
+                            </div>
+                            <div class="chart" ref="chart">
+                                <chart ref="linechart" :id="'homeId'" v-if="chartStatistics.show" :data="chartStatistics.date" :transactionDataArr="chartStatistics.dataArr" :size="chartStatistics.chartSize" v-loading="loadingCharts"></chart>
+                            </div>
+                        </div>
+                    </el-col>
+                </el-row>
+            </div>
+        </div>
+
         <div class="module-wrapper-small">
             <el-table :data="nodeList" class="search-table-content">
                 <el-table-column v-for="head in nodeHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="" :width='head.width'>
@@ -58,13 +63,16 @@
 </template>
 
 <script>
-import { getGroupOverview, getNodeList } from "@/api/chain1";
+import { groupGeneral, groupTransDaily, groupNodeList, blockList } from "@/util/api";
 import Chart from "@/components/Charts/BaseLine"
+import contentHead from "@/components/contentHead";
+import { changWeek, numberFormat, unique } from "@/util/util";
 export default {
     name: 'overview',
 
     components: {
-        Chart
+        Chart,
+        contentHead
     },
 
     props: {
@@ -72,11 +80,23 @@ export default {
 
     data() {
         return {
-            size: {
-                width: 0,
-                height: 0,
+            nodeList: [],
+            chainId: '',
+            groupId: '',
+            chartStatistics: {
+                show: false,
+                date: [],
+                dataArr: [],
+                chartSize: {
+                    width: 0,
+                    height: 0
+                }
             },
-            nodeList: []
+            loadingNumber: false,
+            loadingCharts: false,
+            loadingNodes: false,
+            loadingBlock: false,
+            loadingTransaction: false,
         }
     },
 
@@ -84,8 +104,8 @@ export default {
         detailsList() {
             let data = [
                 {
-                    label: "节点个数",
-                    name: "nodeCount",
+                    label: "用户数量",
+                    name: "userCount",
                     value: 0,
                     icon: "#wbs-icon-node1",
                     bg: 'node-bg'
@@ -99,14 +119,14 @@ export default {
                 },
                 {
                     label: "区块数量",
-                    name: "latestBlock",
+                    name: "blockNumber",
                     value: 0,
                     icon: "#wbs-icon-block",
                     bg: "block-bg"
                 },
                 {
                     label: "交易数量",
-                    name: "transactionCount",
+                    name: "txnCount",
                     value: 0,
                     icon: "#wbs-icon-transation",
                     bg: 'transation-bg'
@@ -148,40 +168,102 @@ export default {
     },
 
     mounted() {
-        this.fetchData()
+        if (this.$route.query.chainId || this.$route.query.groupId) {
+            this.chainId = this.$route.query.chainId
+            this.groupId = this.$route.query.groupId
+        }
+        this.querygroupGeneral()
         this.queryNodeList()
-        this.size.width = this.$refs.chart.offsetWidth;
-        this.size.height = this.$refs.chart.offsetHeight;
+        this.$nextTick(function () {
+            this.chartStatistics.chartSize.width = this.$refs.chart.offsetWidth;
+            this.chartStatistics.chartSize.height = this.$refs.chart.offsetHeight;
+            this.queryGroupTransDaily();
+        });
     },
 
     methods: {
-        fetchData() {
-            getGroupOverview().then(response => {
-                this.detailsList.forEach(function (value, index) {
-                    for (let i in response.data.data) {
-                        if (value.name === i) {
-                            value.value = response.data.data[i];
-                        }
+        querygroupGeneral() {
+            groupGeneral(this.chainId, this.groupId)
+                .then(res => {
+                    if (res.data.code === 0) {
+                        this.detailsList.forEach((value, index) => {
+                            for (let i in res.data.data) {
+                                if (value.name === i) {
+                                    this.$set(value, 'value', res.data.data[i])
+                                }
+                            }
+                        });
                     }
-                });
-
-            })
+                })
         },
         queryNodeList() {
-            getNodeList().then(response => {
-                this.nodeList = response.data.items
+            groupNodeList(this.chainId, this.groupId, 1, 1000).then(res => {
+                if (res.data.code === 0) {
+                    this.nodeList = res.data.data
+                }
             })
+        },
+        queryGroupTransDaily() {
+
+            groupTransDaily(this.chainId, this.groupId)
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let resData = changWeek(res.data.data);
+                        for (let i = 0; i < resData.length; i++) {
+                            this.chartStatistics.date.push(resData[i].day);
+                            this.chartStatistics.dataArr.push(
+                                resData[i].transCount
+                            );
+                        }
+                        this.$set(this.chartStatistics, "show", true);
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
         },
         goDetailRouter(item) {
             let name = item.name;
             switch (name) {
-                case "latestBlock":
-                    this.$router.push("/blockInfo");
+                case "blockNumber":
+                    this.$router.push({
+                        path: "/blockInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId
+                        }
+                    });
                     break;
-                case "transactionCount":
-                    this.$router.push("/transactionInfo");
+                case "txnCount":
+                    this.$router.push({
+                        path: "/transactionInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId
+                        }
+                    });
                     break;
-            
+                case "userCount":
+                    this.$router.push({
+                        path: "/userInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId
+                        }
+                    });
+                    break;
+                case "contractCount":
+                    this.$router.push({
+                        path: "/contractInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId
+                        }
+                    });
+                    break;
             }
         },
         textColor: function (val) {
@@ -225,7 +307,6 @@ export default {
     border-radius: 2px;
     box-sizing: border-box;
     /* cursor: pointer; */
-    
 }
 .overview-item-img {
     display: inline-block;

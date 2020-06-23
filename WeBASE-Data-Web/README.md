@@ -1,91 +1,24 @@
-# vue-admin-template
+# Web管理平台
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://webasedoc.readthedocs.io/zh_CN/latest/docs/WeBASE/CONTRIBUTING.html)
+[![CodeFactor](https://www.codefactor.io/repository/github/webankfintech/webase-web/badge)](https://www.codefactor.io/repository/github/webankfintech/webase-web)
+[![Code Lines](https://tokei.rs/b1/github/WeBankFinTech/WeBASE-Web?category=code)](https://github.com/WeBankFinTech/WeBASE-Web)
+[![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)](http://www.apache.org/licenses/)
+[![GitHub (pre-)release](https://img.shields.io/github/release/WeBankFinTech/WeBASE-Web/all.svg)](https://github.com/WeBankFinTech/WeBASE-Web/releases)
 
-English | [简体中文](./README-zh.md)
+## 简介
 
-> A minimal vue admin template with Element UI & axios & iconfont & permission control & lint
+本项目是区块链中间件平台WeBASE管理平台，使用框架`vue-cli`，支持fisco-bcos 2.0版本及以上。
 
-**Live demo:** http://panjiachen.github.io/vue-admin-template
+兼容浏览器IE9及以上，360浏览器兼容版（IE9内核），360浏览器极速版，chrome浏览器。
 
+本平台支持群组切换、区块信息浏览、合约管理、私钥管理、交易审计和账号管理等功能。详细介绍请查看[WeBASE-Web在线文档](https://webase-web.readthedocs.io/en/latest/docs/WeBASE-Web/index.html)
 
-**The current version is `v4.0+` build on `vue-cli`. If you want to use the old version , you can switch branch to [tag/3.11.0](https://github.com/PanJiaChen/vue-admin-template/tree/tag/3.11.0), it does not rely on `vue-cli`**
+## 贡献说明
 
-## Build Setup
+请阅读我们的贡献文档，了解如何贡献代码，并提交你的代码。
 
+希望在您的参与下，WeBASE会越来越好。
 
-```bash
-# clone the project
-git clone https://github.com/PanJiaChen/vue-admin-template.git
+## 社区
 
-# enter the project directory
-cd vue-admin-template
-
-# install dependency
-npm install
-
-# develop
-npm run dev
-```
-
-This will automatically open http://localhost:9528
-
-## Build
-
-```bash
-# build for test environment
-npm run build:stage
-
-# build for production environment
-npm run build:prod
-```
-
-## Advanced
-
-```bash
-# preview the release environment effect
-npm run preview
-
-# preview the release environment effect + static resource analysis
-npm run preview -- --report
-
-# code format check
-npm run lint
-
-# code format check and auto fix
-npm run lint -- --fix
-```
-
-Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/guide/essentials/deploy.html) for more information
-
-## Demo
-
-![demo](https://github.com/PanJiaChen/PanJiaChen.github.io/blob/master/images/demo.gif)
-
-## Extra
-
-If you want router permission && generate menu by user roles , you can use this branch [permission-control](https://github.com/PanJiaChen/vue-admin-template/tree/permission-control)
-
-For `typescript` version, you can use [vue-typescript-admin-template](https://github.com/Armour/vue-typescript-admin-template) (Credits: [@Armour](https://github.com/Armour))
-
-## Related Project
-
-- [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)
-
-- [electron-vue-admin](https://github.com/PanJiaChen/electron-vue-admin)
-
-- [vue-typescript-admin-template](https://github.com/Armour/vue-typescript-admin-template)
-
-- [awesome-project](https://github.com/PanJiaChen/vue-element-admin/issues/2312)
-
-## Browsers support
-
-Modern browsers and Internet Explorer 10+.
-
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
-| --------- | --------- | --------- | --------- |
-| IE10, IE11, Edge| last 2 versions| last 2 versions| last 2 versions
-
-## License
-
-[MIT](https://github.com/PanJiaChen/vue-admin-template/blob/master/LICENSE) license.
-
-Copyright (c) 2017-present PanJiaChen
+联系我们：webase@webank.com

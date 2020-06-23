@@ -1,147 +1,113 @@
+/*
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import Vue from 'vue'
 import Router from 'vue-router'
+import { getCookie } from '@/util/util'
 
-Vue.use(Router)
+const main = resolve => require(['@/views/index/main'], resolve);
+const home = resolve => require(['@/views/home'], resolve);
+const chain = resolve => require(['@/views/chain'], resolve);
+const group = resolve => require(['@/views/group'], resolve);
+const overview = resolve => require(['@/views/overview'], resolve);
+const blockInfo = resolve => require(['@/views/blockInfo'], resolve);
+const transactionInfo = resolve => require(['@/views/transactionInfo'], resolve);
+const contractInfo = resolve => require(['@/views/contractInfo'], resolve);
+const userInfo = resolve => require(['@/views/userInfo'], resolve);
 
-/* Layout */
-import Layout from '@/layout'
-
-/**
- * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
- *
- * hidden: true                   if set true, item will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu
- *                                if not set alwaysShow, when item has more than one children route,
- *                                it will becomes nested mode, otherwise not show the root menu
- * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
- * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
-    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'svg-name'             the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
-  }
- */
-
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
-export const constantRoutes = [
-    // {
-    //     path: '/login',
-    //     component: () => import('@/views/login/index'),
-    //     hidden: true
-    // },
-
-    {
-        path: '/404',
-        component: () => import('@/views/404'),
-        hidden: true
-    },
-
+Vue.use(Router);
+const routes = [
     {
         path: '/',
-        component: Layout,
+        redirect: '/main',
+    },
+    {
+        path: '/main',
+        name: 'main',
         redirect: '/home',
-        children: [{
-            path: 'home',
-            name: 'Home',
-            component: resolve => require(['@/views/home/index'], resolve),
-            meta: { title: 'Home', icon: 'dashboard' }
-        }]
-    },
-    {
-        path: '/chain',
-        component: Layout,
-        name: 'Chain',
-        redirect: '/chain',
-        alwaysShow: true,
-        children: [{
-            path: '',
-            component: resolve => require(['@/views/group/index'], resolve),
-        }],
-        meta:{
-            title:'Chain',
-            icon: 'nested'
-        }
-    },
-    {
-        path: '/group',
-        component: Layout,
-        redirect: '/group/index',
-        hidden: true,
+        leaf: true,
+        nameKey: "home",    
+        menuShow: true,
+        iconCls: 'wbs-icon-gailan sidebar-icon',
+        component: main,
         children: [
             {
-                path: 'index',
-                name: 'Group',
-                component: resolve => require(['@/views/group/index'], resolve),
-                meta: { title: 'Group', icon: 'form' }
+                path: '/home', component: home, name: '首页',nameKey: "home", menuShow: true, meta: { requireAuth: true }
             }
         ]
     },
     {
-        path: '/overview',
-        component: Layout,
-        redirect: '/overview/index',
-        hidden: true,
+        path: '/',
+        component: main,
+        name: '区块链',
+        nameKey: "nodeTitle",
+        leaf: true,
+        menuShow: true,
+        iconCls: 'wbs-icon-group sidebar-icon',
         children: [
-            {
-                path: 'index',
-                name: 'Overview',
-                component: resolve => require(['@/views/overview/index'], resolve),
-                meta: { title: 'Overview', icon: 'form' }
-            }
+            { path: '/chain', component: chain, name: '区块链', nameKey: "nodeTitle", menuShow: true, meta: { requireAuth: true } },
+        ]
+    }, 
+    {
+        path: '/',
+        component: main,
+        name: '群组',
+        nameKey: "group",
+        leaf: true,
+        menuShow: false,
+        iconCls: 'wbs-icon-group sidebar-icon',
+        children: [
+            { path: '/group', component: group, name: '群组', nameKey: "group", menuShow: true, meta: { requireAuth: true } },
         ]
     },
     {
-        path: '/transactionInfo',
-        component: Layout,
-        redirect: '/transactionInfo/index',
-        hidden: true,
+        path: '/',
+        component: main,
+        name: '概览',
+        nameKey: "overview",
+        leaf: true,
+        menuShow: false,
+        iconCls: 'wbs-icon-group sidebar-icon',
         children: [
-            {
-                path: 'index',
-                name: 'TransactionInfo',
-                component: resolve => require(['@/views/transactionInfo/index'], resolve),
-                meta: { title: 'TransactionInfo', icon: 'form' }
-            }
+            { path: '/overview', component: overview, name: '概览', nameKey: "overview", menuShow: true, meta: { requireAuth: true } },
         ]
     },
     {
-        path: '/blockInfo',
-        component: Layout,
-        redirect: '/blockInfo/index',
-        hidden: true,
+        path: '/',
+        component: main,
+        name: '区块浏览',
+        nameKey: "blockBrowsing",
+        menuShow: false,
+        iconCls: 'wbs-icon-overview sidebar-icon',
         children: [
-            {
-                path: 'index',
-                name: 'BlockInfo',
-                component: resolve => require(['@/views/blockInfo/index'], resolve),
-                meta: { title: 'BlockInfo', icon: 'form' }
-            }
+            { path: '/blockInfo', component: blockInfo, name: '区块信息', nameKey: "blockTitle", menuShow: true, meta: { requireAuth: true } },
+            { path: '/transactionInfo', component: transactionInfo, name: '交易信息', nameKey: "transactionInfo", menuShow: true, meta: { requireAuth: true } },
+            { path: '/contractInfo', component: contractInfo, name: '合约信息', nameKey: "contractInfo", menuShow: true, meta: { requireAuth: true } },
+            { path: '/userInfo', component: userInfo, name: '用户信息', nameKey: "userInfo", menuShow: true, meta: { requireAuth: true } },
+            
         ]
     },
-
-    // 404 page must be placed at the end !!!
-    { path: '*', redirect: '/404', hidden: true }
+    
 ]
-
-const createRouter = () => new Router({
-    // mode: 'history', // require service support
-    scrollBehavior: () => ({ y: 0 }),
-    routes: constantRoutes
-})
-
-const router = createRouter()
-
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
-export function resetRouter() {
-    const newRouter = createRouter()
-    router.matcher = newRouter.matcher // reset router
+const router = new Router({
+    routes
+});
+const originalPush = Router.prototype.push;
+Router.prototype.push = function push(location, onResolve, onReject) {
+    if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+    return originalPush.call(this, location).catch(err => err)
 }
 
 export default router
