@@ -31,13 +31,6 @@ public class ConstantCode {
     public static final RetCode PARAM_EXCEPTION = RetCode.mark(102001, "param exception");
     public static final RetCode DB_EXCEPTION = RetCode.mark(102002, "database exception");
 
-    /* chain code */
-    public static final RetCode CHAIN_ID_EXISTS = RetCode.mark(202001, "chain id already exists");
-    public static final RetCode CHAIN_NAME_EXISTS =
-            RetCode.mark(202002, "chain name already exists");
-    public static final RetCode SAVE_CHAIN_FAIL = RetCode.mark(202003, "save chain fail");
-    public static final RetCode INVALID_CHAIN_ID = RetCode.mark(202004, "invalid chain id");
-
     /* group code */
     public static final RetCode INVALID_GROUP_ID = RetCode.mark(202101, "invalid group id");
 
