@@ -18,13 +18,17 @@ import com.webank.webase.data.fetcher.base.entity.BasePageResponse;
 import com.webank.webase.data.fetcher.base.enums.SearchType;
 import com.webank.webase.data.fetcher.base.enums.TableName;
 import com.webank.webase.data.fetcher.base.exception.BaseException;
+import com.webank.webase.data.fetcher.base.tools.CommonTools;
 import com.webank.webase.data.fetcher.group.GroupService;
 import com.webank.webase.data.fetcher.search.entity.NormalSearchDto;
 import com.webank.webase.data.fetcher.search.entity.NormalSearchParam;
+import com.webank.webase.data.fetcher.search.entity.SearchListParam;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,16 +47,26 @@ public class SearchService {
     /**
      * query count of search.
      */
-    public BasePageResponse normalList(NormalSearchParam queryParam) throws BaseException {
+    public BasePageResponse normalList(NormalSearchParam param) throws BaseException {
         // check param
-        checkParam(queryParam);
-
+        checkParam(param);
+        // copy
+        SearchListParam queryParam = new SearchListParam();
+        BeanUtils.copyProperties(param, queryParam);
+        if (param.getSearchType() == SearchType.BLOCK.getValue()) {
+            if (CommonTools.isNumeric(param.getBlockParam())) {
+                queryParam.setBlockNumber(new BigInteger(param.getBlockParam()));
+            } else {
+                queryParam.setBlockHash(param.getBlockParam());
+            }
+        }
+        // query
         BasePageResponse pageResponse = new BasePageResponse(ConstantCode.SUCCESS);
         int count = countOfNormal(queryParam);
         if (count > 0) {
-            Integer pageNumber = Optional.ofNullable(queryParam.getPageNumber())
+            Integer start = Optional.ofNullable(param.getPageNumber())
                     .map(page -> (page - 1) * queryParam.getPageSize()).orElse(null);
-            queryParam.setPageNumber(pageNumber);
+            queryParam.setStart(start);
             List<NormalSearchDto> searchList = queryNormalList(queryParam);
             pageResponse.setData(searchList);
             pageResponse.setTotalCount(count);
@@ -63,10 +77,11 @@ public class SearchService {
     /**
      * query count of search.
      */
-    private int countOfNormal(NormalSearchParam queryParam) throws BaseException {
+    private int countOfNormal(SearchListParam queryParam) throws BaseException {
         try {
             Integer count = searchMapper.countOfNormal(
                     TableName.PARSER.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
+                    TableName.BLOCK.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
                     queryParam);
             return count == null ? 0 : count;
         } catch (RuntimeException ex) {
@@ -78,13 +93,14 @@ public class SearchService {
     /**
      * query search info list.
      */
-    private List<NormalSearchDto> queryNormalList(NormalSearchParam queryParam)
-            throws BaseException {
+    private List<NormalSearchDto> queryNormalList(SearchListParam queryParam) throws BaseException {
         try {
             List<NormalSearchDto> listOfSearch = searchMapper.queryNormalList(
                     TableName.PARSER.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
+                    TableName.BLOCK.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
                     TableName.TRANS.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
-                    TableName.RECEIPT.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
+                    TableName.RECEIPT.getTableName(queryParam.getChainId(),
+                            queryParam.getGroupId()),
                     queryParam);
             return listOfSearch;
         } catch (RuntimeException ex) {
@@ -96,24 +112,28 @@ public class SearchService {
     /**
      * checkParam.
      */
-    private void checkParam(NormalSearchParam queryParam) throws BaseException {
+    private void checkParam(NormalSearchParam param) throws BaseException {
         // check groupId
-        groupService.checkGroupId(queryParam.getChainId(), queryParam.getGroupId());
-        int searchType = queryParam.getSearchType();
+        groupService.checkGroupId(param.getChainId(), param.getGroupId());
+        // check searchType
+        int searchType = param.getSearchType();
         if (!SearchType.isInclude(searchType)) {
-            log.error("fail checkParam queryParam:{}", queryParam);
+            log.error("fail checkParam queryParam:{}", param);
             throw new BaseException(ConstantCode.SEARCHTYPE_NOT_EXISTS);
         }
-        if (searchType == SearchType.BLOCK.getValue() & queryParam.getBlockNumber() == null) {
+        // check search content
+        if (searchType == SearchType.BLOCK.getValue()
+                & StringUtils.isBlank(param.getBlockParam())) {
             throw new BaseException(ConstantCode.SEARCH_CONTENT_IS_EMPTY);
         }
-        if (searchType == SearchType.TRANS.getValue() & StringUtils.isBlank(queryParam.getTransHash())) {
+        if (searchType == SearchType.TRANS.getValue() & StringUtils.isBlank(param.getTransHash())) {
             throw new BaseException(ConstantCode.SEARCH_CONTENT_IS_EMPTY);
         }
-        if (searchType == SearchType.USER.getValue() & StringUtils.isBlank(queryParam.getUserParam())) {
+        if (searchType == SearchType.USER.getValue() & StringUtils.isBlank(param.getUserParam())) {
             throw new BaseException(ConstantCode.SEARCH_CONTENT_IS_EMPTY);
         }
-        if (searchType == SearchType.CONTRACT.getValue() & StringUtils.isBlank(queryParam.getContractParam())) {
+        if (searchType == SearchType.CONTRACT.getValue()
+                & StringUtils.isBlank(param.getContractParam())) {
             throw new BaseException(ConstantCode.SEARCH_CONTENT_IS_EMPTY);
         }
     }

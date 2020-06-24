@@ -14,7 +14,7 @@
 package com.webank.webase.data.fetcher.search;
 
 import com.webank.webase.data.fetcher.search.entity.NormalSearchDto;
-import com.webank.webase.data.fetcher.search.entity.NormalSearchParam;
+import com.webank.webase.data.fetcher.search.entity.SearchListParam;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -28,14 +28,14 @@ public interface SearchMapper {
     /**
      * query search count.
      */
-    Integer countOfNormal(@Param("tableName") String tableName,
-            @Param("param") NormalSearchParam param);
+    Integer countOfNormal(@Param("tableParser") String tableParser,
+            @Param("tableBlock") String tableBlock, @Param("param") SearchListParam param);
 
     /**
      * query list of search by page.
      */
     List<NormalSearchDto> queryNormalList(@Param("tableParser") String tableParser,
-            @Param("tableTrans") String tableTrans, @Param("tableReceipt") String tableReceipt,
-            @Param("param") NormalSearchParam param);
+            @Param("tableBlock") String tableBlock, @Param("tableTrans") String tableTrans,
+            @Param("tableReceipt") String tableReceipt, @Param("param") SearchListParam param);
 
 }
