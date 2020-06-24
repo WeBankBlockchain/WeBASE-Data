@@ -13,29 +13,23 @@
  */
 package com.webank.webase.data.fetcher.search.entity;
 
-import javax.validation.constraints.NotNull;
+import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
+import java.math.BigInteger;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * param for normal search.
+ * param of query transaction list.
  */
 @Data
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class NormalSearchParam {
-    @NotNull
-    private Integer chainId;
-    @NotNull
-    private Integer groupId;
-    @NotNull
-    private Integer pageNumber = 0;
-    @NotNull
-    private Integer pageSize = 10;
-    @NotNull
-    private Integer searchType;
-    private String blockParam;
+@EqualsAndHashCode(callSuper = true)
+public class SearchListParam extends BaseQueryParam {
+    private BigInteger blockNumber;
+    private String blockHash;
     private String transHash;
     private String userParam;
     private String contractParam;

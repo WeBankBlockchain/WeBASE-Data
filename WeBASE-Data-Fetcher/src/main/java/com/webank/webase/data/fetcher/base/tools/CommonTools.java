@@ -201,4 +201,18 @@ public class CommonTools {
         }
         return Integer.parseInt(str.substring(2), 16);
     }
+
+    /**
+     * isNumeric.
+     * 
+     * @param s
+     * @return
+     */
+    public static boolean isNumeric(String s) {
+        if (s != null && !"".equals(s.trim())) {
+            return s.matches("^[0-9]*$");
+        } else {
+            return false;
+        }
+    }
 }
