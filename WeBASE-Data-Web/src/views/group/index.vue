@@ -1,43 +1,38 @@
 <template>
-    <div class="app-container">
-        <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" fit highlight-current-row>
-            <el-table-column label="群组编号" width="" align="center" :show-overflow-tooltip="true">
-                <template slot-scope="scope">
-                    <span class="link-type" @click="toOverview(scope.row)">{{ scope.row.groupId }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="群组名称" width="" align="center" :show-overflow-tooltip="true">
-                <template slot-scope="scope">
-                    <span class="link-type" @click="toOverview(scope.row)">{{ scope.row.groupId | groupName }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="节点数量" width="" align="center" :show-overflow-tooltip="true">
-                <template slot-scope="scope">
-                    <span>{{ scope.row.nodeCount }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" prop="created_at" label="创建时间" width="200">
-                <template slot-scope="scope">
-                    <i class="el-icon-time" />
-                    <span>{{ scope.row.createTime }}</span>
-                </template>
-            </el-table-column>
-        </el-table>
+    <div>
+        <content-head :headTitle="`链${chainId}`" :headSubTitle="'群组'" :icon="true"></content-head>
+        <div class="module-wrapper">
+            <div class="search-table">
+            <el-table :data="groupList" class="search-table-content" v-loading="loading">
+                    <el-table-column v-for="head in groupHead" :label="head.name" :key="head.enName" :prop="head.enName" :width="head.width" show-overflow-tooltip>
+                        <template slot-scope="scope">
+                            <template v-if="head.enName=='groupName'">
+                                <span @click="toOverview(scope.row)" class="link">{{scope.row[head.enName]}}</span>
+                            </template>
+                            <template v-else-if="head.enName=='groupId'">
+                                <span @click="toOverview(scope.row)" class="link">{{scope.row[head.enName]}}</span>
+                            </template>
+                            <template v-else>
+                                <span>{{scope.row[head.enName]}}</span>
+                            </template>
+                        </template>
+                    </el-table-column>
+
+                </el-table>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script>
-import { getGroupList } from "@/api/chain1";
+import contentHead from "@/components/contentHead";
+import { groupList } from "@/util/api";
 export default {
+    components: {
+        contentHead,
+    },
     filters: {
-        statusFilter(status) {
-            const statusMap = {
-                published: 'success',
-                draft: 'gray',
-                deleted: 'danger'
-            }
-            return statusMap[status]
-        },
         type(val) {
             if (val) {
                 return "sm2/sm3"
@@ -45,33 +40,80 @@ export default {
                 return "secp256k1/sha3"
             }
         },
-        groupName(val) {
-            return `group${val}`
+    },
+    computed: {
+        groupHead() {
+            let data = [
+                {
+                    enName: "groupId",
+                    name: "群组编号",
+                    width: ''
+                },
+                {
+                    enName: "groupName",
+                    name: "群组名称",
+                    width: ''
+                },
+                {
+                    enName: "nodeCount",
+                    name: "节点个数",
+                    width: ''
+                },
+                {
+                    enName: "genesisBlockHash",
+                    name: "创世块Hash",
+                    width: ''
+                },
+                {
+                    enName: "groupStatus",
+                    name: "群组状态",
+                    width: ''
+                },
+                {
+                    enName: "createTime",
+                    name: "创建时间",
+                    width: ''
+                }
+            ];
+            return data
         }
+    },
+    watch: {
+
     },
     data() {
         return {
-            list: null,
-            listLoading: true
+            loading: false,
+            chainId: '',
+            groupList: []
         }
     },
-    created() {
-        
+    mounted() {
+        if (this.$route.query.chainId) {
+            this.chainId = this.$route.query.chainId;
+            this.queryGrouplist()
+        }
+
     },
     methods: {
-        fetchData() {
-            this.listLoading = true
-            getGroupList().then(response => {
-                this.list = response.data.items
-                this.listLoading = false
-            })
+        queryGrouplist() {
+            this.loading = true
+            groupList(this.chainId)
+                .then(res => {
+                    this.loading = false;
+                    if (res.data.code === 0) {
+                        this.groupList = res.data.data
+                    } else {
+
+                    }
+                })
         },
         toOverview(row) {
             this.$router.push({
                 path: '/overview',
                 query: {
                     groupId: row.groupId,
-                    groupName: row.groupName
+                    chainId: row.chainId
                 }
             })
         }
