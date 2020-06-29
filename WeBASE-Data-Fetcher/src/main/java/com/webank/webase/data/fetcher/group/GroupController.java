@@ -173,6 +173,8 @@ public class GroupController extends BaseController {
         BlockListParam queryParam = new BlockListParam();
         queryParam.setChainId(chainId);
         queryParam.setGroupId(groupId);
+        queryParam.setBlockHash(blockHash);
+        queryParam.setBlockNumber(blockNumber);
         int count = groupService.countOfBlock(queryParam);
         if (count > 0) {
             Integer start =
@@ -208,6 +210,8 @@ public class GroupController extends BaseController {
         TransListParam queryParam = new TransListParam();
         queryParam.setChainId(chainId);
         queryParam.setGroupId(groupId);
+        queryParam.setTransHash(transHash);
+        queryParam.setBlockNumber(blockNumber);
         int count = groupService.countOfTrans(queryParam);
         if (count > 0) {
             Integer start =
