@@ -20,6 +20,7 @@ import com.webank.webase.data.fetcher.base.enums.TableName;
 import com.webank.webase.data.fetcher.base.exception.BaseException;
 import com.webank.webase.data.fetcher.base.tools.CommonTools;
 import com.webank.webase.data.fetcher.group.GroupService;
+import com.webank.webase.data.fetcher.search.entity.ElasticSearchDto;
 import com.webank.webase.data.fetcher.search.entity.NormalSearchDto;
 import com.webank.webase.data.fetcher.search.entity.NormalSearchParam;
 import com.webank.webase.data.fetcher.search.entity.SearchListParam;
@@ -30,6 +31,9 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -43,6 +47,8 @@ public class SearchService {
     private GroupService groupService;
     @Autowired
     private SearchMapper searchMapper;
+    @Autowired
+    private SearchRepository searchRepository;
 
     /**
      * query count of search.
@@ -72,6 +78,16 @@ public class SearchService {
             pageResponse.setTotalCount(count);
         }
         return pageResponse;
+    }
+    
+    public BasePageResponse findByKey(String key, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<ElasticSearchDto> pageList = searchRepository.findByUserAddressOrContractAddressLike(key, key, pageable);
+        BasePageResponse pageResponse = new BasePageResponse(ConstantCode.SUCCESS);
+        pageResponse.setData(pageList.getContent());
+        pageResponse.setTotalCount((int) pageList.getTotalElements());
+        return pageResponse;
+//        return new PageResult<ElasticSearchDto>(pageList.getTotalElements(), pageList.getContent());
     }
 
     /**
