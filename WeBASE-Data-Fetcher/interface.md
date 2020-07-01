@@ -202,7 +202,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/general/1/1
 | 2.4  | userCount     | int    | 否   | 用户数量                   |
 | 2.5  | contractCount | int    | 否   | 已部署智能合约数量         |
 | 2.6  | txnCount      | int    | 否   | 交易数量                   |
-| 2.7b | blockNumber   | int    | 否   | 当前块高                   |
+| 2.7  | blockNumber   | int    | 否   | 当前块高                   |
 
 ***2）出参示例***
 
@@ -734,17 +734,17 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/contractList/1/1/1/2
 
 ***1）入参表***
 
-| 序号 | 输入参数      | 类型       | 可为空 | 备注                                     |
-| ---- | ------------- | ---------- | ------ | ---------------------------------------- |
-| 1    | chainId       | Int        | 否     | 链编号                                   |
-| 2    | groupId       | Int        | 否     | 群组编号                                 |
-| 3    | pageSize      | Int        | 否     | 每页记录数                               |
-| 4    | pageNumber    | Int        | 否     | 当前页码                                 |
-| 5    | searchType    | Int        | 否     | 检索类型：1-区块；2-交易；3-用户；4-合约 |
-| 6    | blockNumber   | BigInteger | 是     | 块高，检索类型为1时必填                  |
-| 7    | transHash     | String     | 是     | 交易Hash，检索类型为2时必填              |
-| 8    | userParam     | String     | 是     | 用户名称或地址，检索类型为3时必填        |
-| 9    | contractParam | String     | 是     | 合约名称或地址，检索类型为4时必填        |
+| 序号 | 输入参数      | 类型   | 可为空 | 备注                                     |
+| ---- | ------------- | ------ | ------ | ---------------------------------------- |
+| 1    | chainId       | Int    | 否     | 链编号                                   |
+| 2    | groupId       | Int    | 否     | 群组编号                                 |
+| 3    | pageSize      | Int    | 否     | 每页记录数                               |
+| 4    | pageNumber    | Int    | 否     | 当前页码                                 |
+| 5    | searchType    | Int    | 否     | 检索类型：1-区块；2-交易；3-用户；4-合约 |
+| 6    | blockParam    | String | 是     | 块高或区块Hash，检索类型为1时必填        |
+| 7    | transHash     | String | 是     | 交易Hash，检索类型为2时必填              |
+| 8    | userParam     | String | 是     | 用户名称或地址，检索类型为3时必填        |
+| 9    | contractParam | String | 是     | 合约名称或地址，检索类型为4时必填        |
 
 ***2）入参示例***
 
@@ -767,31 +767,31 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/normal
 
 ***1）出参表***
 
-| 序号   | 输出参数         | 类型          |      | 备注                                         |
-| ------ | ---------------- | ------------- | ---- | -------------------------------------------- |
-| 1      | code             | Int           | 否   | 返回码，0：成功 其它：失败                   |
-| 2      | message          | String        | 否   | 描述                                         |
-| 3      | totalCount       | Int           | 否   | 总记录数                                     |
-| 4      | data             | List          | 是   | 区块列表                                     |
-| 4.1    |                  | Object        |      | 区块信息对象                                 |
-| 4.1.1  | transHash        | String        | 否   | 块hash                                       |
-| 4.1.2  | blockNumber      | BigInteger    | 否   | 块高                                         |
-| 4.1.3  | blockTimestamp   | LocalDateTime | 否   | 出块时间                                     |
-| 4.1.4  | userName         | String        | 否   | 用户名称                                     |
-| 4.1.5  | userAddress      | String        | 否   | 用户地址                                     |
-| 4.1.6  | userType         | Int           | 否   | 用户类型(0-正常，1-异常)                     |
-| 4.1.7  | contractName     | String        | 否   | 合约名称                                     |
-| 4.1.8  | contractAddress  | String        | 否   | 合约地址                                     |
-| 4.1.9  | interfaceName    | String        | 否   | 合约接口名                                   |
-| 4.1.10 | transType        | Int           | 否   | 交易类型(0-合约部署，1-接口调用)             |
-| 4.1.11 | transUnusualType | Int           | 否   | 交易解析类型(0-正常，1-异常合约，2-异常接口) |
-| 4.1.12 | input            | String        | 是   | 交易输入信息                                 |
-| 4.1.13 | output           | String        | 是   | 交易输出信息                                 |
-| 4.1.14 | logs             | String        | 是   | 交易event信息                                |
-| 4.1.15 | transDetail      | String        | 是   | 交易详情                                     |
-| 4.1.16 | receiptDetail    | String        | 是   | 交易回执详情                                 |
-| 4.1.17 | createTime       | LocalDateTime | 否   | 创建时间                                     |
-| 4.1.18 | modifyTime       | LocalDateTime | 否   | 修改时间                                     |
+| 序号   | 输出参数        | 类型          |      | 备注                                         |
+| ------ | --------------- | ------------- | ---- | -------------------------------------------- |
+| 1      | code            | Int           | 否   | 返回码，0：成功 其它：失败                   |
+| 2      | message         | String        | 否   | 描述                                         |
+| 3      | totalCount      | Int           | 否   | 总记录数                                     |
+| 4      | data            | List          | 是   | 区块列表                                     |
+| 4.1    |                 | Object        |      | 区块信息对象                                 |
+| 4.1.1  | transHash       | String        | 否   | 块hash                                       |
+| 4.1.2  | blockNumber     | BigInteger    | 否   | 块高                                         |
+| 4.1.3  | blockTimestamp  | LocalDateTime | 否   | 出块时间                                     |
+| 4.1.4  | userName        | String        | 否   | 用户名称                                     |
+| 4.1.5  | userAddress     | String        | 否   | 用户地址                                     |
+| 4.1.6  | userType        | Int           | 否   | 用户类型(0-正常，1-异常)                     |
+| 4.1.7  | contractName    | String        | 否   | 合约名称                                     |
+| 4.1.8  | contractAddress | String        | 否   | 合约地址                                     |
+| 4.1.9  | interfaceName   | String        | 否   | 合约接口名                                   |
+| 4.1.10 | transType       | Int           | 否   | 交易类型(0-合约部署，1-接口调用)             |
+| 4.1.11 | transParserType | Int           | 否   | 交易解析类型(0-正常，1-异常合约，2-异常接口) |
+| 4.1.12 | input           | String        | 是   | 交易输入信息                                 |
+| 4.1.13 | output          | String        | 是   | 交易输出信息                                 |
+| 4.1.14 | logs            | String        | 是   | 交易event信息                                |
+| 4.1.15 | transDetail     | String        | 是   | 交易详情                                     |
+| 4.1.16 | receiptDetail   | String        | 是   | 交易回执详情                                 |
+| 4.1.17 | createTime      | LocalDateTime | 否   | 创建时间                                     |
+| 4.1.18 | modifyTime      | LocalDateTime | 否   | 修改时间                                     |
 
 ***2）出参示例***
 
@@ -813,7 +813,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/normal
       "contractAddress": "0x970d7d42726e8f1069f6d9aa0aca10e950fcebf9",
       "interfaceName": "set(string)",
       "transType": 1,
-      "transUnusualType": 0,
+      "transParserType": 0,
       "input":"[{\"name\":\"n\",\"type\":\"string\",\"data\":\"test\"}]",
       "output":"",
       "logs":"{\"SetName(string)\":[[{\"name\":\"name\",\"type\":\"string\",\"data\":\"test\",\"indexed\":false}]]}",
@@ -836,3 +836,17 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/normal
     "data": {}
 }
 ```
+
+## 附录 
+
+### 1. 返回码信息列表
+
+| Code   | message                         | 描述             |
+| ------ | ------------------------------- | ---------------- |
+| 0      | success                         | 正常             |
+| 102000 | system exception                | 系统异常         |
+| 102001 | system exception                | 无效的前置编号   |
+| 102002 | database exception              | 数据库异常       |
+| 202101 | invalid group id                | 无效群组编号     |
+| 202201 | searchType not exists           | 搜索类型不存在   |
+| 202202 | search content can not be empty | 搜索内容不能为空 |

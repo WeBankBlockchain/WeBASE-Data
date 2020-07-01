@@ -45,10 +45,13 @@
 	</resultMap>
 
 	<select id="countOfNormal" resultType="java.lang.Integer">
-		select count(1) from ${tableName} where 1=1
+		select count(1) from ${tableParser} where 1=1
 		<if test="param.blockNumber != null">
 			and block_number = #{param.blockNumber}
 		</if>
+		<if test="param.blockHash != null and param.blockHash != ''">
+            and block_number = (select t.block_number as number from ${tableBlock} t where t.block_hash = #{param.blockHash})
+        </if>
 		<if test="param.transHash != null and param.transHash != ''">
             and trans_hash = #{param.transHash}
         </if>
@@ -57,7 +60,7 @@
             or user_address = #{param.userParam}
         </if>
         <if test="param.contractParam != null and param.contractParam != ''">
-            and contrac_name = #{param.contractParam}
+            and contract_name = #{param.contractParam}
             or contract_address = #{param.contractParam}
         </if>
 	</select>
@@ -71,6 +74,9 @@
 		<if test="param.blockNumber != null">
 			and a.block_number = #{param.blockNumber}
 		</if>
+		<if test="param.blockHash != null and param.blockHash != ''">
+            and a.block_number = (select block_number from ${tableBlock} where block_hash = #{param.blockHash})
+        </if>
 		<if test="param.transHash != null and param.transHash != ''">
             and a.trans_hash = #{param.transHash}
         </if>
@@ -79,13 +85,13 @@
             or a.user_address = #{param.userParam})
         </if>
         <if test="param.contractParam != null and param.contractParam != ''">
-            and (a.contrac_name = #{param.contractParam}
+            and (a.contract_name = #{param.contractParam}
             or a.contract_address = #{param.contractParam})
         </if>
 		order by a.block_number desc
-		<if test="param.pageNumber != null and param.pageSize != null">
-			limit #{param.pageNumber},#{param.pageSize}
-		</if>
+		<if test="param.start != null and param.pageSize != null">
+            limit #{param.start},#{param.pageSize}
+        </if>
 	</select>
 
 </mapper>

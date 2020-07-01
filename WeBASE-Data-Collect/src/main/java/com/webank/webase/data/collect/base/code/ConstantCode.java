@@ -62,9 +62,8 @@ public class ConstantCode {
     /* contract code */
     public static final RetCode CONTRACT_EXISTS = RetCode.mark(202401, "contract already exists");
     public static final RetCode INVALID_CONTRACT_ID = RetCode.mark(202402, "invalid contract id");
-    public static final RetCode INVALID_PARAM_INFO = RetCode.mark(202403, "invalid param info");
     public static final RetCode CONTRACT_NAME_REPEAT =
-            RetCode.mark(202404, "contract name cannot be repeated");
+            RetCode.mark(202403, "contract name cannot be repeated");
 
     /* task code */
     public static final RetCode TASK_RUNNING = RetCode.mark(202501, "task is still running");
