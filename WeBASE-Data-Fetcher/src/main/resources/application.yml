@@ -11,12 +11,11 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/webasedata?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
     username: "defaultAccount"
     password: "defaultPassword"
-  data:
-    elasticsearch:
-      cluster-name: my-application
-      cluster-nodes: 127.0.0.1:5300
-  main:
-    allow-bean-definition-overriding: true
+  elasticsearch:
+    rest:
+      uris: 127.0.0.1:9200
+      username:
+      password:
 
 # mybatis config
 mybatis:
@@ -25,6 +24,6 @@ mybatis:
  
 # log config
 logging:
-  config: classpath:log/log4j2-dev.xml
+  config: classpath:log/log4j2.xml
   level:
     com.webank.webase.data.fetcher: info

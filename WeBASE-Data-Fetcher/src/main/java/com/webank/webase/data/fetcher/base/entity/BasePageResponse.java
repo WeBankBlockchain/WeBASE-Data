@@ -26,7 +26,7 @@ public class BasePageResponse {
     private int code;
     private String message;
     private Object data = Collections.emptyList();
-    private int totalCount;
+    private long totalCount;
 
     public BasePageResponse() {}
 
@@ -35,7 +35,7 @@ public class BasePageResponse {
         this.message = retcode.getMessage();
     }
 
-    public BasePageResponse(RetCode retcode, Object data, int totalCount) {
+    public BasePageResponse(RetCode retcode, Object data, long totalCount) {
         this.code = retcode.getCode();
         this.message = retcode.getMessage();
         this.data = data;

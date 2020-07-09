@@ -57,9 +57,10 @@ public class SearchController extends BaseController {
                 Duration.between(startTime, Instant.now()).toMillis());
         return pageResponse;
     }
-    
-    @GetMapping(value = "keyword/{key}/{pageNumber}/{pageSize}")
-    public BasePageResponse findByKey(@PathVariable String key, @PathVariable Integer pageNumber, @PathVariable Integer pageSize) {
-        return searchService.findByKey(key, pageNumber, pageSize);
+
+    @GetMapping(value = "/keyword/{pageNumber}/{pageSize}/{keyword}")
+    public BasePageResponse findByKey(@PathVariable Integer pageNumber,
+            @PathVariable Integer pageSize, @PathVariable String keyword) {
+        return searchService.findByKey(pageNumber, pageSize, keyword);
     }
 }

@@ -11,35 +11,34 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.parser.entity;
+package com.webank.webase.data.fetcher.search.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.webank.webase.data.collect.base.enums.ParserUserType;
-import com.webank.webase.data.collect.base.enums.TransParserType;
-import com.webank.webase.data.collect.base.enums.TransType;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class TbParser {
+public class SearchDto {
     private Long id;
-    private String transHash;
     private BigInteger blockNumber = BigInteger.ZERO;
+    private String transHash;
     private String userName;
     private String userAddress;
-    private Integer userType = ParserUserType.NORMAL.getValue();
+    private Integer userType = 0;
     private String contractName;
     private String contractAddress;
     private String interfaceName;
-    private Integer transType = TransType.DEPLOY.getValue();
-    private Integer transParserType = TransParserType.NORMAL.getValue();
+    private Integer transType = 0;
+    private Integer transParserType = 0;
     private String input;
     private String output;
     private String logs;
+    private String transDetail;
+    private String receiptDetail;
     @JsonSerialize(using = LocalDateTimeSerializer.class) 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class) 
     private LocalDateTime blockTimestamp;

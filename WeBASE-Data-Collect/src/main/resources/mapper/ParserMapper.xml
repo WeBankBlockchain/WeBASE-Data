@@ -6,6 +6,8 @@
 <mapper namespace="com.webank.webase.data.collect.parser.ParserMapper">
     <resultMap id="parserMap"
         type="com.webank.webase.data.collect.parser.entity.TbParser">
+        <id column="id" javaType="java.lang.Long" jdbcType="BIGINT"
+            property="id" />
         <result column="trans_hash" javaType="java.lang.String"
             jdbcType="VARCHAR" property="transHash" />
         <result column="block_number" javaType="java.math.BigInteger"
@@ -40,7 +42,7 @@
             jdbcType="TIMESTAMP" property="modifyTime" />
     </resultMap>
 
-    <insert id="add">
+    <insert id="add" parameterType="com.webank.webase.data.collect.parser.entity.TbParser">
         insert into ${tableName}
         (trans_hash,block_number,user_name,user_address,user_type,contract_name,contract_address,interface_name,trans_type,
         trans_parser_type,input,output,logs,block_timestamp,create_time,modify_time)
@@ -48,6 +50,9 @@
         (#{parser.transHash},#{parser.blockNumber},#{parser.userName},#{parser.userAddress},#{parser.userType},
         #{parser.contractName},#{parser.contractAddress},#{parser.interfaceName},#{parser.transType},
         #{parser.transParserType},#{parser.input},#{parser.output},#{parser.logs},#{parser.blockTimestamp},now(),now())
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
     <update id="updateUnusualUser">
@@ -122,6 +127,10 @@
         <if test="start != null and pageSize != null">
             limit #{start},#{pageSize}
         </if>
+    </select>
+
+    <select id="queryByTxHash" resultMap="parserMap">
+        select * from ${tableName} where trans_hash = #{transHash}
     </select>
 
     <select id="queryUnusualTxHashByBin" resultType="java.lang.String">

@@ -5,7 +5,7 @@
 <!--对应mapper接口 -->
 <mapper namespace="com.webank.webase.data.fetcher.search.SearchMapper">
 	<resultMap id="parserMap"
-		type="com.webank.webase.data.fetcher.search.entity.NormalSearchDto">
+		type="com.webank.webase.data.fetcher.search.entity.SearchDto">
 		<id column="id" javaType="java.lang.Long" jdbcType="BIGINT"
             property="id" />
 		<result column="trans_hash" javaType="java.lang.String"
