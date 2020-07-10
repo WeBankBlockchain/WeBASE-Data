@@ -126,6 +126,89 @@ mysql -utest -p123456 -h localhost -P 3306
 mysql > create database webasedata;
 ```
 
+### 1.3. Elasticsearch部署
+
+此处以Centos安装为例。详情请查看[Elasticsearch官网](<https://www.elastic.co/cn/downloads/elasticsearch>)。
+
+#### ① 安装包下载
+
+下载[elasticsearch]()和[elasticsearch-analysis-ik](<https://github.com/medcl/elasticsearch-analysis-ik/releases>)，注意版本要对应。
+
+```shell
+# 上传elasticsearch安装包并解压
+tar -zxvf elasticsearch-7.8.0-linux-x86_64.tar.gz /software/
+# 在elasticsearch的plugins目录创建子目录ik，并将ik分词插件上传解压到该目录
+mkdir /software/elasticsearch-7.8.0/plugins/ik
+# 进入目录
+cd /software/elasticsearch-7.8.0/plugins/ik
+# 上传ik分词插件安装包并解压
+unzip elasticsearch-analysis-ik-7.8.0.zip
+```
+
+#### ② 启动
+
+在 ES 根目录下面，执行启动脚本文件：
+
+```
+cd /software/elasticsearch-7.8.0
+bin/elasticsearch -d
+```
+
+如果需要**设置用户名密码访问**，则进行以下操作：
+
+1. 在配置文件中开启x-pack验证, 修改config目录下面的elasticsearch.yml文件，在里面添加如下内容，并**重启**
+
+   ```
+   xpack.security.enabled: true
+   xpack.license.self_generated.type: basic
+   xpack.security.transport.ssl.enabled: true
+   ```
+
+2. 设置用户名和密码，需要为4个用户分别设置密码（elastic，kibana，logstash_system，beats_system）
+
+   ```
+   bin/elasticsearch-setup-passwords interactive
+   ```
+
+3. 如果需要修改密码，命令如下：
+
+   ```
+   curl -H "Content-Type:application/json" -XPOST -u elastic 'http://127.0.0.1:9200/_xpack/security/user/elastic/_password' -d '{ "password" : "123456" }'
+   ```
+
+#### ③ 验证
+
+打开浏览器，输入 <http://localhost:9200/> 地址，然后可以得到下面的信息：
+
+```shell
+{
+  "name" : "node-1",
+  "cluster_name" : "my-application",
+  "cluster_uuid" : "K194HmUgRW2uwE9Zv0IDDQ",
+  "version" : {
+    "number" : "7.8.0",
+    "build_flavor" : "default",
+    "build_type" : "tar",
+    "build_hash" : "757314695644ea9a1dc2fecd26d1a43856725e65",
+    "build_date" : "2020-06-14T19:35:50.234439Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.5.1",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+```
+
+#### ④ 停止
+
+查询进程并kill：
+
+```
+ps -ef|grep elasticsearch
+kill -9 pid
+```
+
 ## 2. 常见问题
 
 ### 2.1 脚本没权限
@@ -182,15 +265,18 @@ GRANT ALL PRIVILEGES ON *.* TO 'TestUser'@'%' IDENTIFIED BY '此处为TestUser�
 
 ## 3. application.yml配置项说明
 
-| 参数                                | 默认值                                 | 描述               |
-| ----------------------------------- | -------------------------------------- | ------------------ |
-| server.port                         | 5010                                   | 当前服务端口       |
-| server.servlet.context-path         | /WeBASE-Data-Fetcher                   | 当前服务访问目录   |
-| mybatis.typeAliasesPackage          | com.webank.webase.data.fetcher         | mapper类扫描路径   |
-| mybatis.mapperLocations             | classpath:mapper/*.xml                 | mybatis的xml路径   |
-| spring.datasource.driver-class-name | com.mysql.cj.jdbc.Driver               | mysql驱动          |
-| spring.datasource.url               | jdbc:mysql://127.0.0.1:3306/webasedata | mysql连接地址      |
-| spring.datasource.username          | defaultAccount                         | mysql账号          |
-| spring.datasource.password          | defaultPassword                        | mysql密码          |
-| logging.config                      | classpath:log/log4j2.xml               | 日志配置文件目录   |
-| logging.level                       | com.webank.webase.data.fetcher: info   | 日志扫描目录和级别 |
+| 参数                                | 默认值                                 | 描述                          |
+| ----------------------------------- | -------------------------------------- | ----------------------------- |
+| server.port                         | 5010                                   | 当前服务端口                  |
+| server.servlet.context-path         | /WeBASE-Data-Fetcher                   | 当前服务访问目录              |
+| mybatis.typeAliasesPackage          | com.webank.webase.data.fetcher         | mapper类扫描路径              |
+| mybatis.mapperLocations             | classpath:mapper/*.xml                 | mybatis的xml路径              |
+| spring.datasource.driver-class-name | com.mysql.cj.jdbc.Driver               | mysql驱动                     |
+| spring.datasource.url               | jdbc:mysql://127.0.0.1:3306/webasedata | mysql连接地址                 |
+| spring.datasource.username          | defaultAccount                         | mysql账号                     |
+| spring.datasource.password          | defaultPassword                        | mysql密码                     |
+| spring.elasticsearch.rest.uris      | 127.0.0.1:9200                         | elasticsearch服务的ip地址     |
+| spring.elasticsearch.rest.username  |                                        | elasticsearch用户名，可以为空 |
+| spring.elasticsearch.rest.password  |                                        | elasticsearch密码，可以为空   |
+| logging.config                      | classpath:log/log4j2.xml               | 日志配置文件目录              |
+| logging.level                       | com.webank.webase.data.fetcher: info   | 日志扫描目录和级别            |
