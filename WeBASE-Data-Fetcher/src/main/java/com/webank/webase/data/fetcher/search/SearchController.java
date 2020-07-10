@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -58,9 +59,10 @@ public class SearchController extends BaseController {
         return pageResponse;
     }
 
-    @GetMapping(value = "/keyword/{pageNumber}/{pageSize}/{keyword}")
+    @GetMapping(value = "/keyword/{pageNumber}/{pageSize}")
     public BasePageResponse findByKey(@PathVariable Integer pageNumber,
-            @PathVariable Integer pageSize, @PathVariable String keyword) {
+            @PathVariable Integer pageSize,
+            @RequestParam(value = "keyword", required = true) String keyword) {
         return searchService.findByKey(pageNumber, pageSize, keyword);
     }
 }

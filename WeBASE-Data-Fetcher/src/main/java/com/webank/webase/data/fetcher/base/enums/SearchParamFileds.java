@@ -31,7 +31,7 @@ package com.webank.webase.data.fetcher.base.enums;
  */
 public enum SearchParamFileds {
 
-//    blockNumber("blockNumber"), 
+    blockNumber("blockNumber"), 
     transHash("transHash"), 
     userName("userName"), 
     userAddress("userAddress"), 

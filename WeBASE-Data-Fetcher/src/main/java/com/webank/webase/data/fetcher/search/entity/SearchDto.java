@@ -13,10 +13,6 @@
  */
 package com.webank.webase.data.fetcher.search.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -39,13 +35,7 @@ public class SearchDto {
     private String logs;
     private String transDetail;
     private String receiptDetail;
-    @JsonSerialize(using = LocalDateTimeSerializer.class) 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class) 
     private LocalDateTime blockTimestamp;
-    @JsonSerialize(using = LocalDateTimeSerializer.class) 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class) 
     private LocalDateTime createTime;
-    @JsonSerialize(using = LocalDateTimeSerializer.class) 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class) 
     private LocalDateTime modifyTime;
 }

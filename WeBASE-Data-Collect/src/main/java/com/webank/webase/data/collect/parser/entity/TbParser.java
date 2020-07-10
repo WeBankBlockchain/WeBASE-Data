@@ -13,6 +13,7 @@
  */
 package com.webank.webase.data.collect.parser.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -40,12 +41,15 @@ public class TbParser {
     private String input;
     private String output;
     private String logs;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JsonSerialize(using = LocalDateTimeSerializer.class) 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class) 
     private LocalDateTime blockTimestamp;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JsonSerialize(using = LocalDateTimeSerializer.class) 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class) 
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @JsonSerialize(using = LocalDateTimeSerializer.class) 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class) 
     private LocalDateTime modifyTime;
