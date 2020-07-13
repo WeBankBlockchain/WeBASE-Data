@@ -15,25 +15,28 @@ package com.webank.webase.data.fetcher.search;
 
 import com.webank.webase.data.fetcher.base.code.ConstantCode;
 import com.webank.webase.data.fetcher.base.entity.BasePageResponse;
+import com.webank.webase.data.fetcher.base.enums.SearchParamFileds;
 import com.webank.webase.data.fetcher.base.enums.SearchType;
 import com.webank.webase.data.fetcher.base.enums.TableName;
 import com.webank.webase.data.fetcher.base.exception.BaseException;
 import com.webank.webase.data.fetcher.base.tools.CommonTools;
 import com.webank.webase.data.fetcher.group.GroupService;
-import com.webank.webase.data.fetcher.search.entity.ElasticSearchDto;
-import com.webank.webase.data.fetcher.search.entity.NormalSearchDto;
 import com.webank.webase.data.fetcher.search.entity.NormalSearchParam;
+import com.webank.webase.data.fetcher.search.entity.SearchDto;
 import com.webank.webase.data.fetcher.search.entity.SearchListParam;
 import java.math.BigInteger;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -43,12 +46,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class SearchService {
 
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
     @Autowired
     private GroupService groupService;
     @Autowired
     private SearchMapper searchMapper;
     @Autowired
-    private SearchRepository searchRepository;
+    private EsCurdService esCurdService;
 
     /**
      * query count of search.
@@ -73,21 +79,42 @@ public class SearchService {
             Integer start = Optional.ofNullable(param.getPageNumber())
                     .map(page -> (page - 1) * queryParam.getPageSize()).orElse(null);
             queryParam.setStart(start);
-            List<NormalSearchDto> searchList = queryNormalList(queryParam);
+            List<SearchDto> searchList = queryNormalList(queryParam);
             pageResponse.setData(searchList);
             pageResponse.setTotalCount(count);
         }
         return pageResponse;
     }
-    
-    public BasePageResponse findByKey(String key, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<ElasticSearchDto> pageList = searchRepository.findByUserAddressOrContractAddressLike(key, key, pageable);
+
+    public BasePageResponse findByKey(Integer pageNumber, Integer pageSize, String keyword) {
         BasePageResponse pageResponse = new BasePageResponse(ConstantCode.SUCCESS);
-        pageResponse.setData(pageList.getContent());
-        pageResponse.setTotalCount((int) pageList.getTotalElements());
+        try {
+            String indexName = getDbName();
+            boolean existIndex = esCurdService.existIndex(indexName);
+            if (!existIndex) {
+                log.error("findByKey fail. index not exists.");
+                throw new BaseException(ConstantCode.INDEX_NOT_EXISTS);
+            }
+            BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+            for (SearchParamFileds filed : SearchParamFileds.values()) {
+                boolQueryBuilder
+                        .should(QueryBuilders.wildcardQuery(filed.getValue(), "*" + keyword + "*"));
+            }
+            SearchResponse searchResponse = esCurdService.search(pageNumber, pageSize, indexName,
+                    new SearchSourceBuilder(), boolQueryBuilder);
+            List<Object> result = new LinkedList<>();
+            searchResponse.getHits().iterator().forEachRemaining(hit -> {
+                result.add(hit.getSourceAsMap());
+            });
+            pageResponse.setData(result);
+            pageResponse.setTotalCount(searchResponse.getHits().getTotalHits().value);
+        } catch (BaseException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("findByKey fail.", e);
+            throw new BaseException(ConstantCode.SEARCH_FAIL);
+        }
         return pageResponse;
-//        return new PageResult<ElasticSearchDto>(pageList.getTotalElements(), pageList.getContent());
     }
 
     /**
@@ -109,9 +136,9 @@ public class SearchService {
     /**
      * query search info list.
      */
-    private List<NormalSearchDto> queryNormalList(SearchListParam queryParam) throws BaseException {
+    private List<SearchDto> queryNormalList(SearchListParam queryParam) throws BaseException {
         try {
-            List<NormalSearchDto> listOfSearch = searchMapper.queryNormalList(
+            List<SearchDto> listOfSearch = searchMapper.queryNormalList(
                     TableName.PARSER.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
                     TableName.BLOCK.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
                     TableName.TRANS.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
@@ -152,5 +179,18 @@ public class SearchService {
                 & StringUtils.isBlank(param.getContractParam())) {
             throw new BaseException(ConstantCode.SEARCH_CONTENT_IS_EMPTY);
         }
+    }
+
+    /**
+     * get db name.
+     */
+    private String getDbName() {
+        if (StringUtils.isBlank(dbUrl)) {
+            log.error("fail getDbName. dbUrl is null");
+            throw new BaseException(ConstantCode.DB_EXCEPTION);
+        }
+        String subUrl = dbUrl.substring(0, dbUrl.indexOf("?"));
+        String dbName = subUrl.substring(subUrl.lastIndexOf("/") + 1);
+        return dbName;
     }
 }

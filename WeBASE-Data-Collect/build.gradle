@@ -22,7 +22,7 @@ repositories {
     mavenCentral()
 }
 
-def springboot_version="2.1.15.RELEASE"
+def springboot_version="2.3.1.RELEASE"
 List springboot = [
      "org.springframework.boot:spring-boot-starter-web:$springboot_version",
      "org.springframework.boot:spring-boot-starter-log4j2:$springboot_version",
@@ -33,7 +33,8 @@ List jaxb = [
      "javax.xml.bind:jaxb-api:2.3.0",
      "com.sun.xml.bind:jaxb-impl:2.3.0",
      "com.sun.xml.bind:jaxb-core:2.3.0",
-     "javax.activation:activation:1.1.1"
+     "javax.activation:activation:1.1.1",
+     "javax.validation:validation-api:2.0.1.Final"
 ]
 
 List web3jsdk = [
@@ -69,14 +70,22 @@ List test = [
 
 def log4j_version="2.13.3"
 List log4j = [
-        "org.apache.logging.log4j:log4j-api:$log4j_version",
-        "org.apache.logging.log4j:log4j-core:$log4j_version",
-        "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
-        "org.apache.logging.log4j:log4j-web:$log4j_version"
+    "org.apache.logging.log4j:log4j-api:$log4j_version",
+    "org.apache.logging.log4j:log4j-core:$log4j_version",
+    "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
+    "org.apache.logging.log4j:log4j-web:$log4j_version"
+]
+
+def elastic_version="7.8.0"
+List elasticsearch = [
+    "org.elasticsearch:elasticsearch:$elastic_version",
+    "org.elasticsearch.client:elasticsearch-rest-high-level-client:$elastic_version",
+    "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version",
+    "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
 ]
 
 dependencies {
-    compile springboot,jaxb,web3jsdk,swagger,jackson,mysql,log4j
+    compile springboot,jaxb,web3jsdk,swagger,jackson,mysql,log4j,elasticsearch
     compile "org.apache.commons:commons-lang3:3.8.1"
     compile "cn.hutool:hutool-all:4.1.19"
     compile "com.zaxxer:HikariCP:3.2.0"

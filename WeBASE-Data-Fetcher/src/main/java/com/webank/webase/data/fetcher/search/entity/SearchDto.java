@@ -15,19 +15,11 @@ package com.webank.webase.data.fetcher.search.entity;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Document(indexName = "mysql02")
-public class ElasticSearchDto {
-    @Id
-    private long id;
+public class SearchDto {
+    private Long id;
     private BigInteger blockNumber = BigInteger.ZERO;
     private String transHash;
     private String userName;

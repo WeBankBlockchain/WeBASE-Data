@@ -71,6 +71,19 @@ public class TableService {
             dropTableByName(enumName.getTableName(chainId, groupId));
         }
     }
+    
+    /**
+     * get db name.
+     */
+    public String getDbName() {
+        if (StringUtils.isBlank(dbUrl)) {
+            log.error("fail getDbName. dbUrl is null");
+            throw new BaseException(ConstantCode.DB_EXCEPTION);
+        }
+        String subUrl = dbUrl.substring(0, dbUrl.indexOf("?"));
+        String dbName = subUrl.substring(subUrl.lastIndexOf("/") + 1);
+        return dbName;
+    }
 
     /**
      * drop table by tableName.
@@ -96,16 +109,4 @@ public class TableService {
         log.info("end dropTableByName. tableName:{}", tableName);
     }
 
-    /**
-     * get db name.
-     */
-    private String getDbName() {
-        if (StringUtils.isBlank(dbUrl)) {
-            log.error("fail getDbName. dbUrl is null");
-            throw new BaseException(ConstantCode.SYSTEM_EXCEPTION);
-        }
-        String subUrl = dbUrl.substring(0, dbUrl.indexOf("?"));
-        String dbName = subUrl.substring(subUrl.lastIndexOf("/") + 1);
-        return dbName;
-    }
 }

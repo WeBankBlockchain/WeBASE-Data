@@ -39,5 +39,7 @@ public class ConstantCode {
             RetCode.mark(202201, "searchType not exists");
     public static final RetCode SEARCH_CONTENT_IS_EMPTY =
             RetCode.mark(202202, "search content can not be empty");
+    public static final RetCode INDEX_NOT_EXISTS = RetCode.mark(202203, "search index not exists");
+    public static final RetCode SEARCH_FAIL = RetCode.mark(202204, "search fail");
 
 }

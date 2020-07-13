@@ -28,7 +28,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ParserMapper {
 
-    void add(@Param("tableName") String tableName, @Param("parser") TbParser tbParser);
+    Integer add(@Param("tableName") String tableName, @Param("parser") TbParser tbParser);
 
     int updateUnusualUser(@Param("tableName") String tableName, @Param("userName") String userName,
             @Param("address") String address);
@@ -38,6 +38,9 @@ public interface ParserMapper {
 
     List<String> queryUnusualTxHashByBin(@Param("tableName") String tableName,
             @Param("contractBin") String contractBin);
+    
+    TbParser queryByTxHash(@Param("tableName") String tableName,
+            @Param("transHash") String transHash);
 
     List<String> queryUnusualTxHashMethodId(@Param("tableName") String tableName,
             @Param("methodId") String methodId);

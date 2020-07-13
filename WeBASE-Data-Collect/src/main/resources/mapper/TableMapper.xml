@@ -167,7 +167,7 @@
         CREATE TABLE IF NOT EXISTS ${tableName}(
         id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
         block_number bigint(25) NOT NULL COMMENT '块高',
-        sync_status tinyint(4) NOT NULL COMMENT '同步状态',
+        sync_status tinyint(4) NOT NULL COMMENT '同步状态：INIT(0), DOING(1), DONE(2), ERROR(3), TIMEOUT(4)',
         certainty tinyint(4) NOT NULL COMMENT '确定性',
         handle_item tinyint(4) NOT NULL COMMENT '处理项',
         create_time datetime DEFAULT NULL COMMENT '创建时间',

@@ -26,8 +26,7 @@ def springboot_version="2.3.1.RELEASE"
 List springboot = [
      "org.springframework.boot:spring-boot-starter-web:$springboot_version",
      "org.springframework.boot:spring-boot-starter-log4j2:$springboot_version",
-     "org.springframework.boot:spring-boot-starter-jdbc:$springboot_version",
-     "org.springframework.boot:spring-boot-starter-data-elasticsearch:$springboot_version"
+     "org.springframework.boot:spring-boot-starter-jdbc:$springboot_version"
 ]
 
 List jaxb = [
@@ -67,18 +66,18 @@ List test = [
 
 def log4j_version="2.13.3"
 List log4j = [
-        "org.apache.logging.log4j:log4j-api:$log4j_version",
-        "org.apache.logging.log4j:log4j-core:$log4j_version",
-        "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
-        "org.apache.logging.log4j:log4j-web:$log4j_version"
+    "org.apache.logging.log4j:log4j-api:$log4j_version",
+    "org.apache.logging.log4j:log4j-core:$log4j_version",
+    "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
+    "org.apache.logging.log4j:log4j-web:$log4j_version"
 ]
 
-def elastic_version="7.6.2"
+def elastic_version="7.8.0"
 List elasticsearch = [
-        "org.elasticsearch:elasticsearch:$elastic_version",
-        "org.elasticsearch.client:elasticsearch-rest-high-level-client:$elastic_version",
-        "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version",
-        "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
+    "org.elasticsearch:elasticsearch:$elastic_version",
+    "org.elasticsearch.client:elasticsearch-rest-high-level-client:$elastic_version",
+    "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version",
+    "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
 ]
 
 dependencies {

@@ -837,6 +837,102 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/normal
 }
 ```
 
+### 3.2 关键字检索
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/search/keyword/{pageNumber}/{pageSize}?keyword={keyword}**
+- 请求方式：POST
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数   | 类型   | 可为空 | 备注           |
+| ---- | ---------- | ------ | ------ | -------------- |
+| 1    | pageSize   | Int    | 否     | 每页记录数     |
+| 2    | pageNumber | Int    | 否     | 当前页码       |
+| 3    | keyword    | String | 否     | 要检索的关键字 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/search/keyword/1/2?keyword="测试"
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号   | 输出参数        | 类型          |      | 备注                                         |
+| ------ | --------------- | ------------- | ---- | -------------------------------------------- |
+| 1      | code            | Int           | 否   | 返回码，0：成功 其它：失败                   |
+| 2      | message         | String        | 否   | 描述                                         |
+| 3      | totalCount      | Int           | 否   | 总记录数                                     |
+| 4      | data            | List          | 是   | 区块列表                                     |
+| 4.1    |                 | Object        |      | 区块信息对象                                 |
+| 4.1.1  | transHash       | String        | 否   | 块hash                                       |
+| 4.1.2  | blockNumber     | BigInteger    | 否   | 块高                                         |
+| 4.1.3  | blockTimestamp  | LocalDateTime | 否   | 出块时间                                     |
+| 4.1.4  | userName        | String        | 否   | 用户名称                                     |
+| 4.1.5  | userAddress     | String        | 否   | 用户地址                                     |
+| 4.1.6  | userType        | Int           | 否   | 用户类型(0-正常，1-异常)                     |
+| 4.1.7  | contractName    | String        | 否   | 合约名称                                     |
+| 4.1.8  | contractAddress | String        | 否   | 合约地址                                     |
+| 4.1.9  | interfaceName   | String        | 否   | 合约接口名                                   |
+| 4.1.10 | transType       | Int           | 否   | 交易类型(0-合约部署，1-接口调用)             |
+| 4.1.11 | transParserType | Int           | 否   | 交易解析类型(0-正常，1-异常合约，2-异常接口) |
+| 4.1.12 | input           | String        | 是   | 交易输入信息                                 |
+| 4.1.13 | output          | String        | 是   | 交易输出信息                                 |
+| 4.1.14 | logs            | String        | 是   | 交易event信息                                |
+| 4.1.17 | createTime      | LocalDateTime | 否   | 创建时间                                     |
+| 4.1.18 | modifyTime      | LocalDateTime | 否   | 修改时间                                     |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "transParserType": 0,
+      "transHash": "0x9a3bba86cb2a314d63a6ffc9c92fc28274d944179f6ad538c529a601ac635121",
+      "contractAddress": "0x513657158171fc69017b52ea997bdf49cd0260ba",
+      "userName": "bob",
+      "userAddress": "0x7939e26070be44e6c4fc759ce55c6c8b166d94be",
+      "output": null,
+      "input": "[{\"name\":\"n\",\"type\":\"string\",\"data\":\"测试中\"}]",
+      "modifyTime": "2020-07-09 21:53:43",
+      "transType": 1,
+      "createTime": "2020-07-09 21:53:43",
+      "blockNumber": 296,
+      "contractName": "HelloWorld",
+      "blockTimestamp": "2020-07-09 21:53:27",
+      "id": 2992,
+      "userType": 0,
+      "interfaceName": "set(string)",
+      "logs": "{\"SetName(string)\":[[{\"name\":\"name\",\"type\":\"string\",\"data\":\"测试中\",\"indexed\":false}]]}"
+    }
+  ],
+  "totalCount": 1
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
 ## 附录 
 
 ### 1. 返回码信息列表

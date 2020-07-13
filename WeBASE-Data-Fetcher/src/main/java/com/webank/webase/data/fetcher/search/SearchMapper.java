@@ -13,7 +13,7 @@
  */
 package com.webank.webase.data.fetcher.search;
 
-import com.webank.webase.data.fetcher.search.entity.NormalSearchDto;
+import com.webank.webase.data.fetcher.search.entity.SearchDto;
 import com.webank.webase.data.fetcher.search.entity.SearchListParam;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -34,7 +34,7 @@ public interface SearchMapper {
     /**
      * query list of search by page.
      */
-    List<NormalSearchDto> queryNormalList(@Param("tableParser") String tableParser,
+    List<SearchDto> queryNormalList(@Param("tableParser") String tableParser,
             @Param("tableBlock") String tableBlock, @Param("tableTrans") String tableTrans,
             @Param("tableReceipt") String tableReceipt, @Param("param") SearchListParam param);
 

@@ -16,8 +16,8 @@ package com.webank.webase.data.collect.parser;
 import com.webank.webase.data.collect.base.enums.ParserUserType;
 import com.webank.webase.data.collect.base.enums.PrecompiledAddress;
 import com.webank.webase.data.collect.base.enums.TableName;
-import com.webank.webase.data.collect.base.enums.TransType;
 import com.webank.webase.data.collect.base.enums.TransParserType;
+import com.webank.webase.data.collect.base.enums.TransType;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
@@ -40,9 +40,11 @@ import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
 import com.webank.webase.data.collect.parser.entity.UserParserResult;
 import com.webank.webase.data.collect.receipt.ReceiptService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
+import com.webank.webase.data.collect.table.TableService;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.user.UserService;
 import com.webank.webase.data.collect.user.entity.TbUser;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +90,10 @@ public class ParserService {
     private ReceiptService receiptService;
     @Autowired
     private BlockTaskPoolService blockTaskPoolService;
+    @Autowired
+    private TableService tableService;
+    @Autowired
+    private EsCurdService esCurdService;
 
     public void reset(ResetInfo resetInfo) {
         blockTaskPoolService.resetDataByBlockNumber(resetInfo.getChainId(), resetInfo.getGroupId(),
@@ -155,8 +161,11 @@ public class ParserService {
                     TransactionReceipt.class);
             ContractParserResult contractResult = parserContract(chainId, groupId, receipt);
             // update parser info
-            parserMapper.updateUnusualContract(TableName.PARSER.getTableName(chainId, groupId),
-                    contractResult);
+            String tableName = TableName.PARSER.getTableName(chainId, groupId);
+            parserMapper.updateUnusualContract(tableName, contractResult);
+            // update es
+            TbParser tbParser = parserMapper.queryByTxHash(tableName, transHash);
+            esCurdService.update(tableService.getDbName(), transHash, tbParser);
         } catch (Exception ex) {
             log.error("fail updateUnusualContract. transHash:{}", transHash, ex);
         }
@@ -243,7 +252,8 @@ public class ParserService {
     /**
      * parserTransaction.
      */
-    public void parserTransaction(int chainId, int groupId, TbReceipt tbReceipt) {
+    public void parserTransaction(int chainId, int groupId, TbReceipt tbReceipt)
+            throws IOException {
         TransactionReceipt receipt =
                 JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(), TransactionReceipt.class);
         // parser user
@@ -260,9 +270,13 @@ public class ParserService {
     }
 
     @Transactional
-    public void dataAddAndUpdate(int chainId, int groupId, TbParser tbParser) {
-        parserMapper.add(TableName.PARSER.getTableName(chainId, groupId), tbParser);
+    public void dataAddAndUpdate(int chainId, int groupId, TbParser tbParser) throws IOException {
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
+        parserMapper.add(tableName, tbParser);
         transactionService.updateTransStatFlag(chainId, groupId, tbParser.getTransHash());
+        tbParser = parserMapper.queryByTxHash(tableName, tbParser.getTransHash());
+        esCurdService.insert(tableService.getDbName(), String.valueOf(tbParser.getTransHash()),
+                tbParser);
     }
 
     /**

@@ -8,6 +8,7 @@
 | 2    | WeBASE-Front 1.3.0或以上版本 |
 | 3    | MySQL5.6或以上版本  |
 | 4    | Java8或以上版本     |
+| 5 | Elasticsearch7.8.0及其对应elasticsearch-analysis-ik（分词插件） |
 
 
 ## 2. 注意事项
@@ -98,12 +99,25 @@ bash webase.sh 127.0.0.1 3306
 
 （2）修改服务配置，完整配置项说明请查看 [配置说明](./appendix.md#3-applicationyml配置项说明)
 ```shell
-修改服务端口：sed -i "s/5009/${your_server_port}/g" conf/application.yml
-修改数据库IP：sed -i "s/127.0.0.1/${your_db_ip}/g" conf/application.yml
-修改数据库端口：sed -i "s/3306/${your_db_port}/g" conf/application.yml
-修改数据库名称：sed -i "s/webasedata/${your_db_name}/g" conf/application.yml
-修改数据库用户：sed -i "s/defaultAccount/${your_db_account}/g" conf/application.yml
-修改数据库密码：sed -i "s/defaultPassword/${your_db_password}/g" conf/application.yml
+...
+server:
+  port: 5009
+  servlet:
+    context-path: /WeBASE-Data-Collect
+
+# database connection configuration
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/webasedata?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+    username: "defaultAccount"
+    password: "defaultPassword"
+  elasticsearch:
+    rest:
+      uris: 127.0.0.1:9200
+      username: 
+      password: 
+...
 ```
 
 ### 6.2 服务启停
