@@ -33,11 +33,10 @@
     </resultMap>
 
     <insert id="add" parameterType="com.webank.webase.data.collect.node.entity.TbNode">
-        insert ignore into tb_node
+        replace into tb_node
         (node_id,chain_id,group_id,node_ip,p2p_port,description,create_time,modify_time)
         values(#{nodeId},#{chainId},#{groupId},#{nodeIp},#{p2pPort},#{description},NOW(),NOW())
     </insert>
-
 
     <select id="getCount"
         parameterType="com.webank.webase.data.collect.node.entity.NodeParam"

@@ -27,7 +27,7 @@
     </resultMap>
 
     <insert id="add">
-        insert ignore into ${tableName}
+        insert into ${tableName}
         (block_hash,block_number,block_timestamp,trans_count,sealer_index,sealer,create_time,modify_time)
         values
         (#{block.blockHash},#{block.blockNumber},#{block.blockTimestamp},#{block.transCount},#{block.sealerIndex},#{block.sealer},NOW(),NOW())
