@@ -23,7 +23,7 @@
     </resultMap>
 
     <insert id="add">
-        insert ignore into
+        insert into
         ${tableName}(trans_hash,block_number,receipt_detail,block_timestamp,create_time,modify_time)
         values(#{trans.transHash},#{trans.blockNumber},#{trans.receiptDetail},#{trans.blockTimestamp},NOW(),NOW())
     </insert>

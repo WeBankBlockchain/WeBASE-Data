@@ -843,7 +843,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/normal
 
 - 网络传输协议：使用HTTP协议
 - 请求地址：**/search/keyword/{pageNumber}/{pageSize}?keyword={keyword}**
-- 请求方式：POST
+- 请求方式：GET
 - 返回格式：JSON
 
 #### 请求参数
@@ -887,6 +887,8 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/keyword/1/2?keyword="测试"
 | 4.1.12 | input           | String        | 是   | 交易输入信息                                 |
 | 4.1.13 | output          | String        | 是   | 交易输出信息                                 |
 | 4.1.14 | logs            | String        | 是   | 交易event信息                                |
+| 4.1.15 | chainId         | Int           | 否   | 链编号                                       |
+| 4.1.16 | groupId         | Int           | 否   | 群组编号                                     |
 | 4.1.17 | createTime      | LocalDateTime | 否   | 创建时间                                     |
 | 4.1.18 | modifyTime      | LocalDateTime | 否   | 修改时间                                     |
 
@@ -901,22 +903,24 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/keyword/1/2?keyword="测试"
   "data": [
     {
       "transParserType": 0,
-      "transHash": "0x9a3bba86cb2a314d63a6ffc9c92fc28274d944179f6ad538c529a601ac635121",
+      "transHash": "0xd33a6343ecee98cd6804456d34299d893258e5e3ebc2b8d6d57dc1fdc9a34b43",
+      "groupId": 1,
       "contractAddress": "0x513657158171fc69017b52ea997bdf49cd0260ba",
       "userName": "bob",
       "userAddress": "0x7939e26070be44e6c4fc759ce55c6c8b166d94be",
       "output": null,
-      "input": "[{\"name\":\"n\",\"type\":\"string\",\"data\":\"测试中\"}]",
-      "modifyTime": "2020-07-09 21:53:43",
+      "input": "[{\"name\":\"n\",\"type\":\"string\",\"data\":\"试验\"}]",
+      "modifyTime": "2020-07-14 17:51:26",
       "transType": 1,
-      "createTime": "2020-07-09 21:53:43",
-      "blockNumber": 296,
+      "chainId": 1,
+      "createTime": "2020-07-14 17:51:26",
+      "blockNumber": 312,
       "contractName": "HelloWorld",
-      "blockTimestamp": "2020-07-09 21:53:27",
-      "id": 2992,
+      "blockTimestamp": "2020-07-14 17:51:12",
+      "id": 312,
       "userType": 0,
       "interfaceName": "set(string)",
-      "logs": "{\"SetName(string)\":[[{\"name\":\"name\",\"type\":\"string\",\"data\":\"测试中\",\"indexed\":false}]]}"
+      "logs": "{\"SetName(string)\":[[{\"name\":\"name\",\"type\":\"string\",\"data\":\"试验\",\"indexed\":false}]]}"
     }
   ],
   "totalCount": 1

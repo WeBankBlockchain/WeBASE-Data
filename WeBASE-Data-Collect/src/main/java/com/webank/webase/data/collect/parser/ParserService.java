@@ -33,6 +33,7 @@ import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.parser.entity.ContractParserResult;
+import com.webank.webase.data.collect.parser.entity.EsParser;
 import com.webank.webase.data.collect.parser.entity.ResetInfo;
 import com.webank.webase.data.collect.parser.entity.TbParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
@@ -165,7 +166,11 @@ public class ParserService {
             parserMapper.updateUnusualContract(tableName, contractResult);
             // update es
             TbParser tbParser = parserMapper.queryByTxHash(tableName, transHash);
-            esCurdService.update(tableService.getDbName(), transHash, tbParser);
+            EsParser esParser = new EsParser();
+            BeanUtils.copyProperties(tbParser, esParser);
+            esParser.setChainId(chainId);
+            esParser.setGroupId(groupId);
+            esCurdService.update(tableService.getDbName(), transHash, esParser);
         } catch (Exception ex) {
             log.error("fail updateUnusualContract. transHash:{}", transHash, ex);
         }
@@ -275,8 +280,12 @@ public class ParserService {
         parserMapper.add(tableName, tbParser);
         transactionService.updateTransStatFlag(chainId, groupId, tbParser.getTransHash());
         tbParser = parserMapper.queryByTxHash(tableName, tbParser.getTransHash());
+        EsParser esParser = new EsParser();
+        BeanUtils.copyProperties(tbParser, esParser);
+        esParser.setChainId(chainId);
+        esParser.setGroupId(groupId);
         esCurdService.insert(tableService.getDbName(), String.valueOf(tbParser.getTransHash()),
-                tbParser);
+                esParser);
     }
 
     /**
