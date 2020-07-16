@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <content-head :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}`" :icon="true"></content-head>
+        <content-head :headTitle="`${chainName}`" @changGroup="changGroup"></content-head>
         <div style="margin: 5px;">
             <div style="margin:10px 10px 6px 10px;">
                 <el-row>
@@ -59,14 +59,82 @@
                 </el-table-column>
             </el-table>
         </div>
+        <div style="min-width: 540px;margin: 8px 8px 0px 9px;">
+            <el-row :gutter="16">
+                <el-col :xs='24' :sm="24" :md="12" :lg="12" :xl="12">
+                    <div class="overview-wrapper">
+                        <p>
+                            <span class="overview-title">区块</span>
+                            <span class="overview-more cursor-pointer" @click="goRouter('blocks')">更多>>></span>
+                        </p>
+                        <div class="overview-item-base" v-loading="loadingBlock">
+                            <div class="block-item font-color-2e384d" v-for="item in blockData" :key='item.blockNumber'>
+                                <div class="block-amount" style="padding-bottom: 7px;">
+                                    <span>
+                                        <span class="link" @click="goRouter('blocks', item.blockNumber)">块高 {{item.blockNumber}}</span>
+                                    </span>
+                                    <span class="color-8798AD">{{item.blockTimestamp}}</span>
+                                </div>
+                                <div>
+                                    <div class="block-miner">
+                                        <span>出块者</span>
+                                        <p :title="`${item.sealer}`">{{item.sealer}}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="block-trans" @click="goRouter('blocks',item.blockNumber)">
+                                            <span>{{item.transCount}}</span>
+                                            <span>txns</span>
+                                        </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </el-col>
+                <el-col :xs='24' :sm="24" :md="12" :lg="12" :xl="12">
+                    <div class="overview-wrapper">
+                        <p>
+                            <span class="overview-title">交易</span>
+                            <span class="overview-more cursor-pointer" @click="goRouter('transactions')">更多>>></span>
+                        </p>
+                        <div class="overview-item-base" v-loading="loadingTransaction">
+                            <div class="block-item font-color-2e384d" v-for="item in transactionList" :key='item.transHash'>
+                                <div class="block-amount">
+                                    <p class="trans-hash" :title="`${item.transHash}`">
+                                        <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(item.transHash)" title='复制'></i>
+                                        
+                                        <span class="link" @click="goRouter('transactions', item.transHash)">{{item.transHash}} </span>
+                                    </p>
+                                    <p class="trans-address color-8798AD">
+                                        <span>
+                                            <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(JSON.parse(item.receiptDetail)['from'])" title='复制'></i>
+                                            {{splitAddress(JSON.parse(item.receiptDetail)['from'])}}
+                                        </span>
+                                        <img :src="sRight" :alt="$t('text.arrow')">
+                                        <span>
+                                            <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(JSON.parse(item.receiptDetail)['to'])" title='复制'></i>
+                                            {{splitAddress(JSON.parse(item.receiptDetail)['to'])}}
+                                        </span>
+                                    </p>
+
+                                </div>
+                                <p class="color-8798AD text-right">{{item.blockTimestamp}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+        </div>
     </div>
 </template>
 
 <script>
-import { groupGeneral, groupTransDaily, groupNodeList, blockList } from "@/util/api";
+import { groupGeneral, groupTransDaily, groupNodeList, blockList, transList } from "@/util/api";
 import Chart from "@/components/Charts/BaseLine"
 import contentHead from "@/components/contentHead";
 import { changWeek, numberFormat, unique } from "@/util/util";
+import sRight from "@/../static/image/s-right.png";
 export default {
     name: 'overview',
 
@@ -80,6 +148,7 @@ export default {
 
     data() {
         return {
+            sRight: sRight,
             nodeList: [],
             chainId: '',
             groupId: '',
@@ -97,12 +166,7 @@ export default {
             loadingNodes: false,
             loadingBlock: false,
             loadingTransaction: false,
-        }
-    },
-
-    computed: {
-        detailsList() {
-            let data = [
+            detailsList: [
                 {
                     label: "用户数量",
                     name: "userCount",
@@ -131,9 +195,14 @@ export default {
                     icon: "#wbs-icon-transation",
                     bg: 'transation-bg'
                 }
-            ]
-            return data
-        },
+            ],
+            chainName: '',
+            blockData: [],
+            transactionList: []
+        }
+    },
+
+    computed: {
         nodeHead() {
             let data = [
                 {
@@ -162,26 +231,33 @@ export default {
     },
 
     watch: {
+
     },
 
     created() {
     },
 
     mounted() {
-        if (this.$route.query.chainId || this.$route.query.groupId) {
-            this.chainId = this.$route.query.chainId
-            this.groupId = this.$route.query.groupId
-        }
-        this.querygroupGeneral()
-        this.queryNodeList()
-        this.$nextTick(function () {
-            this.chartStatistics.chartSize.width = this.$refs.chart.offsetWidth;
-            this.chartStatistics.chartSize.height = this.$refs.chart.offsetHeight;
-            this.queryGroupTransDaily();
-        });
+
     },
 
     methods: {
+        changGroup(val) {
+            if (this.$route.params.chainId) {
+                this.chainName = this.$route.params.chainName
+                this.chainId = this.$route.params.chainId
+                this.groupId = val
+            }
+            this.querygroupGeneral()
+            this.queryNodeList()
+            this.getBlockList()
+            this.getTransaction()
+            this.$nextTick(function () {
+                this.chartStatistics.chartSize.width = this.$refs.chart.offsetWidth;
+                this.chartStatistics.chartSize.height = this.$refs.chart.offsetHeight;
+                this.queryGroupTransDaily();
+            });
+        },
         querygroupGeneral() {
             groupGeneral(this.chainId, this.groupId)
                 .then(res => {
@@ -209,6 +285,8 @@ export default {
                 .then(res => {
                     if (res.data.code === 0) {
                         let resData = changWeek(res.data.data);
+                        this.chartStatistics.date = []
+                        this.chartStatistics.dataArr = []
                         for (let i = 0; i < resData.length; i++) {
                             this.chartStatistics.date.push(resData[i].day);
                             this.chartStatistics.dataArr.push(
@@ -224,6 +302,69 @@ export default {
                         });
                     }
                 })
+        },
+        getBlockList: function () {
+            this.loadingBlock = true;
+            let reqData = {
+                chainId: this.chainId,
+                groupId: this.groupId,
+                pageNumber: 1,
+                pageSize: 6
+            },
+                reqQuery = {};
+            blockList(reqData, reqQuery)
+                .then(res => {
+                    this.loadingBlock = false;
+                    if (res.data.code === 0) {
+                        this.blockData = res.data.data;
+                    } else {
+
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.$message({
+                        message: '系统错误',
+                        type: "error",
+                        duration: 2000
+                    });
+
+                });
+        },
+        getTransaction: function () {
+            this.loadingTransaction = true;
+            let reqData = {
+                chainId: this.chainId,
+                groupId: this.groupId,
+                pageNumber: 1,
+                pageSize: 6
+            },
+                reqQuery = {};
+            transList(reqData, reqQuery)
+                .then(res => {
+                    this.loadingTransaction = false;
+                    if (res.data.code === 0) {
+                        this.transactionList = res.data.data;
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.$message({
+                        message: '系统错误',
+                        type: "error",
+                        duration: 2000
+                    });
+
+                });
         },
         goDetailRouter(item) {
             let name = item.name;
@@ -290,11 +431,241 @@ export default {
             }
             return transString;
         },
+        goRouter: function (val, num) {
+            switch (val) {
+                case "blocks":
+                    this.$router.push({
+                        path: "/blockInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId,
+                            blockNumber: num
+                        }
+                    });
+                    break;
+
+                case "transactions":
+                    this.$router.push({
+                        path: "/transactionInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId,
+                            transHash: num
+                        }
+                    });
+                    break;
+            }
+        },
+        copyNodeIdKey: function (val) {
+            if (!val) {
+                this.$message({
+                    type: "fail",
+                    showClose: true,
+                    message: this.$t("text.copyErrorMsg"),
+                    duration: 2000
+                });
+            } else {
+                this.$copyText(val).then(e => {
+                    this.$message({
+                        type: "success",
+                        showClose: true,
+                        message: this.$t("text.copySuccessMsg"),
+                        duration: 2000
+                    });
+                });
+            }
+        },
+        splitAddress(val) {
+            if (!val) return;
+            var startStr = '', endStr = '', str = '';
+            startStr = val.substring(0, 8);
+            endStr = val.substring(val.length - 4);
+            str = `${startStr}...${endStr}`;
+            return str;
+        }
     }
 }
 </script>
 
 <style scoped>
+.node-bg {
+    background: linear-gradient(to top right, #47befa, #37eef2);
+}
+.contract-bg {
+    background: linear-gradient(to top right, #466dff, #30a7ff);
+}
+.block-bg {
+    background: linear-gradient(to top right, #736aff, #b287ff);
+}
+.transation-bg {
+    background: linear-gradient(to top right, #ff6e9a, #ffa895);
+}
+.over-view-wrapper {
+    background: #f7f7f7;
+}
+.amount-wrapper {
+    margin: 30px 30px 0 31px;
+}
+.font-12 {
+    font-size: 12px;
+    color: #9da2ab;
+}
+.part1-content {
+    display: flex;
+    background: #f7f7f7;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+.split-line {
+    margin-left: 22px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    margin-right: 20px;
+    opacity: 0.25;
+}
+.overview-number {
+    margin-top: 20px;
+    margin-left: 20px;
+    padding: 20px;
+}
+.part1-content-amount {
+    overflow: auto;
+    min-width: 112px;
+}
+.part2-title {
+    padding: 22px 31px 26px 32px;
+}
+.part2-title::after {
+    display: block;
+    content: "";
+    clear: both;
+}
+.part2-title-left {
+    float: left;
+    font-size: 16px;
+    color: #000e1f;
+    font-weight: bold;
+}
+.part2-title-right {
+    float: right;
+    font-size: 12px;
+    color: #727476;
+    padding: 2px 12px;
+    border-radius: 20px;
+    background: #f6f6f6;
+}
+.part3-title {
+    padding: 40px 60px 40px 40px;
+}
+.part3-title::after {
+    display: block;
+    content: "";
+    clear: both;
+}
+.more-content {
+    font-size: 14px;
+    color: #0db1c1;
+    cursor: pointer;
+}
+.part3-table-content {
+    width: 100%;
+    padding: 0 39px 48px 40px;
+    font-size: 12px;
+}
+.part3-table-content >>> th,
+.part3-table-content >>> td {
+    padding: 8px 0;
+}
+.part1-details-bottom {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+.part1-details-arrow-right {
+    position: relative;
+    top: 4px;
+}
+.search-table-content {
+    width: 100%;
+}
+.search-table-content >>> th {
+    background: #fafafa;
+    color: #2e384d;
+}
+.search-table-content >>> th,
+.search-table-content >>> td {
+    font-size: 14px;
+}
+.overview-wrapper {
+    background: #fff;
+    font-size: 15px;
+    box-shadow: 0 4px 12px 0 #dfe2e9;
+    border-radius: 2px;
+}
+.overview-wrapper > p {
+    padding: 26px 18px 0px 22px;
+    border-bottom: 1px solid #f2f2f2;
+    display: flex;
+    justify-content: space-between;
+}
+.overview-title {
+    font-size: 15px;
+    color: #2e384d;
+    padding-bottom: 22px;
+    border-bottom: 2px solid #2e384d;
+}
+.overview-more {
+    font-size: 14px;
+    color: #2fcdd1;
+}
+.block-item {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+.block-amount {
+    display: flex;
+    flex-flow: column;
+}
+.overview-item-base {
+    margin: 26px 18px 30px 22px;
+}
+.block-miner {
+    display: flex;
+    flex-flow: row wrap;
+}
+.block-miner > p {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 10px;
+}
+.trans-hash {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.node-ip {
+    color: #0db1c1;
+}
+.block-trans {
+    display: inline-block;
+    padding: 0 2px;
+    background-color: #f6f7f8;
+    color: #0db1c1;
+    cursor: pointer;
+}
+.trans-address span {
+    display: inline-block;
+    max-width: 150px;
+}
+.trans-address img {
+    vertical-align: middle;
+}
 .overview-item {
     display: inline-block;
     width: calc(49% - 15px);
@@ -306,7 +677,7 @@ export default {
     box-shadow: 0 4px 12px 0 #dfe2e9;
     border-radius: 2px;
     box-sizing: border-box;
-    /* cursor: pointer; */
+    cursor: pointer;
 }
 .overview-item-img {
     display: inline-block;
@@ -419,42 +790,5 @@ export default {
     .overview-item:nth-child(2) {
         margin: 8px 15px 16px 0;
     }
-}
-.node-bg {
-    background: linear-gradient(to top right, #47befa, #37eef2);
-}
-.contract-bg {
-    background: linear-gradient(to top right, #466dff, #30a7ff);
-}
-.block-bg {
-    background: linear-gradient(to top right, #736aff, #b287ff);
-}
-.transation-bg {
-    background: linear-gradient(to top right, #ff6e9a, #ffa895);
-}
-.over-view-wrapper {
-    background: #f7f7f7;
-}
-.part2-title {
-    padding: 22px 31px 26px 32px;
-}
-.part2-title::after {
-    display: block;
-    content: "";
-    clear: both;
-}
-.part2-title-left {
-    float: left;
-    font-size: 16px;
-    color: #000e1f;
-    font-weight: bold;
-}
-.part2-title-right {
-    float: right;
-    font-size: 12px;
-    color: #727476;
-    padding: 2px 12px;
-    border-radius: 20px;
-    background: #f6f6f6;
 }
 </style>

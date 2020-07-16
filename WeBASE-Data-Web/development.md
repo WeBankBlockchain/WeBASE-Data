@@ -25,7 +25,7 @@ nodejs下载地址：https://nodejs.org/en/download/
 
 > 切换到项目目录：
 
-    cd D:\project\WeBASE-Web
+    cd D:\project\WeBASE-Data\WeBASE-Data-Web
 
 > 使用命令：
 

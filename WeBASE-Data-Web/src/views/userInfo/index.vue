@@ -18,11 +18,16 @@
         <content-head :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}(用户列表)`" :icon="true"></content-head>
         <div class="module-wrapper">
             <div class="search-part">
-                <!-- <div class="search-part-right">
-                    <el-input :placeholder="$t('placeholder.contractListSearch')" v-model="contractData" class="input-with-select">
+                <div class="search-part-left-bg">
+                    <span>共</span>
+                    <span>{{numberFormat(total, 0, ".", ",")}}</span>
+                    <span>条</span>
+                </div>
+                <div class="search-part-right">
+                    <el-input placeholder="请输入用户名或地址" v-model="userParam" @keyup.enter.native="search" clearable @clear="clearText" class="input-with-select">
                         <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                     </el-input>
-                </div> -->
+                </div>
             </div>
             <div class="search-table">
                 <el-table :data="contractList" tooltip-effect="dark" v-loading="loading">
@@ -51,6 +56,7 @@
 import contentHead from "@/components/contentHead";
 import { userList } from "@/util/api"
 import clip from "@/util/clipboard";
+import { numberFormat } from "@/util/util";
 export default {
     name: "oldContract",
     components: { contentHead },
@@ -64,7 +70,9 @@ export default {
             total: 0,
             disabled: false,
             chainId: '',
-            groupId: ''
+            groupId: '',
+            userParam: '',
+            numberFormat: numberFormat,
         }
     },
     mounted() {
@@ -72,17 +80,27 @@ export default {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId
         }
+        if(this.$route.query.userParam ){
+            this.userParam = this.$route.query.userParam
+        }
         this.queryUser()
     },
     methods: {
+        clearText(){
+            this.queryUser()
+        },
         queryUser() {
             let reqData = {
                 chainId: this.chainId,
                 groupId: this.groupId,
                 pageNumber: this.currentPage,
-                pageSize: this.pageSize
-            }
-            userList(reqData,{}).then(res => {
+                pageSize: this.pageSize,
+
+            }, reqQuery = {
+                userParam: this.userParam
+            };
+            
+            userList(reqData, reqQuery).then(res => {
                 if (res.data.code == 0) {
                     this.contractList = res.data.data || [];
                     this.total = res.data.totalCount || 0;
@@ -105,16 +123,7 @@ export default {
             clip(text, event)
         },
         search() {
-            if (this.contractData && this.contractData.length && this.contractData.length < 20) {
-                this.contractName = this.contractData;
-                this.contractAddress = ""
-            } else if (this.contractData && this.contractData.length && (this.contractData.length > 20 || this.contractData.length == 20)) {
-                this.contractName = "";
-                this.contractAddress = this.contractData;
-            } else {
-                this.contractName = "";
-                this.contractAddress = ""
-            }
+
             this.currentPage = 1
             this.queryUser();
         },

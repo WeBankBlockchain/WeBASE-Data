@@ -18,19 +18,19 @@
         <v-content-head :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}(区块列表)`" :icon="true"></v-content-head>
         <div class="module-wrapper">
             <div class="search-part">
-                <!-- <div class="search-part-left-bg">
-                    <span>{{this.$t("text.total")}}</span>
+                <div class="search-part-left-bg">
+                    <span>共</span>
                     <span>{{numberFormat(total, 0, ".", ",")}}</span>
-                    <span>{{this.$t("text.tiao")}}</span>
-                </div> -->
-                <!-- <div class="search-part-right">
-                    <el-input :placeholder="$t('inputText.blockInput')" v-model="searchKey.value" class="input-with-select" @clear="clearText">
+                    <span>条</span>
+                </div>
+                <div class="search-part-right">
+                    <el-input :placeholder="$t('inputText.blockInput')" v-model.trim="searchKey.value" @keyup.enter.native="search" class="input-with-select" clearable @clear="clearText">
                         <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                     </el-input>
-                </div> -->
+                </div>
             </div>
             <div class="search-table">
-                <el-table :data="blockData" class="block-table-content" v-loading="loading" ref="refTable">
+                <el-table :data="blockData" class="block-table-content" v-loading="loading" @row-click="clickTable" ref="refTable">
                     <el-table-column prop="blockNumber" label="块高" width="120" align="center">
                         <template slot-scope="scope">
                             <span >{{scope.row.blockNumber}}</span>
@@ -101,6 +101,10 @@ export default {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId
         }
+        if (this.$route.query.blockNumber) {
+            this.searchKey.key = "blockNumber";
+            this.searchKey.value = this.$route.query.blockNumber;
+        }
         this.getBlockList();
     },
     methods: {
@@ -129,10 +133,7 @@ export default {
                     pageSize: this.pageSize
                 },
                 reqQuery = {};
-            if (this.$route.query.blockNumber) {
-                this.searchKey.key = "blockNumber";
-                this.searchKey.value = this.$route.query.blockNumber;
-            }
+            
             if(this.searchKey.value){
                 if(this.searchKey.value.length===66){
                     reqQuery.blockHash = this.searchKey.value;
@@ -179,6 +180,23 @@ export default {
         },
         handleCopy(text, event) {
             clip(text, event)
+        },
+        link: function(val) {
+            this.$router.push({
+                path: "/transactionInfo",
+                query: {
+                    chainId: this.chainId,
+                    groupId: this.groupId,
+                    blockNumber: val
+                }
+            });
+        },
+        clickTable: function(row, column, $event) {
+            let nodeName = $event.target.nodeName;
+            if (nodeName === "I") {
+                return
+            }
+            this.link(row.blockNumber)
         },
     }
 };

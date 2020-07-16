@@ -18,19 +18,24 @@
         <content-head :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}(交易列表)`" :icon="true"></content-head>
         <div class="module-wrapper">
             <div class="search-part">
-                <!-- <div class="search-part-left-bg">
-                    <span>{{$t('text.total')}}</span>
+                <div class="search-part-left-bg"> 
+                    <span>共</span>
                     <span>{{numberFormat(total, 0, ".", ",")}}</span>
-                    <span>{{$t('text.tiao')}}</span>
+                    <span>条</span>
                 </div>
                 <div class="search-part-right">
-                    <el-input :placeholder="$t('inputText.transactionSearch')" v-model="searchKey.value" class="input-with-select" @clear="clearText">
+                    <el-input :placeholder="$t('inputText.transactionSearch')" v-model.trim="searchKey.value" @keyup.enter.native="search" class="input-with-select" clearable @clear="clearText">
                         <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                     </el-input>
-                </div> -->
+                </div>
             </div>
             <div class="search-table">
-                <el-table :data="transactionList" class="block-table-content" v-loading="loading" ref="refTable">
+                <el-table :data="transactionList" class="block-table-content"  :row-key="getRowKeys" :expand-row-keys="expands" v-loading="loading" ref="refTable">
+                    <el-table-column type="expand" align="center">
+                        <template slot-scope="scope">
+                            <transaction-detail :txData="scope.row"></transaction-detail>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="transHash" label="交易Hash" align="center" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <span>
@@ -50,11 +55,11 @@
                             <span>{{scope.row['transDetail']}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="auditFlag" label="统计" width="" align="center" :show-overflow-tooltip="true">
+                    <!-- <el-table-column prop="auditFlag" label="统计" width="" align="center" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <span :style="{'color': (scope.row['auditFlag'] == 1 ? '#E6A23C': '#67C23A')}">{{scope.row['auditFlag'] | statusFilter}}</span>
                         </template>
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column prop="receiptDetail" label="交易回执详情" width="" align="center" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['receiptDetail'], $event)" title="复制"></i>
@@ -75,6 +80,7 @@
 </template>
 <script>
 import contentHead from "@/components/contentHead";
+import TransactionDetail from "@/components/TransactionDetail/index.vue";
 import { transList } from "@/util/api";
 import { numberFormat } from "@/util/util";
 import clip from "@/util/clipboard";
@@ -82,6 +88,7 @@ export default {
     name: "transaction",
     components: {
         contentHead,
+        TransactionDetail
     },
     filters: {
         statusFilter(status) {
@@ -121,6 +128,13 @@ export default {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId
         }
+        if(this.$route.query.transHash){
+            this.searchKey.value = this.$route.query.transHash
+        }
+        if(this.$route.query.blockNumber){
+            this.searchKey.value = this.$route.query.blockNumber
+        }
+        
         this.getTransaction();
     },
     methods: {
@@ -152,7 +166,7 @@ export default {
                 reqQuery = {};
             if (this.searchKey.value) {
                 if (this.searchKey.value.length === 66) {
-                    reqQuery.transactionHash = this.searchKey.value;
+                    reqQuery.transHash = this.searchKey.value;
                 } else {
                     reqQuery.blockNumber = this.searchKey.value;
                 }
