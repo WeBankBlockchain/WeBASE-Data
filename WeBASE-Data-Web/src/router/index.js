@@ -52,12 +52,12 @@ const routes = [
         path: '/',
         component: main,
         name: '区块链',
-        nameKey: "nodeTitle",
-        leaf: true,
+        nameKey: "chain",
+        leaf: false,
         menuShow: true,
         iconCls: 'wbs-icon-group sidebar-icon',
         children: [
-            { path: '/chain', component: chain, name: '区块链', nameKey: "nodeTitle", menuShow: true, meta: { requireAuth: true } },
+            // { path: '/chain', component: chain, name: '区块链', nameKey: "nodeTitle", menuShow: true, meta: { requireAuth: true } },
         ]
     }, 
     {
@@ -81,7 +81,7 @@ const routes = [
         menuShow: false,
         iconCls: 'wbs-icon-group sidebar-icon',
         children: [
-            { path: '/overview', component: overview, name: '概览', nameKey: "overview", menuShow: true, meta: { requireAuth: true } },
+            { path: '/overview/:chainId/:chainName', component: overview, name: '概览', nameKey: "overview", menuShow: true, meta: { requireAuth: true } },
         ]
     },
     {
@@ -104,10 +104,13 @@ const routes = [
 const router = new Router({
     routes
 });
+
 const originalPush = Router.prototype.push;
 Router.prototype.push = function push(location, onResolve, onReject) {
     if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
     return originalPush.call(this, location).catch(err => err)
 }
-
+Router.prototype.push = function push(location) {
+    return originalPush.call(this, location).catch(err => err)
+}
 export default router

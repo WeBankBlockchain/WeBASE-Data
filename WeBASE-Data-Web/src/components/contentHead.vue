@@ -28,10 +28,25 @@
             </el-tooltip>
             <a v-if="headHref" target="_blank" :href="headHref.href" class="font-color-fff font-12">{{headHref.content}}</a>
         </div>
+        <div class="content-head-network">
+            <el-dropdown trigger="click" @command="changeGroup" placement="bottom" v-if="chainId">
+                <span class="cursor-pointer font-color-fff" @click="groupVisible = !groupVisible">
+                    {{this.$t("head.group")}}: {{groupName}}<i :class="[groupVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                    <ul style="max-height: 220px;overflow-y:auto" class="text-center">
+                        <el-dropdown-item v-for=" item in groupList" :key="item.group" :command="item">
+                            {{item.groupName}}
+                        </el-dropdown-item>
+                    </ul>
+                </el-dropdown-menu>
+            </el-dropdown>
+        </div>
     </div>
 </template>
 
 <script>
+import { groupList } from "@/util/api";
 import router from "@/router";
 export default {
     name: "conetnt-head",
@@ -62,11 +77,22 @@ export default {
         }
     },
     components: {
-        
+
     },
     watch: {
         headTitle: function (val) {
             this.title = val;
+        },
+        $route: {
+            handler(to,from) {
+                if (this.$route.params.chainId) {
+                    localStorage.removeItem('groupId')
+                    this.chainId = this.$route.params.chainId
+                    this.queryGroup()
+                }
+            },
+            deep: true,
+            immediate: true
         }
     },
     data: function () {
@@ -80,18 +106,46 @@ export default {
             way: this.route || "",
             changePasswordDialogVisible: false,
             groupList: [],
+            groupVisible: false,
+            chainId: ''
         };
     },
     mounted: function () {
-        
+        console.log()
     },
     methods: {
-       skip: function () {
+        skip: function () {
             if (this.route) {
                 this.$router.push(this.way);
             } else {
                 this.$router.go(-1);
             }
+        },
+        queryGroup() {
+            groupList(this.chainId)
+                .then(res => {
+                    if (res.data.code === 0) {
+                        this.groupList = res.data.data
+                        if (!localStorage.getItem('groupId')) {
+                            this.groupName = res.data.data[0]['groupName']
+                            this.groupId = res.data.data[0]['groupId']
+                            this.$emit('changGroup', this.groupId);
+                        }else {
+                            this.groupName = localStorage.getItem('groupName')
+                            this.groupId = localStorage.getItem('groupId')
+                            this.$emit('changGroup', this.groupId);
+                        }
+                        
+                        
+                    }
+                })
+
+        },
+        changeGroup: function (val) {
+            this.groupName = val.groupName
+            localStorage.setItem("groupName", val.groupName);
+            localStorage.setItem("groupId", val.groupId);
+            this.$emit('changGroup', val.groupId);
         },
     }
 };

@@ -26,7 +26,7 @@
                 <i class="el-icon-caret-right font-color-aeb1b5" @click="hideMune(false)" style="font-size: 18px;"></i>
             </div>
             <el-menu default-active="999" router class="el-menu-vertical-demo" text-color="#9da2ab" active-text-color="#37eef2" active-background-color="#1e293e" background-color="#0c1220" @select="select" :collapse="!menuShowC" @open="handleOpen" @close="handleClose">
-                <template v-for="(item,index) in routesListC" v-if="item.menuShow">
+                <template v-for="(item,index) in routesList" v-if="item.menuShow">
                     <el-submenu v-if="!item.leaf" :index="`${index}`" ref="ele" class="">
                         <template slot="title">
                             <div :style="{'padding-left':  menuShowC ? '13px':''}">
@@ -56,6 +56,7 @@
 <script>
 import maxLog from "@/../static/image/logo-2 copy@1.5x.jpg";
 import router from "@/router";
+import { chainAll } from "@/util/api"
 export default {
     name: "sidebar",
     props: ["minMenu"],
@@ -64,8 +65,9 @@ export default {
             maxLog: maxLog,
             activeIndex: 0,
             activeRoute: "",
-            userRole: localStorage.getItem("root"),
-            routesList: []
+            // userRole: localStorage.getItem("root"),
+            routesList: [],
+            chainList: []
         };
     },
     computed: {
@@ -85,22 +87,57 @@ export default {
     mounted: function () {
         this.$nextTick(function () {
             localStorage.setItem("sidebarHide", false);
-            this.changeRouter();
+            this.queryChainAll(this.changeRouter)
         });
     },
     methods: {
+        queryChainAll(callback) {
+            
+            chainAll()
+                .then(res => {
+                    if (res.data.code === 0) {
+                        this.chainList = res.data.data;
+                        callback()
+                    } else {
+                        this.$message({
+                            type: "error",
+                            message: this.$chooseLang(res.data.code)
+                        })
+                    }
+                })
+                .catch(error => {
+                    this.loading = false;
+                    this.$message({
+                        type: "error",
+                        message: '系统异常'
+                    })
+                })
+        },
         changeRouter: function () {
             let list = this.$router.options.routes;
-            list.forEach(item => {
-                if (item.name === "帐号管理") {
-                    item.menuShow = false;
+            // list.forEach(item => {
+            //     if (item.name === "帐号管理") {
+            //         item.menuShow = false;
+            //     }
+            // });
+            // list.forEach(item => {
+            //     if (this.userRole === "admin" && item.name === "帐号管理") {
+            //         item.menuShow = true;
+            //     }
+            // });
+            list.forEach(item=>{
+                if(item.nameKey === "chain" ){
+                    item.children = [];
+                    this.chainList.forEach(it => {
+                        item.children.push({
+                            path: `/overview/${it.chainId}/${it.chainName}`,
+                            menuShow: true,
+                            nameKey: `chain${it.chainId}`,
+                            name: `${it.chainName}`
+                        })
+                    });
                 }
-            });
-            list.forEach(item => {
-                if (this.userRole === "admin" && item.name === "帐号管理") {
-                    item.menuShow = true;
-                }
-            });
+            })
             this.routesList = list;
         },
         select: function (index, indexPath) {

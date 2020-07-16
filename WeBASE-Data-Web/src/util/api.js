@@ -25,6 +25,13 @@ export function searchAll(data) {
         data: data
     })
 }
+export function simpleSearch(pageNumber, pageSize,data) {
+    return get({
+        url: `${url.ORG_LIST}/search/keyword/${pageNumber}/${pageSize}`,
+        method: 'get',
+        params: data
+    })
+}
 export function chainAll() {
     return get({
         url: `${url.ORG_LIST}/chain/all`,

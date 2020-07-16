@@ -18,11 +18,16 @@
         <v-contentHead :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}(合约列表)`" :icon="true"></v-contentHead>
         <div class="module-wrapper">
             <div class="search-part">
-                <!-- <div class="search-part-right">
-                    <el-input :placeholder="$t('placeholder.contractListSearch')" v-model="contractData" class="input-with-select">
+                <div class="search-part-left-bg">
+                    <span>共</span>
+                    <span>{{numberFormat(total, 0, ".", ",")}}</span>
+                    <span>条</span>
+                </div>
+                <div class="search-part-right">
+                    <el-input placeholder="请输入合约" v-model="contractParam" @keyup.enter.native="search"  clearable @clear="clearText" class="input-with-select" >
                         <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                     </el-input>
-                </div> -->
+                </div>
             </div>
             <div class="search-table">
                 <el-table :data="userList" tooltip-effect="dark" v-loading="loading">
@@ -51,6 +56,7 @@
 import contentHead from "@/components/contentHead";
 import { contractList } from "@/util/api"
 import clip from "@/util/clipboard";
+import { numberFormat } from "@/util/util";
 export default {
     name: "oldContract",
     components: {
@@ -64,7 +70,9 @@ export default {
             pageSize: 10,
             total: 0,
             chainId: '',
-            groupId: ''
+            groupId: '',
+            contractParam: '',
+            numberFormat: numberFormat
         }
     },
     mounted() {
@@ -72,17 +80,26 @@ export default {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId
         }
+        
+        if (this.$route.query.contractParam ) {
+            this.contractParam = this.$route.query.contractParam
+        }
         this.getContracts()
     },
     methods: {
+        clearText(){
+            this.getContracts()
+        },
         getContracts() {
             let reqData = {
                 chainId: this.chainId,
                 groupId: this.groupId,
                 pageNumber: this.currentPage,
                 pageSize: this.pageSize
-            }
-            contractList(reqData,{}).then(res => {
+            }, reqQuery = {
+                contractParam: this.contractParam
+            };
+            contractList(reqData, reqQuery).then(res => {
                 if (res.data.code == 0) {
                     this.userList = res.data.data || [];
                     this.total = res.data.totalCount || 0;
@@ -105,16 +122,6 @@ export default {
             clip(text, event)
         },
         search() {
-            if (this.contractData && this.contractData.length && this.contractData.length < 20) {
-                this.contractName = this.contractData;
-                this.contractAddress = ""
-            } else if (this.contractData && this.contractData.length && (this.contractData.length > 20 || this.contractData.length == 20)) {
-                this.contractName = "";
-                this.contractAddress = this.contractData;
-            } else {
-                this.contractName = "";
-                this.contractAddress = ""
-            }
             this.currentPage = 1
             this.getContracts();
         },
