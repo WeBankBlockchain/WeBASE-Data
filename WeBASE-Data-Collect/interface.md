@@ -550,12 +550,14 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 | 4.1.2  | groupId          | Int           | 否   | 群组编号                   |
 | 4.1.3  | groupName        | String        | 否   | 群组名称                   |
 | 4.1.4  | appName          | String        | 否   | 应用名称                   |
-| 4.1.5  | genesisBlockHash | String        | 否   | 创世块hash                 |
-| 4.1.6  | groupStatus      | Int           | 否   | 群组状态                   |
-| 4.1.7  | nodeCount        | Int           | 否   | 节点个数                   |
-| 4.1.8  | description      | String        | 否   | 应用描述                   |
-| 4.1.9  | createTime       | LocalDateTime | 否   | 落库时间                   |
-| 4.1.10 | modifyTime       | LocalDateTime | 否   | 修改时间                   |
+| 4.1.5  | appVersion       | String        | 是   | 应用版本号                 |
+| 4.1.6  | appSynopsis      | String        | 是   | 应用概要介绍               |
+| 4.1.7  | genesisBlockHash | String        | 否   | 创世块hash                 |
+| 4.1.8  | groupStatus      | Int           | 否   | 群组状态                   |
+| 4.1.9  | nodeCount        | Int           | 否   | 节点个数                   |
+| 4.1.10 | description      | String        | 否   | 应用描述                   |
+| 4.1.11 | createTime       | LocalDateTime | 否   | 落库时间                   |
+| 4.1.12 | modifyTime       | LocalDateTime | 否   | 修改时间                   |
 
 ***2）出参示例***
 
@@ -571,6 +573,8 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
       "groupId": 1,
       "groupName": "group1",
       "appName": "APP1",
+      "appVersion": "v1.0.0",
+      "appSynopsis": "存证",
       "genesisBlockHash": "0x7bc361d7d8e078ea9e8f352f2b856d6ea76ab1b9522f4b09853c861d0ed0779f",
       "groupStatus": 1,
       "nodeCount": 2,
@@ -583,6 +587,8 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
       "groupId": 2,
       "groupName": "group2",
       "appName": "APP2",
+      "appVersion": "v1.0.0",
+      "appSynopsis": "供应链",
       "genesisBlockHash": "0x1208de0d47dcba9447d304039d1e4512dd4ce740ec408ef83c5f7ee2aefc7468",
       "groupStatus": 1,
       "nodeCount": 2,
