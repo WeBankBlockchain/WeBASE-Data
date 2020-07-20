@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.group.entity;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -23,7 +22,8 @@ public class AppInfo {
     private Integer chainId;
     @NotNull
     private Integer groupId;
-    @NotBlank
     private String appName;
+    private String appVersion;
+    private String appSynopsis;
     private String description;
 }

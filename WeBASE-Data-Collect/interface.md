@@ -619,12 +619,14 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 
 ***1）入参表***
 
-| 序号 | 输入参数    | 类型   | 可为空 | 备注     |
-| ---- | ----------- | ------ | ------ | -------- |
-| 1    | chainId     | Int    | 否     | 链编号   |
-| 2    | groupId     | Int    | 否     | 群组编号 |
-| 3    | appName     | String | 否     | 应用名称 |
-| 4    | description | String | 是     | 应用描述 |
+| 序号 | 输入参数    | 类型   | 可为空 | 备注         |
+| ---- | ----------- | ------ | ------ | ------------ |
+| 1    | chainId     | Int    | 否     | 链编号       |
+| 2    | groupId     | Int    | 否     | 群组编号     |
+| 3    | appName     | String | 是     | 应用名称     |
+| 4    | appVersion  | String | 是     | 应用版本号   |
+| 5    | appSynopsis | String | 是     | 应用概要介绍 |
+| 6    | description | String | 是     | 应用描述     |
 
 ***2）入参示例***
 
@@ -637,7 +639,9 @@ http://localhost:5009/WeBASE-Data-Collect/chain/update
     "chainId": 1,
     "groupId": 1,
     "appName": "存证",
-    "description": "test"
+    "appVersion": "v1.0.0",
+    "appSynopsis": "存证测试",
+    "description": "这是一个存证应用"
 }
 ```
 

@@ -17,6 +17,10 @@
             jdbcType="VARCHAR" property="groupName" />
         <result column="app_name" javaType="java.lang.String"
             jdbcType="VARCHAR" property="appName" />
+        <result column="app_version" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appVersion" />
+        <result column="app_synopsis" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appSynopsis" />
         <result column="group_status" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="groupStatus" />
         <result column="node_count" javaType="java.lang.Integer"
@@ -40,6 +44,8 @@
     <update id="updateAppInfo">
 		update tb_group 
 		set app_name = #{appName},
+		    app_version = #{appVersion},
+		    app_synopsis = #{appSynopsis},
 		    description = #{description},
 			modify_time = now()
 		where group_id = #{groupId}

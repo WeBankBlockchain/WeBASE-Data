@@ -102,7 +102,7 @@ public class NodeController extends BaseController {
     /**
      * query org node info list.
      */
-    @GetMapping(value = "/orgList/{chainId}/{groupId}/{pageNumber}/{pageSize}")
+    @GetMapping(value = "/orgList/{chainId}/{pageNumber}/{pageSize}")
     public BasePageResponse queryNodeList(@PathVariable("chainId") Integer chainId,
             @PathVariable("pageNumber") Integer pageNumber,
             @PathVariable("pageSize") Integer pageSize) throws BaseException {
