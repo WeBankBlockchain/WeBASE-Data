@@ -91,7 +91,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注   |
 | ---- | -------- | ---- | ------ | ------ |
-| 1    | chainId  | Int  | 是     | 链编号 |
+| 1    | chainId  | Int  | 否     | 链编号 |
 
 ***2）入参示例***
 
@@ -190,7 +190,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/list/1
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注   |
 | ---- | -------- | ---- | ------ | ------ |
-| 1    | chainId  | Int  | 是     | 链编号 |
+| 1    | chainId  | Int  | 否     | 链编号 |
 | 2    | groupId  | int  | 否     | 群组id |
 
 ***2）入参示例***
@@ -261,7 +261,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/general/1/1
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注   |
 | ---- | -------- | ---- | ------ | ------ |
-| 1    | chainId  | Int  | 是     | 链编号 |
+| 1    | chainId  | Int  | 否     | 链编号 |
 | 2    | groupId  | int  | 否     | 群组id |
 
 ***2）入参示例***
