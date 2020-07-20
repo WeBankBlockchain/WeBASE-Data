@@ -125,7 +125,14 @@ export function getGroups(data) {
         method: 'get',
     })
 }
-
+// 修改应用
+export function modifyGroups(data) {
+    return post({
+        url: `${HANDLE}/group/update`,
+        method: 'post',
+        data: data
+    })
+}
 //get node list
 export function getNodes(data, list) {
     const params = reviseParam(data, list);
@@ -135,7 +142,23 @@ export function getNodes(data, list) {
         params: params.querys,
     })
 }
-
+//查询链节点
+export function chainNodes(data, list) {
+    const params = reviseParam(data, list);
+    return get({
+        url: `${HANDLE}/node/orgList/${params.str}`,
+        method: 'get',
+        params: params.querys,
+    })
+}
+//修改链节点
+export function modifyChainNodes(data) {
+    return post({
+        url: `${HANDLE}/node/update`,
+        method: 'post',
+        data: data,
+    })
+}
 //get node detail
 export function getNodeDetail(data) {
     return get({
@@ -168,7 +191,14 @@ export function deleteChain(data) {
         method: 'delete'
     })
 }
-
+//修改 chain
+export function modifyChain(data) {
+    return post({
+        url: `${HANDLE}/chain/update`,
+        method: 'post',
+        data: data
+    })
+}
 export function saveChaincode(data) {
     return post({
         url: `${HANDLE}/contract/save`,

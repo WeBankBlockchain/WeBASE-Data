@@ -36,7 +36,8 @@
                 <el-dropdown-menu slot="dropdown">
                     <ul style="max-height: 220px;overflow-y:auto" class="text-center">
                         <el-dropdown-item v-for=" item in groupList" :key="item.group" :command="item">
-                            {{item.groupName}}
+                            <span>{{item.groupName}}</span>
+                            <span style="font-size: 12px;">{{item.appName}}</span>
                         </el-dropdown-item>
                     </ul>
                 </el-dropdown-menu>

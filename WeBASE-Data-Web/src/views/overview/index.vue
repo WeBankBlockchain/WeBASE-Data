@@ -1,6 +1,51 @@
 <template>
     <div class="app-container">
         <content-head :headTitle="`${chainName}`" @changGroup="changGroup"></content-head>
+        <div class="module-wrapper app-description">
+            <div class="description-left">
+                <div style="height: 160px;width: 160px;">
+                    <img style="height: 100%;width: 100%;" src="../../../static/image/btb.jpeg" alt="图片">
+                </div>
+                <div class="left-content">
+                    <p>
+                        <span>服务</span>
+                        <span class="left-content-title">
+                            碳排放
+                        </span>
+                        <span>v0.0.1</span>
+                    </p>
+                    <div>
+                        指定应用
+                    </div>
+                    <div>
+                        Fisco-2.4.0-sm2
+                    </div>
+
+                </div>
+            </div>
+            <div>
+                <p class="myReleasedApply">服务简介</p>
+                <span class="myReleasedApply-content">这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，</span>
+            </div>
+        </div>
+        <div class="module-wrapper box-content">
+            <div class="box-content-title">
+                <p style="font-weight: bold; font-size: 18px;">
+                    服务描述
+                </p>
+            </div>
+            <div id="appDesc" style="margin-right: 22px; word-break: break-all;">
+                <p>伊OS是一款基于微信生态开发的超轻量插件式小程序应用，零成本与建设各方已有系统进行对接和集成，能够自动收集、整理、归档项目过程中的实证数据和资料，为贯穿全过程管理打下坚实基础。结合移动端和PC端，帮助项目各方单位人员提高协作效率。</p>
+                
+                <p>伊OS通过进度、质量、安全等场景存证，对工程量进行实时反馈、测量、验收、审批，从工作过程到款项申请形成完整的流程闭环，帮助甲方监控管理项目的全生命周期。</p>
+                <p>产品官方链接：
+                    <a href="">https:/xxx.com.cn/</a>
+                </p>
+            </div>
+            <div>
+                <p></p>
+            </div>
+        </div>
         <div style="margin: 5px;">
             <div style="margin:10px 10px 6px 10px;">
                 <el-row>
@@ -103,7 +148,7 @@
                                 <div class="block-amount">
                                     <p class="trans-hash" :title="`${item.transHash}`">
                                         <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(item.transHash)" title='复制'></i>
-                                        
+
                                         <span class="link" @click="goRouter('transactions', item.transHash)">{{item.transHash}} </span>
                                     </p>
                                     <p class="trans-address color-8798AD">
@@ -488,6 +533,36 @@ export default {
 </script>
 
 <style scoped>
+.left-content {
+    margin-left: 10px;
+}
+.left-content-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: 12px;
+    text-overflow: ellipsis;
+    width: 230px;
+    white-space: nowrap;
+}
+.myReleasedApply {
+    font-weight: bold;
+    font-size: 18px;
+}
+.myReleasedApply-content {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.box-content {
+    padding: 20px;
+}
+.box-content-title {
+    padding: 0px 0 10px 0;
+}
+#appDesc p {
+        word-break: break-all;
+}
 .node-bg {
     background: linear-gradient(to top right, #47befa, #37eef2);
 }
@@ -790,5 +865,17 @@ export default {
     .overview-item:nth-child(2) {
         margin: 8px 15px 16px 0;
     }
+}
+.app-description {
+    min-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 10px;
+}
+.description-left {
+    display: flex;
+    justify-content: normal;
+    width: 50%;
 }
 </style>

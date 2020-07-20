@@ -1,27 +1,39 @@
 <template>
     <el-table :data="list" element-loading-text="Loading" fit highlight-current-row>
-        <el-table-column prop="contractAddress" label="合约地址" width="" align="center" :show-overflow-tooltip="true">
+        <el-table-column v-for="head in tableHead[type]" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
             <template slot-scope="scope">
+                {{ scope.row[head.enName] }}
+            </template>
+        </el-table-column>
+
+    </el-table>
+    <!-- <el-table-column prop="contractAddress" label="合约地址" width="" align="center" :show-overflow-tooltip="true">
+            <template slot-scope="scope"> 
+                <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['transHash'], $event)" title="复制"></i>
                 <span class="link" @click="link(scope.row, 'contractAddress')">{{ scope.row.contractAddress }}</span>
             </template>
         </el-table-column>
         <el-table-column prop="contractName" label="合约名称" width="" align="center" :show-overflow-tooltip="true">
             <template slot-scope="scope">
+                <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['transHash'], $event)" title="复制"></i>
                 <span class="link" @click="link(scope.row, 'contractName')">{{ scope.row.contractName }}</span>
             </template>
         </el-table-column>
         <el-table-column prop="userName" label="用户" width="" align="center" :show-overflow-tooltip="true">
             <template slot-scope="scope">
+                <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['transHash'], $event)" title="复制"></i>
                 <span class="link" @click="link(scope.row, 'userName')">{{ scope.row.userName }}</span>
             </template>
         </el-table-column>
         <el-table-column prop="userAddress" label="用户地址" width="" align="center" :show-overflow-tooltip="true">
             <template slot-scope="scope">
+                <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['transHash'], $event)" title="复制"></i>
                 <span class="link" @click="link(scope.row, 'userAddress')">{{ scope.row.userAddress }}</span>
             </template>
         </el-table-column>
         <el-table-column prop="transHash" label="交易哈希" width="" align="center" :show-overflow-tooltip="true">
             <template slot-scope="scope">
+                <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['transHash'], $event)" title="复制"></i>
                 <span class="link" @click="link(scope.row, 'transHash')">{{ scope.row.transHash }}</span>
             </template>
         </el-table-column>
@@ -51,18 +63,21 @@
                 <i class="el-icon-time" />
                 <span>{{ scope.row.blockTimestamp }}</span>
             </template>
-        </el-table-column>
-    </el-table>
+        </el-table-column> -->
 </template>
 
 <script>
+import clip from "@/util/clipboard";
+import head from "./head.json";
 export default {
     components: {
     },
-    props: ['list', 'groupId', 'chainId'],
+    props: ['list', 'groupId', 'chainId', 'handleType'],
 
     data() {
         return {
+            tableHead: head,
+            type: this.handleType
         }
     },
 
@@ -76,6 +91,7 @@ export default {
     },
 
     mounted() {
+        console.log(this.handleType,123213)
     },
 
     methods: {
@@ -144,6 +160,9 @@ export default {
                 default:
                     break;
             }
+        },
+        handleCopy(text, event) {
+            clip(text, event)
         },
     }
 }

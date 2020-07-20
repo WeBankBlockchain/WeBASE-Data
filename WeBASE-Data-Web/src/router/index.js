@@ -31,7 +31,12 @@ Vue.use(Router);
 const routes = [
     {
         path: '/',
-        redirect: '/main',
+        redirect: '/login',
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: resolve => require(['@/views/login/index.vue'], resolve),
     },
     {
         path: '/main',
@@ -44,7 +49,7 @@ const routes = [
         component: main,
         children: [
             {
-                path: '/home', component: home, name: '首页',nameKey: "home", menuShow: true, meta: { requireAuth: true }
+                path: '/home', component: home, name: '搜索',nameKey: "home", menuShow: true, meta: { requireAuth: true }
             }
         ]
     },

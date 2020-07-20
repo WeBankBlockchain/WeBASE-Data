@@ -4,67 +4,62 @@
         <div class="module-wrapper">
             <div class="search-part" style="padding-top: 20px;">
                 <div class="search-part-left">
-                    <el-button type="primary" class="search-part-left-btn" @click="createGroup">新增区块链</el-button>
+                    <el-button type="primary" class="search-part-left-btn" @click="createChain">新增区块链</el-button>
                 </div>
             </div>
             <div class="search-table">
-                <el-table :data="chainData" class="search-table-content" v-loading="loading">
-                    <el-table-column
-                        prop="chainName"
-                        label="区块链名称"
-                        >
+                <el-table :data="chainData" class="search-table-content" :row-key="getRowKeys" :expand-row-keys="expands" ref="refTable">
+                    <el-table-column type="expand" align="center">
+                        <template slot-scope="scope">
+                            <el-tabs type="border-card" :value="currentTab" @tab-click="handleTab">
+                                <el-tab-pane v-for="(tab, index) in tabList" :label="`${tab.label}`" :name="tab.type" :key="index">
+                                    <component v-bind:is="`${currentTab}Info`" :chainId="scope.row.chainId"></component>
+                                </el-tab-pane>
+                            </el-tabs>
+                        </template>
                     </el-table-column>
-                    <el-table-column
-                        prop="chainId"
-                        label="区块链编号"
-                        >
+                    <el-table-column prop="chainName" label="区块链名称">
                     </el-table-column>
-                    <el-table-column
-                        prop="chainType"
-                        label="区块链类型"
-                        >
+                    <el-table-column prop="chainId" label="区块链编号">
+                    </el-table-column>
+                    <el-table-column prop="chainType" label="区块链类型">
                         <template slot-scope="scope">
                             <span>{{scope.row.chainType | Type}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                        prop="createTime"
-                        label="创建时间"
-                        >
+                    <el-table-column prop="createTime" label="创建时间">
                     </el-table-column>
-                    <el-table-column
-                        prop="description"
-                        label="备注"
-                        >
+                    <el-table-column prop="description" label="备注">
                     </el-table-column>
-                    <el-table-column
-                        fixed="right"
-                        label="操作"
-                        width="100">
+                    <el-table-column fixed="right" label="操作" width="100">
                         <template slot-scope="scope">
+                            <el-button @click="modifyChain(scope.row, 'modify')" type="text" size="small">修改</el-button>
                             <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
-                
+
                 <!-- <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination> -->
             </div>
         </div>
-        <add-chain v-if='addChainShow' :show='addChainShow' @close='addChainClose'></add-chain>
+        <add-chain v-if='addChainShow' :show='addChainShow' @close='addChainClose' :chainDialogTitle="chainDialogTitle" :chainDialogOptions="chainDialogOptions"></add-chain>
     </div>
 </template>
 
 <script>
 import contentHead from "@/components/contentHead";
-import { getChains,deleteChain } from "@/util/api"
+import { getChains, deleteChain } from "@/util/api"
 import addChain from "./dialog/addChain"
+import { AppInfo, NodeInfo } from "./components/index.js"
 import Bus from "@/bus"
 export default {
     name: "chain",
     components: {
         "v-content-head": contentHead,
-        "add-chain": addChain
+        "add-chain": addChain,
+        AppInfo,
+        NodeInfo
     },
     data() {
         return {
@@ -74,21 +69,46 @@ export default {
             currentPage: 1,
             pageSize: 10,
             total: 0,
+            expands: [],
+            getRowKeys(row) {
+                return row.chainId;
+            },
+            currentTab: 'app',
+            tabList: [
+                {
+                    label: '应用',
+                    type: 'app'
+                },
+                {
+                    label: '节点',
+                    type: 'node'
+                },
+            ],
+            chainDialogOptions: {}
         }
     },
-    mounted: function(){
+    mounted: function () {
         this.getChainList()
     },
     methods: {
-        createGroup: function(){
+        createChain: function () {
+            this.chainDialogOptions = {
+                type: 'creat',
+                data: {
+                    chainName: "",
+                    chainId: "",
+                    type: 0,
+                }
+            }
             this.addChainShow = true;
+            this.chainDialogTitle = '新增区块链'
         },
-        getChainList: function(){
+        getChainList: function () {
             getChains().then(res => {
-                if(res.data.code == 0){
+                if (res.data.code == 0) {
                     this.chainData = res.data.data;
                     this.total = res.data.totalCount;
-                }else {
+                } else {
                     this.$message({
                         type: "error",
                         message: this.$chooseLang(res.data.code)
@@ -101,35 +121,43 @@ export default {
                 })
             })
         },
-        addChainClose: function(){
+        addChainClose: function () {
             Bus.$emit("delete")
             this.addChainShow = false;
             this.getChainList()
         },
-        handleClick: function(val){
+        modifyChain(val, type) {
+            this.chainDialogOptions = {
+                type: type,
+                data: val
+            }
+            this.addChainShow = true;
+            this.chainDialogTitle = '修改区块链'
+        },
+        handleClick: function (val) {
             this.$confirm('此操作将删除该链, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
-                }).then(() => {
-                    this.deleteData(val)
-                }).catch(() => {
+            }).then(() => {
+                this.deleteData(val)
+            }).catch(() => {
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });          
+                });
             });
         },
-        deleteData: function(val){
+        deleteData: function (val) {
             deleteChain(val.chainId).then(res => {
-                if(res.data.code === 0){
+                if (res.data.code === 0) {
                     this.$message({
                         type: 'success',
                         message: '删除成功'
-                    }); 
+                    });
                     Bus.$emit("delete")
                     this.getChainList()
-                }else {
+                } else {
                     this.$message({
                         type: "error",
                         message: this.$errCode.errCode[res.data.code].zh
@@ -151,12 +179,16 @@ export default {
             this.currentPage = val;
             this.getChainList();
         },
+        handleTab(tab, $event) {
+            console.log(tab, $event)
+            this.currentTab = tab.name
+        }
     },
     filters: {
-        Type: function(val){
-            if(val){
+        Type: function (val) {
+            if (val) {
                 return "sm2/sm3"
-            }else{
+            } else {
                 return "secp256k1/sha3"
             }
         }
@@ -165,5 +197,4 @@ export default {
 </script>
 
 <style>
-
 </style>
