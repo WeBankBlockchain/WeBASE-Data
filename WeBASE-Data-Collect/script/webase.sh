@@ -15,7 +15,7 @@ DBUSER="defaultAccount"
 #dbPass
 PASSWD="defaultPassword"
 #dbName
-DBNAME="webasedatacollect"
+DBNAME="webasedata"
 
 
 #connect to database then execute init
