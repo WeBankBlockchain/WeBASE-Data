@@ -20,12 +20,18 @@ const main = resolve => require(['@/views/index/main'], resolve);
 const chain = resolve => require(['@/views/chain'], resolve);
 const front = resolve => require(['@/views/front'], resolve);
 const contract = resolve => require(['@/views/chaincode/contract'], resolve);
-const rivateKeyManagement = resolve => require(['@/views/rivateKeyManagement/rivateKeyManagement'], resolve);
+const rivateKeyManagement = resolve => require(['@/views/rivateKeyManagement/rivateKeyManagement'], resolve); 
+const keywordConfig = resolve => require(['@/views/keywordConfig/index.vue'], resolve);
 Vue.use(Router);
 const routes = [
     {
         path: '/',
-        redirect: '/chain',
+        redirect: '/login',
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: resolve => require(['@/views/login/index.vue'], resolve),
     },
     {
         path: '/',
@@ -55,15 +61,15 @@ const routes = [
         path: '/',
         component: main,
         name: '合约管理',
-        nameKey: "contractTitle",
+        nameKey: "contract",
         leaf: true,
         menuShow: true,
         iconCls: 'wbs-icon-heyueguanli sidebar-icon', 
         children: [
-            { path: '/contract', component: contract, name: '合约管理', nameKey: "contractTitle", menuShow: true, meta: { requireAuth: true } },
+            { path: '/contract', component: contract, name: '合约管理', nameKey: "contract", menuShow: true, meta: { requireAuth: true } },
             
         ]
-    },
+    }, 
     {
         path: '/',
         component: main,
@@ -74,6 +80,18 @@ const routes = [
         iconCls: 'wbs-icon-lock sidebar-icon',
         children: [
             { path: '/privateKeyManagement', component: rivateKeyManagement, name: '用户管理', nameKey: "PrivateKey", menuShow: true, meta: { requireAuth: true } }
+        ]
+    }, 
+    {
+        path: '/',
+        component: main,
+        name: '关键字配置',
+        nameKey: "keywordConfig",
+        leaf: true,
+        menuShow: true,
+        iconCls: 'wbs-icon-key-b sidebar-icon',
+        children: [
+            { path: '/keywordConfig', component: keywordConfig, name: '关键字配置', nameKey: "v", menuShow: true, meta: { requireAuth: true } }
         ]
     }, 
     {
