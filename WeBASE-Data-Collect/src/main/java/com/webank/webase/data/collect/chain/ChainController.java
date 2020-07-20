@@ -20,6 +20,7 @@ import com.webank.webase.data.collect.base.entity.BasePageResponse;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.chain.entity.ChainInfo;
 import com.webank.webase.data.collect.chain.entity.TbChain;
+import com.webank.webase.data.collect.chain.entity.UpdateChainInfo;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -61,6 +62,22 @@ public class ChainController extends BaseController {
         return baseResponse;
     }
 
+    /**
+     * update chain info
+     */
+    @PostMapping("/update")
+    public BaseResponse updateChain(@RequestBody @Valid UpdateChainInfo chainInfo,
+            BindingResult result) {
+        checkBindResult(result);
+        Instant startTime = Instant.now();
+        log.info("start updateChain.");
+        BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
+        TbChain tbChain = chainService.updateChain(chainInfo);
+        baseResponse.setData(tbChain);
+        log.info("end updateChain useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return baseResponse;
+    }
 
     /**
      * query chain info list.

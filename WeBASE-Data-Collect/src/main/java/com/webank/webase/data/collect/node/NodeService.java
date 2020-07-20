@@ -24,6 +24,7 @@ import com.webank.webase.data.collect.frontinterface.entity.PeerOfConsensusStatu
 import com.webank.webase.data.collect.frontinterface.entity.PeerOfSyncStatus;
 import com.webank.webase.data.collect.frontinterface.entity.SyncStatus;
 import com.webank.webase.data.collect.node.entity.NodeParam;
+import com.webank.webase.data.collect.node.entity.OrgInfo;
 import com.webank.webase.data.collect.node.entity.TbNode;
 import java.math.BigInteger;
 import java.time.Duration;
@@ -75,6 +76,18 @@ public class NodeService {
     }
 
     /**
+     * update node org.
+     */
+    public void updateOrgInfo(OrgInfo orgInfo) throws BaseException {
+        // checkNodeId
+        if (!checkNodeId(orgInfo.getChainId(),null,orgInfo.getNodeId())) {
+            throw new BaseException(ConstantCode.INVALID_NODE_ID);
+        }
+        // update
+        nodeMapper.updateOrgInfo(orgInfo);
+    }
+
+    /**
      * query count of node.
      */
     public Integer countOfNode(NodeParam queryParam) throws BaseException {
@@ -93,6 +106,28 @@ public class NodeService {
     public List<TbNode> queryNodeList(NodeParam queryParam) throws BaseException {
         // query node list
         List<TbNode> listOfNode = nodeMapper.getList(queryParam);
+        return listOfNode;
+    }
+    
+    /**
+     * query count of org node.
+     */
+    public Integer countOfOrgNode(NodeParam queryParam) throws BaseException {
+        try {
+            Integer nodeCount = nodeMapper.getOrgNodeCount(queryParam);
+            return nodeCount;
+        } catch (RuntimeException ex) {
+            log.error("fail countOfOrgNode . queryParam:{}", queryParam, ex);
+            throw new BaseException(ConstantCode.DB_EXCEPTION);
+        }
+    }
+
+    /**
+     * query org node list by page.
+     */
+    public List<OrgInfo> queryOrgNodeList(NodeParam queryParam) throws BaseException {
+        // query node list
+        List<OrgInfo> listOfNode = nodeMapper.getOrgNodeList(queryParam);
         return listOfNode;
     }
 
@@ -244,7 +279,20 @@ public class NodeService {
             // update node
             updateNode(tbNode);
         }
-
+    }
+    
+    /**
+     * add sealer and observer in NodeList return: List<String> nodeIdList
+     */
+    public List<PeerInfo> getSealerAndObserverList(int chainId, int groupId) {
+        log.debug("start getSealerAndObserverList groupId:{}", groupId);
+        List<String> sealerList = frontInterface.getSealerList(chainId, groupId);
+        List<String> observerList = frontInterface.getObserverList(chainId, groupId);
+        List<PeerInfo> resList = new ArrayList<>();
+        sealerList.stream().forEach(nodeId -> resList.add(new PeerInfo(nodeId)));
+        observerList.stream().forEach(nodeId -> resList.add(new PeerInfo(nodeId)));
+        log.debug("end getSealerAndObserverList resList:{}", resList);
+        return resList;
     }
 
     /**
@@ -288,16 +336,19 @@ public class NodeService {
     }
 
     /**
-     * add sealer and observer in NodeList return: List<String> nodeIdList
+     * checkNodeId.
+     * 
      */
-    public List<PeerInfo> getSealerAndObserverList(int chainId, int groupId) {
-        log.debug("start getSealerAndObserverList groupId:{}", groupId);
-        List<String> sealerList = frontInterface.getSealerList(chainId, groupId);
-        List<String> observerList = frontInterface.getObserverList(chainId, groupId);
-        List<PeerInfo> resList = new ArrayList<>();
-        sealerList.stream().forEach(nodeId -> resList.add(new PeerInfo(nodeId)));
-        observerList.stream().forEach(nodeId -> resList.add(new PeerInfo(nodeId)));
-        log.debug("end getSealerAndObserverList resList:{}", resList);
-        return resList;
+    private boolean checkNodeId(Integer chainId, Integer groupId, String nodeId) {
+        NodeParam queryParam = new NodeParam();
+        queryParam.setChainId(chainId);
+        queryParam.setGroupId(groupId);
+        queryParam.setNodeId(nodeId);
+        Integer count = countOfNode(queryParam);
+        if (count != null && count > 0) {
+            return true;
+        }
+        return false;
     }
+    
 }

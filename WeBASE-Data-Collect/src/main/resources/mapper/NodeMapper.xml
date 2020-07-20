@@ -14,6 +14,8 @@
             jdbcType="INTEGER" property="chainId" />
         <result column="group_id" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="groupId" />
+        <result column="org_name" javaType="java.lang.String" jdbcType="VARCHAR"
+            property="orgName" />
         <result column="node_ip" javaType="java.lang.String" jdbcType="VARCHAR"
             property="nodeIp" />
         <result column="p2p_port" javaType="java.lang.Integer"
@@ -37,6 +39,15 @@
         (node_id,chain_id,group_id,node_ip,p2p_port,description,create_time,modify_time)
         values(#{nodeId},#{chainId},#{groupId},#{nodeIp},#{p2pPort},#{description},NOW(),NOW())
     </insert>
+    
+    <update id="updateOrgInfo">
+		update tb_node 
+		set org_name = #{orgName},
+		    description = #{description},
+			modify_time = now()
+		where chain_id = #{chainId}
+        and node_id = #{nodeId}
+	</update>
 
     <select id="getCount"
         parameterType="com.webank.webase.data.collect.node.entity.NodeParam"
@@ -81,6 +92,28 @@
         <if test="flagSortedByTime != null and flagSortedByTime != ''">
             order by a.modify_time ${flagSortedByTime}
         </if>
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+    
+    <select id="getOrgNodeCount"
+        parameterType="com.webank.webase.data.collect.node.entity.NodeParam"
+        resultType="java.lang.Integer">
+        select count(distinct(node_id)) from tb_node
+         where chain_id = #{chainId}
+    </select>
+
+    <select id="getOrgNodeList"
+        parameterType="com.webank.webase.data.collect.node.entity.NodeParam"
+        resultType="com.webank.webase.data.collect.node.entity.OrgInfo">
+        select distinct(node_id) as nodeId,
+               chain_id as chainId,
+               org_name as orgName,
+               description as description
+          from tb_node
+         where chain_id = #{chainId}
+         group by node_id
         <if test="start != null and pageSize != null">
             limit #{start},#{pageSize}
         </if>

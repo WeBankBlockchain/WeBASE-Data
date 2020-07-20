@@ -37,6 +37,8 @@ public class ConstantCode {
             RetCode.mark(202002, "chain name already exists");
     public static final RetCode SAVE_CHAIN_FAIL = RetCode.mark(202003, "save chain fail");
     public static final RetCode INVALID_CHAIN_ID = RetCode.mark(202004, "invalid chain id");
+    public static final RetCode INVALID_CHAIN_TYPE = RetCode.mark(202005, "invalid chain type");
+    public static final RetCode CHAIN_ID_NOT_EXISTS = RetCode.mark(202006, "chain id not exists");
 
     /* front code */
     public static final RetCode SERVER_CONNECT_FAIL = RetCode.mark(202101, "wrong host or port");
@@ -50,6 +52,7 @@ public class ConstantCode {
     public static final RetCode ENCRYPT_TYPE_NOT_MATCH =
             RetCode.mark(202108, "front's encrypt type not matches");
     public static final RetCode INVALID_BLOCK_NUMBER = RetCode.mark(202109, "invalid block number");
+    public static final RetCode INVALID_NODE_ID = RetCode.mark(202110, "invalid node id");
 
     /* group code */
     public static final RetCode INVALID_GROUP_ID = RetCode.mark(202201, "invalid group id");

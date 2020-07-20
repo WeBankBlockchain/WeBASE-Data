@@ -23,6 +23,8 @@ import org.springframework.stereotype.Repository;
 public interface ChainMapper {
 
     int add(TbChain tbChain);
+    
+    int update(TbChain tbChain);
 
     Integer getCount(ChainParam param);
 

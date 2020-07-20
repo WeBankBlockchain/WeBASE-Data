@@ -14,10 +14,12 @@
 package com.webank.webase.data.collect.chain;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
+import com.webank.webase.data.collect.base.enums.ChainType;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.chain.entity.ChainInfo;
 import com.webank.webase.data.collect.chain.entity.ChainParam;
 import com.webank.webase.data.collect.chain.entity.TbChain;
+import com.webank.webase.data.collect.chain.entity.UpdateChainInfo;
 import com.webank.webase.data.collect.contract.ContractService;
 import com.webank.webase.data.collect.contract.MethodService;
 import com.webank.webase.data.collect.front.FrontService;
@@ -73,13 +75,14 @@ public class ChainService {
      */
     public TbChain newChain(ChainInfo chainInfo) {
         log.debug("start newChain chainInfo:{}", chainInfo);
-
+        // check type
+        if (!ChainType.isInclude(chainInfo.getChainType())) {
+            throw new BaseException(ConstantCode.INVALID_CHAIN_TYPE);
+        }
         // check id
-        TbChain tbChainInfo = getChainById(chainInfo.getChainId());
-        if (tbChainInfo != null) {
+        if (checkChainId(chainInfo.getChainId())) {
             throw new BaseException(ConstantCode.CHAIN_ID_EXISTS);
         }
-
         // check name
         ChainParam param = new ChainParam();
         param.setChainName(chainInfo.getChainName());
@@ -87,17 +90,32 @@ public class ChainService {
         if (nameCount > 0) {
             throw new BaseException(ConstantCode.CHAIN_NAME_EXISTS);
         }
-
         // copy attribute
         TbChain tbChain = new TbChain();
         BeanUtils.copyProperties(chainInfo, tbChain);
-
         // save chain info
         int result = chainMapper.add(tbChain);
         if (result == 0) {
             log.warn("fail newChain after save.");
             throw new BaseException(ConstantCode.SAVE_CHAIN_FAIL);
         }
+        return getChainById(chainInfo.getChainId());
+    }
+    
+    /**
+     * update chain info
+     */
+    public TbChain updateChain(UpdateChainInfo chainInfo) {
+        log.debug("start updateChain chainInfo:{}", chainInfo);
+        // check id
+        if (!checkChainId(chainInfo.getChainId())) {
+            throw new BaseException(ConstantCode.CHAIN_ID_NOT_EXISTS);
+        }
+        // copy attribute
+        TbChain tbChain = new TbChain();
+        BeanUtils.copyProperties(chainInfo, tbChain);
+        // update chain info
+        chainMapper.update(tbChain);
         return getChainById(chainInfo.getChainId());
     }
 
@@ -157,5 +175,16 @@ public class ChainService {
         frontGroupMapCache.clearMapList(chainId);
         // drop sub tables
         groupList.forEach(g -> tableService.dropTable(chainId, g.getGroupId()));
+    }
+    
+    /**
+     * check chain id
+     */
+    private boolean checkChainId(Integer chainId) {
+        TbChain tbChainInfo = getChainById(chainId);
+        if (tbChainInfo == null) {
+            return false;
+        }
+        return true;
     }
 }

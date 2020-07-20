@@ -11,30 +11,19 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.node.entity;
+package com.webank.webase.data.collect.group.entity;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
-/**
- * Entity class of table tb_node.
- */
 @Data
-public class TbNode {
-
-    private Integer id;
-    private String nodeId;
+public class AppInfo {
+    @NotNull
     private Integer chainId;
+    @NotNull
     private Integer groupId;
-    private String orgName;
-    private String nodeIp;
-    private Integer p2pPort;
+    @NotBlank
+    private String appName;
     private String description;
-    private BigInteger blockNumber;
-    private BigInteger pbftView;
-    private int nodeActive;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
-
 }

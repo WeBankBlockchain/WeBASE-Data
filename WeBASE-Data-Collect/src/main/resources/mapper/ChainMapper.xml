@@ -24,6 +24,14 @@
         (chain_id,chain_name,chain_type,description,create_time,modify_time)
         values(#{chainId},#{chainName},#{chainType},#{description},NOW(),NOW())
     </insert>
+    
+    <update id="update">
+		update tb_chain 
+		set chain_name = #{chainName},
+		    description = #{description},
+			modify_time = now()
+		where chain_id = #{chainId}
+	</update>
 
     <select id="getCount"
         parameterType="com.webank.webase.data.collect.chain.entity.ChainParam"
