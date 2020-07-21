@@ -26,7 +26,7 @@ const blockInfo = resolve => require(['@/views/blockInfo'], resolve);
 const transactionInfo = resolve => require(['@/views/transactionInfo'], resolve);
 const contractInfo = resolve => require(['@/views/contractInfo'], resolve);
 const userInfo = resolve => require(['@/views/userInfo'], resolve);
-
+const keywordConfig = resolve => require(['@/views/keywordConfig/index.vue'], resolve);
 Vue.use(Router);
 const routes = [
     {
@@ -104,7 +104,18 @@ const routes = [
             
         ]
     },
-    
+    {
+        path: '/',
+        component: main,
+        name: '关键字告警',
+        nameKey: "keywordConfig",
+        leaf: true,
+        menuShow: true,
+        iconCls: 'wbs-icon-key-b sidebar-icon',
+        children: [
+            { path: '/keywordConfig', component: keywordConfig, name: '关键字告警', nameKey: "keywordConfig", menuShow: true, meta: { requireAuth: true } }
+        ]
+    }, 
 ]
 const router = new Router({
     routes

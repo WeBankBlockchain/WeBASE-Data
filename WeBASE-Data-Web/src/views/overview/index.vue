@@ -7,45 +7,35 @@
                     <img style="height: 100%;width: 100%;" src="../../../static/image/btb.jpeg" alt="图片">
                 </div>
                 <div class="left-content">
+                    <p class="myReleasedApply">服务</p>
                     <p>
-                        <span>服务</span>
-                        <span class="left-content-title">
-                            碳排放
+                        <span class="">
+                            {{appTitleMap.appName}}
                         </span>
-                        <span>v0.0.1</span>
+                        <span v-if="appTitleMap.appVersion">v{{appTitleMap.appVersion}}</span>
                     </p>
-                    <div>
-                        指定应用
-                    </div>
-                    <div>
-                        Fisco-2.4.0-sm2
-                    </div>
-
                 </div>
             </div>
             <div>
                 <p class="myReleasedApply">服务简介</p>
-                <span class="myReleasedApply-content">这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，这是碳排放，</span>
+                <span class="myReleasedApply-content">
+                    {{appTitleMap.appSynopsis}}
+                </span>
             </div>
         </div>
-        <div class="module-wrapper box-content">
+        <!-- <div class="module-wrapper box-content" >
             <div class="box-content-title">
                 <p style="font-weight: bold; font-size: 18px;">
                     服务描述
                 </p>
             </div>
             <div id="appDesc" style="margin-right: 22px; word-break: break-all;">
-                <p>伊OS是一款基于微信生态开发的超轻量插件式小程序应用，零成本与建设各方已有系统进行对接和集成，能够自动收集、整理、归档项目过程中的实证数据和资料，为贯穿全过程管理打下坚实基础。结合移动端和PC端，帮助项目各方单位人员提高协作效率。</p>
-                
-                <p>伊OS通过进度、质量、安全等场景存证，对工程量进行实时反馈、测量、验收、审批，从工作过程到款项申请形成完整的流程闭环，帮助甲方监控管理项目的全生命周期。</p>
-                <p>产品官方链接：
-                    <a href="">https:/xxx.com.cn/</a>
-                </p>
+                <p>{{appTitleMap.description}}</p>
             </div>
             <div>
                 <p></p>
             </div>
-        </div>
+        </div> -->
         <div style="margin: 5px;">
             <div style="margin:10px 10px 6px 10px;">
                 <el-row>
@@ -175,7 +165,7 @@
 </template>
 
 <script>
-import { groupGeneral, groupTransDaily, groupNodeList, blockList, transList } from "@/util/api";
+import { groupGeneral, groupTransDaily, groupNodeList, blockList, transList, groupList } from "@/util/api";
 import Chart from "@/components/Charts/BaseLine"
 import contentHead from "@/components/contentHead";
 import { changWeek, numberFormat, unique } from "@/util/util";
@@ -243,7 +233,8 @@ export default {
             ],
             chainName: '',
             blockData: [],
-            transactionList: []
+            transactionList: [],
+            appTitleMap: {}
         }
     },
 
@@ -293,6 +284,7 @@ export default {
                 this.chainId = this.$route.params.chainId
                 this.groupId = val
             }
+            this.queryGroup()
             this.querygroupGeneral()
             this.queryNodeList()
             this.getBlockList()
@@ -302,6 +294,21 @@ export default {
                 this.chartStatistics.chartSize.height = this.$refs.chart.offsetHeight;
                 this.queryGroupTransDaily();
             });
+        },
+        queryGroup() {
+            groupList(this.chainId)
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let arr = res.data.data
+                        var list = arr.filter(item=>{
+                            return item.groupId == this.groupId
+                        })
+                        
+                        if(list.length) this.appTitleMap = list[0];
+                        
+                    }
+                })
+
         },
         querygroupGeneral() {
             groupGeneral(this.chainId, this.groupId)
@@ -869,7 +876,7 @@ export default {
 .app-description {
     min-width: 1200px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-top: 20px;
     padding: 10px;
 }
