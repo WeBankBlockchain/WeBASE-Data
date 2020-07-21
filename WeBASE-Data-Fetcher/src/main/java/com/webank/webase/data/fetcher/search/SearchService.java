@@ -98,7 +98,7 @@ public class SearchService {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
             for (SearchParamFileds filed : SearchParamFileds.values()) {
                 boolQueryBuilder
-                        .should(QueryBuilders.wildcardQuery(filed.getValue(), "*" + keyword + "*"));
+                        .should(QueryBuilders.matchQuery(filed.getValue(), "*" + keyword + "*"));
             }
             SearchResponse searchResponse = esCurdService.search(pageNumber, pageSize, indexName,
                     new SearchSourceBuilder(), boolQueryBuilder);

@@ -50,7 +50,7 @@ public class SearchController extends BaseController {
             BindingResult result) throws BaseException {
         checkBindResult(result);
         Instant startTime = Instant.now();
-        log.info("start normalList.");
+        log.info("start normal search.");
 
         BasePageResponse pageResponse = searchService.normalList(queryParam);
 
@@ -63,6 +63,7 @@ public class SearchController extends BaseController {
     public BasePageResponse findByKey(@PathVariable Integer pageNumber,
             @PathVariable Integer pageSize,
             @RequestParam(value = "keyword", required = true) String keyword) {
+        log.info("start keyword search. keyword:{}", keyword);
         return searchService.findByKey(pageNumber, pageSize, keyword);
     }
 }
