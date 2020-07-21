@@ -19,7 +19,12 @@
             <el-form-item label="应用名" prop="appName" style="width: 300px;">
                 <el-input v-model="appForm.appName" placeholder="请输入应用名"></el-input>
             </el-form-item>
-
+            <el-form-item label="应用版本" prop="appVersion" style="width: 300px;">
+                <el-input v-model="appForm.appVersion" placeholder="请输入应用版本"></el-input>
+            </el-form-item>
+            <el-form-item label="应用概要" prop="appSynopsis" style="width: 300px;">
+                <el-input v-model="appForm.appSynopsis" type="textarea" placeholder="请输入应用概要"></el-input>
+            </el-form-item>
             <el-form-item label="描述" prop="description" style="width: 300px;">
                 <el-input v-model="appForm.description" type="textarea" placeholder="请输入应用描述"></el-input>
             </el-form-item>
@@ -49,6 +54,8 @@ export default {
                         this.appForm = {
                             appName: this.appDialogOptions.data["appName"],
                             description: this.appDialogOptions.data["description"],
+                            appVersion: this.appDialogOptions.data["appVersion"],
+                            appSynopsis: this.appDialogOptions.data["appSynopsis"],
                             disabled: true,
                             mDisabled: false,
                             dShow: true,
@@ -71,11 +78,30 @@ export default {
     },
     computed: {
         rules() {
+            var validateVersion = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入版本号'));
+                }else if (!/^\d+\.\d+\.\d+$/.test(value)) {
+                    callback(new Error('请正确输入版本号例如0.0.1'));
+                }else {
+                    callback()
+                }
+            }
             let data = {
                 appName: [
                     {
                         required: true,
                         message: '请输入应用名',
+                        trigger: "blur"
+                    }
+                ],
+                appVersion: [
+                    { validator: validateVersion, trigger: 'blur',required: true, }
+                ],
+                appSynopsis: [
+                    {
+                        required: true,
+                        message: '请输入应用概要',
                         trigger: "blur"
                     }
                 ],
@@ -99,7 +125,9 @@ export default {
         },
         submit: function (formName) {
             this.$refs[formName].validate(valid => {
+console.log(1111)
                 if (valid) {
+                    
                     this.loading = true;
                     this.getAllInfo();
                 } else {
@@ -109,6 +137,7 @@ export default {
         },
         getAllInfo: function () {
             let type = this.type;
+            console.log(type)
             switch (type) {
 
                 case "modify":
@@ -122,7 +151,9 @@ export default {
                 chainId: this.appDialogOptions.data.chainId,
                 groupId: this.appDialogOptions.data.groupId,
                 appName: this.appForm.appName,
-                description: this.appForm.description
+                appSynopsis: this.appForm.appSynopsis,
+                appVersion: this.appForm.appVersion,
+                description: this.appForm.description,
             };
 
             modifyGroups(reqData, {})
