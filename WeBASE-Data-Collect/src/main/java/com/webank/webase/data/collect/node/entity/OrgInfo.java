@@ -13,28 +13,17 @@
  */
 package com.webank.webase.data.collect.node.entity;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 
-/**
- * Entity class of table tb_node.
- */
 @Data
-public class TbNode {
-
-    private Integer id;
-    private String nodeId;
+public class OrgInfo {
+    @NotNull
     private Integer chainId;
-    private Integer groupId;
+    @NotNull
+    private String nodeId;
+    @NotBlank
     private String orgName;
-    private String nodeIp;
-    private Integer p2pPort;
     private String description;
-    private BigInteger blockNumber;
-    private BigInteger pbftView;
-    private int nodeActive;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
-
 }

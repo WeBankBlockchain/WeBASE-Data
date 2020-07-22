@@ -25,6 +25,7 @@ public class NodeInfoDto {
     private String nodeId;
     private Integer chainId;
     private Integer groupId;
+    private String orgName;
     private String nodeIp;
     private Integer p2pPort;
     private String description;

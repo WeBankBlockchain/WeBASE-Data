@@ -73,7 +73,7 @@ public class GroupController extends BaseController {
             pagesponse.setData(groupList);
         }
 
-        log.info("end getGroupList useTime:{} result:{}",
+        log.info("end getGroupList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }

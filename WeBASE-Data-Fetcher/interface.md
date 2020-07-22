@@ -91,7 +91,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注   |
 | ---- | -------- | ---- | ------ | ------ |
-| 1    | chainId  | Int  | 是     | 链编号 |
+| 1    | chainId  | Int  | 否     | 链编号 |
 
 ***2）入参示例***
 
@@ -103,21 +103,25 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/list/1
 
 ***1）出参表***
 
-| 序号  | 输出参数         | 类型          |      | 备注                       |
-| ----- | ---------------- | ------------- | ---- | -------------------------- |
-| 1     | code             | Int           | 否   | 返回码，0：成功 其它：失败 |
-| 2     | message          | String        | 否   | 描述                       |
-| 3     | totalCount       | Int           | 否   | 总记录数                   |
-| 4     | data             | List          | 否   | 列表                       |
-| 4.1   |                  | Object        |      | 信息对象                   |
-| 4.1.1 | chainId          | Int           | 否   | 链编号                     |
-| 4.1.2 | groupId          | Int           | 否   | 群组编号                   |
-| 4.1.3 | groupName        | String        | 否   | 群组名称                   |
-| 4.1.4 | genesisBlockHash | String        | 否   | 创世块hash                 |
-| 4.1.5 | groupStatus      | Int           | 否   | 群组状态                   |
-| 4.1.6 | nodeCount        | Int           | 否   | 节点个数                   |
-| 4.1.7 | createTime       | LocalDateTime | 否   | 落库时间                   |
-| 4.1.8 | modifyTime       | LocalDateTime | 否   | 修改时间                   |
+| 序号   | 输出参数         | 类型          |      | 备注                       |
+| ------ | ---------------- | ------------- | ---- | -------------------------- |
+| 1      | code             | Int           | 否   | 返回码，0：成功 其它：失败 |
+| 2      | message          | String        | 否   | 描述                       |
+| 3      | totalCount       | Int           | 否   | 总记录数                   |
+| 4      | data             | List          | 否   | 列表                       |
+| 4.1    |                  | Object        |      | 信息对象                   |
+| 4.1.1  | chainId          | Int           | 否   | 链编号                     |
+| 4.1.2  | groupId          | Int           | 否   | 群组编号                   |
+| 4.1.3  | groupName        | String        | 否   | 群组名称                   |
+| 4.1.4  | appName          | String        | 否   | 应用名称                   |
+| 4.1.5  | appVersion       | String        | 是   | 应用版本号                 |
+| 4.1.6  | appSynopsis      | String        | 是   | 应用概要介绍               |
+| 4.1.7  | genesisBlockHash | String        | 否   | 创世块hash                 |
+| 4.1.8  | groupStatus      | Int           | 否   | 群组状态                   |
+| 4.1.9  | nodeCount        | Int           | 否   | 节点个数                   |
+| 4.1.10 | description      | String        | 否   | 应用描述                   |
+| 4.1.11 | createTime       | LocalDateTime | 否   | 落库时间                   |
+| 4.1.12 | modifyTime       | LocalDateTime | 否   | 修改时间                   |
 
 ***2）出参示例***
 
@@ -132,9 +136,13 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/list/1
       "chainId": 1,
       "groupId": 1,
       "groupName": "group1",
+      "appName": "APP1",
+      "appVersion": "v1.0.0",
+      "appSynopsis": "存证",
       "genesisBlockHash": "0x7bc361d7d8e078ea9e8f352f2b856d6ea76ab1b9522f4b09853c861d0ed0779f",
       "groupStatus": 1,
       "nodeCount": 2,
+      "description": "test",
       "createTime": "2020-05-20 20:22:35",
       "modifyTime": "2020-05-20 20:31:38"
     },
@@ -142,9 +150,13 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/list/1
       "chainId": 1,
       "groupId": 2,
       "groupName": "group2",
+      "appName": "APP2",
+      "appVersion": "v1.0.0",
+      "appSynopsis": "供应链",
       "genesisBlockHash": "0x1208de0d47dcba9447d304039d1e4512dd4ce740ec408ef83c5f7ee2aefc7468",
       "groupStatus": 1,
       "nodeCount": 2,
+      "description": "test",
       "createTime": "2020-05-20 20:22:36",
       "modifyTime": "2020-05-20 20:31:38"
     }
@@ -178,7 +190,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/list/1
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注   |
 | ---- | -------- | ---- | ------ | ------ |
-| 1    | chainId  | Int  | 是     | 链编号 |
+| 1    | chainId  | Int  | 否     | 链编号 |
 | 2    | groupId  | int  | 否     | 群组id |
 
 ***2）入参示例***
@@ -249,7 +261,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/general/1/1
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注   |
 | ---- | -------- | ---- | ------ | ------ |
-| 1    | chainId  | Int  | 是     | 链编号 |
+| 1    | chainId  | Int  | 否     | 链编号 |
 | 2    | groupId  | int  | 否     | 群组id |
 
 ***2）入参示例***
@@ -349,14 +361,15 @@ http://127.0.0.1:5005/WeBASE-Chain-Manager/group/nodeList/100001/300001/1/10?nod
 | 4.1.2  | nodeId      | String        | 否   | 节点编号                   |
 | 4.1.3  | nodeName    | string        | 否   | 节点名称                   |
 | 4.1.4  | groupId     | int           | 否   | 所属群组编号               |
-| 4.1.5  | nodeActive  | int           | 否   | 共识状态（1正常，2不正常） |
-| 4.1.6  | nodeIp      | string        | 是   | 节点ip                     |
-| 4.1.7  | P2pPort     | int           | 是   | 节点p2p端口                |
-| 4.1.8  | description | String        | 是   | 备注                       |
-| 4.1.9  | blockNumber | BigInteger    | 否   | 节点块高                   |
-| 4.1.10 | pbftView    | BigInteger    | 否   | Pbft view                  |
-| 4.1.11 | createTime  | LocalDateTime | 否   | 落库时间                   |
-| 4.1.12 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
+| 4.1.5  | orgName     | string        | 是   | 机构名称                   |
+| 4.1.6  | nodeActive  | int           | 否   | 共识状态（1正常，2不正常） |
+| 4.1.7  | nodeIp      | string        | 是   | 节点ip                     |
+| 4.1.8  | P2pPort     | int           | 是   | 节点p2p端口                |
+| 4.1.9  | description | String        | 是   | 备注                       |
+| 4.1.10 | blockNumber | BigInteger    | 否   | 节点块高                   |
+| 4.1.11 | pbftView    | BigInteger    | 否   | Pbft view                  |
+| 4.1.12 | createTime  | LocalDateTime | 否   | 落库时间                   |
+| 4.1.13 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
 
 ***2）出参示例***
 
@@ -373,6 +386,7 @@ http://127.0.0.1:5005/WeBASE-Chain-Manager/group/nodeList/100001/300001/1/10?nod
             "nodeId": "78e467957af3d0f77e19b952a740ba8c53ac76913df7dbd48d7a0fe27f4c902b55e8543e1c4f65b4a61695c3b490a5e8584149809f66e9ffc8c05b427e9d3ca2,
             "nodeName": "1_78e467957af3d0f77e19b952a740ba8c53ac76913df7dbd48d7a0fe27f4c902b55e8543e1c4f65b4a61695c3b490a5e8584149809f66e9ffc8c05b",
             "groupId": 1,
+            "orgName": "org",
             "nodeIp": "127.0.0.1",
             "p2pPort": 10303,
             "description": null,
@@ -651,7 +665,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/userList/1/1/1/2
 #### 传输协议
 
 - 网络传输协议：使用HTTP协议
-- 请求地址：**/group/contractList/{chainId}/{groupId}/{pageNumber}/{pageSize}?contractName={contractName}**
+- 请求地址：**/group/contractList/{chainId}/{groupId}/{pageNumber}/{pageSize}?contractParam={contractParam}**
 - 请求方式：GET
 - 返回格式：JSON
 
@@ -659,13 +673,13 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/userList/1/1/1/2
 
 ***1）入参表***
 
-| 序号 | 输入参数     | 类型   | 可为空 | 备注       |
-| ---- | ------------ | ------ | ------ | ---------- |
-| 1    | chainId      | Int    | 否     | 链编号     |
-| 2    | groupId      | Int    | 否     | 群组id     |
-| 3    | pageSize     | Int    | 是     | 每页记录数 |
-| 4    | pageNumber   | Int    | 是     | 当前页码   |
-| 5    | contractName | String | 是     | 合约名     |
+| 序号 | 输入参数      | 类型   | 可为空 | 备注         |
+| ---- | ------------- | ------ | ------ | ------------ |
+| 1    | chainId       | Int    | 否     | 链编号       |
+| 2    | groupId       | Int    | 否     | 群组id       |
+| 3    | pageSize      | Int    | 是     | 每页记录数   |
+| 4    | pageNumber    | Int    | 是     | 当前页码     |
+| 5    | contractParam | String | 是     | 合约名或地址 |
 
 ***2）入参示例***
 

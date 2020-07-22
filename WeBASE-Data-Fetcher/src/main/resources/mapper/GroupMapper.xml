@@ -14,10 +14,18 @@
             jdbcType="VARCHAR" property="genesisBlockHash" />
         <result column="group_name" javaType="java.lang.String"
             jdbcType="VARCHAR" property="groupName" />
+        <result column="app_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appName" />
+        <result column="app_version" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appVersion" />
+        <result column="app_synopsis" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appSynopsis" />
         <result column="group_status" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="groupStatus" />
         <result column="node_count" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="nodeCount" />
+        <result column="description" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="description" />
         <result column="create_time" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" javaType="java.time.LocalDateTime"
@@ -44,6 +52,8 @@
             jdbcType="INTEGER" property="chainId" />
         <result column="group_id" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="groupId" />
+        <result column="org_name" javaType="java.lang.String" jdbcType="VARCHAR"
+            property="orgName" />
         <result column="node_ip" javaType="java.lang.String" jdbcType="VARCHAR"
             property="nodeIp" />
         <result column="p2p_port" javaType="java.lang.Integer"

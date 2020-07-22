@@ -14,6 +14,7 @@
 package com.webank.webase.data.collect.node;
 
 import com.webank.webase.data.collect.node.entity.NodeParam;
+import com.webank.webase.data.collect.node.entity.OrgInfo;
 import com.webank.webase.data.collect.node.entity.TbNode;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
@@ -29,17 +30,31 @@ public interface NodeMapper {
      * Add new node data.
      */
     Integer add(TbNode tbNode);
+    
+    /**
+     * update node org info.
+     */
+    Integer updateOrgInfo(OrgInfo orgInfo);
 
     /**
      * Query the number of node according to some conditions.
      */
     Integer getCount(NodeParam nodeParam);
 
-
     /**
      * Query node list according to some conditions.
      */
     List<TbNode> getList(NodeParam nodeParam);
+    
+    /**
+     * Query the number of org node according to some conditions.
+     */
+    Integer getOrgNodeCount(NodeParam nodeParam);
+    
+    /**
+     * Query org node list according to some conditions.
+     */
+    List<OrgInfo> getOrgNodeList(NodeParam nodeParam);
 
     /**
      * query tb_node by nodeip and p2pport.

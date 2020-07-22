@@ -15,10 +15,18 @@
             jdbcType="VARCHAR" property="genesisBlockHash" />
         <result column="group_name" javaType="java.lang.String"
             jdbcType="VARCHAR" property="groupName" />
+        <result column="app_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appName" />
+        <result column="app_version" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appVersion" />
+        <result column="app_synopsis" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appSynopsis" />
         <result column="group_status" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="groupStatus" />
         <result column="node_count" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="nodeCount" />
+        <result column="description" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="description" />
         <result column="create_time" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" javaType="java.time.LocalDateTime"
@@ -32,33 +40,35 @@
         ON DUPLICATE KEY UPDATE 
         node_count=#{nodeCount},modify_time=NOW()
     </insert>
-
-    <delete id="remove">
-        delete from tb_group
-        where chain_id = #{chainId}
-        <if test="groupId != null">
-            and group_id = #{groupId}
-        </if>
-    </delete>
+    
+    <update id="updateAppInfo">
+		update tb_group 
+		set app_name = #{appName},
+		    app_version = #{appVersion},
+		    app_synopsis = #{appSynopsis},
+		    description = #{description},
+			modify_time = now()
+		where group_id = #{groupId}
+        and chain_id = #{chainId}
+	</update>
 
     <update id="updateStatus">
-        update tb_group set
-        group_status=#{groupStatus},modify_time=NOW()
-        where group_id =
-        #{groupId}
+        update tb_group 
+        set group_status = #{groupStatus},
+            modify_time = NOW()
+        where group_id = #{groupId}
         and chain_id = #{chainId}
     </update>
 
-    <select id="getCount" parameterType="java.lang.Integer"
-        resultType="java.lang.Integer">
+    <select id="getCount" resultType="java.lang.Integer">
         select count(1) from tb_group where 1 = 1
         <if test="chainId != null">
             and chain_id = #{chainId}
         </if>
-        <if test="groupId != null and groupId !=''">
+        <if test="groupId != null">
             and group_id = #{groupId}
         </if>
-        <if test="groupStatus != null and groupStatus !=''">
+        <if test="groupStatus != null">
             and group_status = #{groupStatus}
         </if>
     </select>
@@ -71,7 +81,7 @@
         <if test="groupId != null">
             and group_id = #{groupId}
         </if>
-        <if test="groupStatus != null and groupStatus !=''">
+        <if test="groupStatus != null">
             and group_status = #{groupStatus}
         </if>
         order by group_id asc
@@ -88,4 +98,12 @@
         WHERE a.chain_id = #{chainId}
           AND a.group_id = #{groupId}
     </select>
+    
+    <delete id="remove">
+        delete from tb_group
+        where chain_id = #{chainId}
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+    </delete>
 </mapper>

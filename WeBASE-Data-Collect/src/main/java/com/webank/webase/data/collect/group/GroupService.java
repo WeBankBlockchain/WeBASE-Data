@@ -31,6 +31,7 @@ import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.frontinterface.entity.PeerInfo;
 import com.webank.webase.data.collect.group.entity.GroupGeneral;
+import com.webank.webase.data.collect.group.entity.AppInfo;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.node.NodeService;
 import com.webank.webase.data.collect.node.entity.TbNode;
@@ -119,6 +120,16 @@ public class GroupService {
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
+    
+    /**
+     * query group overview information.
+     */
+    public void updateGroupAppInfo(AppInfo appInfo) throws BaseException {
+        // check groupId
+        checkGroupId(appInfo.getChainId(), appInfo.getGroupId());
+        // update
+        groupMapper.updateAppInfo(appInfo);
+    }
 
     /**
      * update status.
@@ -153,7 +164,6 @@ public class GroupService {
         }
         return generalInfo;
     }
-
 
     /**
      * reset groupList.

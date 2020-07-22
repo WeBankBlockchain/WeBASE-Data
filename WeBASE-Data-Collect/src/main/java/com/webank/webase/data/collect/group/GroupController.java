@@ -20,6 +20,7 @@ import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.enums.DataStatus;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.group.entity.GroupGeneral;
+import com.webank.webase.data.collect.group.entity.AppInfo;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.scheduler.ResetGroupListTask;
 import com.webank.webase.data.collect.txndaily.TxnDailyService;
@@ -27,10 +28,14 @@ import com.webank.webase.data.collect.txndaily.entity.TbTxnDaily;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,6 +53,22 @@ public class GroupController extends BaseController {
     private TxnDailyService txnDailyService;
     @Autowired
     private ResetGroupListTask resetGroupListTask;
+
+    /**
+     * update group app info
+     */
+    @PostMapping("/update")
+    public BaseResponse updateGroupAppInfo(@RequestBody @Valid AppInfo appInfo,
+            BindingResult result) throws BaseException {
+        checkBindResult(result);
+        Instant startTime = Instant.now();
+        BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
+        log.info("start updateGroupInfo.");
+        groupService.updateGroupAppInfo(appInfo);
+        log.info("end updateGroupInfo useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return baseResponse;
+    }
 
     /**
      * get group general.

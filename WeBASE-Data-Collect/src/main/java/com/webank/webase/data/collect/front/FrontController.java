@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.front;
 
-
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;

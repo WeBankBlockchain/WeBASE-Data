@@ -13,6 +13,7 @@
  */
 package com.webank.webase.data.collect.group;
 
+import com.webank.webase.data.collect.group.entity.AppInfo;
 import com.webank.webase.data.collect.group.entity.GroupGeneral;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import java.util.List;
@@ -29,6 +30,11 @@ public interface GroupMapper {
      * add group info
      */
     int save(TbGroup tbGroup);
+
+    /**
+     * update group application info
+     */
+    int updateAppInfo(AppInfo appInfo);
 
     /**
      * remove by id.

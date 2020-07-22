@@ -11,30 +11,33 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.node.entity;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
-import lombok.Data;
+package com.webank.webase.data.collect.base.enums;
 
 /**
- * Entity class of table tb_node.
+ * Enumeration of chain type.
  */
-@Data
-public class TbNode {
+public enum ChainType {
+    ecdsa(0), guomi(1);
 
-    private Integer id;
-    private String nodeId;
-    private Integer chainId;
-    private Integer groupId;
-    private String orgName;
-    private String nodeIp;
-    private Integer p2pPort;
-    private String description;
-    private BigInteger blockNumber;
-    private BigInteger pbftView;
-    private int nodeActive;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
+    private int type;
 
+    private ChainType(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
+        return this.type;
+    }
+
+    public static boolean isInclude(int type) {
+        boolean include = false;
+        for (ChainType e : ChainType.values()) {
+            if (e.getType() == type) {
+                include = true;
+                break;
+            }
+        }
+        return include;
+    }
 }
