@@ -13,9 +13,12 @@
  */
 package com.webank.webase.data.collect.contract.entity;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 /**
  *
@@ -23,11 +26,14 @@ import lombok.Data;
 @Data
 public class Contract {
     @NotNull
+    @Min(1)
+    @Max(9999)
     private Integer chainId;
     @NotNull
     private Integer groupId;
     private Integer contractId;
     @NotBlank
+    @Length(min=1, max=120)
     private String contractName;
     @NotBlank
     private String contractPath;

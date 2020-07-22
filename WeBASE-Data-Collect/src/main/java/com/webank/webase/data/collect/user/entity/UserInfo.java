@@ -13,10 +13,13 @@
  */
 package com.webank.webase.data.collect.user.entity;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * bind public user to import
@@ -25,12 +28,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserInfo {
     @NotNull
+    @Min(1)
+    @Max(9999)
     private Integer chainId;
     @NotNull
     private Integer groupId;
     @NotBlank
+    @Length(min=1, max=64)
     private String userName;
     @NotBlank
+    @Length(min=1, max=64)
     private String address;
     private String description;
 }

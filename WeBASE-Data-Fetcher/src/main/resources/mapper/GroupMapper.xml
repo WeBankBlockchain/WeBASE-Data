@@ -118,10 +118,10 @@
         <if test="chainId != null">
             and chain_id = #{chainId}
         </if>
-        <if test="groupId != null and groupId !=''">
+        <if test="groupId != null">
             and group_id = #{groupId}
         </if>
-        <if test="groupStatus != null and groupStatus !=''">
+        <if test="groupStatus != null">
             and group_status = #{groupStatus}
         </if>
     </select>
@@ -134,7 +134,7 @@
         <if test="groupId != null">
             and group_id = #{groupId}
         </if>
-        <if test="groupStatus != null and groupStatus !=''">
+        <if test="groupStatus != null">
             and group_status = #{groupStatus}
         </if>
         order by group_id asc
@@ -181,6 +181,26 @@
         <if test="groupId != null">
             and group_id = #{groupId}
         </if>
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+    
+    <select id="getOrgNodeCount"
+        resultType="java.lang.Integer">
+        select count(distinct(node_id)) from tb_node
+         where chain_id = #{chainId}
+    </select>
+
+    <select id="getOrgNodeList"
+        resultType="com.webank.webase.data.fetcher.group.entity.OrgInfoDto">
+        select distinct(node_id) as nodeId,
+               chain_id as chainId,
+               org_name as orgName,
+               description as description
+          from tb_node
+         where chain_id = #{chainId}
+         group by node_id
         <if test="start != null and pageSize != null">
             limit #{start},#{pageSize}
         </if>

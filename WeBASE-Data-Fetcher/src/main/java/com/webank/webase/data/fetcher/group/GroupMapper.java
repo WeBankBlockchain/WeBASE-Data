@@ -20,6 +20,7 @@ import com.webank.webase.data.fetcher.group.entity.ContractInfoDto;
 import com.webank.webase.data.fetcher.group.entity.GroupGeneral;
 import com.webank.webase.data.fetcher.group.entity.GroupInfoDto;
 import com.webank.webase.data.fetcher.group.entity.NodeInfoDto;
+import com.webank.webase.data.fetcher.group.entity.OrgInfoDto;
 import com.webank.webase.data.fetcher.group.entity.TransListParam;
 import com.webank.webase.data.fetcher.group.entity.TransactionInfoDto;
 import com.webank.webase.data.fetcher.group.entity.TxnDailyDto;
@@ -67,6 +68,16 @@ public interface GroupMapper {
      * Query node list according to some conditions.
      */
     List<NodeInfoDto> queryNodeList(BaseQueryParam param);
+    
+    /**
+     * Query the number of org node according to some conditions.
+     */
+    Integer getOrgNodeCount(BaseQueryParam param);
+    
+    /**
+     * Query org node list according to some conditions.
+     */
+    List<OrgInfoDto> getOrgNodeList(BaseQueryParam param);
 
     /**
      * query block count.

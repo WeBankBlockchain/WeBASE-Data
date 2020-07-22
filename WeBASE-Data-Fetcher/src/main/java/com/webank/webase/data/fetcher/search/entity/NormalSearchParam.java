@@ -13,6 +13,8 @@
  */
 package com.webank.webase.data.fetcher.search.entity;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class NormalSearchParam {
     @NotNull
+    @Min(1)
+    @Max(9999)
     private Integer chainId;
     @NotNull
     private Integer groupId;
