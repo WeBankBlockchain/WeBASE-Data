@@ -27,6 +27,7 @@ const transactionInfo = resolve => require(['@/views/transactionInfo'], resolve)
 const contractInfo = resolve => require(['@/views/contractInfo'], resolve);
 const userInfo = resolve => require(['@/views/userInfo'], resolve);
 const keywordConfig = resolve => require(['@/views/keywordConfig/index.vue'], resolve);
+const alarm = resolve => require(['@/views/alarm/index.vue'], resolve);
 Vue.use(Router);
 const routes = [
     {
@@ -58,11 +59,11 @@ const routes = [
         component: main,
         name: '区块链',
         nameKey: "chain",
-        leaf: false,
+        leaf: true,
         menuShow: true,
         iconCls: 'wbs-icon-group sidebar-icon',
         children: [
-            // { path: '/chain', component: chain, name: '区块链', nameKey: "nodeTitle", menuShow: true, meta: { requireAuth: true } },
+            { path: '/chain', component: chain, name: '区块链', nameKey: "nodeTitle", menuShow: true, meta: { requireAuth: true } },
         ]
     }, 
     {
@@ -86,7 +87,7 @@ const routes = [
         menuShow: false,
         iconCls: 'wbs-icon-group sidebar-icon',
         children: [
-            { path: '/overview/:chainId/:chainName', component: overview, name: '概览', nameKey: "overview", menuShow: true, meta: { requireAuth: true } },
+            { path: '/overview/:chainId/:chainName/:groupId', component: overview, name: '概览', nameKey: "overview", menuShow: true, meta: { requireAuth: true } },
         ]
     },
     {
@@ -107,13 +108,25 @@ const routes = [
     {
         path: '/',
         component: main,
-        name: '关键字告警',
+        name: '配置',
         nameKey: "keywordConfig",
         leaf: true,
         menuShow: true,
-        iconCls: 'wbs-icon-key-b sidebar-icon',
+        iconCls: 'wbs-icon-key sidebar-icon',
         children: [
-            { path: '/keywordConfig', component: keywordConfig, name: '关键字告警', nameKey: "keywordConfig", menuShow: true, meta: { requireAuth: true } }
+            { path: '/keywordConfig', component: keywordConfig, name: '配置', nameKey: "keywordConfig", menuShow: true, meta: { requireAuth: true } }
+        ]
+    }, 
+    {
+        path: '/',
+        component: main,
+        name: '告警列表',
+        nameKey: "alarm",
+        leaf: true,
+        menuShow: true,
+        iconCls: 'wbs-icon-wenjian sidebar-icon',
+        children: [
+            { path: '/alarm', component: alarm, name: '告警列表', nameKey: "alarm", menuShow: true, meta: { requireAuth: true } }
         ]
     }, 
 ]

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-content-head :headTitle="'关键字配置'"></v-content-head>
+        <v-content-head :headTitle="'配置'"></v-content-head>
         <div class="module-wrapper">
             <div class="search-part" style="padding-top: 20px;">
                 <div class="search-part-left">
@@ -24,7 +24,7 @@
             </div>
            
         </div>
-        <div  class="module-wrapper">
+        <!-- <div  class="module-wrapper">
             <div style="padding: 10px 0 0 40px; font-weight: bold;font-size: 16px;">告警列表</div>
              <div class="search-table">
                 <el-table :data="alarmList" tooltip-effect="dark">
@@ -40,11 +40,8 @@
                         </template>
                     </el-table-column>
                 </el-table>
-
-                <!-- <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-                </el-pagination> -->
             </div>
-        </div>
+        </div> -->
         <el-dialog :visible.sync="keywordVisible" title="关键字配置" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="keywordVisible">
             <create-keyword @success="success" @close="close"></create-keyword>
         </el-dialog>

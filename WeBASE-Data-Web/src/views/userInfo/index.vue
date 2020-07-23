@@ -97,7 +97,7 @@ export default {
                 pageSize: this.pageSize,
 
             }, reqQuery = {
-                userParam: this.userParam
+                userParam: this.replaceStartEndSpace(this.userParam)
             };
             
             userList(reqData, reqQuery).then(res => {

@@ -97,7 +97,7 @@ export default {
                 pageNumber: this.currentPage,
                 pageSize: this.pageSize
             }, reqQuery = {
-                contractParam: this.contractParam
+                contractParam: this.replaceStartEndSpace(this.contractParam)
             };
             contractList(reqData, reqQuery).then(res => {
                 if (res.data.code == 0) {

@@ -117,6 +117,14 @@
     ],
     "5": [
         {
+            "enName": "chainName",
+            "name": "链名称"
+        },
+        {
+            "enName": "appName",
+            "name": "应用名"
+        },
+        {
             "enName": "contractAddress",
             "name": "合约地址"
         },
