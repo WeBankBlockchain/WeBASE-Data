@@ -38,13 +38,22 @@ export function chainAll() {
         method: 'get',
     })
 }
-export function groupList(chainId) {
+export function groupList(param) {
     return get({
-        url: `${url.ORG_LIST}/group/list/${chainId}`,
+        url: `${url.ORG_LIST}/group/list`,
         method: 'get',
+        params: param
     })
 }
-
+//查询链节点
+export function chainNodes(data, list) {
+    const params = reviseParam(data, list);
+    return get({
+        url: `${url.ORG_LIST}/group/orgList/${params.str}`,
+        method: 'get',
+        params: params.querys,
+    })
+}
 export function groupGeneral(chainId, groupId) {
     return get({
         url: `${url.ORG_LIST}/group/general/${chainId}/${groupId}`,

@@ -28,7 +28,7 @@
             </el-tooltip>
         </div>
         <div class="content-head-network">
-            <el-dropdown trigger="click" @command="changeChain" placement="bottom">
+            <el-dropdown trigger="click" @command="changeChain" placement="bottom" v-if="showChain">
                 <span class="cursor-pointer font-color-fff" @click="chainVisible = !chainVisible">
                     区块链: {{chainName}}<i :class="[chainVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
                 </span>
@@ -40,7 +40,7 @@
                     </ul>
                 </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown trigger="click" @command="changeGroup" placement="bottom">
+            <el-dropdown trigger="click" @command="changeGroup" placement="bottom" v-if="showGroup">
                 <span class="cursor-pointer font-color-fff" @click="groupVisible = !groupVisible">
                     群组: {{groupName}}<i :class="[groupVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
                 </span>
@@ -95,8 +95,22 @@ export default {
     watch: {
         headTitle(val) {
             this.title = val;
-        }
+        },
+        $route: {
+            handler(to, from) {
+                
+                if (this.$route.path == '/contract' || this.$route.path == '/privateKeyManagement') {
+                    this.showChain = true;
+                    this.showGroup = true
+                }
+                if (this.$route.path == '/front') {
+                    this.showChain = true;
+                }
 
+            },
+            deep: true,
+            immediate: true
+        }
     },
     data() {
         return {
@@ -112,7 +126,9 @@ export default {
             groupVisible: false,
             chainVisible: false,
             chainName: "-",
-            chainList: []
+            chainList: [],
+            showChain: false,
+            showGroup: false
         };
     },
     beforeDestroy() {

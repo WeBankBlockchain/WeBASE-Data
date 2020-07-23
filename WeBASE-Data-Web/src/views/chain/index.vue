@@ -2,147 +2,133 @@
     <div>
         <content-head :headTitle="'区块链'"></content-head>
         <div class="module-wrapper">
+            <div class="search-part" style="padding-top: 20px;">
+
+            </div>
             <div class="search-table">
-                
-                <el-table :data="chainList" class="search-table-content" v-loading="loading">
-                    <el-table-column v-for="head in chainHead" :label="head.name" :key="head.enName" :prop="head.enName" :width="head.width" show-overflow-tooltip>
+                <el-table :data="chainData" class="search-table-content" ref="refTable" v-loading='loading'>
+                    <el-table-column type="expand" align="center">
                         <template slot-scope="scope">
-                            <template v-if="head.enName=='chainName'">
-                                <span @click="link(scope.row.chainId)" class="link">{{scope.row[head.enName]}}</span>
-                            </template>
-                            <template v-else-if="head.enName=='chainId'">
-                                <span @click="link(scope.row.chainId)" class="link">{{scope.row[head.enName]}}</span>
-                            </template>
-                            <template v-else-if="head.enName=='chainType'">
-                                <span >{{scope.row[head.enName] | type}}</span>
-                            </template>
-                            <template v-else>
-                                <span>{{scope.row[head.enName]}}</span>
-                            </template>
+                            <el-tabs type="border-card" :value="currentTab" @tab-click="handleTab">
+                                <el-tab-pane v-for="(tab, index) in tabList" :label="`${tab.label}`" :name="tab.type" :key="index">
+                                    <component v-bind:is="`${currentTab}Info`" :chainId="scope.row.chainId"></component>
+                                </el-tab-pane>
+                            </el-tabs>
                         </template>
                     </el-table-column>
-
+                    <el-table-column v-for="head in chainHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
+                        <template slot-scope="scope">
+                            <span v-if="head.enName == 'chainType' ">{{scope.row[head.enName] | Type}}</span>
+                            <span v-else>{{scope.row[head.enName]}}</span>
+                            
+                        </template>
+                    </el-table-column>
                 </el-table>
+
                 <!-- <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination> -->
             </div>
         </div>
     </div>
 </template>
-
 <script>
 import contentHead from "@/components/contentHead";
 import { chainAll } from "@/util/api"
+import { AppInfo, NodeInfo } from "./components/index.js"
 export default {
-    name: 'Chain',
+    name: 'chain',
+    components: { contentHead, AppInfo, NodeInfo },
+    data() {
+        return {
+            chainHead: [
+                {
+                    enName: 'chainName',
+                    name: '区块链名称'
+                },
+                {
+                    enName: 'chainId',
+                    name: '区块链编号'
+                },
+                {
+                    enName: 'chainType',
+                    name: '区块链类型'
+                },
+                {
+                    enName: 'createTime',
+                    name: '创建时间'
+                },
+                {
+                    enName: 'description',
+                    name: '备注'
+                }
+            ],
+            chainData: [],
+            loading: false,
+            currentPage: 1,
+            pageSize: 10,
+            total: 0,
+            currentTab: 'app',
+            tabList: [
+                {
+                    label: '应用',
+                    type: 'app'
+                },
+                {
+                    label: '节点',
+                    type: 'node'
+                },
+            ],
+        }
+    },
+    mounted() {
+        this.getChainList()
+    },
+    methods: {
+        getChainList: function () {
+            this.loading = true
+            chainAll().then(res => {
+                this.loading = false
+                if (res.data.code == 0) {
+                    this.chainData = res.data.data;
+                    this.total = res.data.totalCount;
+                } else {
+                    this.$message({
+                        type: "error",
+                        message: this.$chooseLang(res.data.code)
+                    })
+                }
+            }).catch(err => {
+                this.loading = false
+                this.$message({
+                    type: "error",
+                    message: "系统错误"
+                })
+            })
+        },
+        handleSizeChange: function (val) {
+            this.pageSize = val;
+            this.currentPage = 1;
+            this.getChainList();
+        },
+        handleCurrentChange: function (val) {
+            this.currentPage = val;
+            this.getChainList();
+        },
+        handleTab(tab, $event) {
+            console.log(tab, $event)
+            this.currentTab = tab.name
+        }
 
-    components: {
-        contentHead,
+
     },
     filters: {
-        type(val) {
+        Type: function (val) {
             if (val) {
                 return "sm2/sm3"
             } else {
                 return "secp256k1/sha3"
             }
-        },
-    },
-    props: {
-    },
-
-    data() {
-        return {
-            loading: false,
-            currentPage: 1,
-            pageSize: 10,
-            total: 0,
-            chainList: []
         }
-    },
-
-    computed: {
-        chainHead() {
-            let data = [
-                {
-                    enName: "chainName",
-                    name: "区块链名称",
-                    width: ''
-                },
-                {
-                    enName: "chainId",
-                    name: "区块链编号",
-                    width: ''
-                },
-                {
-                    enName: "chainType",
-                    name: "区块链类型",
-                    width: ''
-                },
-                {
-                    enName: "createTime",
-                    name: "创建时间",
-                    width: ''
-                }
-            ];
-            return data
-        }
-    },
-
-    watch: {
-
-    },
-    created() {
-    },
-    mounted() {
-        this.queryChainAll()
-    },
-    methods: {
-        queryChainAll() {
-            
-            chainAll()
-                .then(res => {
-                    if (res.data.code === 0) {
-                        this.chainList = res.data.data;
-                    } else {
-                        this.$message({
-                            type: "error",
-                            message: this.$chooseLang(res.data.code)
-                        })
-                    }
-                })
-                .catch(error => {
-                    this.loading = false;
-                    this.$message({
-                        type: "error",
-                        message: '系统异常'
-                    })
-                })
-        },
-        handleSizeChange(val) {
-            this.pageSize = val;
-            this.currentPage = 1;
-            this.queryChainAll();
-        },
-        handleCurrentChange(val) {
-            this.currentPage = val;
-            this.queryChainAll();
-        },
-        link(val) {
-            this.$router.push({
-                path: '/group',
-                query: {
-                    chainId: val
-                }
-            })
-        }
-
     }
 }
 </script>
-
-<style scoped>
-.search-part-left-btn {
-    border-radius: 20px;
-}
-</style>
