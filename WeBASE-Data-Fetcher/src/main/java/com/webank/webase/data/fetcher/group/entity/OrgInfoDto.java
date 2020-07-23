@@ -11,22 +11,14 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.contract.entity;
+package com.webank.webase.data.fetcher.group.entity;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class QueryContractParam {
-    @NotNull
-    @Min(1)
-    @Max(9999)
+public class OrgInfoDto {
     private Integer chainId;
-    @NotNull
-    private Integer groupId;
-    private String contractName;
-    private Integer pageNumber;
-    private Integer pageSize;
+    private String nodeId;
+    private String orgName;
+    private String description;
 }

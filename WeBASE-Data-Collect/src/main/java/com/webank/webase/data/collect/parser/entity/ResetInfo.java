@@ -14,12 +14,16 @@
 package com.webank.webase.data.collect.parser.entity;
 
 import java.math.BigInteger;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class ResetInfo {
     @NotNull
+    @Min(1)
+    @Max(9999)
     private Integer chainId;
     @NotNull
     private Integer groupId;

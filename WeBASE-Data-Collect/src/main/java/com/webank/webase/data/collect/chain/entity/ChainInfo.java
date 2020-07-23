@@ -18,6 +18,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 public class ChainInfo {
@@ -26,6 +27,7 @@ public class ChainInfo {
     @Max(9999)
     private Integer chainId;
     @NotBlank
+    @Length(min=1, max=120)
     private String chainName;
     @NotNull
     private Integer chainType;

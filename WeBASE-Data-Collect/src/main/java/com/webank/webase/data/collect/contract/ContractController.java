@@ -92,8 +92,9 @@ public class ContractController extends BaseController {
      * query contract info list.
      */
     @PostMapping(value = "/list")
-    public BasePageResponse queryContractList(@RequestBody QueryContractParam inputParam)
+    public BasePageResponse queryContractList(@RequestBody @Valid QueryContractParam inputParam, BindingResult result)
             throws BaseException {
+        checkBindResult(result);
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start contractList.");

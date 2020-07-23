@@ -13,12 +13,16 @@
  */
 package com.webank.webase.data.collect.group.entity;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class AppInfo {
     @NotNull
+    @Min(1)
+    @Max(9999)
     private Integer chainId;
     @NotNull
     private Integer groupId;

@@ -13,6 +13,8 @@
  */
 package com.webank.webase.data.collect.node.entity;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,6 +22,8 @@ import lombok.Data;
 @Data
 public class OrgInfo {
     @NotNull
+    @Min(1)
+    @Max(9999)
     private Integer chainId;
     @NotNull
     private String nodeId;

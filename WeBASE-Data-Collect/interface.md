@@ -637,7 +637,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 ***2）入参示例***
 
 ```
-http://localhost:5009/WeBASE-Data-Collect/chain/update
+http://localhost:5009/WeBASE-Data-Collect/group/update
 ```
 
 ```
@@ -709,7 +709,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/update
 ***2）入参示例***
 
 ```
-http://localhost:5009/WeBASE-Data-Collect/group/nodeList/100001/300001/1/10
+http://localhost:5009/WeBASE-Data-Collect/node/nodeList/100001/300001/1/10
 ```
 
 #### 返回参数 
@@ -798,7 +798,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/nodeList/100001/300001/1/10
 ***2）入参示例***
 
 ```
-http://localhost:5009/WeBASE-Data-Collect/group/nodeList/100001/1/10
+http://localhost:5009/WeBASE-Data-Collect/node/orgList/100001/1/10
 ```
 
 #### 返回参数 
@@ -871,7 +871,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/nodeList/100001/1/10
 ***2）入参示例***
 
 ```
-http://localhost:5009/WeBASE-Data-Collect/chain/update
+http://localhost:5009/WeBASE-Data-Collect/node/update
 ```
 
 ```
