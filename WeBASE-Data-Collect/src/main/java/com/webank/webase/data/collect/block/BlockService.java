@@ -32,6 +32,7 @@ import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -48,6 +49,7 @@ public class BlockService {
     @Autowired
     private BlockMapper blockMapper;
     @Autowired
+    @Lazy
     private TransactionService transactionService;
     @Autowired
     private ReceiptService receiptService;

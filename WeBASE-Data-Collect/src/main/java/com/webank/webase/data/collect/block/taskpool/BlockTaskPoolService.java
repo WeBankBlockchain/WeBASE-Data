@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -60,6 +61,63 @@ public class BlockTaskPoolService {
     private RollBackService rollBackService;
     @Autowired
     private ConstantProperties cProperties;
+    
+    @Async("asyncExecutor")
+    public void pullBlockProcess(CountDownLatch latch, int chainId, int groupId) {
+        log.info("start pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
+        try {
+            boolean check = true;
+            while (check) {
+                // max block in chain
+                long currentChainHeight =
+                        frontInterface.getLatestBlockNumber(chainId, groupId).longValue();
+                long fromHeight =
+                        getHeight(getTaskPoolHeight(chainId, groupId));
+                // control the batch unit number
+                long end = fromHeight + cProperties.getCrawlBatchUnit() - 1;
+                long toHeight = currentChainHeight < end ? currentChainHeight : end;
+                log.debug("Current depot status: {} of {}, and try to process block from {} to {}",
+                        fromHeight - 1, currentChainHeight, fromHeight, toHeight);
+                boolean certainty = toHeight + 1 < currentChainHeight
+                        - BlockConstants.MAX_FORK_CERTAINTY_BLOCK_NUMBER;
+                if (fromHeight <= toHeight) {
+                    log.debug("Try to sync block number {} to {} of {}", fromHeight, toHeight,
+                            currentChainHeight);
+                    prepareTask(chainId, groupId, fromHeight, toHeight,
+                            certainty);
+                }
+
+                log.debug("Begin to fetch at most {} tasks", cProperties.getCrawlBatchUnit());
+                List<Block> taskList = fetchData(chainId, groupId,
+                        cProperties.getCrawlBatchUnit());
+                for (Block b : taskList) {
+                    handleSingleBlock(chainId, groupId, b, currentChainHeight);
+                }
+                if (!certainty) {
+                    checkForks(chainId, groupId, currentChainHeight);
+                    checkTaskCount(chainId, groupId,
+                            cProperties.getStartBlockNumber(), currentChainHeight);
+                }
+                checkTimeOut(chainId, groupId);
+                processErrors(chainId, groupId);
+                if (fromHeight > toHeight) {
+                    check = false;
+                }
+            }
+        } catch (Exception ex) {
+            log.error("fail pullBlockProcess. chainId:{} groupId:{} ", chainId, groupId, ex);
+        } finally {
+            if (Objects.nonNull(latch)) {
+                latch.countDown();
+            }
+        }
+        log.info("end pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
+    }
+
+    private long getHeight(long height) {
+        return height > cProperties.getStartBlockNumber() ? height
+                : cProperties.getStartBlockNumber();
+    }
 
     public long getTaskPoolHeight(int chainId, int groupId) {
         long height = 0;
