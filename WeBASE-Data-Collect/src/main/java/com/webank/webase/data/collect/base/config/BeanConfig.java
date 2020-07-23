@@ -19,33 +19,26 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
-import com.webank.webase.data.collect.base.properties.ExecutorProperties;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.ThreadPoolExecutor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * config about bean.
  */
-@Log4j2
 @Configuration
 public class BeanConfig {
 
     @Autowired
     private ConstantProperties constantProperties;
-    @Autowired
-    private ExecutorProperties executorProperties;
 
     @Bean
     public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
@@ -71,25 +64,6 @@ public class BeanConfig {
     public SimpleClientHttpRequestFactory getHttpFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         return factory;
-    }
-
-    /**
-     * pull block and trans from chain
-     * 
-     * @return
-     */
-    @Bean(name = "asyncExecutor")
-    public ThreadPoolTaskExecutor asyncExecutor() {
-        log.info("start asyncExecutor init..");
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(executorProperties.getCorePoolSize());
-        executor.setMaxPoolSize(executorProperties.getMaxPoolSize());
-        executor.setQueueCapacity(executorProperties.getQueueSize());
-        executor.setThreadNamePrefix(executorProperties.getThreadNamePrefix());
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        // init executor
-        executor.initialize();
-        return executor;
     }
 
     /**

@@ -28,7 +28,7 @@
             filePattern="${logPath}/WeBASE-Data-Collect-error.log.%d{yyyy-MM-dd}.%i.log.gz"
             name="errorLog">
             <PatternLayout
-                pattern="[%-5p][%d{yyyy-MM-dd HH:mm:ss.SSS}][%t][wsweb][2224][2224][LOG_POINT]%m%n" />
+                pattern="[%-5p][%d{yyyy-MM-dd HH:mm:ss.SSS}][%t][data][2224][2224][LOG_POINT]%m%n" />
             <ThresholdFilter level="error" onMatch="ACCEPT"
                 onMismatch="DENY" />
             <Policies>

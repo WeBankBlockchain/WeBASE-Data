@@ -14,25 +14,18 @@
 package com.webank.webase.data.collect.scheduler;
 
 import com.webank.webase.data.collect.base.enums.DataStatus;
-import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
-import com.webank.webase.data.collect.parser.ParserService;
-import com.webank.webase.data.collect.receipt.ReceiptService;
-import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * data parser
@@ -45,13 +38,7 @@ public class DataParserTask {
     @Autowired
     private GroupService groupService;
     @Autowired
-    private ParserService parserService;
-    @Autowired
     private TransactionService transactionService;
-    @Autowired
-    private ReceiptService receiptService;
-    @Autowired
-    private ConstantProperties cProperties;
 
     @Scheduled(fixedDelayString = "${constant.dataParserTaskFixedDelay}", initialDelay = 1000)
     public void taskStart() {
@@ -72,7 +59,7 @@ public class DataParserTask {
         // count down group, make sure all group's transMonitor finished
         CountDownLatch latch = new CountDownLatch(groupList.size());
         groupList.stream()
-                .forEach(group -> parserProcess(latch, group.getChainId(), group.getGroupId()));
+                .forEach(group -> transactionService.parserProcess(latch, group.getChainId(), group.getGroupId()));
         try {
             latch.await();
         } catch (InterruptedException ex) {
@@ -80,46 +67,5 @@ public class DataParserTask {
             Thread.currentThread().interrupt();
         }
         log.info("end parser useTime:{} ", Duration.between(startTime, Instant.now()).toMillis());
-    }
-
-    @Async("asyncExecutor")
-    private void parserProcess(CountDownLatch latch, int chainId, int groupId) {
-        log.info("start parserProcess. chainId:{} groupId:{}", chainId, groupId);
-        try {
-            Instant startTimem = Instant.now();
-            Long useTimeSum = 0L;
-            do {
-                List<String> transHashList =
-                        transactionService.queryUnStatTransHashList(chainId, groupId);
-                if (CollectionUtils.isEmpty(transHashList)) {
-                    return;
-                }
-                // parser
-                transHashList.stream()
-                        .forEach(transHash -> parserTransaction(chainId, groupId, transHash));
-
-                // parser useTime
-                useTimeSum = Duration.between(startTimem, Instant.now()).getSeconds();
-            } while (useTimeSum < cProperties.getDataParserTaskFixedDelay());
-        } catch (Exception ex) {
-            log.error("fail parserProcess chainId:{} groupId:{} ", chainId, groupId, ex);
-        } finally {
-            if (Objects.nonNull(latch)) {
-                latch.countDown();
-            }
-        }
-        log.info("end parserProcess. chainId:{} groupId:{}", chainId, groupId);
-    }
-
-    private void parserTransaction(int chainId, int groupId, String transHash) {
-        try {
-            TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId, transHash);
-            if (ObjectUtils.isEmpty(tbReceipt)) {
-                return;
-            }
-            parserService.parserTransaction(chainId, groupId, tbReceipt);
-        } catch (Exception ex) {
-            log.error("fail parserTransaction chainId:{} groupId:{} ", chainId, groupId, ex);
-        }
     }
 }
