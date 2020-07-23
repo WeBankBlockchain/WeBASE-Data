@@ -42,16 +42,12 @@ export default {
                     name: '应用名称'
                 },
                 {
-                    enName: 'groupId',
-                    name: '应用ID'
+                    enName: 'appVersion',
+                    name: '应用版本'
                 },
                 {
-                    enName: 'groupStatus',
-                    name: '应用状态'
-                },
-                {
-                    enName: 'nodeCount',
-                    name: '节点个数'
+                    enName: 'appSynopsis',
+                    name: '应用概要'
                 },
                 {
                     enName: 'description',

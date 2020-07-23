@@ -2,7 +2,7 @@
     <div>
         <content-head :headTitle="'搜索'"></content-head>
         <div class="module-wrapper">
-            <el-tabs type="border-card" @tab-click="handleClickTab" v-loading="listLoading">
+            <el-tabs type="border-card" @tab-click="handleClickTab" :value="tabName" v-loading="listLoading">
                 <el-tab-pane label="关键字搜索">
                     <div class="search-table">
                         <el-input v-model="singleSearchValue" @keyup.enter.native="querySimpleSearch" placeholder="请输入用户名/用户地址/合约名/合约地址/块高/交易Hash/上链数据"></el-input>
@@ -14,12 +14,12 @@
                         <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout=" sizes, prev, pager, next, jumper" :total="total">
                         </el-pagination>
                     </div>
-                    <!-- <div v-else class="no-data" :style=" {'height': initHeight + 'px'}">
+                    <div v-else class="no-data" :style=" {'height': initHeight + 'px'}">
                         <div class="no-data-text">
-                            
+
                         </div>
-                    </div> -->
-                    <div v-if="tabName == '0'">
+                    </div>
+                    <!-- <div v-if="tabName == '0'">
                         <div style="padding: 10px 0 0 40px; font-weight: bold;font-size: 16px;">告警列表</div>
                         <div class="search-table">
                             <el-table :data="alarmList" tooltip-effect="dark">
@@ -36,7 +36,7 @@
                                 </el-table-column>
                             </el-table>
                         </div>
-                    </div>
+                    </div> -->
                 </el-tab-pane>
                 <el-tab-pane label="条件搜索">
                     <div class="search-table">
@@ -44,8 +44,8 @@
                             <el-option v-for="item in chainList" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
-                        <el-select v-model="groupId" placeholder="请选择群组" @change="changeGroup">
-                            <el-option v-for="item in groupCollection" :key="item.value" :label="item.label" :value="item.value">
+                        <el-select v-model="groupId" placeholder="请选择应用" @change="changeGroup">
+                            <el-option v-for="item in groupCollection" :key="item.value" :label="item.appName" :value="item.value">
                             </el-option>
                         </el-select>
                         <el-select v-model="searchType" placeholder="请选择" slot="prepend" @change="changeSearchType">
@@ -69,9 +69,9 @@
                     </div>
                 </el-tab-pane>
             </el-tabs>
-            
+
         </div>
-        
+
     </div>
 </template>
 
@@ -103,9 +103,9 @@ export default {
                 value: '4',
                 label: '合约'
             }],
-            searchType: '5',
+            searchType: '',
             searchValue: '',
-            singleSearchValue: '',
+            singleSearchValue: sessionStorage.getItem('simpleKeyword') ? sessionStorage.getItem('simpleKeyword') : '',
             chainId: '',
             groupId: '',
             chainList: [],
@@ -113,7 +113,7 @@ export default {
             currentPage: 1,
             pageSize: 10,
             total: 0,
-            tabName: '0',
+            tabName: sessionStorage.getItem('tab') ? sessionStorage.getItem('tab') : '0',
             initHeight: window.innerHeight - 800,
             alarmHead: [
                 {
@@ -174,27 +174,37 @@ export default {
         }
     },
     mounted() {
+        if (this.singleSearchValue && this.tabName == '0') {
+            this.querySimpleSearch()
+        }
+        if (this.tabName == 0) {
+            this.searchType = '5'
+        } else if (this.tabName == 1) {
+            this.searchType = '1'
+        }
         this.queryChainAll()
+
     },
     methods: {
-        deleteKeyword(){
-            
-        },
-        handleBtn(){
+        deleteKeyword() {
 
         },
-        btnText(key){
+        handleBtn() {
+
+        },
+        btnText(key) {
             switch (key) {
                 case '1':
                     return '确认'
                     break;
-            
+
                 case '2':
                     return ''
                     break;
             }
         },
         handleClickTab(tab) {
+            sessionStorage.setItem('tab', tab.paneName)
             this.tabName = tab.paneName
             this.searchValue = ""
             this.singleSearchValue = ""
@@ -242,13 +252,17 @@ export default {
                 })
         },
         queryGroupList(val) {
-            groupList(val)
+            let param = {
+                chainId : val
+            }
+            groupList(param)
                 .then(res => {
                     if (res.data.code === 0) {
                         this.groupCollection = res.data.data
                         this.groupCollection.forEach(group => {
                             group.label = group.groupName;
                             group.value = group.groupId;
+                            group.appName = group.appName;
                         })
                         if (this.groupCollection.length) {
                             this.groupId = this.groupCollection[0]['value']
@@ -314,15 +328,18 @@ export default {
                 })
         },
         querySimpleSearch() {
+            sessionStorage.setItem('simpleKeyword', this.singleSearchValue)
             this.listLoading = true;
             var data = {
                 keyword: this.singleSearchValue
             }
+
             simpleSearch(this.currentPage, this.pageSize, data)
                 .then(res => {
                     if (res.data.code === 0) {
-                        this.list = res.data.data;
-                        this.total = res.data.totalCount
+                        let list = res.data.data;
+                        let total = res.data.totalCount
+                        this.queryAppList(list, total)
                     } else {
                         this.$message({
                             type: 'error',
@@ -339,20 +356,76 @@ export default {
                     this.listLoading = false
                 })
         },
+        queryAppList(list, total){
+            this.total = total
+            let param = {
+                
+            }
+            groupList(param)
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let appList = res.data.data
+                        list.forEach(item=>{
+                            appList.forEach(it=>{
+                                if(item.chainId == it.chainId && item.groupId == it.groupId){
+                                    item.appName = it.appName
+                                }
+                            })
+                        })
+                        this.queryAppChain(list)
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: this.$chooseLang(res.data.code),
+                        })
+                    }
+                })
+        },
+        queryAppChain(list) {
+            chainAll()
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let chainList = res.data.data;
+                        list.forEach(item=>{
+                            chainList.forEach(it=>{
+                                if(item.chainId == it.chainId){
+                                    item.chainName = it.chainName
+                                }
+                            })
+                        })
+                        this.list = list
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.listLoading = false
+                    this.$message({
+                        type: "error",
+                        message: '系统异常'
+                    })
+                })
+        },
         changeChain(val) {
             this.chainId = val
             this.queryGroupList(val)
         },
         changeGroup(val) {
             this.groupId = val
-            this.sureSearch()
+            // this.sureSearch()
         },
         changeSearchType(type) {
             this.list = []
             this.searchType = type;
         },
         sureSearch() {
-
+            sessionStorage.setItem('chainId', this.chainId)
+            sessionStorage.setItem('groupId', this.groupId)
+            sessionStorage.setItem('searchType', this.searchType)
             // this.querySearchAll()
             switch (this.searchType) {
                 case "1":

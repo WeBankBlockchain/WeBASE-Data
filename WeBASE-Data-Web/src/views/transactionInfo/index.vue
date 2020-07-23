@@ -18,19 +18,19 @@
         <content-head :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}(交易列表)`" :icon="true"></content-head>
         <div class="module-wrapper">
             <div class="search-part">
-                <div class="search-part-left-bg"> 
+                <div class="search-part-left-bg">
                     <span>共</span>
                     <span>{{numberFormat(total, 0, ".", ",")}}</span>
                     <span>条</span>
                 </div>
                 <div class="search-part-right">
-                    <el-input :placeholder="$t('inputText.transactionSearch')" v-model.trim="searchKey.value" @keyup.enter.native="search" class="input-with-select" clearable @clear="clearText">
+                    <el-input :placeholder="$t('inputText.transactionSearch')" v-model="searchKey.value" @keyup.enter.native="search" class="input-with-select" clearable @clear="clearText">
                         <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                     </el-input>
                 </div>
             </div>
             <div class="search-table">
-                <el-table :data="transactionList" class="block-table-content"  :row-key="getRowKeys" :expand-row-keys="expands" v-loading="loading" ref="refTable">
+                <el-table :data="transactionList" class="block-table-content" :row-key="getRowKeys" :expand-row-keys="expands" v-loading="loading" ref="refTable">
                     <el-table-column type="expand" align="center">
                         <template slot-scope="scope">
                             <transaction-detail :txData="scope.row"></transaction-detail>
@@ -46,7 +46,7 @@
                     </el-table-column>
                     <el-table-column prop="blockNumber" label="块高" width="160" align="center" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
-                            <span>{{scope.row['blockNumber']}}</span>
+                            <span class="link link-item" @click="link(scope.row, 'blockNumber')">{{scope.row['blockNumber']}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="transDetail" label="交易详情" width="" align="center" :show-overflow-tooltip="true">
@@ -128,13 +128,13 @@ export default {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId
         }
-        if(this.$route.query.transHash){
+        if (this.$route.query.transHash) {
             this.searchKey.value = this.$route.query.transHash
         }
-        if(this.$route.query.blockNumber){
+        if (this.$route.query.blockNumber) {
             this.searchKey.value = this.$route.query.blockNumber
         }
-        
+
         this.getTransaction();
     },
     methods: {
@@ -164,6 +164,7 @@ export default {
                 pageSize: this.pageSize
             },
                 reqQuery = {};
+                this.searchKey.value = this.replaceStartEndSpace(this.searchKey.value.toString())
             if (this.searchKey.value) {
                 if (this.searchKey.value.length === 66) {
                     reqQuery.transHash = this.searchKey.value;
@@ -217,6 +218,16 @@ export default {
         handleCopy(text, event) {
             clip(text, event)
         },
+        link(val) {
+            this.$router.push({
+                path: "/blockInfo",
+                query: {
+                    chainId: this.chainId,
+                    groupId: this.groupId,
+                    blockNumber: val.blockNumber
+                }
+            })
+        }
     }
 };
 </script>
@@ -281,6 +292,9 @@ export default {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     box-shadow: 0 3px 11px 0 rgba(159, 166, 189, 0.11);
+}
+.link-item {
+    padding: 5px 20px 5px 20px;
 }
 </style>
 

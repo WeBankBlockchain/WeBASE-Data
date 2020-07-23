@@ -21,7 +21,7 @@ import router from './router'
 import store from './store'
 import ElementUI from 'element-ui'
 import axios from 'axios'
-import { getCookie, setCookie, delCookie } from './util/util'
+import { getCookie, setCookie, delCookie, replaceStartEndSpace } from './util/util'
 import JsonViewer from "vue-json-viewer"
 import errcode from './util/errcode'
 import VueClipboard from 'vue-clipboard2'
@@ -63,6 +63,7 @@ promise.polyfill();
 Vue.prototype.getCookie = getCookie;
 Vue.prototype.setCookie = setCookie;
 Vue.prototype.delCookie = delCookie;
+Vue.prototype.replaceStartEndSpace = replaceStartEndSpace;
 //error code
 Vue.prototype.errcode = errcode;
 Vue.prototype.$chooseLang = chooseLang;

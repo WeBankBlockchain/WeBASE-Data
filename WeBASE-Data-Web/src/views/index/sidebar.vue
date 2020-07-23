@@ -87,7 +87,8 @@ export default {
     mounted: function () {
         this.$nextTick(function () {
             localStorage.setItem("sidebarHide", false);
-            this.queryChainAll(this.changeRouter)
+            // this.queryChainAll(this.changeRouter)
+            this.changeRouter()
         });
     },
     methods: {
@@ -125,19 +126,19 @@ export default {
             //         item.menuShow = true;
             //     }
             // });
-            list.forEach(item=>{
-                if(item.nameKey === "chain" ){
-                    item.children = [];
-                    this.chainList.forEach(it => {
-                        item.children.push({
-                            path: `/overview/${it.chainId}/${it.chainName}`,
-                            menuShow: true,
-                            nameKey: `chain${it.chainId}`,
-                            name: `${it.chainName}`
-                        })
-                    });
-                }
-            })
+            // list.forEach(item=>{
+            //     if(item.nameKey === "chain" ){
+            //         item.children = [];
+            //         this.chainList.forEach(it => {
+            //             item.children.push({
+            //                 path: `/overview/${it.chainId}/${it.chainName}`,
+            //                 menuShow: true,
+            //                 nameKey: `chain${it.chainId}`,
+            //                 name: `${it.chainName}`
+            //             })
+            //         });
+            //     }
+            // })
             this.routesList = list;
         },
         select: function (index, indexPath) {

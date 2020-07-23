@@ -27,7 +27,7 @@
                     <use xlink:href="#wbs-icon-WeBASE"></use>
                 </svg> -->
                 <!-- <p class="logo-content">xxxxxxx</p> -->
-                数据运维平台
+                监管配置平台
             </div>
             <div class="msg-wrapper">
                 <div class="msg-error" v-show="msgError || timeout">

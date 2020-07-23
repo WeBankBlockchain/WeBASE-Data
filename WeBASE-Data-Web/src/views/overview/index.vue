@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
-        <content-head :headTitle="`${chainName}`" @changGroup="changGroup"></content-head>
-        <div class="module-wrapper app-description">
+        <content-head :headTitle="`${chainName}`" :icon="true" @changGroup="changGroup"></content-head>
+        <!-- <div class="module-wrapper app-description">
             <div class="description-left">
                 <div style="height: 160px;width: 160px;">
                     <img style="height: 100%;width: 100%;" src="../../../static/image/btb.jpeg" alt="图片">
@@ -16,13 +16,13 @@
                     </p>
                 </div>
             </div>
-            <div>
+            <div class="description-right">
                 <p class="myReleasedApply">服务简介</p>
                 <span class="myReleasedApply-content">
                     {{appTitleMap.appSynopsis}}
                 </span>
             </div>
-        </div>
+        </div> -->
         <!-- <div class="module-wrapper box-content" >
             <div class="box-content-title">
                 <p style="font-weight: bold; font-size: 18px;">
@@ -247,10 +247,16 @@ export default {
                     width: ""
                 },
                 {
+                    enName: "orgName",
+                    name: "机构名称",
+                    width: 180
+                },
+                {
                     enName: "blockNumber",
                     name: "块高",
                     width: 180
                 },
+                
                 {
                     enName: "pbftView",
                     name: "PbftView",
@@ -296,7 +302,10 @@ export default {
             });
         },
         queryGroup() {
-            groupList(this.chainId)
+            let param = {
+                chainId: this.chainId
+            }
+            groupList(param)
                 .then(res => {
                     if (res.data.code === 0) {
                         let arr = res.data.data
@@ -542,6 +551,7 @@ export default {
 <style scoped>
 .left-content {
     margin-left: 10px;
+    min-width: 122px;
 }
 .left-content-title {
     font-weight: bold;
@@ -883,6 +893,9 @@ export default {
 .description-left {
     display: flex;
     justify-content: normal;
+    width: 50%;
+}
+.description-right {
     width: 50%;
 }
 </style>

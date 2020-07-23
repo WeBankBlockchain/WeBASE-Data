@@ -24,7 +24,7 @@
                     <span>条</span>
                 </div>
                 <div class="search-part-right">
-                    <el-input :placeholder="$t('inputText.blockInput')" v-model.trim="searchKey.value" @keyup.enter.native="search" class="input-with-select" clearable @clear="clearText">
+                    <el-input :placeholder="$t('inputText.blockInput')" v-model="searchKey.value" @keyup.enter.native="search" class="input-with-select" clearable @clear="clearText">
                         <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                     </el-input>
                 </div>
@@ -133,7 +133,7 @@ export default {
                     pageSize: this.pageSize
                 },
                 reqQuery = {};
-            
+            this.searchKey.value = this.replaceStartEndSpace(this.searchKey.value.toString());
             if(this.searchKey.value){
                 if(this.searchKey.value.length===66){
                     reqQuery.blockHash = this.searchKey.value;

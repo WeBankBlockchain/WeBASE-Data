@@ -34,7 +34,7 @@
                         </template>
                         <template v-else-if="item==='from'">
                             <span>{{txInfoMap[item]}}</span>
-                            <span class="link" @click="link(txInfoMap[item])">=></span>
+                            =><span class="link" @click="link(txInfoMap[item])">{{userName}}</span>
                         </template>
                         <template v-else>
                             <span>{{txInfoMap[item]}}</span>
@@ -76,7 +76,7 @@
                         </template>
                         <template v-else-if="item==='from'">
                             <span>{{txReceiptInfoMap[item]}}</span>
-                            <span class="link" @click="link(txReceiptInfoMap[item])">=></span>
+                            =><span class="link" @click="link(txReceiptInfoMap[item])">{{userName}}</span>
                         </template>
                         <template v-else>
                             <span>{{txReceiptInfoMap[item]}}</span>
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { searchAll } from "@/util/api"
+import { searchAll, userList } from "@/util/api"
 import clip from "@/util/clipboard";
 export default {
     name: 'TransactionDetail',
@@ -132,7 +132,8 @@ export default {
             inputData: [],
             logsName: '',
             eventLog: [],
-            logsMap: []
+            logsMap: [],
+            userName: ''
         }
     },
 
@@ -151,6 +152,7 @@ export default {
             this.groupId = this.$route.query.groupId
         }
         this.querySearchAll()
+        this.queryUser()
     },
 
     methods: {
@@ -203,6 +205,38 @@ export default {
                         message: '系统异常'
                     })
                 })
+        },
+        queryUser() {
+            let reqData = {
+                chainId: this.chainId,
+                groupId: this.groupId,
+                pageSize: 1,
+                pageNumber: 10,
+
+            }, reqQuery = {
+                userParam: this.txReceiptInfoMap.from
+            };
+            
+            userList(reqData, reqQuery).then(res => {
+                if (res.data.code == 0) {
+                    console.log(res.data.data)
+                    let list = res.data.data
+                    if(list.length) this.userName = list[0]['userName']
+                    
+                } else {
+                    this.$message({
+                        message: this.$chooseLang(res.data.code),
+                        type: "error",
+                        duration: 2000
+                    });
+                }
+            }).catch(err => {
+                this.$message({
+                    message: '系统错误',
+                    type: "error",
+                    duration: 2000
+                });
+            })
         },
         handleCopy(text, event) {
             clip(text, event)

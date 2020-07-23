@@ -65,7 +65,7 @@ export default {
         submit: function (formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
-
+                    this.modelClose()
                 } else {
                     return false;
                 }
