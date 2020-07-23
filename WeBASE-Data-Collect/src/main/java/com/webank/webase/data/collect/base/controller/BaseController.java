@@ -16,6 +16,7 @@ package com.webank.webase.data.collect.base.controller;
 import com.google.common.collect.Maps;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.ParamException;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import java.util.Map;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -33,7 +34,7 @@ public class BaseController {
                     fields.put(fe.getField(), fe.getDefaultMessage());
                 }
             });
-            String message = "these fields error:" + fields;
+            String message = "these fields error:" + JacksonUtils.objToString(fields);
             throw new ParamException(ConstantCode.PARAM_EXCEPTION.getCode(), message);
         }
     }

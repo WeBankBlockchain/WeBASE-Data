@@ -103,12 +103,12 @@ public class NodeController extends BaseController {
      * query org node info list.
      */
     @GetMapping(value = "/orgList/{chainId}/{pageNumber}/{pageSize}")
-    public BasePageResponse queryNodeList(@PathVariable("chainId") Integer chainId,
+    public BasePageResponse queryOrgNodeList(@PathVariable("chainId") Integer chainId,
             @PathVariable("pageNumber") Integer pageNumber,
             @PathVariable("pageSize") Integer pageSize) throws BaseException {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
-        log.info("start queryNodeList.");
+        log.info("start queryOrgNodeList.");
 
         // param
         NodeParam queryParam = new NodeParam();
@@ -125,7 +125,7 @@ public class NodeController extends BaseController {
             pagesponse.setTotalCount(count);
         }
 
-        log.info("end queryNodeList useTime:{}",
+        log.info("end queryOrgNodeList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }

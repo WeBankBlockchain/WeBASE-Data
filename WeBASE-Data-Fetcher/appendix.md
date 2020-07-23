@@ -132,7 +132,7 @@ mysql > create database webasedata;
 
 #### ① 安装包下载
 
-下载[elasticsearch]()和[elasticsearch-analysis-ik](<https://github.com/medcl/elasticsearch-analysis-ik/releases>)，注意版本要对应。
+下载[elasticsearch](<https://www.elastic.co/cn/downloads/elasticsearch>)和[elasticsearch-analysis-ik](<https://github.com/medcl/elasticsearch-analysis-ik/releases>)，注意版本要对应。
 
 ```shell
 # 上传elasticsearch安装包并解压

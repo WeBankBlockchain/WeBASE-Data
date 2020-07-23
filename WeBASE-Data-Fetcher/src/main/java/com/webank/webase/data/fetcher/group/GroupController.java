@@ -26,6 +26,7 @@ import com.webank.webase.data.fetcher.group.entity.ContractInfoDto;
 import com.webank.webase.data.fetcher.group.entity.GroupGeneral;
 import com.webank.webase.data.fetcher.group.entity.GroupInfoDto;
 import com.webank.webase.data.fetcher.group.entity.NodeInfoDto;
+import com.webank.webase.data.fetcher.group.entity.OrgInfoDto;
 import com.webank.webase.data.fetcher.group.entity.TransListParam;
 import com.webank.webase.data.fetcher.group.entity.TransactionInfoDto;
 import com.webank.webase.data.fetcher.group.entity.TxnDailyDto;
@@ -57,8 +58,9 @@ public class GroupController extends BaseController {
     /**
      * query all group.
      */
-    @GetMapping("/list/{chainId}")
-    public BasePageResponse getGroupList(@PathVariable("chainId") Integer chainId)
+    @GetMapping("/list")
+    public BasePageResponse getGroupList(
+            @RequestParam(value = "chainId", required = false) Integer chainId)
             throws BaseException {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
@@ -148,6 +150,37 @@ public class GroupController extends BaseController {
         }
 
         log.info("end queryNodeList useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return pagesponse;
+    }
+
+    /**
+     * query org node info list.
+     */
+    @GetMapping(value = "/orgList/{chainId}/{pageNumber}/{pageSize}")
+    public BasePageResponse queryOrgNodeList(@PathVariable("chainId") Integer chainId,
+            @PathVariable("pageNumber") Integer pageNumber,
+            @PathVariable("pageSize") Integer pageSize) throws BaseException {
+        BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
+        Instant startTime = Instant.now();
+        log.info("start queryOrgNodeList.");
+
+        // param
+        BaseQueryParam queryParam = new BaseQueryParam();
+        queryParam.setChainId(chainId);
+        Integer count = groupService.countOfOrgNode(queryParam);
+        if (count != null && count > 0) {
+            Integer start =
+                    Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
+            queryParam.setStart(start);
+            queryParam.setPageSize(pageSize);
+
+            List<OrgInfoDto> list = groupService.queryOrgNodeList(queryParam);
+            pagesponse.setData(list);
+            pagesponse.setTotalCount(count);
+        }
+
+        log.info("end queryOrgNodeList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }

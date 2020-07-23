@@ -23,6 +23,7 @@ import com.webank.webase.data.fetcher.group.entity.ContractInfoDto;
 import com.webank.webase.data.fetcher.group.entity.GroupGeneral;
 import com.webank.webase.data.fetcher.group.entity.GroupInfoDto;
 import com.webank.webase.data.fetcher.group.entity.NodeInfoDto;
+import com.webank.webase.data.fetcher.group.entity.OrgInfoDto;
 import com.webank.webase.data.fetcher.group.entity.TransListParam;
 import com.webank.webase.data.fetcher.group.entity.TransactionInfoDto;
 import com.webank.webase.data.fetcher.group.entity.TxnDailyDto;
@@ -127,6 +128,28 @@ public class GroupService {
     }
 
     /**
+     * query count of org node.
+     */
+    public Integer countOfOrgNode(BaseQueryParam queryParam) throws BaseException {
+        try {
+            Integer nodeCount = groupMapper.getOrgNodeCount(queryParam);
+            return nodeCount;
+        } catch (RuntimeException ex) {
+            log.error("fail countOfOrgNode . queryParam:{}", queryParam, ex);
+            throw new BaseException(ConstantCode.DB_EXCEPTION);
+        }
+    }
+
+    /**
+     * query org node list by page.
+     */
+    public List<OrgInfoDto> queryOrgNodeList(BaseQueryParam queryParam) throws BaseException {
+        // query node list
+        List<OrgInfoDto> listOfNode = groupMapper.getOrgNodeList(queryParam);
+        return listOfNode;
+    }
+
+    /**
      * query count of block.
      */
     public int countOfBlock(BlockListParam queryParam) throws BaseException {
@@ -178,7 +201,8 @@ public class GroupService {
         try {
             List<TransactionInfoDto> listOfTran = groupMapper.queryTransList(
                     TableName.TRANS.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
-                    TableName.RECEIPT.getTableName(queryParam.getChainId(), queryParam.getGroupId()),
+                    TableName.RECEIPT.getTableName(queryParam.getChainId(),
+                            queryParam.getGroupId()),
                     queryParam);
             return listOfTran;
         } catch (RuntimeException ex) {

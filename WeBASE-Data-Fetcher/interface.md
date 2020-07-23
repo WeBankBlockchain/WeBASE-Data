@@ -81,7 +81,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
 #### 传输协议
 
 - 网络传输协议：使用HTTP协议
-- 请求地址：**/group/list/{chainId}**
+- 请求地址：**/group/list**
 - 请求方式：GET
 - 返回格式：JSON
 
@@ -91,12 +91,12 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
 
 | 序号 | 输入参数 | 类型 | 可为空 | 备注   |
 | ---- | -------- | ---- | ------ | ------ |
-| 1    | chainId  | Int  | 否     | 链编号 |
+| 1    | chainId  | Int  | 是     | 链编号 |
 
 ***2）入参示例***
 
 ```
-http://localhost:5010/WeBASE-Data-Fetcher/group/list/1
+http://localhost:5010/WeBASE-Data-Fetcher/group/list?chainId=1
 ```
 
 #### 返回参数 
@@ -320,7 +320,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/txnDaily/1/1
 }
 ```
 
-### 2.4 查询节点列表
+### 2.4 查询群组节点列表
 
 #### 传输协议规范
 
@@ -343,7 +343,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/txnDaily/1/1
 ***2）入参示例***
 
 ```
-http://127.0.0.1:5005/WeBASE-Chain-Manager/group/nodeList/100001/300001/1/10?nodeId=
+http://localhost:5010/WeBASE-Data-Fetcher/group/nodeList/100001/300001/1/10
 ```
 
 #### 返回参数 
@@ -410,7 +410,78 @@ http://127.0.0.1:5005/WeBASE-Chain-Manager/group/nodeList/100001/300001/1/10?nod
 }
 ```
 
-### 2.5 查询区块列表
+### 2.5 查询机构节点列表
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/group/orgList/{chainId}/{pageNumber}/{pageSize}**
+- 请求方式：GET
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数   | 类型 | 可为空 | 备注       |
+| ---- | ---------- | ---- | ------ | ---------- |
+| 1    | chainId    | int  | 否     | 链编号     |
+| 2    | pageSize   | Int  | 否     | 每页记录数 |
+| 3    | pageNumber | Int  | 否     | 当前页码   |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/group/orgList/100001/1/10
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号  | 输出参数    | 类型   |      | 备注                       |
+| ----- | ----------- | ------ | ---- | -------------------------- |
+| 1     | code        | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2     | message     | String | 否   | 描述                       |
+| 3     | totalCount  | Int    | 否   | 总记录数                   |
+| 4     | data        | List   | 是   | 节点列表                   |
+| 4.1   |             | Object |      | 节点信息对象               |
+| 4.1.1 | chainId     | Int    | 否   | 链编号                     |
+| 4.1.2 | nodeId      | String | 否   | 节点编号                   |
+| 4.1.3 | orgName     | String | 是   | 机构名称                   |
+| 4.1.4 | description | String | 是   | 备注                       |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+    "code": 0,
+    "message": "success",
+    "totalCount": 1,
+    "data": [
+        {
+            "chainId": 100001,
+            "nodeId": "78e467957af3d0f77e19b952a740ba8c53ac76913df7dbd48d7a0fe27f4c902b55e8543e1c4f65b4a61695c3b490a5e8584149809f66e9ffc8c05b427e9d3ca2,
+            "orgName": "org",
+            "description": "test"
+        }
+    ]
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 2.6 查询区块列表
 
 #### 传输协议
 
@@ -505,7 +576,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/blockList/1/1/1/2?blockHash=
 ```
 
 
-### 2.6 查询交易列表
+### 2.7 查询交易列表
 
 #### 传输协议
 
@@ -591,7 +662,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/transList/1/1/1/2?transHash=0x49
 }
 ```
 
-### 2.7 查询用户列表 
+### 2.8 查询用户列表 
 
 #### 传输协议
 
@@ -660,7 +731,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/userList/1/1/1/2
 }
 ```
 
-### 2.8 查询合约列表 
+### 2.9 查询合约列表 
 
 #### 传输协议
 
