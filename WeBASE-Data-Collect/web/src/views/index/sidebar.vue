@@ -17,7 +17,9 @@
     <div style="height: 100%;">
         <div style="height: 100%;background-color: #0c1220" class="sidebar-content">
             <div class="image-flex justify-center center" style="height: 54px;position:relative;" v-if="menuShowC">
-                <span class="font-color-fff">Data-Config</span>
+                <span class="font-color-fff" >
+                    <span style="font-size: 23px;">监管配置平台</span>
+                    </span>
                 <span class="sidebar-contract-icon">
                     <i class="el-icon-caret-left font-color-aeb1b5" @click="hideMune(true)" style="font-size: 18px;"></i>
                 </span>

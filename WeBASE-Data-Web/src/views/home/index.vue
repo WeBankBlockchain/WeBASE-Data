@@ -1,33 +1,51 @@
 <template>
     <div>
-        <content-head :headTitle="'首页'"></content-head>
+        <content-head :headTitle="'搜索'"></content-head>
         <div class="module-wrapper">
-            <el-tabs type="border-card" @tab-click="handleClickTab">
-                <el-tab-pane label="简单">
+            <el-tabs type="border-card" @tab-click="handleClickTab" :value="tabName" v-loading="listLoading">
+                <el-tab-pane label="关键字搜索">
                     <div class="search-table">
                         <el-input v-model="singleSearchValue" @keyup.enter.native="querySimpleSearch" placeholder="请输入用户名/用户地址/合约名/合约地址/块高/交易Hash/上链数据"></el-input>
                         <el-button @click="querySimpleSearch" type="primary">搜索</el-button>
                     </div>
                     <div class="search-result" v-if="list.length > 0">
-                        <search-results :list="list" />
+                        <search-results :list="list" :handleType="searchType" />
 
                         <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout=" sizes, prev, pager, next, jumper" :total="total">
                         </el-pagination>
                     </div>
                     <div v-else class="no-data" :style=" {'height': initHeight + 'px'}">
                         <div class="no-data-text">
-                            <!-- <span>暂无数据</span> -->
+
                         </div>
                     </div>
+                    <!-- <div v-if="tabName == '0'">
+                        <div style="padding: 10px 0 0 40px; font-weight: bold;font-size: 16px;">告警列表</div>
+                        <div class="search-table">
+                            <el-table :data="alarmList" tooltip-effect="dark">
+                                <el-table-column v-for="head in alarmHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
+                                    <template slot-scope="scope">
+                                        <template v-if="head.enName!='operate'">
+                                            <span>{{scope.row[head.enName]}}</span>
+                                        </template>
+                                        <template v-else>
+                                            <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">删除</el-button>
+                                            <el-button type="text" size="small" @click="handleBtn(scope.row)">{{btnText(scope.row['statusType'])}}</el-button>
+                                        </template>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </div> -->
                 </el-tab-pane>
-                <el-tab-pane label="高级">
+                <el-tab-pane label="条件搜索">
                     <div class="search-table">
                         <el-select v-model="chainId" placeholder="请选择链" @change="changeChain">
                             <el-option v-for="item in chainList" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
-                        <el-select v-model="groupId" placeholder="请选择群组" @change="changeGroup">
-                            <el-option v-for="item in groupCollection" :key="item.value" :label="item.label" :value="item.value">
+                        <el-select v-model="groupId" placeholder="请选择应用" @change="changeGroup">
+                            <el-option v-for="item in groupCollection" :key="item.value" :label="item.appName" :value="item.value">
                             </el-option>
                         </el-select>
                         <el-select v-model="searchType" placeholder="请选择" slot="prepend" @change="changeSearchType">
@@ -39,7 +57,7 @@
                     </div>
 
                     <div class="search-result" v-if="list.length > 0">
-                        <search-results :list="list" :chainId="chainId" :groupId="groupId"/>
+                        <search-results :list="list" :chainId="chainId" :groupId="groupId" :handleType="searchType" />
 
                         <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout=" sizes, prev, pager, next, jumper" :total="total">
                         </el-pagination>
@@ -51,13 +69,14 @@
                     </div>
                 </el-tab-pane>
             </el-tabs>
+
         </div>
 
     </div>
 </template>
 
 <script>
-import { searchAll, chainAll, groupList, simpleSearch } from "@/util/api"
+import { searchAll, chainAll, groupList, simpleSearch, blockList, transList } from "@/util/api"
 import contentHead from "@/components/contentHead";
 import SearchResults from "./components/SearchResults";
 export default {
@@ -84,9 +103,9 @@ export default {
                 value: '4',
                 label: '合约'
             }],
-            searchType: '1',
+            searchType: '',
             searchValue: '',
-            singleSearchValue: '',
+            singleSearchValue: sessionStorage.getItem('simpleKeyword') ? sessionStorage.getItem('simpleKeyword') : '',
             chainId: '',
             groupId: '',
             chainList: [],
@@ -94,15 +113,98 @@ export default {
             currentPage: 1,
             pageSize: 10,
             total: 0,
-            tabName: '0',
-            initHeight: window.innerHeight - 200
+            tabName: sessionStorage.getItem('tab') ? sessionStorage.getItem('tab') : '0',
+            initHeight: window.innerHeight - 800,
+            alarmHead: [
+                {
+                    enName: 'keyword',
+                    name: '关键字'
+                },
+                {
+                    enName: 'chainName',
+                    name: '链名称'
+                },
+                {
+                    enName: 'appName',
+                    name: '应用名称'
+                },
+                {
+                    enName: 'hash',
+                    name: '交易Hash'
+                },
+                {
+                    enName: 'user',
+                    name: '用户'
+                },
+                {
+                    enName: 'status',
+                    name: '状态'
+                },
+                {
+                    enName: 'modifyTime',
+                    name: '修改时间'
+                },
+                {
+                    enName: "operate",
+                    name: '操作'
+                }
+            ],
+            alarmList: [
+                {
+                    chainName: '存证链',
+                    appName: '碳排放',
+                    hash: '0x19843jsdf9834dff3',
+                    user: '0x5743r4545fe3r',
+                    status: '未处理',
+                    statusType: '1',
+                    modifyTime: '2019-03-15 11:14:29',
+                    keyword: '金三胖'
+                },
+                {
+                    chainName: '存证链',
+                    appName: '产品质量码',
+                    hash: '0x19843jsdf9834dff3',
+                    user: '0x5743r4545fe3r',
+                    status: '已处理',
+                    statusType: '2',
+                    modifyTime: '2019-03-14 11:14:29',
+                    keyword: '金三胖'
+                }
+            ],
         }
     },
     mounted() {
+        if (this.singleSearchValue && this.tabName == '0') {
+            this.querySimpleSearch()
+        }
+        if (this.tabName == 0) {
+            this.searchType = '5'
+        } else if (this.tabName == 1) {
+            this.searchType = '1'
+        }
         this.queryChainAll()
+
     },
     methods: {
+        deleteKeyword() {
+
+        },
+        handleBtn() {
+
+        },
+        btnText(key) {
+            switch (key) {
+                case '1':
+                    return '确认'
+                    break;
+
+                case '2':
+                    return ''
+                    break;
+            }
+        },
         handleClickTab(tab) {
+            sessionStorage.setItem('tab', tab.paneName)
             this.tabName = tab.paneName
             this.searchValue = ""
             this.singleSearchValue = ""
@@ -110,6 +212,12 @@ export default {
             this.pageSize = 10
             this.total = 0
             this.list = [];
+            if (this.tabName == 0) {
+                this.searchType = '5'
+            } else if (this.tabName == 1) {
+                this.searchType = '1'
+            }
+
         },
         queryChainAll() {
             this.listLoading = true;
@@ -144,13 +252,17 @@ export default {
                 })
         },
         queryGroupList(val) {
-            groupList(val)
+            let param = {
+                chainId : val
+            }
+            groupList(param)
                 .then(res => {
                     if (res.data.code === 0) {
                         this.groupCollection = res.data.data
                         this.groupCollection.forEach(group => {
                             group.label = group.groupName;
                             group.value = group.groupId;
+                            group.appName = group.appName;
                         })
                         if (this.groupCollection.length) {
                             this.groupId = this.groupCollection[0]['value']
@@ -216,15 +328,18 @@ export default {
                 })
         },
         querySimpleSearch() {
+            sessionStorage.setItem('simpleKeyword', this.singleSearchValue)
             this.listLoading = true;
             var data = {
                 keyword: this.singleSearchValue
             }
-            simpleSearch(this.currentPage,this.pageSize,data)
+
+            simpleSearch(this.currentPage, this.pageSize, data)
                 .then(res => {
                     if (res.data.code === 0) {
-                        this.list = res.data.data;
-                        this.total = res.data.totalCount
+                        let list = res.data.data;
+                        let total = res.data.totalCount
+                        this.queryAppList(list, total)
                     } else {
                         this.$message({
                             type: 'error',
@@ -241,38 +356,187 @@ export default {
                     this.listLoading = false
                 })
         },
+        queryAppList(list, total){
+            this.total = total
+            let param = {
+                
+            }
+            groupList(param)
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let appList = res.data.data
+                        list.forEach(item=>{
+                            appList.forEach(it=>{
+                                if(item.chainId == it.chainId && item.groupId == it.groupId){
+                                    item.appName = it.appName
+                                }
+                            })
+                        })
+                        this.queryAppChain(list)
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: this.$chooseLang(res.data.code),
+                        })
+                    }
+                })
+        },
+        queryAppChain(list) {
+            chainAll()
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let chainList = res.data.data;
+                        list.forEach(item=>{
+                            chainList.forEach(it=>{
+                                if(item.chainId == it.chainId){
+                                    item.chainName = it.chainName
+                                }
+                            })
+                        })
+                        this.list = list
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.listLoading = false
+                    this.$message({
+                        type: "error",
+                        message: '系统异常'
+                    })
+                })
+        },
         changeChain(val) {
             this.chainId = val
             this.queryGroupList(val)
         },
         changeGroup(val) {
             this.groupId = val
+            // this.sureSearch()
         },
         changeSearchType(type) {
+            this.list = []
             this.searchType = type;
         },
         sureSearch() {
-            this.querySearchAll()
+            sessionStorage.setItem('chainId', this.chainId)
+            sessionStorage.setItem('groupId', this.groupId)
+            sessionStorage.setItem('searchType', this.searchType)
+            // this.querySearchAll()
+            switch (this.searchType) {
+                case "1":
+                    this.getBlockList()
+                    break;
+                case "2":
+                    this.getTransaction()
+                    break;
+                case "3":
+                    this.querySearchAll()
+                    break;
+
+                case "4":
+                    this.querySearchAll()
+                    break;
+            }
         },
+        getBlockList: function () {
+            this.listLoading = true;
+            let reqData = {
+                chainId: this.chainId,
+                groupId: this.groupId,
+                pageNumber: this.currentPage,
+                pageSize: this.pageSize
+            },
+                reqQuery = {};
+            if (this.searchValue) {
+                reqQuery.blockNumber = this.searchValue;
+
+            }
+            blockList(reqData, reqQuery)
+                .then(res => {
+                    this.listLoading = false;
+                    if (res.data.code === 0) {
+                        this.list = res.data.data;
+                        this.total = res.data.totalCount;
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.listLoading = false;
+                    this.$message({
+                        message: '系统异常',
+                        type: "error",
+                        duration: 2000
+                    });
+
+                });
+        },
+        getTransaction() {
+            this.expands = [];
+            this.listLoading = true;
+            let reqData = {
+                chainId: this.chainId,
+                groupId: this.groupId,
+                pageNumber: this.currentPage,
+                pageSize: this.pageSize
+            },
+                reqQuery = {};
+            if (this.searchValue) {
+                reqQuery.transHash = this.searchValue
+            }
+            transList(reqData, reqQuery)
+                .then(res => {
+                    this.listLoading = false;
+                    if (res.data.code === 0) {
+                        this.list = res.data.data;
+                        this.total = res.data.totalCount;
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.listLoading = false;
+                    this.$message({
+                        message: '系统异常',
+                        type: "error",
+                        duration: 2000
+                    });
+
+                });
+        },
+
         handleSizeChange: function (val) {
             this.pageSize = val;
             this.currentPage = 1;
-            if(this.tabName == 0){
+            if (this.tabName == 0) {
                 this.querySimpleSearch()
-            }else {
+            } else {
                 this.querySearchAll();
             }
-            
+
         },
         handleCurrentChange: function (val) {
             this.currentPage = val;
-            if(this.tabName == 0){
+            if (this.tabName == 0) {
                 this.querySimpleSearch()
-            }else {
+            } else {
                 this.querySearchAll();
             }
         },
-        
+
     }
 }
 </script>

@@ -29,25 +29,40 @@
             <a v-if="headHref" target="_blank" :href="headHref.href" class="font-color-fff font-12">{{headHref.content}}</a>
         </div>
         <div class="content-head-network">
-            <el-dropdown trigger="click" @command="changeGroup" placement="bottom" v-if="chainId">
+            <!-- <el-dropdown trigger="click" @command="changeGroup" placement="bottom" v-if="chainId">
                 <span class="cursor-pointer font-color-fff" @click="groupVisible = !groupVisible">
-                    {{this.$t("head.group")}}: {{groupName}}<i :class="[groupVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
+                    应用: {{appName}}<i :class="[groupVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
                     <ul style="max-height: 220px;overflow-y:auto" class="text-center">
                         <el-dropdown-item v-for=" item in groupList" :key="item.group" :command="item">
-                            {{item.groupName}}
+                            
+                            <span style="font-size: 12px;">{{item.appName}}</span>
                         </el-dropdown-item>
                     </ul>
                 </el-dropdown-menu>
-            </el-dropdown>
+            </el-dropdown> -->
+            <el-popover placement="bottom" width="0" min-width="50px" trigger="click">
+                <div class="sign-out-wrapper">
+                    <span class="change-password" @click="changePassword">修改密码</span><br>
+                    <span class="sign-out" @click="signOut">退出</span>
+                </div>
+                <a class="browse-user" slot="reference">
+                    <i class="wbs-icon-user-icon"></i>
+                    <i>{{accountName}}</i>
+                </a>
+            </el-popover>
         </div>
+        <el-dialog title="修改密码" :visible.sync="changePasswordDialogVisible" width="30%" style="text-align: center;">
+            <change-password-dialog @success="success"></change-password-dialog>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import { groupList } from "@/util/api";
 import router from "@/router";
+import changePasswordDialog from "./changePasswordDialog";
 export default {
     name: "conetnt-head",
     props: {
@@ -77,7 +92,7 @@ export default {
         }
     },
     components: {
-
+        changePasswordDialog
     },
     watch: {
         headTitle: function (val) {
@@ -99,7 +114,7 @@ export default {
         return {
             title: this.headTitle,
             groupName: "-",
-            accountName: "-",
+            accountName: "admin",
             dialogShow: false,
             path: "",
             headIcon: this.icon || false,
@@ -107,7 +122,8 @@ export default {
             changePasswordDialogVisible: false,
             groupList: [],
             groupVisible: false,
-            chainId: ''
+            chainId: '',
+            appName: ''
         };
     },
     mounted: function () {
@@ -122,17 +138,22 @@ export default {
             }
         },
         queryGroup() {
-            groupList(this.chainId)
+            let param = {
+                chainId: this.chainId
+            }
+            groupList(param)
                 .then(res => {
                     if (res.data.code === 0) {
                         this.groupList = res.data.data
                         if (!localStorage.getItem('groupId')) {
                             this.groupName = res.data.data[0]['groupName']
                             this.groupId = res.data.data[0]['groupId']
+                            this.appName = res.data.data[0]['appName']
                             this.$emit('changGroup', this.groupId);
                         }else {
                             this.groupName = localStorage.getItem('groupName')
                             this.groupId = localStorage.getItem('groupId')
+                            this.appName = localStorage.getItem('appName')
                             this.$emit('changGroup', this.groupId);
                         }
                         
@@ -143,9 +164,26 @@ export default {
         },
         changeGroup: function (val) {
             this.groupName = val.groupName
+            this.appName = val.appName
             localStorage.setItem("groupName", val.groupName);
             localStorage.setItem("groupId", val.groupId);
+            localStorage.setItem("appName", val.appName);
             this.$emit('changGroup', val.groupId);
+        },
+        changePassword: function () {
+            this.changePasswordDialogVisible = true;
+        },
+        success: function (val) {
+            this.changePasswordDialogVisible = false;
+        },
+        signOut: function () {
+            localStorage.removeItem("user");
+            // loginOut()
+            //     .then()
+            //     .catch();
+            // delCookie("JSESSIONID");
+            // delCookie("NODE_MGR_ACCOUNT_C");
+            this.$router.push("/login");
         },
     }
 };

@@ -334,3 +334,8 @@ export function dataType(type, value) {
 export function substring_0_40(params) {
     return params.substring(0, 40)
 }
+
+
+export function replaceStartEndSpace(str) {
+    return str.replace(/(^\s*)|(\s*$)/g, "")
+}

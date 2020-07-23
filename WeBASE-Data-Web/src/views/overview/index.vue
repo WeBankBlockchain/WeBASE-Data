@@ -1,6 +1,41 @@
 <template>
     <div class="app-container">
-        <content-head :headTitle="`${chainName}`" @changGroup="changGroup"></content-head>
+        <content-head :headTitle="`${chainName}`" :icon="true" @changGroup="changGroup"></content-head>
+        <!-- <div class="module-wrapper app-description">
+            <div class="description-left">
+                <div style="height: 160px;width: 160px;">
+                    <img style="height: 100%;width: 100%;" src="../../../static/image/btb.jpeg" alt="图片">
+                </div>
+                <div class="left-content">
+                    <p class="myReleasedApply">服务</p>
+                    <p>
+                        <span class="">
+                            {{appTitleMap.appName}}
+                        </span>
+                        <span v-if="appTitleMap.appVersion">v{{appTitleMap.appVersion}}</span>
+                    </p>
+                </div>
+            </div>
+            <div class="description-right">
+                <p class="myReleasedApply">服务简介</p>
+                <span class="myReleasedApply-content">
+                    {{appTitleMap.appSynopsis}}
+                </span>
+            </div>
+        </div> -->
+        <!-- <div class="module-wrapper box-content" >
+            <div class="box-content-title">
+                <p style="font-weight: bold; font-size: 18px;">
+                    服务描述
+                </p>
+            </div>
+            <div id="appDesc" style="margin-right: 22px; word-break: break-all;">
+                <p>{{appTitleMap.description}}</p>
+            </div>
+            <div>
+                <p></p>
+            </div>
+        </div> -->
         <div style="margin: 5px;">
             <div style="margin:10px 10px 6px 10px;">
                 <el-row>
@@ -103,7 +138,7 @@
                                 <div class="block-amount">
                                     <p class="trans-hash" :title="`${item.transHash}`">
                                         <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(item.transHash)" title='复制'></i>
-                                        
+
                                         <span class="link" @click="goRouter('transactions', item.transHash)">{{item.transHash}} </span>
                                     </p>
                                     <p class="trans-address color-8798AD">
@@ -130,7 +165,7 @@
 </template>
 
 <script>
-import { groupGeneral, groupTransDaily, groupNodeList, blockList, transList } from "@/util/api";
+import { groupGeneral, groupTransDaily, groupNodeList, blockList, transList, groupList } from "@/util/api";
 import Chart from "@/components/Charts/BaseLine"
 import contentHead from "@/components/contentHead";
 import { changWeek, numberFormat, unique } from "@/util/util";
@@ -198,7 +233,8 @@ export default {
             ],
             chainName: '',
             blockData: [],
-            transactionList: []
+            transactionList: [],
+            appTitleMap: {}
         }
     },
 
@@ -211,10 +247,16 @@ export default {
                     width: ""
                 },
                 {
+                    enName: "orgName",
+                    name: "机构名称",
+                    width: 180
+                },
+                {
                     enName: "blockNumber",
                     name: "块高",
                     width: 180
                 },
+                
                 {
                     enName: "pbftView",
                     name: "PbftView",
@@ -248,6 +290,7 @@ export default {
                 this.chainId = this.$route.params.chainId
                 this.groupId = val
             }
+            this.queryGroup()
             this.querygroupGeneral()
             this.queryNodeList()
             this.getBlockList()
@@ -257,6 +300,24 @@ export default {
                 this.chartStatistics.chartSize.height = this.$refs.chart.offsetHeight;
                 this.queryGroupTransDaily();
             });
+        },
+        queryGroup() {
+            let param = {
+                chainId: this.chainId
+            }
+            groupList(param)
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let arr = res.data.data
+                        var list = arr.filter(item=>{
+                            return item.groupId == this.groupId
+                        })
+                        
+                        if(list.length) this.appTitleMap = list[0];
+                        
+                    }
+                })
+
         },
         querygroupGeneral() {
             groupGeneral(this.chainId, this.groupId)
@@ -488,6 +549,37 @@ export default {
 </script>
 
 <style scoped>
+.left-content {
+    margin-left: 10px;
+    min-width: 122px;
+}
+.left-content-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: 12px;
+    text-overflow: ellipsis;
+    width: 230px;
+    white-space: nowrap;
+}
+.myReleasedApply {
+    font-weight: bold;
+    font-size: 18px;
+}
+.myReleasedApply-content {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.box-content {
+    padding: 20px;
+}
+.box-content-title {
+    padding: 0px 0 10px 0;
+}
+#appDesc p {
+        word-break: break-all;
+}
 .node-bg {
     background: linear-gradient(to top right, #47befa, #37eef2);
 }
@@ -790,5 +882,20 @@ export default {
     .overview-item:nth-child(2) {
         margin: 8px 15px 16px 0;
     }
+}
+.app-description {
+    min-width: 1200px;
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+    padding: 10px;
+}
+.description-left {
+    display: flex;
+    justify-content: normal;
+    width: 50%;
+}
+.description-right {
+    width: 50%;
 }
 </style>

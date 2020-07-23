@@ -17,7 +17,7 @@
     <div style="height: 100%;">
         <div style="height: 100%;background-color: #0c1220" class="sidebar-content">
             <div class="image-flex justify-center center" style="height: 54px;position:relative;" v-if="menuShowC">
-                <span class="font-color-fff text-center">UPB-DATA</span>
+                <span class="font-color-fff text-center" style="font-size: 23px;">数据监管平台</span>
                 <span class="sidebar-contract-icon">
                     <i class="el-icon-caret-left font-color-aeb1b5" @click="hideMune(true)" style="font-size: 18px;"></i>
                 </span>
@@ -87,7 +87,8 @@ export default {
     mounted: function () {
         this.$nextTick(function () {
             localStorage.setItem("sidebarHide", false);
-            this.queryChainAll(this.changeRouter)
+            // this.queryChainAll(this.changeRouter)
+            this.changeRouter()
         });
     },
     methods: {
@@ -125,19 +126,19 @@ export default {
             //         item.menuShow = true;
             //     }
             // });
-            list.forEach(item=>{
-                if(item.nameKey === "chain" ){
-                    item.children = [];
-                    this.chainList.forEach(it => {
-                        item.children.push({
-                            path: `/overview/${it.chainId}/${it.chainName}`,
-                            menuShow: true,
-                            nameKey: `chain${it.chainId}`,
-                            name: `${it.chainName}`
-                        })
-                    });
-                }
-            })
+            // list.forEach(item=>{
+            //     if(item.nameKey === "chain" ){
+            //         item.children = [];
+            //         this.chainList.forEach(it => {
+            //             item.children.push({
+            //                 path: `/overview/${it.chainId}/${it.chainName}`,
+            //                 menuShow: true,
+            //                 nameKey: `chain${it.chainId}`,
+            //                 name: `${it.chainName}`
+            //             })
+            //         });
+            //     }
+            // })
             this.routesList = list;
         },
         select: function (index, indexPath) {
