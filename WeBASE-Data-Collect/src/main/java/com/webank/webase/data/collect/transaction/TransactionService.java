@@ -16,19 +16,31 @@ package com.webank.webase.data.collect.transaction;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.block.entity.MinMaxBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
+import com.webank.webase.data.collect.parser.ParserService;
+import com.webank.webase.data.collect.receipt.ReceiptService;
+import com.webank.webase.data.collect.receipt.entity.TbReceipt;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * services for block data.
@@ -41,6 +53,13 @@ public class TransactionService {
     private TransactionMapper transactionMapper;
     @Autowired
     private FrontInterfaceService frontInterface;
+    @Autowired
+    @Lazy
+    private ParserService parserService;
+    @Autowired
+    private ReceiptService receiptService;
+    @Autowired
+    private ConstantProperties cProperties;
 
     /**
      * add trans hash info.
@@ -50,6 +69,8 @@ public class TransactionService {
         String tableName = TableName.TRANS.getTableName(chainId, groupId);
         transactionMapper.add(tableName, tbTransaction);
     }
+
+
 
     /**
      * query trans list.
@@ -173,5 +194,46 @@ public class TransactionService {
      */
     public TransactionReceipt getTransReceipt(int chainId, int groupId, String transHash) {
         return frontInterface.getTransReceipt(chainId, groupId, transHash);
+    }
+
+    @Async("asyncExecutor")
+    public void parserProcess(CountDownLatch latch, int chainId, int groupId) {
+        log.info("start parserProcess. chainId:{} groupId:{}", chainId, groupId);
+        try {
+            Instant startTimem = Instant.now();
+            Long useTimeSum = 0L;
+            do {
+                List<String> transHashList = queryUnStatTransHashList(chainId, groupId);
+                if (CollectionUtils.isEmpty(transHashList)) {
+                    return;
+                }
+                // parser
+                transHashList.stream()
+                        .forEach(transHash -> parserTransaction(chainId, groupId, transHash));
+
+                // parser useTime
+                useTimeSum = Duration.between(startTimem, Instant.now()).getSeconds();
+            } while (useTimeSum < cProperties.getDataParserTaskFixedDelay());
+        } catch (Exception ex) {
+            log.error("fail parserProcess chainId:{} groupId:{} ", chainId, groupId, ex);
+        } finally {
+            if (Objects.nonNull(latch)) {
+                latch.countDown();
+            }
+        }
+        log.info("end parserProcess. chainId:{} groupId:{}", chainId, groupId);
+    }
+
+    private void parserTransaction(int chainId, int groupId, String transHash) {
+        try {
+            log.info("parser chainId:{} groupId:{} transHash:{}", chainId, groupId, transHash);
+            TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId, transHash);
+            if (ObjectUtils.isEmpty(tbReceipt)) {
+                return;
+            }
+            parserService.parserTransaction(chainId, groupId, tbReceipt);
+        } catch (Exception ex) {
+            log.error("fail parserTransaction chainId:{} groupId:{} ", chainId, groupId, ex);
+        }
     }
 }
