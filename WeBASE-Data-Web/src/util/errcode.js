@@ -19,8 +19,8 @@ let errCode = {
         zh: '系统异常'
     },
     "102001": {
-        en: "system exception",
-        zh: '无效的前置编号'
+        en: "param exception",
+        zh: '请求参数错误'
     },
     "102002": {
         en: "database exception",
@@ -37,6 +37,14 @@ let errCode = {
     "202202": {
         en: "search content can not be empty",
         zh: '搜索内容不能为空'
+    },
+    "202203": {
+        en: "search index not exists",
+        zh: '索引不存在'
+    },
+    "202204": {
+        en: "search fail",
+        zh: '搜索失败'
     },
 }
 export function chooseLang(code) {

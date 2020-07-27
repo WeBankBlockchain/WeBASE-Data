@@ -1,6 +1,24 @@
 <template>
     <div>
         <el-table :data="list" element-loading-text="Loading" fit highlight-current-row>
+            <!-- <el-table-column type="expand">
+                <template slot-scope="scope">
+                    <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item label="合约地址">
+                            <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['contractAddress'], $event)" title="复制"></i>
+                            <span class="link link-item" @click="link(scope.row, 'contractAddress')">{{ scope.row.contractAddress }}</span>
+                        </el-form-item>
+                        <el-form-item label="合约名称">
+                            <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['contractName'], $event)" title="复制"></i>
+                            <span class="link link-item" @click="link(scope.row, 'contractName')">{{ scope.row.contractName }}</span>
+                        </el-form-item>
+                        <el-form-item label="用户">
+                            <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['userName'], $event)" title="复制"></i>
+                            <span class="link link-item" @click="link(scope.row, 'userName')">{{ scope.row.userName }}</span>
+                        </el-form-item>
+                    </el-form>
+                </template>
+            </el-table-column> -->
             <el-table-column v-for="head in tableHead[type]" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
                 <template slot-scope="scope">
                     <template v-if="head.enName=='contractAddress'">
@@ -266,11 +284,11 @@ export default {
             this.$refs[formName].validate(valid => {
                 if (valid) {
                     // this.modelClose()
-                    console.log(this.chainId,this.groupId)
+                    console.log(this.chainId, this.groupId)
                     this.$router.push({
                         path: "/alarm",
                         query: {
-                            
+
                             content: this.interventionForm.content
                         }
                     })
