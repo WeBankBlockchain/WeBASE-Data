@@ -187,9 +187,9 @@ export default {
     filters: {
         Type: function (val) {
             if (val) {
-                return "sm2/sm3"
+                return "fisco-bcos(secp256k1/sha3)"
             } else {
-                return "secp256k1/sha3"
+                return "fisco-bcos(sm2/sm3)"
             }
         }
     }

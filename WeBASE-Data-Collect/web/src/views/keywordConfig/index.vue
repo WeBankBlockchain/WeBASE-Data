@@ -80,10 +80,10 @@ export default {
             ],
             keywordList: [
                 {
-                    keyword: '金三胖'
+                    keyword: '新冠病毒'
                 },
                 {
-                    keyword: '川建国'
+                    keyword: '禽流感'
                 }
             ],
             alarmHead: [
@@ -129,7 +129,7 @@ export default {
                     status: '未处理',
                     statusType: '1',
                     modifyTime: '2019-03-15 11:14:29',
-                    keyword: '金三胖'
+                    keyword: '新冠病毒'
                 },
                 {
                     chainName: '存证链',
@@ -139,7 +139,7 @@ export default {
                     status: '已处理',
                     statusType: '2',
                     modifyTime: '2019-03-14 11:14:29',
-                    keyword: '金三胖'
+                    keyword: '新冠病毒'
                 }
             ],
 
