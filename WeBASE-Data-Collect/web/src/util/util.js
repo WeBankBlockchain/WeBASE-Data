@@ -357,3 +357,7 @@ export function loadScript(url, callback) {
         }　　　　
     }
 }
+
+export function replaceStartEndSpace(str) {
+    return str.replace(/(^\s*)|(\s*$)/g, "")
+}

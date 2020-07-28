@@ -19,8 +19,8 @@ let errCode = {
         zh: '系统异常'
     },
     "102001": {
-        en: "system exception",
-        zh: '无效的前置编号'
+        en: "param exception",
+        zh: '请求参数错误'
     },
     "102002": {
         en: "database exception",
