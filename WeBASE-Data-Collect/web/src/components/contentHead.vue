@@ -193,12 +193,21 @@ export default {
                     var list = res.data.data;
                     this.groupList = list;
                     if (!list.length) return;
-
-                    if (!localStorage.getItem('groupId') || !localStorage.getItem('groupName')) {
+                    let arr = []
+                    list.forEach(item => {
+                        arr.push(item.groupId)
+                    });
+                    let is = arr.includes(+localStorage.getItem("groupId"))
+                    if(!is){
                         this.groupName = list[0]['groupName']
                         localStorage.setItem("groupName", list[0]['groupName'])
                         localStorage.setItem("groupId", list[0]['groupId'])
                     }
+                    // if (!localStorage.getItem('groupId')&&!is) {
+                    //     this.groupName = list[0]['groupName']
+                    //     localStorage.setItem("groupName", list[0]['groupName'])
+                    //     localStorage.setItem("groupId", list[0]['groupId'])
+                    // }
                 } else {
                     this.$message({
                         type: "error",
