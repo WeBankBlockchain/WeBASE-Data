@@ -1,4 +1,4 @@
-# WeBASE-Web开发文档
+# WeBASE-Data-Web开发文档
 
 本代码仅支持fisco-bcos 2.0以上版本，支持群组和群组切换。
 
@@ -19,7 +19,7 @@ nodejs下载地址：https://nodejs.org/en/download/
 
 > 执行命令：
 
-    git clone https://github.com/WeBankFinTech/WeBASE-Web.git
+    git clone https://github.com/WeBankFinTech/WeBASE-Data.git
 
 将代码放在你的工作目录，例如：D：\project
 
