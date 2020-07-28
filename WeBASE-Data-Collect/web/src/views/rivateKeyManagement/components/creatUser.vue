@@ -24,7 +24,7 @@
                 <el-input v-model.trim="userForm.address" placeholder="请输入公钥地址"></el-input>
             </el-form-item>
             <el-form-item label="用户描述" prop="explain"style="width: 546px">
-                <el-input type="textarea" v-model.trim="userForm.explain" maxlength="120" placeholder="请输入用户描述"></el-input>
+                <el-input type="textarea" v-model="userForm.explain" maxlength="120" placeholder="请输入用户描述"></el-input>
             </el-form-item>
         </el-form>
         <div class="dialog-footer">
@@ -120,7 +120,7 @@ export default {
                 groupId: localStorage.getItem('groupId'),
                 userName: this.userForm.name,
                 address: this.userForm.address,
-                description: this.userForm.explain || ""
+                description: this.replaceStartEndSpace(this.userForm.explain) || ""
             };
             userAdd(reqData)
                 .then(res => {
