@@ -103,11 +103,11 @@ export default {
                 value: '4',
                 label: '合约'
             }],
-            searchType: '',
-            searchValue: '',
+            searchType: sessionStorage.getItem('searchType') ? sessionStorage.getItem('searchType') : '',
+            searchValue: sessionStorage.getItem('searchValue') ? sessionStorage.getItem('searchValue') : '',
             singleSearchValue: sessionStorage.getItem('simpleKeyword') ? sessionStorage.getItem('simpleKeyword') : '',
-            chainId: '',
-            groupId: '',
+            chainId: sessionStorage.getItem('chainId') ? sessionStorage.getItem('chainId') : '',
+            groupId: sessionStorage.getItem('groupId') ? sessionStorage.getItem('groupId') : '',
             chainList: [],
             groupCollection: [],
             currentPage: 1,
@@ -158,7 +158,7 @@ export default {
                     status: '未处理',
                     statusType: '1',
                     modifyTime: '2019-03-15 11:14:29',
-                    keyword: '金三胖'
+                    keyword: '新冠病毒'
                 },
                 {
                     chainName: '存证链',
@@ -168,7 +168,7 @@ export default {
                     status: '已处理',
                     statusType: '2',
                     modifyTime: '2019-03-14 11:14:29',
-                    keyword: '金三胖'
+                    keyword: '新冠病毒'
                 }
             ],
         }
@@ -177,10 +177,13 @@ export default {
         if (this.singleSearchValue && this.tabName == '0') {
             this.querySimpleSearch()
         }
+        if (this.searchValue && this.tabName == '1') {
+            this.sureSearch()
+        }
         if (this.tabName == 0) {
             this.searchType = '5'
         } else if (this.tabName == 1) {
-            this.searchType = '1'
+            this.searchType = sessionStorage.getItem('searchType')
         }
         this.queryChainAll()
 
@@ -215,7 +218,7 @@ export default {
             if (this.tabName == 0) {
                 this.searchType = '5'
             } else if (this.tabName == 1) {
-                this.searchType = '1'
+                this.searchType = sessionStorage.getItem('searchType')
             }
 
         },
@@ -228,11 +231,16 @@ export default {
                         this.chainList = res.data.data;
                         this.chainList.forEach(chain => {
                             chain.label = chain.chainName
-                            chain.value = chain.chainId
+                            chain.value = chain.chainId.toString()
                         })
-                        if (this.chainList.length) {
-                            this.chainId = this.chainList[0]['value']
-                            this.queryGroupList(this.chainId)
+                        if (!sessionStorage.getItem('chainId')) {
+                            if (this.chainList.length) {
+                                this.chainId = this.chainList[0]['value']
+                                this.queryGroupList(this.chainId);
+                            }
+                        } else {
+                            this.chainId = sessionStorage.getItem('chainId')
+                            this.queryGroupList(this.chainId);
                         }
 
                     } else {
@@ -253,20 +261,34 @@ export default {
         },
         queryGroupList(val) {
             let param = {
-                chainId : val
+                chainId: val
             }
             groupList(param)
                 .then(res => {
                     if (res.data.code === 0) {
-                        this.groupCollection = res.data.data
-                        this.groupCollection.forEach(group => {
-                            group.label = group.groupName;
-                            group.value = group.groupId;
-                            group.appName = group.appName;
+                        let arr = res.data.data
+                        this.groupCollection = []
+                        arr.forEach(group => {
+                            this.groupCollection.push({
+                                label: group.groupName,
+                                value: group.groupId.toString(),
+                                appName: group.appName,
+                            })
+
                         })
-                        if (this.groupCollection.length) {
-                            this.groupId = this.groupCollection[0]['value']
+                        let groupIdList = this.groupCollection.map(item => {
+                            return item.value
+                        })
+
+                        var is = groupIdList.includes(sessionStorage.getItem('groupId'))
+                        if (!is) {
+                            if (this.groupCollection.length) {
+                                this.groupId = this.groupCollection[0]['value']
+                            }
+                        } else {
+                            this.groupId = sessionStorage.getItem('groupId')
                         }
+
                     } else {
                         this.$message({
                             type: 'error',
@@ -356,18 +378,18 @@ export default {
                     this.listLoading = false
                 })
         },
-        queryAppList(list, total){
+        queryAppList(list, total) {
             this.total = total
             let param = {
-                
+
             }
             groupList(param)
                 .then(res => {
                     if (res.data.code === 0) {
                         let appList = res.data.data
-                        list.forEach(item=>{
-                            appList.forEach(it=>{
-                                if(item.chainId == it.chainId && item.groupId == it.groupId){
+                        list.forEach(item => {
+                            appList.forEach(it => {
+                                if (item.chainId == it.chainId && item.groupId == it.groupId) {
                                     item.appName = it.appName
                                 }
                             })
@@ -386,9 +408,9 @@ export default {
                 .then(res => {
                     if (res.data.code === 0) {
                         let chainList = res.data.data;
-                        list.forEach(item=>{
-                            chainList.forEach(it=>{
-                                if(item.chainId == it.chainId){
+                        list.forEach(item => {
+                            chainList.forEach(it => {
+                                if (item.chainId == it.chainId) {
                                     item.chainName = it.chainName
                                 }
                             })
@@ -411,21 +433,28 @@ export default {
                 })
         },
         changeChain(val) {
+            sessionStorage.setItem('chainId', val)
             this.chainId = val
             this.queryGroupList(val)
         },
         changeGroup(val) {
+            sessionStorage.setItem('groupId', val)
             this.groupId = val
+            this.searchValue = ''
             // this.sureSearch()
         },
         changeSearchType(type) {
+            sessionStorage.setItem('searchType', type)
+            sessionStorage.setItem('searchValue', '')
             this.list = []
             this.searchType = type;
+            this.searchValue = ''
         },
         sureSearch() {
             sessionStorage.setItem('chainId', this.chainId)
             sessionStorage.setItem('groupId', this.groupId)
             sessionStorage.setItem('searchType', this.searchType)
+            sessionStorage.setItem('searchValue', this.searchValue)
             // this.querySearchAll()
             switch (this.searchType) {
                 case "1":
