@@ -4,7 +4,7 @@
 
 <mapper namespace="com.webank.webase.data.collect.keywords.KeywordsMapper">
     <resultMap id="keywordMap"
-        type="com.webank.webase.data.collect.collect.entity.TbKeyword">
+        type="com.webank.webase.data.collect.keywords.entity.TbKeyword">
         <result column="id" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="id" />
         <result column="keyword" javaType="java.lang.String"

@@ -1030,8 +1030,10 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/keyword/1/2?keyword="测试"
 | ------ | ------------------------------- | ---------------- |
 | 0      | success                         | 正常             |
 | 102000 | system exception                | 系统异常         |
-| 102001 | system exception                | 无效的前置编号   |
+| 102001 | param exception                 | 请求参数错误     |
 | 102002 | database exception              | 数据库异常       |
 | 202101 | invalid group id                | 无效群组编号     |
 | 202201 | searchType not exists           | 搜索类型不存在   |
 | 202202 | search content can not be empty | 搜索内容不能为空 |
+| 202203 | search index not exists         | 索引不存在       |
+| 202204 | search fail                     | 搜索失败         |

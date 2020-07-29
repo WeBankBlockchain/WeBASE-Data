@@ -96,9 +96,23 @@ public class SearchService {
                 throw new BaseException(ConstantCode.INDEX_NOT_EXISTS);
             }
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-            for (SearchParamFileds filed : SearchParamFileds.values()) {
-                boolQueryBuilder
-                        .should(QueryBuilders.matchQuery(filed.getValue(), "*" + keyword + "*"));
+            if (CommonTools.isNumeric(keyword)) {
+                boolQueryBuilder.must(QueryBuilders
+                        .matchQuery(SearchParamFileds.blockNumber.getValue(), keyword));
+            } else {
+                for (SearchParamFileds filed : SearchParamFileds.values()) {
+                    String value = filed.getValue();
+                    if (value.equals(SearchParamFileds.transHash.getValue())
+                            || value.equals(SearchParamFileds.userAddress.getValue())
+                            || value.equals(SearchParamFileds.contractAddress.getValue())) {
+                        boolQueryBuilder.should(QueryBuilders.matchQuery(value, keyword));
+                    } else if (value.equals(SearchParamFileds.blockNumber.getValue())) {
+                        continue;
+                    } else {
+                        boolQueryBuilder
+                                .should(QueryBuilders.matchQuery(value, "*" + keyword + "*"));
+                    }
+                }
             }
             SearchResponse searchResponse = esCurdService.search(pageNumber, pageSize, indexName,
                     new SearchSourceBuilder(), boolQueryBuilder);
