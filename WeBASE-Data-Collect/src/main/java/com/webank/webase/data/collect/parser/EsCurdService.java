@@ -53,7 +53,6 @@ public class EsCurdService {
                     .endObject()
                     .startObject("userName")
                         .field("type","text")
-                        .field("analyzer", "ik_max_word")
                     .endObject()
                     .startObject("userAddress")
                         .field("type","text")
