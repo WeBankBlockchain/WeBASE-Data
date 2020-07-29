@@ -36,6 +36,8 @@ public class EsCurdService {
 
     @Autowired
     private RestHighLevelClient rhlClient;
+    
+    private static final Integer MAX_RESULT_WINDOW = 2000000000;
 
     public String createIndex(String indexName) throws IOException {
         XContentBuilder builder = XContentFactory.jsonBuilder()
@@ -102,7 +104,8 @@ public class EsCurdService {
                 .endObject()
             .endObject();
         Settings settings = Settings.builder().put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 0).build();
+                .put("index.number_of_replicas", 0)
+                .put("index.max_result_window", MAX_RESULT_WINDOW).build();
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName, settings);
         createIndexRequest.mapping("doc", builder);
         CreateIndexResponse response =
