@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * chain controller
+ * keywords controller
  */
 @Log4j2
 @RestController
