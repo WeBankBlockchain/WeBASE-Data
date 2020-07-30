@@ -48,10 +48,10 @@ public class KeywordsService {
             throw new BaseException(ConstantCode.KEYWORD_EXISTS);
         }
         // copy attribute
-        TbKeyword tbChain = new TbKeyword();
-        BeanUtils.copyProperties(keywordInfo, tbChain);
+        TbKeyword tbKeyword1 = new TbKeyword();
+        BeanUtils.copyProperties(keywordInfo, tbKeyword1);
         // save keyword info
-        int result = keywordsMapper.add(tbChain);
+        int result = keywordsMapper.add(tbKeyword1);
         if (result == 0) {
             log.warn("fail keyword after save.");
             throw new BaseException(ConstantCode.SAVE_KEYWORD_FAIL);
