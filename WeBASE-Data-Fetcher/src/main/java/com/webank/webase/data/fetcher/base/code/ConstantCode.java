@@ -42,4 +42,13 @@ public class ConstantCode {
     public static final RetCode INDEX_NOT_EXISTS = RetCode.mark(202203, "search index not exists");
     public static final RetCode SEARCH_FAIL = RetCode.mark(202204, "search fail");
 
+    /* keyword code */
+    public static final RetCode KEYWORD_ID_NOT_EXISTS = RetCode.mark(202301, "keyword id not exists");
+    public static final RetCode KEYWORD_EXISTS = RetCode.mark(202302, "keyword exists");
+    public static final RetCode SAVE_KEYWORD_FAIL = RetCode.mark(202303, "save keyword fail");
+    
+    /* audit code */
+    public static final RetCode AUDIT_ID_NOT_EXISTS = RetCode.mark(202401, "audit id not exists");
+    public static final RetCode AUDIT_EXISTS = RetCode.mark(202402, "audit inffo exists");
+    public static final RetCode SAVE_AUDIT_FAIL = RetCode.mark(202403, "save audit info fail");
 }

@@ -11,20 +11,21 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.keywords;
+package com.webank.webase.data.fetcher.keyword;
 
-import com.webank.webase.data.collect.base.code.ConstantCode;
-import com.webank.webase.data.collect.base.controller.BaseController;
-import com.webank.webase.data.collect.base.entity.BasePageResponse;
-import com.webank.webase.data.collect.base.entity.BaseResponse;
+import com.webank.webase.data.fetcher.base.code.ConstantCode;
+import com.webank.webase.data.fetcher.base.controller.BaseController;
+import com.webank.webase.data.fetcher.base.entity.BasePageResponse;
+import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
+import com.webank.webase.data.fetcher.base.entity.BaseResponse;
+import com.webank.webase.data.fetcher.keyword.entity.KeywordInfo;
+import com.webank.webase.data.fetcher.keyword.entity.TbKeyword;
+import com.webank.webase.data.fetcher.keyword.entity.UpdateKeywordInfo;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
-
-import com.webank.webase.data.collect.keywords.entity.KeywordInfo;
-import com.webank.webase.data.collect.keywords.entity.TbKeyword;
-import com.webank.webase.data.collect.keywords.entity.UpdateKeywordInfo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -42,23 +43,25 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RestController
 @RequestMapping("keywords")
-public class KeywordsController extends BaseController {
+public class KeywordController extends BaseController {
 
     @Autowired
-    private KeywordsService keywordsService;
+    private KeywordService keywordService;
 
     /**
      * add a new keyword
      */
-    @PostMapping("/new")
-    public BaseResponse newKeyword(@RequestBody @Valid KeywordInfo keywordInfo, BindingResult result) {
+    @PostMapping("/add")
+    public BaseResponse newKeyword(@RequestBody @Valid KeywordInfo keywordInfo,
+            BindingResult result) {
         checkBindResult(result);
         Instant startTime = Instant.now();
         log.info("start newKeyword.");
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        TbKeyword tbKeyword = keywordsService.newKeyword(keywordInfo);
+        TbKeyword tbKeyword = keywordService.newKeyword(keywordInfo);
         baseResponse.setData(tbKeyword);
-        log.info("end newKeyword useTime:{}", Duration.between(startTime, Instant.now()).toMillis());
+        log.info("end newKeyword useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
     }
 
@@ -72,7 +75,7 @@ public class KeywordsController extends BaseController {
         Instant startTime = Instant.now();
         log.info("start updateKeyword.");
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        TbKeyword tbKeyword = keywordsService.updateKeyword(updateKeywordInfo);
+        TbKeyword tbKeyword = keywordService.updateKeyword(updateKeywordInfo);
         baseResponse.setData(tbKeyword);
         log.info("end updateKeyword useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
@@ -82,16 +85,23 @@ public class KeywordsController extends BaseController {
     /**
      * query keyword list.
      */
-    @GetMapping("/all")
-    public BasePageResponse queryKeywordList() {
+    @GetMapping("/list/{pageNumber}/{pageSize}")
+    public BasePageResponse queryKeywordList(@PathVariable("pageNumber") Integer pageNumber,
+            @PathVariable("pageSize") Integer pageSize) {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start queryKeywordList.");
 
-        int count = keywordsService.getKeywordCount();
+        // param
+        int count = keywordService.getKeywordCount();
         pagesponse.setTotalCount(count);
         if (count > 0) {
-            List<TbKeyword> list = keywordsService.getKeywordList();
+            BaseQueryParam queryParam = new BaseQueryParam();
+            Integer start =
+                    Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
+            queryParam.setStart(start);
+            queryParam.setPageSize(pageSize);
+            List<TbKeyword> list = keywordService.getKeywordList(queryParam);
             pagesponse.setData(list);
         }
 
@@ -103,14 +113,14 @@ public class KeywordsController extends BaseController {
     /**
      * delete by keywordId
      */
-    @DeleteMapping("/{keywordId}")
-    public BaseResponse removeKeyword(@PathVariable("keywordId") Integer keywordId) {
+    @DeleteMapping("/{id}")
+    public BaseResponse removeKeyword(@PathVariable("id") Integer id) {
         Instant startTime = Instant.now();
-        log.info("start removeKeyword. keywordId:{}", keywordId);
+        log.info("start removeKeyword. id:{}", id);
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
 
         // remove
-        keywordsService.removeKeyword(keywordId);
+        keywordService.removeKeyword(id);
 
         log.info("end removeKeyword useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());

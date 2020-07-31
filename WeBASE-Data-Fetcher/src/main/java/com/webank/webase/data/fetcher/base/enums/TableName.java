@@ -18,7 +18,7 @@ package com.webank.webase.data.fetcher.base.enums;
  */
 public enum TableName {
     TASK("tb_task_pool_"), BLOCK("tb_block_"), TRANS("tb_transaction_"), RECEIPT(
-            "tb_receipt_"), PARSER("tb_parser_");
+            "tb_receipt_"), PARSER("tb_parser_"), KEYWORDS("tb_keywords"), WARNING_INFO("tb_warning_info");
 
     String value;
 
