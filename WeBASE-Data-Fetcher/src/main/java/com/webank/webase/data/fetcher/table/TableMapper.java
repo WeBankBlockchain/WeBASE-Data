@@ -11,13 +11,22 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.keywords.entity;
+package com.webank.webase.data.fetcher.table;
 
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
-import lombok.Data;
+@Repository
+public interface TableMapper {
 
-@Data
-public class UpdateKeywordInfo {
-    private Integer id;
-    private String keyword;
+    int createTbKeyword();
+
+    int createTbWarningInfo();
+
+    List<String> queryTables(@Param("dbName") String dbName, @Param("tableName") String tableName);
+
+    int dropTable(@Param("dbName") String dbName, @Param("tableName") String tableName);
+
+    int deleteByTableName(@Param("tableName") String tableName);
 }

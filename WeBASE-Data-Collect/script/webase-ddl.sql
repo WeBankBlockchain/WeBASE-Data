@@ -180,31 +180,3 @@ CREATE TABLE IF NOT EXISTS tb_solc (
 	modify_time datetime DEFAULT NULL COMMENT '修改时间',
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='编译器信息表';
-
--- ----------------------------
--- Table structure for tb_keywords
--- ----------------------------
-CREATE TABLE IF NOT EXISTS tb_keywords (
-	id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
-	keyword varchar(1024) COMMENT '关键字',
-	create_time datetime DEFAULT NULL COMMENT '创建时间',
-	modify_time datetime DEFAULT NULL COMMENT '修改时间',
-	PRIMARY KEY (id),
-	UNIQUE KEY uk_keyword (keyword)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='关键字信息表';
-
--- ----------------------------
--- Table structure for tb_warning_info
--- ----------------------------
-CREATE TABLE IF NOT EXISTS tb_warning_info (
-	id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
-	keyword varchar(1024) COMMENT '关键字',
-    comment varchar(1024) COMMENT '监管添加意见信息',
-    chain_id int(11) NOT NULL COMMENT '所属区块链编号',
-    group_id int(11) NOT NULL COMMENT '所属群组编号',
-    tx_hash varchar(1024) COMMENT '交易hash',
-    status tinyint(4) DEFAULT '1' COMMENT '状态（1-处理中 2-已处理）',
-	create_time datetime DEFAULT NULL COMMENT '创建时间',
-	modify_time datetime DEFAULT NULL COMMENT '修改时间',
-	PRIMARY KEY (id),
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='关键字告警信息表';

@@ -81,10 +81,5 @@ public class ConstantCode {
             RetCode.mark(202604, "save solc js file error");
     public static final RetCode READ_SOLC_FILE_ERROR =
             RetCode.mark(202605, "read solc js file error");
-
-
-    public static final RetCode INVALID_KEYWORD_ID = RetCode.mark(202701, "invalid keyword id");
-    public static final RetCode KEYWORD_ID_NOT_EXISTS = RetCode.mark(202702, "keyword id not exists");
-    public static final RetCode KEYWORD_EXISTS = RetCode.mark(202703, "keyword exists");
-    public static final RetCode SAVE_KEYWORD_FAIL = RetCode.mark(202003, "save keyword fail");
+    
 }

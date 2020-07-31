@@ -11,16 +11,16 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.keywords;
+package com.webank.webase.data.fetcher.keyword;
 
-import com.webank.webase.data.collect.keywords.entity.TbKeyword;
+import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
+import com.webank.webase.data.fetcher.keyword.entity.TbKeyword;
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface KeywordsMapper {
+public interface KeywordMapper {
 
     int add(TbKeyword keyword);
     
@@ -28,11 +28,11 @@ public interface KeywordsMapper {
 
     Integer getCount();
 
-    List<TbKeyword> getList();
+    List<TbKeyword> getList(BaseQueryParam param);
 
-    TbKeyword getKeywordById(@Param("id") Integer keywordId);
+    TbKeyword getKeywordById(@Param("id") Integer id);
 
     TbKeyword getKeywordByKeyword(@Param("keyword") String keyword);
 
-    int remove(@Param("id") Integer keywordId);
+    int remove(@Param("id") Integer id);
 }

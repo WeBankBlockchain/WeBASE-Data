@@ -11,18 +11,30 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.audit.entity;
+package com.webank.webase.data.fetcher.audit.entity;
 
-
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 public class AuditInfo {
-    private Integer id;
+    @NotNull
+    private Integer chainId;
+    @NotNull
+    private Integer groupId;
+    @NotBlank
+    @Length(min=1, max=64)
     private String keyword;
+    @NotBlank
+    @NotBlank
+    @Length(min=1, max=1024)
     private String comment;
-    private Integer chain_id;
-    private Integer group_id;
-    private String tx_hash;
-    private Integer status;
+    @NotBlank
+    private String txHash;
+    @NotBlank
+    private String address;
+    private String chainName;
+    private String appName;
 }

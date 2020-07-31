@@ -34,7 +34,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
 | 2     | message     | String        | 否   | 描述                       |
 | 3     | totalCount  | Int           | 否   | 总记录数                   |
 | 4     | data        | List          | 否   | 组织列表                   |
-| 4.1   |             | Object        |      | 节点信息对象               |
+| 4.1   |             | Object        |      | 信息对象                   |
 | 4.1.1 | chainId     | Int           | 否   | 链编号                     |
 | 4.1.2 | chainName   | String        | 否   | 链名称                     |
 | 4.1.3 | chainType   | Int           | 否   | 链类型（0-非国密，1-国密） |
@@ -279,7 +279,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/txnDaily/1/1
 | 1    | code     | Int    | 否   | 返回码，0：成功 其它：失败 |
 | 2    | message  | String | 否   | 描述                       |
 | 3    | data     | list   | 否   | 返回信息列表               |
-| 3.1  |          | object |      | 返回信息实体               |
+| 4    |          | object |      | 返回信息实体               |
 | 4.1  | statDate | string | 否   | 日期YYYY-MM-DD             |
 | 4.2  | chainId  | Int    | 是   | 链编号                     |
 | 4.3  | groupId  | int    | 否   | 群组编号                   |
@@ -356,7 +356,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/nodeList/100001/300001/1/10
 | 2      | message     | String        | 否   | 描述                       |
 | 3      | totalCount  | Int           | 否   | 总记录数                   |
 | 4      | data        | List          | 是   | 节点列表                   |
-| 4.1    |             | Object        |      | 节点信息对象               |
+| 4.1    |             | Object        |      | 信息对象                   |
 | 4.1.1  | chainId     | int           | 否   | 链编号                     |
 | 4.1.2  | nodeId      | String        | 否   | 节点编号                   |
 | 4.1.3  | nodeName    | string        | 否   | 节点名称                   |
@@ -445,7 +445,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/orgList/100001/1/10
 | 2     | message     | String | 否   | 描述                       |
 | 3     | totalCount  | Int    | 否   | 总记录数                   |
 | 4     | data        | List   | 是   | 节点列表                   |
-| 4.1   |             | Object |      | 节点信息对象               |
+| 4.1   |             | Object |      | 信息对象                   |
 | 4.1.1 | chainId     | Int    | 否   | 链编号                     |
 | 4.1.2 | nodeId      | String | 否   | 节点编号                   |
 | 4.1.3 | orgName     | String | 是   | 机构名称                   |
@@ -1022,6 +1022,604 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/keyword/1/2?keyword="测试"
 }
 ```
 
+## 4 关键字管理模块
+
+### 4.1 新增关键字
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址： **/keywords/add**
+- 请求方式：POST
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型   | 可为空 | 备注   |
+| ---- | -------- | ------ | ------ | ------ |
+| 1    | keyword  | String | 否     | 关键字 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/keywords/add
+```
+
+```
+{
+  "keyword": "禽流感"
+}
+```
+
+#### 返回参数
+
+***1）出参表***
+
+| 序号 | 输出参数   | 类型          | 可为空 | 备注                       |
+| ---- | ---------- | ------------- | ------ | -------------------------- |
+| 1    | code       | Int           | 否     | 返回码，0：成功 其它：失败 |
+| 2    | message    | String        | 否     | 描述                       |
+| 3    | data       | Object        |        | 信息对象                   |
+| 3.1  | id         | Int           | 否     | 编号                       |
+| 3.2  | keyword    | String        | 否     | 关键字                     |
+| 3.3  | createTime | LocalDateTime | 是     | 落库时间                   |
+| 3.2  | modifyTime | LocalDateTime | 是     | 修改时间                   |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "keyword": "禽流感",
+    "createTime": "2020-07-30 20:14:38",
+    "modifyTime": "2020-07-30 20:14:38"
+  }
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 4.2 获取关键字列表 
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/keywords/list/{pageNumber}/{pageSize}**
+- 请求方式：GET
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数   | 类型 | 可为空 | 备注       |
+| ---- | ---------- | ---- | ------ | ---------- |
+| 1    | pageNumber | Int  | 否     | 当前页码   |
+| 2    | pageSize   | Int  | 否     | 每页记录数 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/keywords/list/1/2
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号  | 输出参数   | 类型          |      | 备注                       |
+| ----- | ---------- | ------------- | ---- | -------------------------- |
+| 1     | code       | Int           | 否   | 返回码，0：成功 其它：失败 |
+| 2     | message    | String        | 否   | 描述                       |
+| 3     | totalCount | Int           | 否   | 总记录数                   |
+| 4     | data       | List          | 否   | 列表                       |
+| 4.1   |            | Object        |      | 对象                       |
+| 4.1.1 | id         | Int           | 否   | 编号                       |
+| 4.1.2 | keyword    | String        | 否   | 关键字                     |
+| 4.1.3 | createTime | LocalDateTime | 否   | 落库时间                   |
+| 4.1.4 | modifyTime | LocalDateTime | 否   | 修改时间                   |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "keyword": "禽流感",
+      "createTime": "2020-07-30 20:14:38",
+      "modifyTime": "2020-07-30 20:14:38"
+    }
+  ],
+  "totalCount": 1
+}
+```
+
+- 失败：
+
+```
+{
+   "code": 102000,
+   "message": "system exception",
+   "data": {}
+}
+```
+
+### 4.3 修改关键字
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址： **/keywords/update**
+- 请求方式：POST
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型   | 可为空 | 备注       |
+| ---- | -------- | ------ | ------ | ---------- |
+| 1    | id       | Int    | 否     | 关键字编号 |
+| 2    | keyword  | String | 否     | 关键字     |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/keywords/update
+```
+
+```
+{
+    "id": 1,
+    "keyword": "冠状病毒"
+}
+```
+
+#### 返回参数
+
+***1）出参表***
+
+| 序号 | 输出参数   | 类型          | 可为空 | 备注                       |
+| ---- | ---------- | ------------- | ------ | -------------------------- |
+| 1    | code       | Int           | 否     | 返回码，0：成功 其它：失败 |
+| 2    | message    | String        | 否     | 描述                       |
+| 3    | data       | Object        |        | 信息对象                   |
+| 3.1  | id         | Int           | 否     | 编号                       |
+| 3.2  | keyword    | String        | 否     | 关键字                     |
+| 3.3  | createTime | LocalDateTime | 是     | 落库时间                   |
+| 3.2  | modifyTime | LocalDateTime | 是     | 修改时间                   |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "keyword": "冠状病毒",
+    "createTime": "2020-07-30 20:14:38",
+    "modifyTime": "2020-07-30 20:15:35"
+  }
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 4.4 删除关键字
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/keywords/{id}**
+- 请求方式：DELETE
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型 | 可为空 | 备注       |
+| ---- | -------- | ---- | ------ | ---------- |
+| 1    | id       | Int  | 否     | 关键字编号 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/keywords/1
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号 | 输出参数 | 类型   |      | 备注                       |
+| ---- | -------- | ------ | ---- | -------------------------- |
+| 1    | code     | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2    | message  | String | 否   | 描述                       |
+| 3    | data     | object | 是   | 返回信息实体（空）         |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": null
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+## 5 告警信息管理模块
+
+### 5.1 新增告警信息
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址： **/audit/add**
+- 请求方式：POST
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数  | 类型   | 可为空 | 备注     |
+| ---- | --------- | ------ | ------ | -------- |
+| 1    | chainId   | Int    | 否     | 链编号   |
+| 2    | groupId   | Int    | 否     | 群组编号 |
+| 3    | keyword   | String | 否     | 关键字   |
+| 4    | comment   | String | 否     | 监管意见 |
+| 5    | txHash    | String | 否     | 交易hash |
+| 6    | address   | String | 否     | 用户地址 |
+| 7    | chainName | String | 是     | 链名称   |
+| 8    | appName   | String | 是     | 应用名称 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/audit/add
+```
+
+```
+{
+  "chainId": 1,
+  "groupId": 1,
+  "keyword": "禽流感",
+  "comment": "停止售卖",
+  "txHash": "0x8e8b15e87f09e35f4ce811fb61b0bbd730eab0cfe63a350e2bab6f7a2bfe36b0",
+  "address": "0xd0332a67b2136ff5767c9ee7b775be83950da59c",
+  "chainName": "存证链",
+  "appName": "文件存证"
+}
+```
+
+#### 返回参数
+
+***1）出参表***
+
+| 序号 | 输出参数   | 类型          |      | 备注                        |
+| ---- | ---------- | ------------- | ---- | --------------------------- |
+| 1    | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
+| 2    | message    | String        | 否   | 描述                        |
+| 3    | data       | Object        |      | 信息对象                    |
+| 3.1  | id         | Int           | 否   | 编号                        |
+| 3.2  | chainId    | Int           | 否   | 链编号                      |
+| 3.3  | groupId    | Int           | 否   | 群组编号                    |
+| 3.4  | keyword    | String        | 否   | 关键字                      |
+| 3.5  | comment    | String        | 否   | 监管意见                    |
+| 3.6  | txHash     | String        | 否   | 交易hash                    |
+| 3.7  | address    | String        | 否   | 用户地址                    |
+| 3.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
+| 3.9  | chainName  | String        | 是   | 链名称                      |
+| 3.10 | appName    | String        | 是   | 应用名称                    |
+| 3.11 | createTime | LocalDateTime | 否   | 落库时间                    |
+| 3.12 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "chainId": 1,
+    "groupId": 1,
+    "keyword": "禽流感",
+    "comment": "停止售卖",
+    "txHash": "0x8e8b15e87f09e35f4ce811fb61b0bbd730eab0cfe63a350e2bab6f7a2bfe36b0",
+    "address": "0xd0332a67b2136ff5767c9ee7b775be83950da59c",
+    "status": 1,
+    "chainName": "存证链",
+    "appName": "文件存证",
+    "createTime": "2020-07-30 20:19:39",
+    "modifyTime": "2020-07-30 20:19:39"
+  }
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 5.2 获取告警信息列表 
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/audit/list/{pageNumber}/{pageSize}**
+- 请求方式：GET
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数   | 类型 | 可为空 | 备注       |
+| ---- | ---------- | ---- | ------ | ---------- |
+| 1    | pageNumber | Int  | 否     | 当前页码   |
+| 2    | pageSize   | Int  | 否     | 每页记录数 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/audit/list/1/2
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号   | 输出参数   | 类型          |      | 备注                        |
+| ------ | ---------- | ------------- | ---- | --------------------------- |
+| 1      | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
+| 2      | message    | String        | 否   | 描述                        |
+| 3      | totalCount | Int           | 否   | 总记录数                    |
+| 4      | data       | List          | 否   | 列表                        |
+| 4.1    |            | Object        |      | 对象                        |
+| 4.1.1  | id         | Int           | 否   | 编号                        |
+| 4.1.2  | chainId    | Int           | 否   | 链编号                      |
+| 4.1.3  | groupId    | Int           | 否   | 群组编号                    |
+| 4.1.4  | keyword    | String        | 否   | 关键字                      |
+| 4.1.5  | comment    | String        | 是   | 监管意见                    |
+| 4.1.6  | txHash     | String        | 否   | 交易hash                    |
+| 4.1.7  | address    | String        | 否   | 用户地址                    |
+| 4.1.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
+| 4.1.9  | chainName  | String        | 是   | 链名称                      |
+| 4.1.10 | appName    | String        | 是   | 应用名称                    |
+| 4.1.11 | createTime | LocalDateTime | 否   | 落库时间                    |
+| 4.1.12 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "chainId": 1,
+      "groupId": 1,
+      "keyword": "禽流感",
+      "comment": "停止售卖",
+      "txHash": "0x8e8b15e87f09e35f4ce811fb61b0bbd730eab0cfe63a350e2bab6f7a2bfe36b0",
+      "address": "0xd0332a67b2136ff5767c9ee7b775be83950da59c",
+      "status": 1,
+      "chainName": "存证链",
+      "appName": "文件存证",
+      "createTime": "2020-07-30 20:19:39",
+      "modifyTime": "2020-07-30 20:19:39"
+    }
+  ],
+  "totalCount": 1
+}
+```
+
+- 失败：
+
+```
+{
+   "code": 102000,
+   "message": "system exception",
+   "data": {}
+}
+```
+
+### 5.3 确认处理状态
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址： **/audit/confirm/{id}**
+- 请求方式：POST
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型 | 可为空 | 备注         |
+| ---- | -------- | ---- | ------ | ------------ |
+| 1    | id       | Int  | 否     | 告警信息编号 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/audit/confirm/1
+```
+
+#### 返回参数
+
+***1）出参表***
+
+| 序号 | 输出参数   | 类型          |      | 备注                        |
+| ---- | ---------- | ------------- | ---- | --------------------------- |
+| 1    | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
+| 2    | message    | String        | 否   | 描述                        |
+| 3    | data       | Object        |      | 信息对象                    |
+| 3.1  | id         | Int           | 否   | 编号                        |
+| 3.2  | chainId    | Int           | 否   | 链编号                      |
+| 3.3  | groupId    | Int           | 否   | 群组编号                    |
+| 3.4  | keyword    | String        | 否   | 关键字                      |
+| 3.5  | comment    | String        | 否   | 监管意见                    |
+| 3.6  | txHash     | String        | 否   | 交易hash                    |
+| 3.7  | address    | String        | 否   | 用户地址                    |
+| 3.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
+| 3.9  | chainName  | String        | 是   | 链名称                      |
+| 3.10 | appName    | String        | 是   | 应用名称                    |
+| 3.11 | createTime | LocalDateTime | 否   | 落库时间                    |
+| 3.12 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "chainId": 1,
+    "groupId": 1,
+    "keyword": "禽流感",
+    "comment": "停止售卖",
+    "txHash": "0x8e8b15e87f09e35f4ce811fb61b0bbd730eab0cfe63a350e2bab6f7a2bfe36b0",
+    "address": "0xd0332a67b2136ff5767c9ee7b775be83950da59c",
+    "status": 2,
+    "chainName": "存证链",
+    "appName": "文件存证",
+    "createTime": "2020-07-30 20:19:39",
+    "modifyTime": "2020-07-30 20:22:06"
+  }
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 5.4 删除告警信息
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/audit/{id}**
+- 请求方式：DELETE
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型 | 可为空 | 备注         |
+| ---- | -------- | ---- | ------ | ------------ |
+| 1    | id       | Int  | 否     | 告警信息编号 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/audit/1
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号 | 输出参数 | 类型   |      | 备注                       |
+| ---- | -------- | ------ | ---- | -------------------------- |
+| 1    | code     | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2    | message  | String | 否   | 描述                       |
+| 3    | data     | object | 是   | 返回信息实体（空）         |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": null
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
 ## 附录 
 
 ### 1. 返回码信息列表
@@ -1037,3 +1635,9 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/keyword/1/2?keyword="测试"
 | 202202 | search content can not be empty | 搜索内容不能为空 |
 | 202203 | search index not exists         | 索引不存在       |
 | 202204 | search fail                     | 搜索失败         |
+| 202301 | keyword id not exists           | 关键字不存在     |
+| 202302 | keyword exists                  | 关键字已存在     |
+| 202303 | save keyword fail               | 关键字保存失败   |
+| 202401 | audit id not exists             | 告警信息不存在   |
+| 202402 | audit inffo exists              | 告警信息已存在   |
+| 202403 | save audit info fail            | 告警信息保存失败 |
