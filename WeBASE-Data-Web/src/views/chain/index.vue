@@ -11,7 +11,7 @@
                         <template slot-scope="scope">
                             <el-tabs type="border-card" :value="currentTab" @tab-click="handleTab">
                                 <el-tab-pane v-for="(tab, index) in tabList" :label="`${tab.label}`" :name="tab.type" :key="index">
-                                    <component v-bind:is="`${currentTab}Info`" :chainId="scope.row.chainId"></component>
+                                    <component v-bind:is="`${currentTab}Info`" :chainId="scope.row.chainId" :chainName="scope.row.chainName"></component>
                                 </el-tab-pane>
                             </el-tabs>
                         </template>

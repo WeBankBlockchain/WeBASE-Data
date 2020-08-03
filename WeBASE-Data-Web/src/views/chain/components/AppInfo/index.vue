@@ -26,7 +26,11 @@ export default {
     props: {
         chainId: {
             type: Number
+        },
+        chainName: {
+            type: String
         }
+
     },
 
     data() {
@@ -99,6 +103,9 @@ export default {
         link(val) {
             this.$router.push({
                 path: `/overview/${val.chainId}/${val.appName}/${val.groupId}`,
+                query: {
+                    chainName: this.chainName
+                }
             })
         }
     }

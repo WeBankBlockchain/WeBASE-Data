@@ -15,7 +15,7 @@
  */
 <template>
     <div>
-        <v-content-head :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}(区块列表)`" :icon="true"></v-content-head>
+        <v-content-head :headTitle="`${chainName}`" :headSubTitle="`${appName}(区块列表)`" :icon="true"></v-content-head>
         <div class="module-wrapper">
             <div class="search-part">
                 <div class="search-part-left-bg">
@@ -93,13 +93,17 @@ export default {
                 value: ""
             },
             chainId: '',
-            groupId: ''
+            groupId: '',
+            chainName: '',
+            appName: '',
         };
     },
     mounted: function() {
         if (this.$route.query.chainId || this.$route.query.groupId) {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId
+            this.chainName = this.$route.query.chainName
+            this.appName = this.$route.query.appName
         }
         if (this.$route.query.blockNumber) {
             this.searchKey.key = "blockNumber";

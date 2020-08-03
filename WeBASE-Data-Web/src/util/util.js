@@ -339,3 +339,9 @@ export function substring_0_40(params) {
 export function replaceStartEndSpace(str) {
     return str.replace(/(^\s*)|(\s*$)/g, "")
 }
+
+export function rexIsNumber(num) {
+    var rex = /^[0-9]+$/;
+    var flag = rex.test(num);
+    return flag
+}
