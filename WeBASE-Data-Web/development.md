@@ -1,6 +1,6 @@
 # WeBASE-Data-Web开发文档
 
-本代码仅支持fisco-bcos 2.0以上版本，支持群组和群组切换。
+本代码仅支持fisco-bcos 2.0以上版本。
 
 
 ## 1、开发环境搭建
@@ -71,7 +71,7 @@ nodejs下载地址：https://nodejs.org/en/download/
             assetsPublicPath: '/',
             proxyTable: {
             '/mgr':{
-                target:'http://127.0.0.1:8080/',  //在此修改跨域地址，这里是node_mgr服务ip和端口，且可以访问
+                target:'http://127.0.0.1:8080/',  //在此修改跨域地址，这里是WeBASE-Data-Fetcher服务ip和端口，且可以访问
                 changeOrigin:true,
                 pathRewrite:{
                     '^/mgr':''
@@ -85,7 +85,7 @@ nodejs下载地址：https://nodejs.org/en/download/
 
 模拟数据在mock.js中，在开发联调前使用，使用中注意mock.js的url和axios请求的url要保持一致。`包括get拼接在url上面的参数`
 
-注意：开发时将mian.js中加上mock.js引用，打包时需要注释mock.js的引用。
+注意：开发时将main.js中加上mock.js引用，打包时需要注释mock.js的引用。
 
 > axios请求地址：
 

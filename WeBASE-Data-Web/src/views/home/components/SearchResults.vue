@@ -1,51 +1,84 @@
 <template>
     <div>
         <el-table :data="list" element-loading-text="Loading" fit highlight-current-row>
-            <!-- <el-table-column type="expand">
+            <el-table-column type="expand" v-if="handleType =='5'">
                 <template slot-scope="scope">
-                    <el-form label-position="left" inline class="demo-table-expand">
-                        <el-form-item label="合约地址">
-                            <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['contractAddress'], $event)" title="复制"></i>
-                            <span class="link link-item" @click="link(scope.row, 'contractAddress')">{{ scope.row.contractAddress }}</span>
-                        </el-form-item>
-                        <el-form-item label="合约名称">
-                            <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['contractName'], $event)" title="复制"></i>
-                            <span class="link link-item" @click="link(scope.row, 'contractName')">{{ scope.row.contractName }}</span>
-                        </el-form-item>
-                        <el-form-item label="用户">
-                            <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['userName'], $event)" title="复制"></i>
-                            <span class="link link-item" @click="link(scope.row, 'userName')">{{ scope.row.userName }}</span>
-                        </el-form-item>
-                    </el-form>
+                    <li v-for="(val, key) in (scope.row)">
+                        <template v-if=" key !='createTime'&&key !='modifyTime'&&key !='rawData'&&key !='groupId'&&key !='chainId'&&key !='dynamicTableName'&&key !='id' ">
+                            <template v-if="key=='transHash'">
+                                <span class="item-detail-key">txHash：</span>
+                                <span class="item-detail-val">
+                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
+                                    <span class="link link-item" @click="link(scope.row, 'transHash')">
+                                        {{val}}
+                                    </span>
+                                </span>
+                            </template>
+                            <template v-else-if="key=='blockNumber'">
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-detail-val">
+                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
+                                    <span class="link link-item" @click="link(scope.row, 'blockNumber')">
+                                        {{val}}
+                                    </span>
+                                </span>
+                            </template>
+                             <template v-else-if="key=='userAddress'">
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-detail-val">
+                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
+                                    <span class="link link-item" @click="link(scope.row, 'userAddress')">
+                                        {{val}}
+                                    </span>
+                                </span>
+                            </template>
+                             <template v-else-if="key=='contractAddress'">
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-detail-val">
+                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
+                                    <span class="link link-item" @click="link(scope.row, 'contractAddress')">
+                                        {{val}}
+                                    </span>
+                                </span>
+                            </template>
+                            <template v-else-if="key=='contractName'">
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-detail-val">
+                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
+                                    <span class="link link-item" @click="link(scope.row, 'contractName')">
+                                        {{val}}
+                                    </span>
+                                </span>
+                            </template>
+                            <template v-else-if="key=='userName'">
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-detail-val">
+                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
+                                    <span class="link link-item" @click="link(scope.row, 'userName')">
+                                        {{val}}
+                                    </span>
+                                </span>
+                            </template>
+                            <template v-else-if="key=='userAddress'">
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-detail-val">
+                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
+                                    <span class="link link-item" @click="link(scope.row, 'userAddress')">
+                                        {{val}}
+                                    </span>
+                                </span>
+                            </template>
+                            <template v-else>
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-detail-val">{{val}}</span>
+                            </template>
+                        </template>
+                    </li>
                 </template>
-            </el-table-column> -->
+            </el-table-column>
             <el-table-column v-for="head in tableHead[type]" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
                 <template slot-scope="scope">
-                    <template v-if="head.enName=='contractAddress'">
-                        <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['contractAddress'], $event)" title="复制"></i>
-                        <span class="link link-item" @click="link(scope.row, 'contractAddress')">{{ scope.row.contractAddress }}</span>
-                    </template>
-                    <template v-else-if="head.enName=='contractName'">
-                        <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['contractName'], $event)" title="复制"></i>
-                        <span class="link link-item" @click="link(scope.row, 'contractName')">{{ scope.row.contractName }}</span>
-                    </template>
-                    <template v-else-if="head.enName=='userName'">
-                        <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['userName'], $event)" title="复制"></i>
-                        <span class="link link-item" @click="link(scope.row, 'userName')">{{ scope.row.userName }}</span>
-                    </template>
-                    <template v-else-if="head.enName=='userAddress'">
-                        <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['userAddress'], $event)" title="复制"></i>
-                        <span class="link link-item" @click="link(scope.row, 'userAddress')">{{ scope.row.userAddress }}</span>
-                    </template>
-                    <template v-else-if="head.enName=='transHash'">
-                        <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['transHash'], $event)" title="复制"></i>
-                        <span class="link link-item" @click="link(scope.row, 'transHash')">{{ scope.row.transHash }}</span>
-                    </template>
-                    <template v-else-if="head.enName=='blockNumber'">
-                        <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['blockNumber'], $event)" title="复制"></i>
-                        <span class="link link-item" @click="link(scope.row, 'blockNumber')">{{ scope.row.blockNumber }}</span>
-                    </template>
-                    <template v-else-if="head.enName=='chainId'">
+                    <template v-if="head.enName=='chainId'">
                         <span>{{ scope.row.chainId }}</span>
                     </template>
                     <template v-else-if="head.enName=='groupId'">
@@ -70,7 +103,6 @@
             <el-table-column fixed="right" label="操作" v-if="type=='5'">
                 <template slot-scope="scope">
                     <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">介入处理</el-button>
-                    <el-button type="text" size="small" @click="handleBtn(scope.row)">{{btnText(scope.row['statusType'])}}</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -91,10 +123,11 @@
 <script>
 import clip from "@/util/clipboard";
 import head from "./head.json";
+import { auditAdd } from "@/util/api"
 export default {
     components: {
     },
-    props: ['list', 'groupId', 'chainId', 'handleType'],
+    props: ['list', 'groupId', 'chainId', 'handleType', 'singleSearchValue'],
 
     data() {
         return {
@@ -102,7 +135,8 @@ export default {
             interventionVisible: false,
             interventionForm: {
                 content: ''
-            }
+            },
+            rowData: {}
         }
     },
 
@@ -136,7 +170,8 @@ export default {
     },
 
     methods: {
-        deleteKeyword() {
+        deleteKeyword(val) {
+            this.rowData = val
             this.interventionVisible = true
         },
         handleBtn() {
@@ -165,15 +200,6 @@ export default {
                             from: ''
                         }
                     })
-                    // var { href } = this.$router.resolve({
-                    //     path: "/userInfo",
-                    //     query: {
-                    //         chainId: val.chainId || this.chainId,
-                    //         groupId: val.groupId || this.groupId,
-                    //         userParam: val.userName
-                    //     }
-                    // })
-                    // window.open(href, '_blank')
                     break;
                 case 'userAddress':
                     this.$router.push({
@@ -184,15 +210,7 @@ export default {
                             userParam: val.userAddress
                         }
                     })
-                    // var { href } = this.$router.resolve({
-                    //     path: "/userInfo",
-                    //     query: {
-                    //         chainId: val.chainId || this.chainId,
-                    //         groupId: val.groupId || this.groupId,
-                    //         userParam: val.userAddress
-                    //     }
-                    // })
-                    // window.open(href, '_blank')
+
                     break;
                 case 'transHash':
                     this.$router.push({
@@ -203,15 +221,7 @@ export default {
                             transHash: val.transHash
                         }
                     })
-                    // var { href } = this.$router.resolve({
-                    //     path: "/transactionInfo",
-                    //     query: {
-                    //         chainId: val.chainId || this.chainId,
-                    //         groupId: val.groupId || this.groupId,
-                    //         transHash: val.transHash
-                    //     }
-                    // })
-                    // window.open(href, '_blank')
+
                     break;
                 case "blockNumber":
                     this.$router.push({
@@ -222,15 +232,7 @@ export default {
                             blockNumber: val.blockNumber
                         }
                     })
-                    // var { href } = this.$router.resolve({
-                    //     path: "/blockInfo",
-                    //     query: {
-                    //         chainId: val.chainId || this.chainId,
-                    //         groupId: val.groupId || this.groupId,
-                    //         blockNumber: val.blockNumber
-                    //     }
-                    // })
-                    // window.open(href, '_blank')
+
                     break;
                 case "contractAddress":
                     this.$router.push({
@@ -241,15 +243,7 @@ export default {
                             contractParam: val.contractAddress
                         }
                     })
-                    // var { href } = this.$router.resolve({
-                    //     path: "/contractInfo",
-                    //     query: {
-                    //         chainId: val.chainId || this.chainId,
-                    //         groupId: val.groupId || this.groupId,
-                    //         contractParam: val.contractAddress
-                    //     }
-                    // })
-                    // window.open(href, '_blank')
+
                     break;
                 case "contractName":
                     this.$router.push({
@@ -260,15 +254,79 @@ export default {
                             contractParam: val.contractName
                         }
                     })
-                    // var { href } = this.$router.resolve({
-                    //     path: "/contractInfo",
-                    //     query: {
-                    //         chainId: val.chainId || this.chainId,
-                    //         groupId: val.groupId || this.groupId,
-                    //         contractParam: val.contractName
-                    //     }
-                    // })
-                    // window.open(href, '_blank')
+
+                    break;
+                default:
+                    break;
+            }
+        },
+        rowDetailLink(val, type) {
+            switch (type) {
+                case 'userName':
+                    this.$router.push({
+                        path: "/userInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId,
+                            userParam: val,
+                            from: ''
+                        }
+                    })
+                    break;
+                case 'userAddress':
+                    this.$router.push({
+                        path: "/userInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId,
+                            userParam: val
+                        }
+                    })
+
+                    break;
+                case 'transHash':
+                    this.$router.push({
+                        path: "/transactionInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId,
+                            transHash: val
+                        }
+                    })
+
+                    break;
+                case "blockNumber":
+                    this.$router.push({
+                        path: "/blockInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId,
+                            blockNumber: val
+                        }
+                    })
+
+                    break;
+                case "contractAddress":
+                    this.$router.push({
+                        path: "/contractInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId,
+                            contractParam: val
+                        }
+                    })
+
+                    break;
+                case "contractName":
+                    this.$router.push({
+                        path: "/contractInfo",
+                        query: {
+                            chainId: this.chainId,
+                            groupId: this.groupId,
+                            contractParam: val
+                        }
+                    })
+
                     break;
                 default:
                     break;
@@ -283,20 +341,53 @@ export default {
         submit: function (formName) {
             this.$refs[formName].validate(valid => {
                 if (valid) {
-                    // this.modelClose()
-                    console.log(this.chainId, this.groupId)
-                    this.$router.push({
-                        path: "/alarm",
-                        query: {
-
-                            content: this.interventionForm.content
-                        }
-                    })
+                    this.queryAuditAdd()
                 } else {
                     return false;
                 }
             });
         },
+        queryAuditAdd() {
+            let reqData = {
+                chainId: this.rowData.chainId,
+                groupId: this.rowData.groupId,
+                keyword: this.singleSearchValue,
+                comment: this.interventionForm.content,
+                txHash: this.rowData.transHash,
+                address: this.rowData.userAddress,
+                chainName: this.rowData.chainName,
+                appName: this.rowData.appName
+            };
+            auditAdd(reqData)
+                .then(res => {
+                    this.loading = false;
+                    if (res.data.code === 0) {
+                        this.$message({
+                            type: "success",
+                            message: '介入成功'
+                        });
+                        this.modelClose();
+                        this.$router.push({
+                            path: "/alarm"
+                        })
+                    } else {
+                        this.modelClose();
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.modelClose();
+                    this.$message({
+                        message: '系统错误',
+                        type: "error",
+                        duration: 2000
+                    });
+                });
+        }
     }
 }
 </script>
@@ -304,5 +395,12 @@ export default {
 <style scoped>
 .link-item {
     padding: 5px 10px 5px 10px;
+}
+.link-item {
+    padding: 5px 10px 5px 10px;
+}
+.item-detail-key {
+    width: 150px;
+    display: inline-block;
 }
 </style>

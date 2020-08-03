@@ -15,7 +15,7 @@
  */
 <template>
     <div class="bg-f7f7f7">
-        <content-head :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}(交易列表)`" :icon="true"></content-head>
+        <content-head :headTitle="`${chainName}`" :headSubTitle="`${appName}(交易列表)`" :icon="true"></content-head>
         <div class="module-wrapper">
             <div class="search-part">
                 <div class="search-part-left-bg">
@@ -55,11 +55,6 @@
                             <span>{{scope.row['transDetail']}}</span>
                         </template>
                     </el-table-column>
-                    <!-- <el-table-column prop="auditFlag" label="统计" width="" align="center" :show-overflow-tooltip="true">
-                        <template slot-scope="scope">
-                            <span :style="{'color': (scope.row['auditFlag'] == 1 ? '#E6A23C': '#67C23A')}">{{scope.row['auditFlag'] | statusFilter}}</span>
-                        </template>
-                    </el-table-column> -->
                     <el-table-column prop="receiptDetail" label="交易回执详情" width="" align="center" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['receiptDetail'], $event)" title="复制"></i>
@@ -118,6 +113,8 @@ export default {
             numberFormat: numberFormat,
             chainId: '',
             groupId: '',
+            chainName: '',
+            appName: '',
             getRowKeys(row) {
                 return row.transHash;
             }
@@ -126,7 +123,9 @@ export default {
     mounted() {
         if (this.$route.query.chainId || this.$route.query.groupId) {
             this.chainId = this.$route.query.chainId
-            this.groupId = this.$route.query.groupId
+            this.groupId = this.$route.query.groupId,
+            this.chainName = this.$route.query.chainName
+            this.appName = this.$route.query.appName
         }
         if (this.$route.query.transHash) {
             this.searchKey.value = this.$route.query.transHash
