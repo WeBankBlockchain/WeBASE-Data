@@ -261,8 +261,6 @@ export default {
             }
         },
         rowDetailLink(val, type) {
-            console.log(val, type, this.chainId, this.groupId)
-            return
             switch (type) {
                 case 'userName':
                     this.$router.push({
