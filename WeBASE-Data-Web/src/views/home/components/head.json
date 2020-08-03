@@ -125,30 +125,6 @@
             "name": "应用名"
         },
         {
-            "enName": "contractAddress",
-            "name": "合约地址"
-        },
-        {
-            "enName": "contractName",
-            "name": "合约名称"
-        },
-        {
-            "enName": "userName",
-            "name": "用户"
-        },
-        {
-            "enName": "userAddress",
-            "name": "用户地址"
-        },
-        {
-            "enName": "transHash",
-            "name": "交易Hash"
-        },
-        {
-            "enName": "blockNumber",
-            "name": "块高"
-        },
-        {
             "enName": "input",
             "name": "Input"
         },

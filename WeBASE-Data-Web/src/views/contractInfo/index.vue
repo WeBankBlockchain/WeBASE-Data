@@ -15,7 +15,7 @@
  */
 <template>
     <div class="rivate-key-management-wrapper">
-        <v-contentHead :headTitle="`链${chainId}`" :headSubTitle="`群组${groupId}(合约列表)`" :icon="true"></v-contentHead>
+        <v-contentHead :headTitle="`${chainName}`" :headSubTitle="`${appName}(合约列表)`" :icon="true"></v-contentHead>
         <div class="module-wrapper">
             <div class="search-part">
                 <div class="search-part-left-bg">
@@ -72,13 +72,17 @@ export default {
             chainId: '',
             groupId: '',
             contractParam: '',
-            numberFormat: numberFormat
+            numberFormat: numberFormat,
+            chainName: '',
+            appName: '',
         }
     },
     mounted() {
         if (this.$route.query.chainId || this.$route.query.groupId) {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId
+            this.chainName = this.$route.query.chainName
+            this.appName = this.$route.query.appName
         }
         
         if (this.$route.query.contractParam ) {

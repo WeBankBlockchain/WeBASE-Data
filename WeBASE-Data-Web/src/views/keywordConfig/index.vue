@@ -8,55 +8,40 @@
                 </div>
             </div>
             <div>
-                <el-table :data="keywordList" tooltip-effect="dark">
+                <el-table :data="keywordList" tooltip-effect="dark" v-loading="loading">
                     <el-table-column v-for="head in keywordHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
                         <template slot-scope="scope">
                             <template v-if="head.enName!='operate'">
                                 <span>{{scope.row[head.enName]}}</span>
                             </template>
                             <template v-else>
-                                <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">删除</el-button>
-                                <el-button type="text" size="small" @click="handleBtn(scope.row)">{{btnText(scope.row['statusType'])}}</el-button>
+                                <el-button type="text" size="small" @click="deleteKeyword(scope.row,'delete')">删除</el-button>
+                                <el-button type="text" size="small" @click="updateKeyword(scope.row,'modify')">修改</el-button>
                             </template>
                         </template>
                     </el-table-column>
                 </el-table>
+                <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout=" sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
             </div>
-           
+
         </div>
-        <!-- <div  class="module-wrapper">
-            <div style="padding: 10px 0 0 40px; font-weight: bold;font-size: 16px;">告警列表</div>
-             <div class="search-table">
-                <el-table :data="alarmList" tooltip-effect="dark">
-                    <el-table-column v-for="head in alarmHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
-                        <template slot-scope="scope">
-                            <template v-if="head.enName!='operate'">
-                                <span>{{scope.row[head.enName]}}</span>
-                            </template>
-                            <template v-else>
-                                <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">删除</el-button>
-                                <el-button type="text" size="small" @click="handleBtn(scope.row)">{{btnText(scope.row['statusType'])}}</el-button>
-                            </template>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
-        </div> -->
-        <el-dialog :visible.sync="keywordVisible" title="关键字配置" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="keywordVisible">
-            <create-keyword @success="success" @close="close"></create-keyword>
+        <el-dialog :visible.sync="keywordVisible" :title="configTitle" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="keywordVisible">
+            <keyword @success="success" @close="close" :configOptions="configOptions"></keyword>
         </el-dialog>
     </div>
 </template>
 
 <script>
 import contentHead from "@/components/contentHead";
-import createKeyword from "./components/createKeyword";
+import keyword from "./components/keyword";
+import { keywordsList } from "@/util/api";
 export default {
     name: 'keywordConfig',
 
     components: {
         "v-content-head": contentHead,
-        createKeyword
+        keyword
     },
 
     props: {
@@ -65,48 +50,18 @@ export default {
     data() {
         return {
             keywordVisible: false,
+            loading: false,
+            currentPage: 1,
+            pageSize: 10,
+            total: 0,
             keywordHead: [
                 {
                     enName: 'keyword',
                     name: '关键字'
                 },
                 {
-                    enName: "operate",
-                    name: '操作'
-                }
-            ],
-            keywordList: [
-                {
-                    keyword: '新冠病毒'
-                },
-                {
-                    keyword: '禽流感'
-                }
-            ],
-            alarmHead: [
-                {
-                    enName: 'keyword',
-                    name: '关键字'
-                },
-                {
-                    enName: 'chainName',
-                    name: '链名称'
-                },
-                {
-                    enName: 'appName',
-                    name: '应用名称'
-                },
-                {
-                    enName: 'hash',
-                    name: '交易Hash'
-                },
-                {
-                    enName: 'user',
-                    name: '用户'
-                },
-                {
-                    enName: 'status',
-                    name: '状态'
+                    enName: 'createTime',
+                    name: '创建时间'
                 },
                 {
                     enName: 'modifyTime',
@@ -117,29 +72,9 @@ export default {
                     name: '操作'
                 }
             ],
-            alarmList: [
-                {
-                    chainName: '存证链',
-                    appName: '碳排放',
-                    hash: '0x19843jsdf9834dff3',
-                    user: '0x5743r4545fe3r',
-                    status: '未处理',
-                    statusType: '1',
-                    modifyTime: '2019-03-15 11:14:29',
-                    keyword: '新冠病毒'
-                },
-                {
-                    chainName: '存证链',
-                    appName: '产品质量码',
-                    hash: '0x19843jsdf9834dff3',
-                    user: '0x5743r4545fe3r',
-                    status: '已处理',
-                    statusType: '2',
-                    modifyTime: '2019-03-14 11:14:29',
-                    keyword: '新冠病毒'
-                }
-            ],
-
+            keywordList: [],
+            configTitle: '',
+            configOptions: {}
         }
     },
 
@@ -153,30 +88,86 @@ export default {
     },
 
     mounted() {
+        this.queryKeywordslist()
     },
 
     methods: {
-        createKeyword: function () {
-           this.keywordVisible = true
+        handleSizeChange: function(val) {
+            this.pageSize = val;
+            this.currentPage = 1;
+            this.queryKeywordslist();
         },
-        deleteKeyword(){
-            
+        handleCurrentChange: function(val) {
+            this.currentPage = val;
+            this.queryKeywordslist();
         },
-        handleBtn(){
+        queryKeywordslist() {
+            this.loading = true
+            let reqData = {
+                pageNumber: this.currentPage,
+                pageSize: this.pageSize
+            }
+            keywordsList(reqData, {})
+                .then(res => {
+                    this.loading = false
+                    if (res.data.code === 0) {
+                        this.keywordList = res.data.data;
+                        this.total = res.data.totalCount
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.loading = false
+                    this.$message({
+                        type: "error",
+                        message: '系统异常'
+                    })
+                })
+        },
+        createKeyword() {
+            this.configTitle = '增加关键字'
+            this.configOptions = {
+                type: 'creat',
+                data: {
+                    keyword: '',
+                }
+            }
+            this.keywordVisible = true
 
         },
-        success(){
-           
+        deleteKeyword(val, type) {
+            this.configTitle = '删除关键字'
+            this.configOptions = {
+                type: type,
+                data: val
+            }
+            this.keywordVisible = true
         },
-        close(val){
+        updateKeyword(val, type) {
+            this.configTitle = '修改关键字'
+            this.configOptions = {
+                type: type,
+                data: val
+            }
+            this.keywordVisible = true
+        },
+        success() {
+            this.queryKeywordslist()
+        },
+        close(val) {
             this.keywordVisible = val
         },
-        btnText(key){
+        btnText(key) {
             switch (key) {
                 case '1':
                     return '确认'
                     break;
-            
+
                 case '2':
                     return ''
                     break;
