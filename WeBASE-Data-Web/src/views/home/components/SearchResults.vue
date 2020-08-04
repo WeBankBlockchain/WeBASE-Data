@@ -197,7 +197,8 @@ export default {
                             chainId: val.chainId || this.chainId,
                             groupId: val.groupId || this.groupId,
                             userParam: val.userName,
-                            from: ''
+                            chainName: val.chainName,
+                            appName: val.appName
                         }
                     })
                     break;
@@ -207,7 +208,9 @@ export default {
                         query: {
                             chainId: val.chainId || this.chainId,
                             groupId: val.groupId || this.groupId,
-                            userParam: val.userAddress
+                            userParam: val.userAddress,
+                            chainName: val.chainName,
+                            appName: val.appName
                         }
                     })
 
@@ -218,7 +221,9 @@ export default {
                         query: {
                             chainId: val.chainId || this.chainId,
                             groupId: val.groupId || this.groupId,
-                            transHash: val.transHash
+                            transHash: val.transHash,
+                            chainName: val.chainName,
+                            appName: val.appName
                         }
                     })
 
@@ -229,7 +234,9 @@ export default {
                         query: {
                             chainId: val.chainId || this.chainId,
                             groupId: val.groupId || this.groupId,
-                            blockNumber: val.blockNumber
+                            blockNumber: val.blockNumber,
+                            chainName: val.chainName,
+                            appName: val.appName
                         }
                     })
 
@@ -240,7 +247,9 @@ export default {
                         query: {
                             chainId: val.chainId || this.chainId,
                             groupId: val.groupId || this.groupId,
-                            contractParam: val.contractAddress
+                            contractParam: val.contractAddress,
+                            chainName: val.chainName,
+                            appName: val.appName
                         }
                     })
 
@@ -251,79 +260,9 @@ export default {
                         query: {
                             chainId: val.chainId || this.chainId,
                             groupId: val.groupId || this.groupId,
-                            contractParam: val.contractName
-                        }
-                    })
-
-                    break;
-                default:
-                    break;
-            }
-        },
-        rowDetailLink(val, type) {
-            switch (type) {
-                case 'userName':
-                    this.$router.push({
-                        path: "/userInfo",
-                        query: {
-                            chainId: this.chainId,
-                            groupId: this.groupId,
-                            userParam: val,
-                            from: ''
-                        }
-                    })
-                    break;
-                case 'userAddress':
-                    this.$router.push({
-                        path: "/userInfo",
-                        query: {
-                            chainId: this.chainId,
-                            groupId: this.groupId,
-                            userParam: val
-                        }
-                    })
-
-                    break;
-                case 'transHash':
-                    this.$router.push({
-                        path: "/transactionInfo",
-                        query: {
-                            chainId: this.chainId,
-                            groupId: this.groupId,
-                            transHash: val
-                        }
-                    })
-
-                    break;
-                case "blockNumber":
-                    this.$router.push({
-                        path: "/blockInfo",
-                        query: {
-                            chainId: this.chainId,
-                            groupId: this.groupId,
-                            blockNumber: val
-                        }
-                    })
-
-                    break;
-                case "contractAddress":
-                    this.$router.push({
-                        path: "/contractInfo",
-                        query: {
-                            chainId: this.chainId,
-                            groupId: this.groupId,
-                            contractParam: val
-                        }
-                    })
-
-                    break;
-                case "contractName":
-                    this.$router.push({
-                        path: "/contractInfo",
-                        query: {
-                            chainId: this.chainId,
-                            groupId: this.groupId,
-                            contractParam: val
+                            contractParam: val.contractName,
+                            chainName: val.chainName,
+                            appName: val.appName
                         }
                     })
 
