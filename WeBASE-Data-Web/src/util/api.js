@@ -111,4 +111,65 @@ export function contractList(data, list) {
     })
 }
 
+export function keywordsAdd(data) {
+    return post({
+        url: `${url.ORG_LIST}/keywords/add`,
+        method: 'post',
+        data: data
+    })
+}
 
+export function keywordsList(data, list) {
+    const params = reviseParam(data, list);
+    return get({
+        url: `${url.ORG_LIST}/keywords/list/${params.str}`,
+        method: 'get',
+        params: params.querys
+    })
+}
+
+export function keywordsUpdate(data) {
+    return post({
+        url: `${url.ORG_LIST}/keywords/update`,
+        method: 'post',
+        data: data
+    })
+}
+
+export function keywordsDelete(data) {
+    return deleted({
+        url: `${url.ORG_LIST}/keywords/${data}`,
+        method: 'delete',
+    })
+}
+
+export function auditAdd(data) {
+    return post({
+        url: `${url.ORG_LIST}/audit/add`,
+        method: 'post',
+        data: data
+    })
+}
+
+export function auditList(data, list) {
+    const params = reviseParam(data, list);
+    return get({
+        url: `${url.ORG_LIST}/audit/list/${params.str}`,
+        method: 'get',
+        data: params.querys
+    })
+}
+
+export function auditConfirm(data) {
+    return post({
+        url: `${url.ORG_LIST}/audit/confirm/${data}`,
+        method: 'post'
+    })
+}
+
+export function auditDelete(data) {
+    return deleted({
+        url: `${url.ORG_LIST}/audit/${data}`,
+        method: 'delete',
+    })
+}
