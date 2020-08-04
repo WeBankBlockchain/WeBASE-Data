@@ -86,6 +86,8 @@
             jdbcType="INTEGER" property="sealerIndex" />
         <result column="sealer" javaType="java.lang.String" jdbcType="VARCHAR"
             property="sealer" />
+        <result column="block_detail" javaType="java.lang.String" jdbcType="VARCHAR"
+            property="blockDetail" />
         <result column="create_time" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" javaType="java.time.LocalDateTime"
