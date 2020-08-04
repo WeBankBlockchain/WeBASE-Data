@@ -526,8 +526,9 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/blockList/1/1/1/2?blockHash=
 | 4.1.4 | transCount     | Int           | 否   | 交易数                     |
 | 4.1.5 | sealerIndex    | Int           | 否   | 打包节点索引               |
 | 4.1.6 | sealer         | String        | 否   | 打包节点                   |
-| 4.1.7 | createTime     | LocalDateTime | 否   | 创建时间                   |
-| 4.1.8 | modifyTime     | LocalDateTime | 否   | 修改时间                   |
+| 4.1.7 | blockDetail    | String        | 否   | 区块详情                   |
+| 4.1.8 | createTime     | LocalDateTime | 否   | 创建时间                   |
+| 4.1.9 | modifyTime     | LocalDateTime | 否   | 修改时间                   |
 
 ***2）出参示例***
 
@@ -546,6 +547,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/blockList/1/1/1/2?blockHash=
       "transCount": 1,
       "sealerIndex": 0,
       "sealer": "944607f7e83efe2ba72476dc39a269a910811db8caac34f440dd9c9dd8ec2490b8854b903bd6c9b95c2c79909649977b8e92097c2f3ec32232c4f655b5a01850",
+      "blockDetail": "",
       "createTime": "2020-05-20 20:22:41",
       "modifyTime": "2020-05-20 20:22:41"
     },
@@ -557,6 +559,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/blockList/1/1/1/2?blockHash=
       "transCount": 1,
       "sealerIndex": 0,
       "sealer": "944607f7e83efe2ba72476dc39a269a910811db8caac34f440dd9c9dd8ec2490b8854b903bd6c9b95c2c79909649977b8e92097c2f3ec32232c4f655b5a01850",
+      "blockDetail": "",
       "createTime": "2020-05-20 20:22:41",
       "modifyTime": "2020-05-20 20:22:41"
     }

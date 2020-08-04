@@ -197,7 +197,8 @@ public class BlockService {
         }
         // save block info
         TbBlock tbBlock = new TbBlock(block.getHash(), block.getNumber(), blockTimestamp,
-                block.getTransactions().size(), sealerIndex, sealer);
+                block.getTransactions().size(), sealerIndex, sealer,
+                JacksonUtils.objToString(block));
         return tbBlock;
     }
 }
