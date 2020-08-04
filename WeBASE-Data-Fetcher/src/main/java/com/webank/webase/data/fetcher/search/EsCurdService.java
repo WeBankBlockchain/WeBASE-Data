@@ -44,7 +44,8 @@ public class EsCurdService {
     public boolean deleteIndex(String indexName) throws IOException {
         DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest();
         deleteIndexRequest.indices(indexName);
-        AcknowledgedResponse acknowledgedResponse = rhlClient.indices().delete(deleteIndexRequest, RequestOptions.DEFAULT);
+        AcknowledgedResponse acknowledgedResponse =
+                rhlClient.indices().delete(deleteIndexRequest, RequestOptions.DEFAULT);
         boolean isDeleted = acknowledgedResponse.isAcknowledged();
         log.info("deleteIndex：{}", isDeleted);
         return isDeleted;
@@ -56,8 +57,7 @@ public class EsCurdService {
         return rhlClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
     }
 
-    public RestStatus insert(String indexName, String id, Object object)
-            throws IOException {
+    public RestStatus insert(String indexName, String id, Object object) throws IOException {
         IndexRequest indexRequest = new IndexRequest();
         indexRequest.index(indexName).id(id).source(JacksonUtils.objToString(object),
                 XContentType.JSON);
@@ -65,24 +65,26 @@ public class EsCurdService {
         return response.status();
     }
 
-    public SearchResponse search(int from, int size, String indexName,
+    public SearchResponse search(Integer from, Integer size, String indexName,
             SearchSourceBuilder sourceBuilder, QueryBuilder queryBuilder) throws IOException {
         if (!existIndex(indexName)) {
             return null;
         }
         SearchRequest searchRequest = new SearchRequest(indexName);
         sourceBuilder.timeout(new TimeValue(120, TimeUnit.SECONDS)).explain(true)
-                .from((from - 1) * size).size(size).query(queryBuilder);
+                .query(queryBuilder);
+        if (from != null && size != null) {
+            sourceBuilder.from((from - 1) * size).size(size);
+        }
+        sourceBuilder.query(queryBuilder);
         searchRequest.source(sourceBuilder);
         SearchResponse response = rhlClient.search(searchRequest, RequestOptions.DEFAULT);
         return response;
     }
 
-    public RestStatus update(String indexName, String id, Object object)
-            throws IOException {
+    public RestStatus update(String indexName, String id, Object object) throws IOException {
         UpdateRequest request = new UpdateRequest();
-        request.index(indexName).id(id).doc(JacksonUtils.objToString(object),
-                XContentType.JSON);
+        request.index(indexName).id(id).doc(JacksonUtils.objToString(object), XContentType.JSON);
         UpdateResponse response = rhlClient.update(request, RequestOptions.DEFAULT);
         return response.status();
     }

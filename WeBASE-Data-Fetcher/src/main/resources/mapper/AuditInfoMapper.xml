@@ -35,6 +35,8 @@
         insert into tb_warning_info
         (chain_id,group_id,keyword,comment,tx_hash,address,chain_name,app_name,create_time,modify_time)
         values(#{chainId},#{groupId},#{keyword},#{comment},#{txHash},#{address},#{chainName},#{appName},NOW(),NOW())
+        ON DUPLICATE KEY UPDATE 
+        keyword=#{keyword},chain_name=#{chainName},app_name=#{appName},modify_time=NOW()
     </insert>
     
     <update id="confirm">

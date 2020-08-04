@@ -13,14 +13,18 @@
  */
 package com.webank.webase.data.fetcher.search;
 
+import com.webank.webase.data.fetcher.base.code.ConstantCode;
 import com.webank.webase.data.fetcher.base.controller.BaseController;
 import com.webank.webase.data.fetcher.base.entity.BasePageResponse;
 import com.webank.webase.data.fetcher.base.exception.BaseException;
 import com.webank.webase.data.fetcher.search.entity.NormalSearchParam;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.LinkedList;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,6 +68,14 @@ public class SearchController extends BaseController {
             @PathVariable Integer pageSize,
             @RequestParam(value = "keyword", required = true) String keyword) {
         log.info("start keyword search. keyword:{}", keyword);
-        return searchService.findByKey(pageNumber, pageSize, keyword);
+        BasePageResponse pageResponse = new BasePageResponse(ConstantCode.SUCCESS);
+        SearchResponse searchResponse = searchService.findByKey(pageNumber, pageSize, keyword);
+        List<Object> result = new LinkedList<>();
+        searchResponse.getHits().iterator().forEachRemaining(hit -> {
+            result.add(hit.getSourceAsMap());
+        });
+        pageResponse.setData(result);
+        pageResponse.setTotalCount(searchResponse.getHits().getTotalHits().value);
+        return pageResponse;
     }
 }
