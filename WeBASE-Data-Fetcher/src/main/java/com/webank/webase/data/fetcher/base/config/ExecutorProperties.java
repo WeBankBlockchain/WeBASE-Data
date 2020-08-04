@@ -11,19 +11,21 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher.chain;
+package com.webank.webase.data.fetcher.base.config;
 
-import com.webank.webase.data.fetcher.chain.entity.ChainInfoDto;
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-@Repository
-public interface ChainMapper {
+@Data
+@Component
+@ConfigurationProperties(prefix = ExecutorProperties.EXECUTOR_PREFIX)
+public class ExecutorProperties {
+    public static final String EXECUTOR_PREFIX = "executor";
 
-    Integer getCount();
+    private Integer corePoolSize = 3;
+    private Integer maxPoolSize = 5;
+    private Integer queueSize = 50;
+    private String threadNamePrefix = "custom-async-";
 
-    List<ChainInfoDto> getList();
-    
-    ChainInfoDto getChainById(@Param("chainId") Integer chainId);
 }

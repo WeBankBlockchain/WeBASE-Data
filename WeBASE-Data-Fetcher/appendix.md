@@ -265,18 +265,23 @@ GRANT ALL PRIVILEGES ON *.* TO 'TestUser'@'%' IDENTIFIED BY '此处为TestUser�
 
 ## 3. application.yml配置项说明
 
-| 参数                                | 默认值                                 | 描述                          |
-| ----------------------------------- | -------------------------------------- | ----------------------------- |
-| server.port                         | 5010                                   | 当前服务端口                  |
-| server.servlet.context-path         | /WeBASE-Data-Fetcher                   | 当前服务访问目录              |
-| mybatis.typeAliasesPackage          | com.webank.webase.data.fetcher         | mapper类扫描路径              |
-| mybatis.mapperLocations             | classpath:mapper/*.xml                 | mybatis的xml路径              |
-| spring.datasource.driver-class-name | com.mysql.cj.jdbc.Driver               | mysql驱动                     |
-| spring.datasource.url               | jdbc:mysql://127.0.0.1:3306/webasedata | mysql连接地址                 |
-| spring.datasource.username          | defaultAccount                         | mysql账号                     |
-| spring.datasource.password          | defaultPassword                        | mysql密码                     |
-| spring.elasticsearch.rest.uris      | 127.0.0.1:9200                         | elasticsearch服务的ip地址     |
-| spring.elasticsearch.rest.username  |                                        | elasticsearch用户名，可以为空 |
-| spring.elasticsearch.rest.password  |                                        | elasticsearch密码，可以为空   |
-| logging.config                      | classpath:log/log4j2.xml               | 日志配置文件目录              |
-| logging.level                       | com.webank.webase.data.fetcher: info   | 日志扫描目录和级别            |
+| 参数                                | 默认值                                 | 描述                                       |
+| ----------------------------------- | -------------------------------------- | ------------------------------------------ |
+| server.port                         | 5010                                   | 当前服务端口                               |
+| server.servlet.context-path         | /WeBASE-Data-Fetcher                   | 当前服务访问目录                           |
+| mybatis.typeAliasesPackage          | com.webank.webase.data.fetcher         | mapper类扫描路径                           |
+| mybatis.mapperLocations             | classpath:mapper/*.xml                 | mybatis的xml路径                           |
+| spring.datasource.driver-class-name | com.mysql.cj.jdbc.Driver               | mysql驱动                                  |
+| spring.datasource.url               | jdbc:mysql://127.0.0.1:3306/webasedata | mysql连接地址                              |
+| spring.datasource.username          | defaultAccount                         | mysql账号                                  |
+| spring.datasource.password          | defaultPassword                        | mysql密码                                  |
+| spring.elasticsearch.rest.uris      | 127.0.0.1:9200                         | elasticsearch服务的ip地址                  |
+| spring.elasticsearch.rest.username  |                                        | elasticsearch用户名，可以为空              |
+| spring.elasticsearch.rest.password  |                                        | elasticsearch密码，可以为空                |
+| constant.keywordAuditCron           | 0 0 0/1 * * ?                          | 关键字审计任务执行时间，默认每小时执行一次 |
+| executor.corePoolSize               | 50                                     | 线程池大小                                 |
+| executor.maxPoolSize                | 100                                    | 线程池最大线程数                           |
+| executor.queueSize                  | 50                                     | 线程池队列大小                             |
+| executor.threadNamePrefix           | custom-async-                          | 线程名前缀                                 |
+| logging.config                      | classpath:log/log4j2.xml               | 日志配置文件目录                           |
+| logging.level                       | com.webank.webase.data.fetcher: info   | 日志扫描目录和级别                         |

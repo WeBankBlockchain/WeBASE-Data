@@ -55,4 +55,15 @@ public class ChainService {
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
+
+    /**
+     * get chain name
+     */
+    public String getNameById(Integer chainId) {
+        ChainInfoDto chainInfoDto = chainMapper.getChainById(chainId);
+        if (chainInfoDto != null) {
+            return chainInfoDto.getChainName();
+        }
+        return null;
+    }
 }
