@@ -9,7 +9,7 @@
                         <el-button @click="querySimpleSearch" type="primary">搜索</el-button>
                     </div>
                     <div class="search-result" v-if="list.length > 0">
-                        <search-results :list="list" :handleType="searchType" />
+                        <search-results :list="list" :singleSearchValue='singleSearchValue' :handleType="searchType" />
 
                         <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout=" sizes, prev, pager, next, jumper" :total="total">
                         </el-pagination>
@@ -19,24 +19,6 @@
 
                         </div>
                     </div>
-                    <!-- <div v-if="tabName == '0'">
-                        <div style="padding: 10px 0 0 40px; font-weight: bold;font-size: 16px;">告警列表</div>
-                        <div class="search-table">
-                            <el-table :data="alarmList" tooltip-effect="dark">
-                                <el-table-column v-for="head in alarmHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
-                                    <template slot-scope="scope">
-                                        <template v-if="head.enName!='operate'">
-                                            <span>{{scope.row[head.enName]}}</span>
-                                        </template>
-                                        <template v-else>
-                                            <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">删除</el-button>
-                                            <el-button type="text" size="small" @click="handleBtn(scope.row)">{{btnText(scope.row['statusType'])}}</el-button>
-                                        </template>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
-                    </div> -->
                 </el-tab-pane>
                 <el-tab-pane label="条件搜索">
                     <div class="search-table">
@@ -79,6 +61,7 @@
 import { searchAll, chainAll, groupList, simpleSearch, blockList, transList } from "@/util/api"
 import contentHead from "@/components/contentHead";
 import SearchResults from "./components/SearchResults";
+import { rexIsNumber } from "@/util/util";
 export default {
     name: 'home',
     components: {
@@ -171,6 +154,7 @@ export default {
                     keyword: '新冠病毒'
                 }
             ],
+            rexIsNumber: rexIsNumber
         }
     },
     mounted() {
@@ -183,7 +167,7 @@ export default {
         if (this.tabName == 0) {
             this.searchType = '5'
         } else if (this.tabName == 1) {
-            this.searchType = sessionStorage.getItem('searchType')
+            this.searchType = sessionStorage.getItem('searchType') || '1'
         }
         this.queryChainAll()
 
@@ -218,7 +202,7 @@ export default {
             if (this.tabName == 0) {
                 this.searchType = '5'
             } else if (this.tabName == 1) {
-                this.searchType = sessionStorage.getItem('searchType')
+                this.searchType = sessionStorage.getItem('searchType') || '1'
             }
 
         },
@@ -482,7 +466,11 @@ export default {
             },
                 reqQuery = {};
             if (this.searchValue) {
-                reqQuery.blockNumber = this.searchValue;
+                if (!rexIsNumber(this.searchValue)) {
+                    reqQuery.blockHash = this.searchValue;
+                } else {
+                    reqQuery.blockNumber = this.searchValue
+                }
 
             }
             blockList(reqData, reqQuery)

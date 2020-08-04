@@ -1,41 +1,6 @@
 <template>
     <div class="app-container">
-        <content-head :headTitle="`${chainName}`" :icon="true" @changGroup="changGroup"></content-head>
-        <!-- <div class="module-wrapper app-description">
-            <div class="description-left">
-                <div style="height: 160px;width: 160px;">
-                    <img style="height: 100%;width: 100%;" src="../../../static/image/btb.jpeg" alt="图片">
-                </div>
-                <div class="left-content">
-                    <p class="myReleasedApply">服务</p>
-                    <p>
-                        <span class="">
-                            {{appTitleMap.appName}}
-                        </span>
-                        <span v-if="appTitleMap.appVersion">v{{appTitleMap.appVersion}}</span>
-                    </p>
-                </div>
-            </div>
-            <div class="description-right">
-                <p class="myReleasedApply">服务简介</p>
-                <span class="myReleasedApply-content">
-                    {{appTitleMap.appSynopsis}}
-                </span>
-            </div>
-        </div> -->
-        <!-- <div class="module-wrapper box-content" >
-            <div class="box-content-title">
-                <p style="font-weight: bold; font-size: 18px;">
-                    服务描述
-                </p>
-            </div>
-            <div id="appDesc" style="margin-right: 22px; word-break: break-all;">
-                <p>{{appTitleMap.description}}</p>
-            </div>
-            <div>
-                <p></p>
-            </div>
-        </div> -->
+        <content-head :headTitle="`${appName}`" :icon="true" @changGroup="changGroup"></content-head>
         <div style="margin: 5px;">
             <div style="margin:10px 10px 6px 10px;">
                 <el-row>
@@ -76,7 +41,7 @@
             </div>
         </div>
 
-        <div class="module-wrapper-small">
+        <div class="module-wrapper-small" style="padding: 10px;">
             <el-table :data="nodeList" class="search-table-content">
                 <el-table-column v-for="head in nodeHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="" :width='head.width'>
                     <template slot-scope="scope">
@@ -232,6 +197,7 @@ export default {
                 }
             ],
             chainName: '',
+            appName: '',
             blockData: [],
             transactionList: [],
             appTitleMap: {}
@@ -286,9 +252,10 @@ export default {
     methods: {
         changGroup(val) {
             if (this.$route.params.chainId) {
-                this.chainName = this.$route.params.chainName
+                this.appName = this.$route.params.chainName
                 this.chainId = this.$route.params.chainId
-                this.groupId = val
+                this.groupId = val,
+                this.chainName = this.$route.query.chainName
             }
             this.queryGroup()
             this.querygroupGeneral()
@@ -435,7 +402,9 @@ export default {
                         path: "/blockInfo",
                         query: {
                             chainId: this.chainId,
-                            groupId: this.groupId
+                            groupId: this.groupId,
+                            chainName: this.chainName,
+                            appName: this.appName
                         }
                     });
                     break;
@@ -444,7 +413,9 @@ export default {
                         path: "/transactionInfo",
                         query: {
                             chainId: this.chainId,
-                            groupId: this.groupId
+                            groupId: this.groupId,
+                            chainName: this.chainName,
+                            appName: this.appName
                         }
                     });
                     break;
@@ -453,7 +424,9 @@ export default {
                         path: "/userInfo",
                         query: {
                             chainId: this.chainId,
-                            groupId: this.groupId
+                            groupId: this.groupId,
+                            chainName: this.chainName,
+                            appName: this.appName
                         }
                     });
                     break;
@@ -462,7 +435,9 @@ export default {
                         path: "/contractInfo",
                         query: {
                             chainId: this.chainId,
-                            groupId: this.groupId
+                            groupId: this.groupId,
+                            chainName: this.chainName,
+                            appName: this.appName
                         }
                     });
                     break;
@@ -500,7 +475,9 @@ export default {
                         query: {
                             chainId: this.chainId,
                             groupId: this.groupId,
-                            blockNumber: num
+                            blockNumber: num,
+                            chainName: this.chainName,
+                            appName: this.appName
                         }
                     });
                     break;
@@ -511,7 +488,9 @@ export default {
                         query: {
                             chainId: this.chainId,
                             groupId: this.groupId,
-                            transHash: num
+                            transHash: num,
+                            chainName: this.chainName,
+                            appName: this.appName
                         }
                     });
                     break;
