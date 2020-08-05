@@ -11,31 +11,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.audit;
+package com.webank.webase.data.fetcher.keyword.entity;
 
-import com.webank.webase.data.collect.audit.entity.AuditInfo;
-import com.webank.webase.data.collect.audit.entity.TbAudit;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import lombok.Data;
 
-
-/**
- * service of Keywords.
- */
-@Log4j2
-@Service
-public class AuditService {
-
-    @Autowired
-    private AuditMapper auditMapper;
-
-    /**
-     * add a new AuditInfo
-     */
-    public TbAudit addAuditInfo(AuditInfo auditInfo) {
-        return  null;
-    }
-    
-
+@Data
+public class TbKeyword {
+    private Integer id;
+    private String keyword;
+    private LocalDateTime createTime;
+    private LocalDateTime modifyTime;
 }

@@ -25,7 +25,6 @@ import com.webank.webase.data.fetcher.search.entity.NormalSearchParam;
 import com.webank.webase.data.fetcher.search.entity.SearchDto;
 import com.webank.webase.data.fetcher.search.entity.SearchListParam;
 import java.math.BigInteger;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
@@ -86,8 +85,7 @@ public class SearchService {
         return pageResponse;
     }
 
-    public BasePageResponse findByKey(Integer pageNumber, Integer pageSize, String keyword) {
-        BasePageResponse pageResponse = new BasePageResponse(ConstantCode.SUCCESS);
+    public SearchResponse findByKey(Integer pageNumber, Integer pageSize, String keyword) {
         try {
             String indexName = getDbName();
             boolean existIndex = esCurdService.existIndex(indexName);
@@ -114,21 +112,14 @@ public class SearchService {
                     }
                 }
             }
-            SearchResponse searchResponse = esCurdService.search(pageNumber, pageSize, indexName,
-                    new SearchSourceBuilder(), boolQueryBuilder);
-            List<Object> result = new LinkedList<>();
-            searchResponse.getHits().iterator().forEachRemaining(hit -> {
-                result.add(hit.getSourceAsMap());
-            });
-            pageResponse.setData(result);
-            pageResponse.setTotalCount(searchResponse.getHits().getTotalHits().value);
+            return esCurdService.search(pageNumber, pageSize, indexName, new SearchSourceBuilder(),
+                    boolQueryBuilder);
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
             log.error("findByKey fail.", e);
             throw new BaseException(ConstantCode.SEARCH_FAIL);
         }
-        return pageResponse;
     }
 
     /**

@@ -11,16 +11,23 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.keywords.entity;
+package com.webank.webase.data.fetcher.audit.entity;
 
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-public class TbKeyword {
+public class TbAuditInfo {
     private Integer id;
+    private Integer chainId;
+    private Integer groupId;
     private String keyword;
+    private String comment;
+    private String txHash;
+    private String address;
+    private Integer status;
+    private String chainName;
+    private String appName;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 }
-

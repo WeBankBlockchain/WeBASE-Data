@@ -31,6 +31,7 @@ public class BlockInfoDto {
     private int transCount;
     private int sealerIndex;
     private String sealer;
+    private String blockDetail;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 }

@@ -11,14 +11,21 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.audit.entity;
-
+package com.webank.webase.data.fetcher.base.config;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Data
-public class UpdateAuditInfo {
-    private Integer id;
-    private Integer status;
-    private String comment;
+@Component
+@ConfigurationProperties(prefix = ExecutorProperties.EXECUTOR_PREFIX)
+public class ExecutorProperties {
+    public static final String EXECUTOR_PREFIX = "executor";
+
+    private Integer corePoolSize = 3;
+    private Integer maxPoolSize = 5;
+    private Integer queueSize = 50;
+    private String threadNamePrefix = "custom-async-";
+
 }

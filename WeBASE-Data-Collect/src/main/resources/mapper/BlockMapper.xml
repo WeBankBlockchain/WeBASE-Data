@@ -20,6 +20,8 @@
             jdbcType="INTEGER" property="sealerIndex" />
         <result column="sealer" javaType="java.lang.String" jdbcType="VARCHAR"
             property="sealer" />
+        <result column="block_detail" javaType="java.lang.String" jdbcType="VARCHAR"
+            property="blockDetail" />
         <result column="create_time" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" javaType="java.time.LocalDateTime"
@@ -28,9 +30,10 @@
 
     <insert id="add">
         insert ignore into ${tableName}
-        (block_hash,block_number,block_timestamp,trans_count,sealer_index,sealer,create_time,modify_time)
+        (block_hash,block_number,block_timestamp,trans_count,sealer_index,sealer,block_detail,create_time,modify_time)
         values
-        (#{block.blockHash},#{block.blockNumber},#{block.blockTimestamp},#{block.transCount},#{block.sealerIndex},#{block.sealer},NOW(),NOW())
+        (#{block.blockHash},#{block.blockNumber},#{block.blockTimestamp},#{block.transCount},
+        #{block.sealerIndex},#{block.sealer},#{block.blockDetail},NOW(),NOW())
     </insert>
 
     <select id="findByBlockHash" resultMap="blockMap">

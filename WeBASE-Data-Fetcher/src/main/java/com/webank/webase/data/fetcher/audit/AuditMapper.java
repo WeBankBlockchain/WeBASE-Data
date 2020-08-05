@@ -11,26 +11,28 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.audit;
+package com.webank.webase.data.fetcher.audit;
 
-import com.webank.webase.data.collect.audit.entity.TbAudit;
+import com.webank.webase.data.fetcher.audit.entity.TbAuditInfo;
+import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface AuditMapper {
 
-    int add(TbAudit tbAudit);
+    int add(TbAuditInfo tbAuditInfo);
     
-    int update(TbAudit tbAudit);
+    int confirm(@Param("id") Integer id);
 
     Integer getCount();
 
-    List<TbAudit> getList();
+    List<TbAuditInfo> getList(BaseQueryParam param);
 
-    TbAudit getAuditInfoById(@Param("id") Integer id);
+    TbAuditInfo getAuditInfoById(@Param("id") Integer id);
+    
+    TbAuditInfo getAuditInfoByTxHash(@Param("txHash") String txHash);
 
     int remove(@Param("id") Integer id);
 }
