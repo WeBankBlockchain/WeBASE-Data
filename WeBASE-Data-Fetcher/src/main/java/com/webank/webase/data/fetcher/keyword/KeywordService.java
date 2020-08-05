@@ -11,16 +11,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.keywords;
+package com.webank.webase.data.fetcher.keyword;
 
-import com.webank.webase.data.collect.base.code.ConstantCode;
-import com.webank.webase.data.collect.base.exception.BaseException;
-import com.webank.webase.data.collect.keywords.entity.KeywordInfo;
-import com.webank.webase.data.collect.keywords.entity.TbKeyword;
-
+import com.webank.webase.data.fetcher.base.code.ConstantCode;
+import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
+import com.webank.webase.data.fetcher.base.exception.BaseException;
+import com.webank.webase.data.fetcher.keyword.entity.KeywordInfo;
+import com.webank.webase.data.fetcher.keyword.entity.TbKeyword;
+import com.webank.webase.data.fetcher.keyword.entity.UpdateKeywordInfo;
 import java.util.List;
-
-import com.webank.webase.data.collect.keywords.entity.UpdateKeywordInfo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +27,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * service of Keywords.
+ * service of Keyword.
  */
 @Log4j2
 @Service
-public class KeywordsService {
+public class KeywordService {
 
     @Autowired
-    private KeywordsMapper keywordsMapper;
+    private KeywordMapper keywordMapper;
 
     /**
      * add a new keyword
@@ -51,14 +50,14 @@ public class KeywordsService {
         TbKeyword tbKeyword1 = new TbKeyword();
         BeanUtils.copyProperties(keywordInfo, tbKeyword1);
         // save keyword info
-        int result = keywordsMapper.add(tbKeyword1);
+        int result = keywordMapper.add(tbKeyword1);
         if (result == 0) {
             log.warn("fail keyword after save.");
             throw new BaseException(ConstantCode.SAVE_KEYWORD_FAIL);
         }
         return getKeywordByKeyword(keywordInfo.getKeyword());
     }
-    
+
     /**
      * update keyword
      */
@@ -72,7 +71,7 @@ public class KeywordsService {
         TbKeyword tbKeyword = new TbKeyword();
         BeanUtils.copyProperties(updateKeywordInfo, tbKeyword);
 
-        keywordsMapper.update(tbKeyword);
+        keywordMapper.update(tbKeyword);
         return getKeywordById(tbKeyword.getId());
     }
 
@@ -80,49 +79,48 @@ public class KeywordsService {
      * get keyword count
      */
     public int getKeywordCount() {
-        Integer count = keywordsMapper.getCount();
+        Integer count = keywordMapper.getCount();
         return count == null ? 0 : count;
     }
 
     /**
      * get keyword list
      */
-    public List<TbKeyword> getKeywordList() {
-        return keywordsMapper.getList();
+    public List<TbKeyword> getKeywordList(BaseQueryParam queryParam) {
+        return keywordMapper.getList(queryParam);
     }
 
     /**
      * get keyword info
      */
-    public TbKeyword getKeywordById(Integer keywordId) {
-        return keywordsMapper.getKeywordById(keywordId);
+    public TbKeyword getKeywordById(Integer id) {
+        return keywordMapper.getKeywordById(id);
     }
 
     /**
      * get keyword info
      */
     public TbKeyword getKeywordByKeyword(String keyword) {
-        return keywordsMapper.getKeywordByKeyword(keyword);
+        return keywordMapper.getKeywordByKeyword(keyword);
     }
 
     /**
      * remove keyword
      */
     @Transactional
-    public void removeKeyword(Integer keywordId) {
-
-        TbKeyword tbKeyword = getKeywordById(keywordId);
+    public void removeKeyword(Integer id) {
+        TbKeyword tbKeyword = getKeywordById(id);
         if (tbKeyword == null) {
-            throw new BaseException(ConstantCode.INVALID_KEYWORD_ID);
+            throw new BaseException(ConstantCode.KEYWORD_ID_NOT_EXISTS);
         }
-        keywordsMapper.remove(keywordId);
+        keywordMapper.remove(id);
     }
-    
+
     /**
      * check keyword id
      */
-    private boolean checkKeywordId(Integer keywordId) {
-        TbKeyword tbKeyword = getKeywordById(keywordId);
+    private boolean checkKeywordId(Integer id) {
+        TbKeyword tbKeyword = getKeywordById(id);
         if (tbKeyword == null) {
             return false;
         }

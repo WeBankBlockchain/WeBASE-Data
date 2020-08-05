@@ -11,12 +11,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.keywords.entity;
+package com.webank.webase.data.fetcher.keyword.entity;
 
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class KeywordInfo {
+@NoArgsConstructor
+@AllArgsConstructor
+public class KeywordParam {
     private String keyword;
 }

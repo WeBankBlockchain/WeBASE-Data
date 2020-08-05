@@ -17,6 +17,18 @@ spring:
       username:
       password:
 
+# constant config
+constant:
+  ## keyword audit
+  keywordAuditCron: "0 0 0/1 * * ?"
+  
+# executor config
+executor:
+  corePoolSize: 50
+  maxPoolSize: 100
+  queueSize: 50
+  threadNamePrefix: "custom-async-"
+  
 # mybatis config
 mybatis:
   typeAliasesPackage: com.webank.webase.data.fetcher

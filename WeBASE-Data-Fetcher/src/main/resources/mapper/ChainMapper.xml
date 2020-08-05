@@ -26,5 +26,9 @@
     <select id="getList" resultMap="chainMap">
         select * from tb_chain order by chain_id
     </select>
+    
+    <select id="getChainById" resultMap="chainMap" parameterType="java.lang.Integer">
+        select * from tb_chain where chain_id = #{chainId}
+    </select>
 
 </mapper>

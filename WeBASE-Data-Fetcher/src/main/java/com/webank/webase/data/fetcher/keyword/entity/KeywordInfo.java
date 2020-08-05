@@ -11,15 +11,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.keywords.entity;
+package com.webank.webase.data.fetcher.keyword.entity;
 
-import lombok.AllArgsConstructor;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class KeywordParam {
+public class KeywordInfo {
+    @NotBlank
+    @Length(min=1, max=64)
     private String keyword;
 }

@@ -15,6 +15,7 @@ package com.webank.webase.data.fetcher.chain;
 
 import com.webank.webase.data.fetcher.chain.entity.ChainInfoDto;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -23,4 +24,6 @@ public interface ChainMapper {
     Integer getCount();
 
     List<ChainInfoDto> getList();
+    
+    ChainInfoDto getChainById(@Param("chainId") Integer chainId);
 }

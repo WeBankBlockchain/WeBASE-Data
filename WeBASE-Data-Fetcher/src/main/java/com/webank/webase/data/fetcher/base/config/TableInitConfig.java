@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2014-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -11,21 +11,25 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.audit.entity;
 
-import java.time.LocalDateTime;
-import lombok.Data;
+package com.webank.webase.data.fetcher.base.config;
 
-@Data
-public class TbAudit {
-    private Integer id;
-    private String keyword;
-    private String comment;
-    private Integer chain_id;
-    private Integer group_id;
-    private String tx_hash;
-    private Integer status;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
+import com.webank.webase.data.fetcher.table.TableService;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * table init.
+ *
+ */
+@Configuration
+public class TableInitConfig implements InitializingBean {
+    @Autowired
+    private TableService tableService;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        tableService.newCommonTable();
+    }
 }
-
