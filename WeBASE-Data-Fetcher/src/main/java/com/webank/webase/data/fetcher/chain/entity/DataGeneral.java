@@ -13,16 +13,15 @@
  */
 package com.webank.webase.data.fetcher.chain.entity;
 
-import java.time.LocalDateTime;
+import java.math.BigInteger;
 import lombok.Data;
 
 @Data
-public class ChainInfoDto {
-    private Integer chainId;
-    private String chainName;
-    private Integer chainType;
-    private String attribute;
-    private String description;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
+public class DataGeneral {
+    private int chainCount;
+    private int groupCount;
+    private BigInteger blockCount;
+    private BigInteger txnCount;
+    private int userCount;
+    private int contractCount;
 }

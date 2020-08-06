@@ -3,7 +3,73 @@
 
 ## 1 区块链管理模块
 
-### 1.1 查询链列表 
+### 1.1 全量数据概览 
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/chain/general**
+- 请求方式：GET
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+无
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/chain/general
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号 | 输出参数      | 类型   |      | 备注                       |
+| ---- | ------------- | ------ | ---- | -------------------------- |
+| 1    | code          | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2    | message       | String | 否   | 描述                       |
+| 3    | data          | object | 否   | 返回信息实体               |
+| 2.1  | chainCount    | Int    | 是   | 链数量                     |
+| 2.2  | groupCount    | int    | 否   | 群组数量                   |
+| 2.3  | blockCount    | int    | 否   | 区块数量                   |
+| 2.4  | txnCount      | int    | 否   | 交易数量                   |
+| 2.5  | userCount     | int    | 否   | 用户数量                   |
+| 2.6  | contractCount | int    | 否   | 合约数量                   |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "chainCount": 1,
+    "groupCount": 2,
+    "blockCount": 360,
+    "txnCount": 360,
+    "userCount": 28,
+    "contractCount": 77
+  }
+}
+```
+
+- 失败：
+
+```
+{
+   "code": 102000,
+   "message": "system exception",
+   "data": {}
+}
+```
+
+### 1.2 查询链列表 
 
 #### 传输协议
 
@@ -38,9 +104,10 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
 | 4.1.1 | chainId     | Int           | 否   | 链编号                     |
 | 4.1.2 | chainName   | String        | 否   | 链名称                     |
 | 4.1.3 | chainType   | Int           | 否   | 链类型（0-非国密，1-国密） |
-| 4.1.4 | description | String        | 是   | 备注                       |
-| 4.1.5 | createTime  | LocalDateTime | 否   | 落库时间                   |
-| 4.1.6 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
+| 4.1.4 | attribute   | String        | 是   | 属性，默认“fisco bcos”     |
+| 4.1.5 | description | String        | 是   | 备注                       |
+| 4.1.6 | createTime  | LocalDateTime | 否   | 落库时间                   |
+| 4.1.7 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
 
 ***2）出参示例***
 
@@ -55,6 +122,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
         "chainId": 1,
         "chainName": "链一",
         "chainType": 0,
+        "attribute": "fisco bcos",
         "description": "test"
         "createTime": "2019-02-14 17:47:00",
         "modifyTime": "2019-03-15 11:14:29"

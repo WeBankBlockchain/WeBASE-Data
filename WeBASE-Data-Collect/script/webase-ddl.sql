@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS tb_chain (
 	chain_id int(11) NOT NULL COMMENT '区块链编号',
 	chain_name varchar(120) DEFAULT NULL COMMENT '区块链名称',
 	chain_type tinyint(4) DEFAULT '0' COMMENT '类型（ 0-非国密 1-国密）',
+	attribute varchar(16) DEFAULT 'fisco bcos' COMMENT '属性',
 	description varchar(1024) COMMENT '描述',
 	create_time datetime DEFAULT NULL COMMENT '创建时间',
 	modify_time datetime DEFAULT NULL COMMENT '修改时间',

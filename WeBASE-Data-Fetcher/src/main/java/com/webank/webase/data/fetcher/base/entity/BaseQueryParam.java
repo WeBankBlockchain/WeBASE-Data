@@ -26,4 +26,9 @@ public class BaseQueryParam {
     private Integer start;
     private Integer pageSize;
     private String comVariable;
+
+    public BaseQueryParam(Integer chainId, Integer groupId) {
+        this.chainId = chainId;
+        this.groupId = groupId;
+    }
 }
