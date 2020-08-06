@@ -154,6 +154,15 @@
         WHERE a.chain_id = #{chainId}
           AND a.group_id = #{groupId}
     </select>
+    
+    <select id="getBlockCounts" resultType="java.math.BigInteger">
+        SELECT SUM(a.block_number) 
+        FROM (SELECT chain_id,group_id ,MAX(block_number) AS block_number FROM tb_txn_daily GROUP BY chain_id,group_id) AS a
+    </select>
+    
+    <select id="getTxnCounts" resultType="java.math.BigInteger">
+        select sum(txn) from tb_txn_daily
+    </select>
 
     <select id="listSeventDayOfTransDaily" resultMap="txnDailyMap">
         SELECT * FROM tb_txn_daily

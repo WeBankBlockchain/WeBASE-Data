@@ -25,6 +25,7 @@ import com.webank.webase.data.fetcher.group.entity.TransListParam;
 import com.webank.webase.data.fetcher.group.entity.TransactionInfoDto;
 import com.webank.webase.data.fetcher.group.entity.TxnDailyDto;
 import com.webank.webase.data.fetcher.group.entity.UserInfoDto;
+import java.math.BigInteger;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -51,6 +52,16 @@ public interface GroupMapper {
      * query general info.
      */
     GroupGeneral getGeneral(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId);
+    
+    /**
+     * query all block counts.
+     */
+    BigInteger getBlockCounts();
+    
+    /**
+     * query all transaction counts.
+     */
+    BigInteger getTxnCounts();
 
     /**
      * listSeventDayOfTransDaily.
