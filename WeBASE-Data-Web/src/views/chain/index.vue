@@ -9,18 +9,13 @@
                 <el-table :data="chainData" class="search-table-content" ref="refTable" v-loading='loading'>
                     <el-table-column type="expand" align="center">
                         <template slot-scope="scope">
-                            <el-tabs type="border-card" :value="currentTab" @tab-click="handleTab">
-                                <el-tab-pane v-for="(tab, index) in tabList" :label="`${tab.label}`" :name="tab.type" :key="index">
-                                    <component v-bind:is="`${currentTab}Info`" :chainId="scope.row.chainId" :chainName="scope.row.chainName"></component>
-                                </el-tab-pane>
-                            </el-tabs>
+                            <chain-detail :scope="scope"></chain-detail>
                         </template>
                     </el-table-column>
                     <el-table-column v-for="head in chainHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
                         <template slot-scope="scope">
                             <span v-if="head.enName == 'chainType' ">{{scope.row[head.enName] | Type}}</span>
                             <span v-else>{{scope.row[head.enName]}}</span>
-                            
                         </template>
                     </el-table-column>
                 </el-table>
@@ -33,11 +28,11 @@
 </template>
 <script>
 import contentHead from "@/components/contentHead";
+import chainDetail from "./chainDetail";
 import { chainAll } from "@/util/api"
-import { AppInfo, NodeInfo } from "./components/index.js"
 export default {
     name: 'chain',
-    components: { contentHead, AppInfo, NodeInfo },
+    components: { contentHead, chainDetail },
     data() {
         return {
             chainHead: [
@@ -67,17 +62,6 @@ export default {
             currentPage: 1,
             pageSize: 10,
             total: 0,
-            currentTab: 'app',
-            tabList: [
-                {
-                    label: '应用',
-                    type: 'app'
-                },
-                {
-                    label: '节点',
-                    type: 'node'
-                },
-            ],
         }
     },
     mounted() {
@@ -114,12 +98,9 @@ export default {
             this.currentPage = val;
             this.getChainList();
         },
-        handleTab(tab, $event) {
-            console.log(tab, $event)
-            this.currentTab = tab.name
-        }
-
-
+        handleTab(val, $event) {
+            this.currentTab = $event.name
+        },
     },
     filters: {
         Type: function (val) {

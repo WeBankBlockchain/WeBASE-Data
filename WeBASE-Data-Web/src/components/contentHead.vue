@@ -42,6 +42,10 @@
                     </ul>
                 </el-dropdown-menu>
             </el-dropdown> -->
+            <el-badge :is-dot="isDot" class="badge-item">
+                <i class="el-icon-bell" style="font-size: 18px" @click="toAlert"></i>
+            </el-badge>
+            <div style="display: inline-block">|</div>
             <el-popover placement="bottom" width="0" min-width="50px" trigger="click">
                 <div class="sign-out-wrapper">
                     <span class="change-password" @click="changePassword">修改密码</span><br>
@@ -60,7 +64,7 @@
 </template>
 
 <script>
-import { groupList } from "@/util/api";
+import { groupList, txAuditList, appAuditList } from "@/util/api";
 import router from "@/router";
 import changePasswordDialog from "./changePasswordDialog";
 export default {
@@ -94,12 +98,20 @@ export default {
     components: {
         changePasswordDialog
     },
+    computed: {
+        isDot() {
+            let show = false
+            let allAlertNum = this.txAlertNum + this.appAlertNum
+            if (allAlertNum > 0) show = true;
+            return show
+        }
+    },
     watch: {
         headTitle: function (val) {
             this.title = val;
         },
         $route: {
-            handler(to,from) {
+            handler(to, from) {
                 if (this.$route.params.chainId) {
                     localStorage.removeItem('groupId')
                     this.chainId = this.$route.params.chainId
@@ -110,6 +122,7 @@ export default {
             immediate: true
         }
     },
+
     data: function () {
         return {
             title: this.headTitle,
@@ -123,11 +136,13 @@ export default {
             groupList: [],
             groupVisible: false,
             chainId: '',
-            appName: ''
+            appName: '',
+            txAlertNum: 0,
+            appAlertNum: 0,
         };
     },
     mounted: function () {
-        console.log()
+        this.queryTxAuditList()
     },
     methods: {
         skip: function () {
@@ -145,19 +160,20 @@ export default {
                 .then(res => {
                     if (res.data.code === 0) {
                         this.groupList = res.data.data
+                        if(!this.groupList.length) return;
                         if (!localStorage.getItem('groupId')) {
                             this.groupName = res.data.data[0]['groupName']
                             this.groupId = res.data.data[0]['groupId']
                             this.appName = res.data.data[0]['appName']
                             this.$emit('changGroup', this.groupId);
-                        }else {
+                        } else {
                             this.groupName = localStorage.getItem('groupName')
                             this.groupId = localStorage.getItem('groupId')
                             this.appName = localStorage.getItem('appName')
                             this.$emit('changGroup', this.groupId);
                         }
-                        
-                        
+
+
                     }
                 })
 
@@ -185,6 +201,80 @@ export default {
             // delCookie("NODE_MGR_ACCOUNT_C");
             this.$router.push("/login");
         },
+        queryTxAuditList() {
+            let reqData = {
+                pageNumber: 1,
+                pageSize: 10
+            }
+            txAuditList(reqData, {})
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let data = res.data.data
+                        let isAlertList = []
+                        data.forEach(item => {
+                            if (item.status == 1) {
+                                isAlertList.push(item.status)
+                            }
+                        });
+                        this.txAlertNum = isAlertList.length
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.$message({
+                        message: '系统错误',
+                        type: "error",
+                        duration: 2000
+                    });
+                });
+
+        },
+        queryAppAuditList() {
+            let reqData = {
+                pageNumber: 1,
+                pageSize: 10
+            }
+            appAuditList(reqData, {})
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let data = res.data.data
+                        let isAlertList = []
+                        data.forEach(item => {
+                            if (item.status == 1) {
+                                isAlertList.push(item.status)
+                            }
+                        });
+                        this.appAlertNum = isAlertList.length
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.$message({
+                        message: '系统错误',
+                        type: "error",
+                        duration: 2000
+                    });
+                });
+
+        },
+        toAlert() {
+            if (this.isDot) {
+                this.$router.push({
+                    path: '/txAlarm'
+                })
+            }
+
+        }
     }
 };
 </script>
@@ -303,5 +393,14 @@ export default {
     /* background-color: #fff; */
     right: 350px;
     top: 0px;
+}
+.badge-item {
+    color: #fff;
+    margin-right: 15px;
+}
+
+.badge-item >>> .el-badge__content {
+    border: none;
+    top: 20px;
 }
 </style>

@@ -10,14 +10,14 @@
                         <el-input v-model="chainFrom.chainName" :clearable="true"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="区块链类型" prop="type" style="width:330px">
+                    <el-form-item label="区块链类型" prop="type" style="width:330px" class="chain-type">
                         <el-select v-model="chainFrom.type" placeholder="请选择" :disabled="chainFrom['mDisabled']">
                             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="区块链备注" prop="description" style="width:330px">
-                        <el-input v-model="chainFrom.description"></el-input>
+                        <el-input v-model="chainFrom.description" type="textarea"></el-input>
                     </el-form-item>
                 </el-form>
             </div>
@@ -138,7 +138,6 @@ export default {
             })
         },
         getAllInfo: function () {
-            console.log(this.dialogType)
             let type = this.dialogType;
             switch (type) {
                 case "creat":
@@ -206,5 +205,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+    .chain-type >>> .el-input__inner {
+        width: 230px;
+    }
 </style>

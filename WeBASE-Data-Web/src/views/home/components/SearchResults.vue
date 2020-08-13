@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table :data="list" element-loading-text="Loading" fit highlight-current-row>
+        <el-table :data="list" element-loading-text="Loading" fit highlight-current-row @expand-change="exChange">
             <el-table-column type="expand" v-if="handleType =='5'">
                 <template slot-scope="scope">
                     <li v-for="(val, key) in (scope.row)">
@@ -23,7 +23,7 @@
                                     </span>
                                 </span>
                             </template>
-                             <template v-else-if="key=='userAddress'">
+                            <template v-else-if="key=='userAddress'">
                                 <span class="item-detail-key">{{key}}：</span>
                                 <span class="item-detail-val">
                                     <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
@@ -32,7 +32,7 @@
                                     </span>
                                 </span>
                             </template>
-                             <template v-else-if="key=='contractAddress'">
+                            <template v-else-if="key=='contractAddress'">
                                 <span class="item-detail-key">{{key}}：</span>
                                 <span class="item-detail-val">
                                     <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
@@ -68,12 +68,66 @@
                                     </span>
                                 </span>
                             </template>
+                            <template v-else-if="key=='input'">
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-datail-val-table">
+                                    <el-table :data="JSON.parse(val)" tooltip-effect="dark" :border="true">
+                                        <el-table-column prop="name" label="name" show-overflow-tooltip width="200" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.name}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="type" show-overflow-tooltip width="" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.type}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="data" label="data" show-overflow-tooltip width="" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.data}}</span>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                </span>
+                            </template>
+                            <template v-else-if="key=='output'">
+                                <span class="item-detail-key">{{key}}：</span>
+                                <span class="item-datail-val-table">
+                                    <el-table :data="JSON.parse(val)" tooltip-effect="dark" :border="true">
+                                        <el-table-column prop="name" label="name" show-overflow-tooltip width="200" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.name}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="type" show-overflow-tooltip width="" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.type}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="data" label="data" show-overflow-tooltip width="" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.data}}</span>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                </span>
+                            </template>
                             <template v-else>
                                 <span class="item-detail-key">{{key}}：</span>
                                 <span class="item-detail-val">{{val}}</span>
                             </template>
                         </template>
                     </li>
+                </template>
+            </el-table-column>
+            <el-table-column type="expand" align="center" v-if="type==1">
+                <template slot-scope="scope">
+                    <block-detail :blockData="JSON.parse(scope.row.blockDetail)"></block-detail>
+                </template>
+            </el-table-column>
+            <el-table-column type="expand" align="center" v-if="type==2">
+                <template slot-scope="scope">
+                    <transaction-detail :txData="txData"></transaction-detail>
                 </template>
             </el-table-column>
             <el-table-column v-for="head in tableHead[type]" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
@@ -102,20 +156,20 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作" v-if="type=='5'">
                 <template slot-scope="scope">
-                    <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">介入处理</el-button>
+                    <el-button type="text" size="small" @click="interveneKeyword(scope.row,'modify')">介入处理</el-button>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" v-if="type=='2'">
+                <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="interveneKeyword(scope.row,'modify')">介入处理</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <el-dialog :visible.sync="interventionVisible" title="处理意见" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="interventionVisible">
-            <el-form :model="interventionForm" :rules="rules" ref="interventionForm" label-width="70px" class="demo-ruleForm">
-                <el-form-item label="意见" prop="content" style="width: 380px;">
-                    <el-input v-model="interventionForm.content" placeholder="请输入处理意见" type="textarea"></el-input>
-                </el-form-item>
-            </el-form>
-            <div class="dialog-footer text-right">
-                <el-button @click="modelClose">取消</el-button>
-                <el-button type="primary" @click="submit('interventionForm')">添加到告警列表</el-button>
-            </div>
+        <el-dialog :visible.sync="interventionVisible" title="处理意见" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="interventionVisible&&type==1">
+            <intervene :rowData="rowData" :singleSearchValue="singleSearchValue" type="1" @modelClose="modelClose"></intervene>
+        </el-dialog>
+        <el-dialog :visible.sync="interventionVisible" title="处理意见" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="interventionVisible&&type==2">
+            <intervene :rowData="rowData" type="2" @modelClose="modelClose"></intervene>
         </el-dialog>
     </div>
 </template>
@@ -123,9 +177,14 @@
 <script>
 import clip from "@/util/clipboard";
 import head from "./head.json";
-import { auditAdd } from "@/util/api"
+import Intervene from "@/components/Intervene";
+import TransactionDetail from "@/components/TransactionDetail/index.vue";
+import BlockDetail from "@/components/BlockDetail";
 export default {
     components: {
+        Intervene,
+        TransactionDetail,
+        BlockDetail
     },
     props: ['list', 'groupId', 'chainId', 'handleType', 'singleSearchValue'],
 
@@ -133,28 +192,14 @@ export default {
         return {
             tableHead: head,
             interventionVisible: false,
-            interventionForm: {
-                content: ''
-            },
-            rowData: {}
+            rowData: {},
+            txData: {}
         }
     },
 
     computed: {
         type() {
             return this.handleType
-        },
-        rules() {
-            let data = {
-                content: [
-                    {
-                        required: true,
-                        message: '请输入处理意见',
-                        trigger: "blur"
-                    }
-                ]
-            }
-            return data
         }
     },
 
@@ -170,9 +215,23 @@ export default {
     },
 
     methods: {
-        deleteKeyword(val) {
-            this.rowData = val
-            this.interventionVisible = true
+        interveneKeyword(val) {
+            if (this.type == 1) {
+                this.rowData = val
+                this.interventionVisible = true
+            } else if (this.type == 2) {
+                this.rowData.userAddress = JSON.parse(val.receiptDetail).from;
+                this.rowData.transHash = val.transHash;
+                this.rowData.chainId = this.chainId
+                this.rowData.groupId = this.groupId
+                this.rowData.chainName = this.chainName
+                this.rowData.appName = this.appName
+                this.interventionVisible = true
+            }
+
+        },
+        modelClose() {
+            this.interventionVisible = false
         },
         handleBtn() {
 
@@ -274,58 +333,11 @@ export default {
         handleCopy(text, event) {
             clip(text, event)
         },
-        modelClose: function () {
-            this.interventionVisible = false
-        },
-        submit: function (formName) {
-            this.$refs[formName].validate(valid => {
-                if (valid) {
-                    this.queryAuditAdd()
-                } else {
-                    return false;
-                }
-            });
-        },
-        queryAuditAdd() {
-            let reqData = {
-                chainId: this.rowData.chainId,
-                groupId: this.rowData.groupId,
-                keyword: this.singleSearchValue,
-                comment: this.interventionForm.content,
-                txHash: this.rowData.transHash,
-                address: this.rowData.userAddress,
-                chainName: this.rowData.chainName,
-                appName: this.rowData.appName
-            };
-            auditAdd(reqData)
-                .then(res => {
-                    this.loading = false;
-                    if (res.data.code === 0) {
-                        this.$message({
-                            type: "success",
-                            message: '介入成功'
-                        });
-                        this.modelClose();
-                        this.$router.push({
-                            path: "/alarm"
-                        })
-                    } else {
-                        this.modelClose();
-                        this.$message({
-                            message: this.$chooseLang(res.data.code),
-                            type: "error",
-                            duration: 2000
-                        });
-                    }
-                })
-                .catch(err => {
-                    this.modelClose();
-                    this.$message({
-                        message: '系统错误',
-                        type: "error",
-                        duration: 2000
-                    });
-                });
+        exChange(row) {
+            this.txData = Object.assign(row, {
+                chainId: this.chainId,
+                groupId: this.groupId
+            })
         }
     }
 }
@@ -341,5 +353,11 @@ export default {
 .item-detail-key {
     width: 150px;
     display: inline-block;
+}
+.item-detail-val {
+}
+.item-datail-val-table {
+    display: inline-block;
+    width: 900px;
 }
 </style>

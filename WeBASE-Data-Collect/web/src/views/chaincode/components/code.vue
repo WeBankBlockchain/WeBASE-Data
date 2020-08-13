@@ -96,7 +96,7 @@
 
 <script>
 import ace from "ace-builds";
-import "ace-builds/webpack-resolver";
+// import "ace-builds/webpack-resolver";
 import "ace-builds/src-noconflict/theme-chrome";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/ext-language_tools";

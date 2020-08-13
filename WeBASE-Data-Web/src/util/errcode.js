@@ -46,6 +46,34 @@ let errCode = {
         en: "search fail",
         zh: '搜索失败'
     },
+    "202301": {
+        en: "keyword id not exists",
+        zh: '关键字不存在'
+    },
+    "202302": {
+        en: "keyword exists",
+        zh: '关键字已存在'
+    },
+    "202303": {
+        en: "save keyword fail",
+        zh: '关键字保存失败'
+    },
+    "202401": {
+        en: "audit id not exists",
+        zh: '告警信息不存在'
+    },
+    "202402": {
+        en: "audit inffo exists",
+        zh: '告警信息已存在'
+    },
+    "202403": {
+        en: "save audit info fail",
+        zh: '告警信息保存失败'
+    },
+    "202405": {
+        en: "keyword can not be empty",
+        zh: '关键字不能为空'
+    },
 }
 export function chooseLang(code) {
     let lang = localStorage.getItem('lang')
