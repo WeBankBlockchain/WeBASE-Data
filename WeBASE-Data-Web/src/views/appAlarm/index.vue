@@ -1,18 +1,18 @@
 <template>
     <div>
-        <v-content-head :headTitle="'交易告警'"></v-content-head>
+        <v-content-head :headTitle="'应用告警'"></v-content-head>
         <div class="module-wrapper">
         </div>
         <div class="module-wrapper">
             <!-- <div style="padding: 10px 0 0 40px; font-weight: bold;font-size: 16px;">告警列表</div> -->
             <div class="search-table">
-                <el-table :data="alarmList" tooltip-effect="dark" v-loading="loading">
-                    <el-table-column type="expand" align="center">
+                <el-table :data="appAlarmList" tooltip-effect="dark" v-loading="loading">
+                    <!-- <el-table-column type="expand" align="center">
                         <template slot-scope="scope">
                             <detail :txData="scope.row"></detail>
                         </template>
-                    </el-table-column>
-                    <el-table-column v-for="head in alarmHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
+                    </el-table-column> -->
+                    <el-table-column v-for="head in appAlarmHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
                         <template slot-scope="scope">
                             <template v-if="head.enName!='operate'">
                                 <span v-if="head.enName=='status'" :style="{'color': statusColor(scope.row[head.enName])}">{{statusText(scope.row[head.enName])}}</span>
@@ -24,14 +24,14 @@
                                     <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row[head.enName], $event)" title="复制"></i>
                                     <span  class="link" @click="link(scope.row,'userAddress')">{{scope.row[head.enName]}}</span>
                                 </span>
-                                <span v-else>
-                                    <span v-if="scope.row[head.enName]">{{scope.row[head.enName]}}</span>
-                                    <span v-else>-</span>
-                                </span>
+                                <span v-else>{{scope.row[head.enName]}}</span>
                             </template>
                             <template v-else>
                                 <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">删除</el-button>
                                 <el-button type="text" size="small" @click="handleBtn(scope.row)">{{btnText(scope.row['status'])}}</el-button>
+                                <el-button type="text" size="small" @click="pauseBtn(scope.row)">暂停</el-button>
+                                <el-button type="text" size="small" @click="shutDownBtn(scope.row)">关停</el-button>
+                                <el-button type="text" size="small" @click="freezeBtn(scope.row)">冻结</el-button>
                             </template>
                         </template>
                     </el-table-column>
@@ -47,7 +47,7 @@
 <script>
 import contentHead from "@/components/contentHead";
 import detail from "./components/detail.vue";
-import { auditList, auditConfirm, auditDelete } from "@/util/api";
+import { appAuditList, appAuditConfirm, appAuditDelete } from "@/util/api";
 import clip from "@/util/clipboard";
 export default {
     name: 'keywordConfig',
@@ -66,11 +66,7 @@ export default {
             currentPage: 1,
             pageSize: 10,
             total: 0,
-            alarmHead: [
-                {
-                    enName: 'keyword',
-                    name: '关键字'
-                },
+            appAlarmHead: [
                 {
                     enName: 'chainName',
                     name: '链名称'
@@ -80,20 +76,12 @@ export default {
                     name: '应用名称'
                 },
                 {
-                    enName: 'comment',
-                    name: '监管意见'
+                    enName: 'appVersion',
+                    name: '应用版本'
                 },
                 {
                     enName: 'status',
                     name: '状态'
-                },
-                {
-                    enName: 'txHash',
-                    name: '交易Hash'
-                },
-                {
-                    enName: 'address',
-                    name: '用户'
                 },
                 {
                     enName: 'modifyTime',
@@ -104,7 +92,7 @@ export default {
                     name: '操作'
                 }
             ],
-            alarmList: [],
+            appAlarmList: [],
 
         }
     },
@@ -119,30 +107,30 @@ export default {
     },
 
     mounted() {
-        this.queryAuditList()
+        this.queryAppAuditList()
     },
 
     methods: {
         handleSizeChange: function (val) {
             this.pageSize = val;
             this.currentPage = 1;
-            this.queryAuditList();
+            this.queryAppAuditList();
         },
         handleCurrentChange: function (val) {
             this.currentPage = val;
-            this.queryAuditList();
+            this.queryAppAuditList();
         },
-        queryAuditList() {
-            // this.loading = true;
+        queryAppAuditList() {
+            this.loading = true;
             let reqData = {
                 pageNumber: this.currentPage,
                 pageSize: this.pageSize
             }
-            auditList(reqData, {})
+            appAuditList(reqData, {})
                 .then(res => {
                     this.loading = false;
                     if (res.data.code === 0) {
-                        this.alarmList = res.data.data;
+                        this.appAlarmList = res.data.data;
                         this.total = res.data.totalCount
                     } else {
                         this.$message({
@@ -167,19 +155,19 @@ export default {
                 type: 'warning'
             })
                 .then(_ => {
-                    this.queryAuditDelete(val)
+                    this.queryAppAuditDelete(val)
                 })
                 .catch(_ => { });
         },
-        queryAuditDelete(val) {
-            auditDelete(val.id)
+        queryAppAuditDelete(val) {
+            appAuditDelete(val.id)
                 .then(res => {
                     if (res.data.code === 0) {
                         this.$message({
                             type: "success",
                             message: '删除成功'
                         });
-                        this.queryAuditList()
+                        this.queryAppAuditList()
                     } else {
                         this.$message({
                             message: this.$chooseLang(res.data.code),
@@ -201,19 +189,22 @@ export default {
                 type: 'warning'
             })
                 .then(_ => {
-                    this.queryAuditConfirm(val)
+                    this.queryAppAuditConfirm(val)
                 })
                 .catch(_ => { });
         },
-        queryAuditConfirm(val) {
-            auditConfirm(val.id)
+        pauseBtn(){},
+        shutDownBtn(){},
+        freezeBtn(){},
+        queryAppAuditConfirm(val) {
+            appAuditConfirm(val.id)
                 .then(res => {
                     if (res.data.code === 0) {
                         this.$message({
                             type: "success",
                             message: '删除成功'
                         });
-                        this.queryAuditList()
+                        this.queryAppAuditList()
                     } else {
                         this.$message({
                             message: this.$chooseLang(res.data.code),

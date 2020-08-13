@@ -82,18 +82,18 @@ const routes = [
             { path: '/privateKeyManagement', component: rivateKeyManagement, name: '用户管理', nameKey: "PrivateKey", menuShow: true, meta: { requireAuth: true } }
         ]
     }, 
-    {
-        path: '/',
-        component: main,
-        name: '关键字配置',
-        nameKey: "keywordConfig",
-        leaf: true,
-        menuShow: true,
-        iconCls: 'wbs-icon-key-b sidebar-icon',
-        children: [
-            { path: '/keywordConfig', component: keywordConfig, name: '关键字配置', nameKey: "keywordConfig", menuShow: true, meta: { requireAuth: true } }
-        ]
-    }, 
+    // {
+    //     path: '/',
+    //     component: main,
+    //     name: '关键字配置',
+    //     nameKey: "keywordConfig",
+    //     leaf: true,
+    //     menuShow: true,
+    //     iconCls: 'wbs-icon-key-b sidebar-icon',
+    //     children: [
+    //         { path: '/keywordConfig', component: keywordConfig, name: '关键字配置', nameKey: "keywordConfig", menuShow: true, meta: { requireAuth: true } }
+    //     ]
+    // }, 
     {
         path: '/',
         component: main,

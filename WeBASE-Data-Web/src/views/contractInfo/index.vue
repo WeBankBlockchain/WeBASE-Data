@@ -24,13 +24,18 @@
                     <span>条</span>
                 </div>
                 <div class="search-part-right">
-                    <el-input placeholder="请输入合约" v-model="contractParam" @keyup.enter.native="search"  clearable @clear="clearText" class="input-with-select" >
+                    <el-input placeholder="请输入合约" v-model="contractParam" @keyup.enter.native="search" clearable @clear="clearText" class="input-with-select">
                         <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                     </el-input>
                 </div>
             </div>
             <div class="search-table">
                 <el-table :data="userList" tooltip-effect="dark" v-loading="loading">
+                    <!-- <el-table-column type="expand" align="center">
+                        <template slot-scope="scope">
+                            {{scope.row.contractAbi}}
+                        </template>
+                    </el-table-column> -->
                     <el-table-column prop="contractName" label="合约名称" show-overflow-tooltip width="" align="center">
                         <template slot-scope="scope">
                             <i class="wbs-icon-copy font-12 copy-public-key" @click="handleCopy(scope.row.contractName, $event)" title="复制"></i>
@@ -43,13 +48,18 @@
                             <span>{{scope.row.contractAddress}}</span>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="contractAbi" label="合约ABI" show-overflow-tooltip align="center">
+                        <template slot-scope="scope">
+                            <i class="wbs-icon-copy font-12 copy-public-key" v-if="scope.row.contractAbi" @click="handleCopy(scope.row.contractAbi, $event)" title="复制"></i>
+                            <span style="color:#1f83e7" class="link" @click='openAbi(scope.row)'>{{scope.row.contractAbi}}</span>
+                        </template>
                     </el-table-column>
                 </el-table>
                 <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination>
             </div>
         </div>
-
+        <parse-abi :show="abiDialogShow" v-if="abiDialogShow" :data='abiData' @close="abiClose"></parse-abi>
     </div>
 </template>
 <script>
@@ -57,10 +67,12 @@ import contentHead from "@/components/contentHead";
 import { contractList } from "@/util/api"
 import clip from "@/util/clipboard";
 import { numberFormat } from "@/util/util";
+import parseAbi from "./components/parseAbi"
 export default {
     name: "oldContract",
     components: {
         "v-contentHead": contentHead,
+        parseAbi
     },
     data() {
         return {
@@ -75,6 +87,8 @@ export default {
             numberFormat: numberFormat,
             chainName: '',
             appName: '',
+            abiDialogShow: false,
+            abiData: null,
         }
     },
     mounted() {
@@ -84,14 +98,14 @@ export default {
             this.chainName = this.$route.query.chainName
             this.appName = this.$route.query.appName
         }
-        
-        if (this.$route.query.contractParam ) {
+
+        if (this.$route.query.contractParam) {
             this.contractParam = this.$route.query.contractParam
         }
         this.getContracts()
     },
     methods: {
-        clearText(){
+        clearText() {
             this.getContracts()
         },
         getContracts() {
@@ -137,6 +151,14 @@ export default {
         handleCurrentChange(val) {
             this.currentPage = val;
             this.getContracts();
+        },
+        openAbi(val) {
+            this.abiData = val.contractAbi;
+            this.abiDialogShow = true
+        },
+        abiClose() {
+            this.abiDialogShow = false;
+            this.abiData = null
         },
     }
 }

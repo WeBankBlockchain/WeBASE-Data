@@ -1,7 +1,7 @@
 <template>
     <div>
-        <el-tabs type="border-card" v-model="activeName"  @tab-click="handleClick">
-            <el-tab-pane label="交易信息" name="txInfo">
+        <el-tabs type="border-card" @tab-click="handleClick">
+            <el-tab-pane label="交易信息">
                 <el-row v-for="item in txInfoList" :key="item">
                     <el-col :xs='24' :sm="24" :md="6" :lg="4" :xl="2">
                         <span class="receipt-field">{{item}}：</span>
@@ -42,7 +42,7 @@
                     </el-col>
                 </el-row>
             </el-tab-pane>
-            <el-tab-pane label="交易回执" name="txReceiptInfo">
+            <el-tab-pane label="交易回执">
                 <el-row v-for="item in txReceiptInfoList" :key="item">
                     <el-col :xs='24' :sm="24" :md="6" :lg="4" :xl="2">
                         <span class="receipt-field">{{item}}：</span>
@@ -51,7 +51,7 @@
                         <template v-if="item==='logs'">
                             <div class="detail-input-content" v-if="eventLog&&eventLog.length >0" style="padding: 0 0 0 10px">
 
-                                <div v-for="(item) in eventLog" >
+                                <div v-for="(item) in eventLog">
                                     <div class="item">
                                         <span class="label">function </span>
                                         <span>{{item.eventName}}</span>
@@ -86,24 +86,19 @@
             </el-tab-pane>
         </el-tabs>
     </div>
-</template>
 
+</template>
 <script>
-import { searchAll, userList } from "@/util/api"
+import { transList, searchAll, userList } from "@/util/api";
 import clip from "@/util/clipboard";
 export default {
-    name: 'TransactionDetail',
-
-    components: {
-    },
-
+    name: 'detail',
     props: ['txData'],
-
     data() {
         return {
-            activeName: "txInfo",
-            txInfoMap: this.txData.transDetail ? JSON.parse(this.txData.transDetail) : this.txData.transDetail,
-            txReceiptInfoMap: this.txData.receiptDetail ? JSON.parse(this.txData.receiptDetail) : this.txData.receiptDetail,
+            txDetail: {},
+            txInfoMap: {},
+            txReceiptInfoMap: {},
             txInfoList: [
                 "blockHash",
                 "blockNumber",
@@ -134,60 +129,75 @@ export default {
             logsName: '',
             eventLog: [],
             logsMap: [],
-            userName: '',
-            chainName: '',
-            appName: '',
+            userName: ''
         }
     },
-
-    computed: {
-    },
-
-    watch: {
-    },
-
-    created() {
-    },
-
     mounted() {
-        if (this.$route.query.chainId || this.$route.query.groupId) {
-            this.chainId = this.$route.query.chainId
-            this.groupId = this.$route.query.groupId
-            this.chainName = this.$route.query.chainName
-            this.appName = this.$route.query.appName
-        }else {
-            this.chainId = this.txData.chainId
-            this.groupId = this.txData.groupId
-        }
+        this.getTransaction()
         this.querySearchAll()
         this.queryUser()
     },
-
     methods: {
         handleClick() {
 
+        },
+        getTransaction() {
+            let reqData = {
+                chainId: this.txData.chainId,
+                groupId: this.txData.groupId,
+                pageNumber: 1,
+                pageSize: 10
+            },
+                reqQuery = {
+                    transHash: this.txData.txHash
+                };
+            transList(reqData, reqQuery)
+                .then(res => {
+                    if (res.data.code === 0) {
+                        let arr = res.data.data;
+                        if (arr && arr.length) {
+                            this.txDetail = arr[0]
+                            this.txInfoMap = JSON.parse(arr[0].transDetail)
+                            this.txReceiptInfoMap = JSON.parse(arr[0].receiptDetail)
+                        };
+
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.loading = false;
+                    this.$message({
+                        message: '系统异常',
+                        type: "error",
+                        duration: 2000
+                    });
+                });
         },
         link(val) {
             this.$router.push({
                 path: "/userInfo",
                 query: {
-                    chainId: this.chainId,
-                    groupId: this.groupId,
-                    chainName: this.chainName,
-                    appName: this.appName,
+                    chainId: this.txData.chainId,
+                    groupId: this.txData.groupId,
                     userParam: val
                 }
             });
         },
         querySearchAll() {
             var data = {
-                chainId: this.chainId,
-                groupId: this.groupId,
+                chainId:  this.txData.chainId,
+                groupId:  this.txData.groupId,
                 pageSize: 10,
                 pageNumber: 1,
                 searchType: 2,
-                transHash: this.txInfoMap.hash
+                transHash: this.txData.txHash
             }
+            
             searchAll(data)
                 .then(res => {
 
@@ -218,8 +228,8 @@ export default {
         },
         queryUser() {
             let reqData = {
-                chainId: this.chainId,
-                groupId: this.groupId,
+                chainId: this.txData.chainId,
+                groupId: this.txData.groupId,
                 pageSize: 1,
                 pageNumber: 10,
 
@@ -253,8 +263,15 @@ export default {
     }
 }
 </script>
-
 <style scoped>
+.item-detail-key {
+    width: 150px;
+    display: inline-block;
+}
+.item-datail-val-table {
+    display: inline-block;
+    width: 900px;
+}
 .label {
     display: inline-block;
     width: 65px;
@@ -313,8 +330,5 @@ export default {
     overflow: hidden;
     word-break: break-all;
     word-wrap: break-word;
-}
-span {
-    word-break: break-all;
 }
 </style>
