@@ -8,14 +8,10 @@
                 </div>
             </div>
             <div class="search-table">
-                <el-table :data="chainData" class="search-table-content" :row-key="getRowKeys" :expand-row-keys="expands" ref="refTable">
+                <el-table :data="chainData" class="search-table-content" ref="refTable">
                     <el-table-column type="expand" align="center">
                         <template slot-scope="scope">
-                            <el-tabs type="border-card" :value="currentTab" @tab-click="handleTab">
-                                <el-tab-pane v-for="(tab, index) in tabList" :label="`${tab.label}`" :name="tab.type" :key="index">
-                                    <component v-bind:is="`${currentTab}Info`" :chainId="scope.row.chainId"></component>
-                                </el-tab-pane>
-                            </el-tabs>
+                            <chain-detail :scope="scope"></chain-detail>
                         </template>
                     </el-table-column>
                     <el-table-column prop="chainName" label="区块链名称">
@@ -31,7 +27,7 @@
                     </el-table-column>
                     <el-table-column prop="description" label="备注">
                     </el-table-column>
-                    <el-table-column fixed="right" label="操作" width="100">
+                    <el-table-column label="操作" width="100">
                         <template slot-scope="scope">
                             <el-button @click="modifyChain(scope.row, 'modify')" type="text" size="small">修改</el-button>
                             <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
@@ -51,15 +47,14 @@
 import contentHead from "@/components/contentHead";
 import { getChains, deleteChain } from "@/util/api"
 import addChain from "./dialog/addChain"
-import { AppInfo, NodeInfo } from "./components/index.js"
+import chainDetail from "./chainDetail.vue";
 import Bus from "@/bus"
 export default {
     name: "chain",
     components: {
         "v-content-head": contentHead,
         "add-chain": addChain,
-        AppInfo,
-        NodeInfo
+        chainDetail
     },
     data() {
         return {
@@ -69,21 +64,6 @@ export default {
             currentPage: 1,
             pageSize: 10,
             total: 0,
-            expands: [],
-            getRowKeys(row) {
-                return row.chainId;
-            },
-            currentTab: 'app',
-            tabList: [
-                {
-                    label: '应用',
-                    type: 'app'
-                },
-                {
-                    label: '节点',
-                    type: 'node'
-                },
-            ],
             chainDialogOptions: {}
         }
     },
@@ -180,7 +160,6 @@ export default {
             this.getChainList();
         },
         handleTab(tab, $event) {
-            console.log(tab, $event)
             this.currentTab = tab.name
         }
     },

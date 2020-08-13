@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,39 @@
 <template>
     <div>
         <el-dialog title="ABI详情" :visible.sync="dialogVisible" :before-close="modelClose" class="dialog-wrapper" width="600px">
-            <div >
-                <json-viewer
-                    :value="blcokContent"
-                    :expand-depth=5
-                    copyable
-                    sort
-                    boxed></json-viewer>
-                    <div style="text-align: center" v-if="noData">无数据</div>
-                </div>
+            <div>
+                <json-viewer :value="blcokContent" :expand-depth=5 copyable sort boxed></json-viewer>
+                <div style="text-align: center" v-if="noData">无数据</div>
+            </div>
         </el-dialog>
     </div>
 </template>
 <script>
 export default {
     name: "abiDialog",
-    props: ["data","show"],
-    data: function(){
+    props: ["data", "show"],
+    data() {
         return {
             dialogVisible: this.show,
             noData: false,
             blcokContent: null
         }
     },
-    mounted: function(){
+    mounted() {
         let data = {
             list: JSON.parse(this.data)
         }
         this.blcokContent = JSON.parse(this.data)
         this.$nextTick(function () {
-            if(this.blcokContent){
+            if (this.blcokContent) {
                 this.noData = false
-            }else{
+            } else {
                 this.noData = true
             }
         })
     },
     methods: {
-        modelClose: function(){
+        modelClose() {
             this.$emit("close")
         }
     }

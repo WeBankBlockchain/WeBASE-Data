@@ -69,7 +69,6 @@
 import { login, getPictureCheckCode } from "@/util/api";
 import url from "@/util/url"
 import bg from "@/../static/image/banner-1.jpg";
-import logo from "@/../static/image/logo-2 copy@1.5x.jpg";
 import { delCookie } from '@/util/util'
 const sha256 = require("js-sha256").sha256;
 import langSelect from "@/components/LangSelect"
@@ -81,7 +80,6 @@ export default {
     data() {
         return {
             bgLogin: bg,
-            logoPng: logo,
             logining: false,
             msgError: false,
             msgErrorContent: "",

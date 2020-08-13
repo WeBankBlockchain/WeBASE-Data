@@ -66,16 +66,25 @@
                             <span>{{scope.row['blockTimestamp']}}</span>
                         </template>
                     </el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small" @click="interveneKeyword(scope.row,'modify')">介入处理</el-button>
+                        </template>
+                    </el-table-column>
                 </el-table>
                 <el-pagination class="page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout=" sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination>
             </div>
         </div>
+        <el-dialog :visible.sync="interventionVisible" title="处理意见" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="interventionVisible">
+            <intervene :rowData="rowData" type="2" @modelClose="modelClose"></intervene>
+        </el-dialog>
     </div>
 </template>
 <script>
 import contentHead from "@/components/contentHead";
 import TransactionDetail from "@/components/TransactionDetail/index.vue";
+import Intervene from "@/components/Intervene";
 import { transList } from "@/util/api";
 import { numberFormat } from "@/util/util";
 import clip from "@/util/clipboard";
@@ -83,7 +92,8 @@ export default {
     name: "transaction",
     components: {
         contentHead,
-        TransactionDetail
+        TransactionDetail,
+        Intervene
     },
     filters: {
         statusFilter(status) {
@@ -117,14 +127,16 @@ export default {
             appName: '',
             getRowKeys(row) {
                 return row.transHash;
-            }
+            },
+            interventionVisible: false,
+            rowData: {}
         };
     },
     mounted() {
         if (this.$route.query.chainId || this.$route.query.groupId) {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId,
-            this.chainName = this.$route.query.chainName
+                this.chainName = this.$route.query.chainName
             this.appName = this.$route.query.appName
         }
         if (this.$route.query.transHash) {
@@ -163,9 +175,9 @@ export default {
                 pageSize: this.pageSize
             },
                 reqQuery = {};
-                this.searchKey.value = this.replaceStartEndSpace(this.searchKey.value.toString())
+            this.searchKey.value = this.replaceStartEndSpace(this.searchKey.value.toString())
             if (this.searchKey.value) {
-                if (this.searchKey.value.length === 66) {
+                if (this.searchKey.value.length == 66) {
                     reqQuery.transHash = this.searchKey.value;
                 } else {
                     reqQuery.blockNumber = this.searchKey.value;
@@ -223,10 +235,24 @@ export default {
                 query: {
                     chainId: this.chainId,
                     groupId: this.groupId,
+                    chainName: this.chainName,
+                    appName: this.appName,
                     blockNumber: val.blockNumber
                 }
             })
-        }
+        },
+        interveneKeyword(val) {
+            this.rowData.userAddress = JSON.parse(val.receiptDetail).from;
+            this.rowData.transHash = val.transHash;
+            this.rowData.chainId = this.chainId
+            this.rowData.groupId = this.groupId
+            this.rowData.chainName = this.chainName
+            this.rowData.appName = this.appName
+            this.interventionVisible = true
+        },
+        modelClose(){
+            this.interventionVisible = false
+        },
     }
 };
 </script>

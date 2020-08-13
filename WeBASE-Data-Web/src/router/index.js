@@ -28,6 +28,8 @@ const contractInfo = resolve => require(['@/views/contractInfo'], resolve);
 const userInfo = resolve => require(['@/views/userInfo'], resolve);
 const keywordConfig = resolve => require(['@/views/keywordConfig/index.vue'], resolve);
 const alarm = resolve => require(['@/views/alarm/index.vue'], resolve);
+const appAlarm = resolve => require(['@/views/appAlarm/index.vue'], resolve);
+const txAlarm = resolve => require(['@/views/txAlarm/index.vue'], resolve);
 Vue.use(Router);
 const routes = [
     {
@@ -120,13 +122,14 @@ const routes = [
     {
         path: '/',
         component: main,
-        name: '告警列表',
+        name: '监管告警',
         nameKey: "alarm",
-        leaf: true,
+        // leaf: true,
         menuShow: true,
         iconCls: 'wbs-icon-wenjian sidebar-icon',
         children: [
-            { path: '/alarm', component: alarm, name: '告警列表', nameKey: "alarm", menuShow: true, meta: { requireAuth: true } }
+            { path: '/txAlarm', component: txAlarm, name: '交易告警', nameKey: "txAlarm", menuShow: true, meta: { requireAuth: true } },
+            { path: '/appAlarm', component: appAlarm, name: '应用告警', nameKey: "appAlarm", menuShow: true, meta: { requireAuth: true } }
         ]
     }, 
 ]
