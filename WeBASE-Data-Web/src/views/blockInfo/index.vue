@@ -30,10 +30,15 @@
                 </div>
             </div>
             <div class="search-table">
-                <el-table :data="blockData" class="block-table-content" v-loading="loading" @row-click="clickTable" ref="refTable">
+                <el-table :data="blockData" class="block-table-content" v-loading="loading" ref="refTable">
+                    <el-table-column type="expand" align="center">
+                        <template slot-scope="scope">
+                            <block-detail :blockData="JSON.parse(scope.row.blockDetail)"></block-detail>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="blockNumber" label="块高" width="120" align="center">
                         <template slot-scope="scope">
-                            <span >{{scope.row.blockNumber}}</span>
+                            <span>{{scope.row.blockNumber}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="transCount" label="交易数量" width="100" align="center">
@@ -45,7 +50,7 @@
                         <template slot-scope="scope">
                             <span class="">
                                 <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['blockHash'], $event)" title="复制"></i>
-                                {{scope.row['blockHash']}}   
+                                {{scope.row['blockHash']}}
                             </span>
                         </template>
                     </el-table-column>
@@ -53,7 +58,7 @@
                         <template slot-scope="scope">
                             <span class="">
                                 <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row['sealer'], $event)" title="复制"></i>
-                                {{scope.row['sealer']}}   
+                                {{scope.row['sealer']}}
                             </span>
                         </template>
                     </el-table-column>
@@ -72,15 +77,17 @@
 
 <script>
 import contentHead from "@/components/contentHead";
+import BlockDetail from "@/components/BlockDetail";
 import { blockList } from "@/util/api";
 import { numberFormat } from "@/util/util";
 import clip from "@/util/clipboard";
 export default {
     name: "blockInfo",
     components: {
-        "v-content-head": contentHead
+        "v-content-head": contentHead,
+        BlockDetail
     },
-    data: function() {
+    data: function () {
         return {
             blockData: [],
             currentPage: 1,
@@ -98,7 +105,7 @@ export default {
             appName: '',
         };
     },
-    mounted: function() {
+    mounted: function () {
         if (this.$route.query.chainId || this.$route.query.groupId) {
             this.chainId = this.$route.query.chainId
             this.groupId = this.$route.query.groupId
@@ -112,7 +119,7 @@ export default {
         this.getBlockList();
     },
     methods: {
-        search: function() {
+        search: function () {
             if (
                 this.searchKey.key == "blockHash" &&
                 this.searchKey.value.length != 66 &&
@@ -128,20 +135,20 @@ export default {
                 this.getBlockList();
             }
         },
-        getBlockList: function() {
+        getBlockList: function () {
             this.loading = true;
             let reqData = {
-                    chainId: this.chainId,
-                    groupId: this.groupId,
-                    pageNumber: this.currentPage,
-                    pageSize: this.pageSize
-                },
+                chainId: this.chainId,
+                groupId: this.groupId,
+                pageNumber: this.currentPage,
+                pageSize: this.pageSize
+            },
                 reqQuery = {};
             this.searchKey.value = this.replaceStartEndSpace(this.searchKey.value.toString());
-            if(this.searchKey.value){
-                if(this.searchKey.value.length===66){
+            if (this.searchKey.value) {
+                if (this.searchKey.value.length === 66) {
                     reqQuery.blockHash = this.searchKey.value;
-                }else {
+                } else {
                     reqQuery.blockNumber = this.searchKey.value;
                 }
             }
@@ -166,26 +173,26 @@ export default {
                         type: "error",
                         duration: 2000
                     });
-                    
+
                 });
         },
-        handleSizeChange: function(val) {
+        handleSizeChange: function (val) {
             this.pageSize = val;
             this.currentPage = 1;
             this.getBlockList();
         },
-        handleCurrentChange: function(val) {
+        handleCurrentChange: function (val) {
             this.currentPage = val;
             this.getBlockList();
         },
-        
-        clearText: function(){
+
+        clearText: function () {
             this.getBlockList()
         },
         handleCopy(text, event) {
             clip(text, event)
         },
-        link: function(val) {
+        link: function (val) {
             this.$router.push({
                 path: "/transactionInfo",
                 query: {
@@ -195,7 +202,7 @@ export default {
                 }
             });
         },
-        clickTable: function(row, column, $event) {
+        clickTable: function (row, column, $event) {
             let nodeName = $event.target.nodeName;
             if (nodeName === "I") {
                 return
@@ -214,24 +221,24 @@ export default {
 .input-with-select {
     width: 610px;
 }
-.input-with-select>>>.el-input__inner {
+.input-with-select >>> .el-input__inner {
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     border: 1px solid #eaedf3;
     box-shadow: 0 3px 11px 0 rgba(159, 166, 189, 0.11);
 }
-.input-with-select>>>.el-input--suffix > .el-input__inner {
+.input-with-select >>> .el-input--suffix > .el-input__inner {
     box-shadow: none;
 }
-.input-with-select>>>.el-input-group__prepend {
+.input-with-select >>> .el-input-group__prepend {
     border-left-color: #fff;
 }
-.input-with-select>>>.el-input-group__append {
+.input-with-select >>> .el-input-group__append {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     box-shadow: 0 3px 11px 0 rgba(159, 166, 189, 0.11);
 }
-.input-with-select>>>.el-button {
+.input-with-select >>> .el-button {
     border: 1px solid #20d4d9;
     border-radius: inherit;
     background: #20d4d9;
@@ -243,6 +250,16 @@ export default {
     font-size: 12px;
 }
 .block-table-content /deep/ .el-table__row {
-    cursor: pointer;
+    /* cursor: pointer; */
+}
+.item-detail-key {
+    width: 150px;
+    display: inline-block;
+}
+.item-detail-val {
+}
+.item-datail-val-table {
+    display: inline-block;
+    width: 900px;
 }
 </style>

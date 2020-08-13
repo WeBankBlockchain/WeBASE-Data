@@ -6,13 +6,13 @@
         <div class="module-wrapper">
             <!-- <div style="padding: 10px 0 0 40px; font-weight: bold;font-size: 16px;">告警列表</div> -->
             <div class="search-table">
-                <el-table :data="alarmList" tooltip-effect="dark" v-loading="loading">
+                <el-table :data="txAlarmList" tooltip-effect="dark" v-loading="loading">
                     <el-table-column type="expand" align="center">
                         <template slot-scope="scope">
                             <detail :txData="scope.row"></detail>
                         </template>
                     </el-table-column>
-                    <el-table-column v-for="head in alarmHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
+                    <el-table-column v-for="head in txAlarmHead" :label="head.name" :key="head.enName" :width='head.width' show-overflow-tooltip align="center">
                         <template slot-scope="scope">
                             <template v-if="head.enName!='operate'">
                                 <span v-if="head.enName=='status'" :style="{'color': statusColor(scope.row[head.enName])}">{{statusText(scope.row[head.enName])}}</span>
@@ -32,6 +32,9 @@
                             <template v-else>
                                 <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">删除</el-button>
                                 <el-button type="text" size="small" @click="handleBtn(scope.row)">{{btnText(scope.row['status'])}}</el-button>
+                                <el-button type="text" size="small" @click="pauseBtn(scope.row)">暂停</el-button>
+                                <el-button type="text" size="small" @click="shutDownBtn(scope.row)">关停</el-button>
+                                <el-button type="text" size="small" @click="freezeBtn(scope.row)">冻结</el-button>
                             </template>
                         </template>
                     </el-table-column>
@@ -47,7 +50,7 @@
 <script>
 import contentHead from "@/components/contentHead";
 import detail from "./components/detail.vue";
-import { auditList, auditConfirm, auditDelete } from "@/util/api";
+import { txAuditList, txAuditConfirm, txAuditDelete } from "@/util/api";
 import clip from "@/util/clipboard";
 export default {
     name: 'keywordConfig',
@@ -66,45 +69,54 @@ export default {
             currentPage: 1,
             pageSize: 10,
             total: 0,
-            alarmHead: [
+            txAlarmHead: [
                 {
                     enName: 'keyword',
-                    name: '关键字'
+                    name: '关键字',
+                    width: ""
                 },
                 {
                     enName: 'chainName',
-                    name: '链名称'
+                    name: '链名称',
+                    width: ""
                 },
                 {
                     enName: 'appName',
-                    name: '应用名称'
+                    name: '应用名称',
+                    width: ""
                 },
                 {
                     enName: 'comment',
-                    name: '监管意见'
+                    name: '监管意见',
+                    width: ""
                 },
                 {
                     enName: 'status',
-                    name: '状态'
+                    name: '状态',
+                    width: ""
                 },
                 {
                     enName: 'txHash',
-                    name: '交易Hash'
+                    name: '交易Hash',
+                    width: ""
                 },
                 {
                     enName: 'address',
-                    name: '用户'
+                    name: '用户',
+                    width: ""
                 },
                 {
                     enName: 'modifyTime',
-                    name: '修改时间'
+                    name: '修改时间',
+                    width: ""
                 },
                 {
                     enName: "operate",
-                    name: '操作'
+                    name: '操作',
+                    width: 210
                 }
             ],
-            alarmList: [],
+            txAlarmList: [],
 
         }
     },
@@ -119,30 +131,30 @@ export default {
     },
 
     mounted() {
-        this.queryAuditList()
+        this.queryTxAuditList()
     },
 
     methods: {
         handleSizeChange: function (val) {
             this.pageSize = val;
             this.currentPage = 1;
-            this.queryAuditList();
+            this.queryTxAuditList();
         },
         handleCurrentChange: function (val) {
             this.currentPage = val;
-            this.queryAuditList();
+            this.queryTxAuditList();
         },
-        queryAuditList() {
-            // this.loading = true;
+        queryTxAuditList() {
+            this.loading = true;
             let reqData = {
                 pageNumber: this.currentPage,
                 pageSize: this.pageSize
             }
-            auditList(reqData, {})
+            txAuditList(reqData, {})
                 .then(res => {
                     this.loading = false;
                     if (res.data.code === 0) {
-                        this.alarmList = res.data.data;
+                        this.txAlarmList = res.data.data;
                         this.total = res.data.totalCount
                     } else {
                         this.$message({
@@ -167,19 +179,19 @@ export default {
                 type: 'warning'
             })
                 .then(_ => {
-                    this.queryAuditDelete(val)
+                    this.queryTxAuditDelete(val)
                 })
                 .catch(_ => { });
         },
-        queryAuditDelete(val) {
-            auditDelete(val.id)
+        queryTxAuditDelete(val) {
+            txAuditDelete(val.id)
                 .then(res => {
                     if (res.data.code === 0) {
                         this.$message({
                             type: "success",
                             message: '删除成功'
                         });
-                        this.queryAuditList()
+                        this.queryTxAuditList()
                     } else {
                         this.$message({
                             message: this.$chooseLang(res.data.code),
@@ -201,19 +213,22 @@ export default {
                 type: 'warning'
             })
                 .then(_ => {
-                    this.queryAuditConfirm(val)
+                    this.queryTxAuditConfirm(val)
                 })
                 .catch(_ => { });
         },
-        queryAuditConfirm(val) {
-            auditConfirm(val.id)
+        pauseBtn(){},
+        shutDownBtn(){},
+        freezeBtn(){},
+        queryTxAuditConfirm(val) {
+            txAuditConfirm(val.id)
                 .then(res => {
                     if (res.data.code === 0) {
                         this.$message({
                             type: "success",
                             message: '删除成功'
                         });
-                        this.queryAuditList()
+                        this.queryTxAuditList()
                     } else {
                         this.$message({
                             message: this.$chooseLang(res.data.code),

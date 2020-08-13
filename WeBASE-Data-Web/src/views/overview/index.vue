@@ -7,8 +7,8 @@
                     <el-col :xs='24' :sm="24" :md="11" :lg="10" :xl="8">
                         <div class="overview-item" style="font-size:0" v-for="item in detailsList" :key='item.label' @click="goDetailRouter(item)" :class="item.bg">
                             <div class="overview-item-img">
-                                <svg class="overview-item-svg" aria-hidden="true" v-if='item.icon == "#wbs-icon-node1"'>
-                                    <use xlink:href="#wbs-icon-node1"></use>
+                                <svg class="overview-item-svg" aria-hidden="true" v-if='item.icon == "#wbs-icon-user-icon"'>
+                                    <use xlink:href="#wbs-icon-user-icon"></use>
                                 </svg>
                                 <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-contract"'>
                                     <use xlink:href="#wbs-icon-contract"></use>
@@ -107,12 +107,12 @@
                                         <span class="link" @click="goRouter('transactions', item.transHash)">{{item.transHash}} </span>
                                     </p>
                                     <p class="trans-address color-8798AD">
-                                        <span>
+                                        <span :title="`${JSON.parse(item.receiptDetail)['from']}`">
                                             <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(JSON.parse(item.receiptDetail)['from'])" title='复制'></i>
                                             {{splitAddress(JSON.parse(item.receiptDetail)['from'])}}
                                         </span>
                                         <img :src="sRight" :alt="$t('text.arrow')">
-                                        <span>
+                                        <span :title="`${JSON.parse(item.receiptDetail)['to']}`">
                                             <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(JSON.parse(item.receiptDetail)['to'])" title='复制'></i>
                                             {{splitAddress(JSON.parse(item.receiptDetail)['to'])}}
                                         </span>
@@ -171,7 +171,7 @@ export default {
                     label: "用户数量",
                     name: "userCount",
                     value: 0,
-                    icon: "#wbs-icon-node1",
+                    icon: "#wbs-icon-user-icon",
                     bg: 'node-bg'
                 },
                 {
@@ -254,7 +254,7 @@ export default {
             if (this.$route.params.chainId) {
                 this.appName = this.$route.params.chainName
                 this.chainId = this.$route.params.chainId
-                this.groupId = val,
+                this.groupId = this.$route.params.groupId,
                 this.chainName = this.$route.query.chainName
             }
             this.queryGroup()
