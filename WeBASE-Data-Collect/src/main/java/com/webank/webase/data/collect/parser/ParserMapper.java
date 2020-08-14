@@ -35,6 +35,9 @@ public interface ParserMapper {
 
     void updateUnusualContract(@Param("tableName") String tableName,
             @Param("result") ContractParserResult result);
+    
+    List<TbParser> queryListByUserAddress(@Param("tableName") String tableName,
+            @Param("userAddress") String userAddress);
 
     List<String> queryUnusualTxHashByBin(@Param("tableName") String tableName,
             @Param("contractBin") String contractBin);
