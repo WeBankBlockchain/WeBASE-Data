@@ -11,24 +11,28 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher.table;
+package com.webank.webase.data.fetcher.audit.mapper;
 
+import com.webank.webase.data.fetcher.audit.entity.AuditQueryParam;
+import com.webank.webase.data.fetcher.audit.entity.TbTransAudit;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TableMapper {
+public interface TransAuditMapper {
 
-    int createTbKeyword();
+    int add(TbTransAudit tbTransAudit);
 
-    int createTbTransAudit();
-    
-    int createTbAppAudit();
+    int confirm(@Param("id") Integer id);
 
-    List<String> queryTables(@Param("dbName") String dbName, @Param("tableName") String tableName);
+    Integer getCount(AuditQueryParam param);
 
-    int dropTable(@Param("dbName") String dbName, @Param("tableName") String tableName);
+    List<TbTransAudit> getList(AuditQueryParam param);
 
-    int deleteByTableName(@Param("tableName") String tableName);
+    TbTransAudit getAuditInfoById(@Param("id") Integer id);
+
+    TbTransAudit getAuditInfoByTxHash(@Param("txHash") String txHash);
+
+    int remove(@Param("id") Integer id);
 }

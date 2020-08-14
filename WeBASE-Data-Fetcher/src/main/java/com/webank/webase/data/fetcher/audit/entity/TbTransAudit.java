@@ -11,24 +11,24 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher.table;
+package com.webank.webase.data.fetcher.audit.entity;
 
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
+import java.time.LocalDateTime;
+import lombok.Data;
 
-@Repository
-public interface TableMapper {
-
-    int createTbKeyword();
-
-    int createTbTransAudit();
-    
-    int createTbAppAudit();
-
-    List<String> queryTables(@Param("dbName") String dbName, @Param("tableName") String tableName);
-
-    int dropTable(@Param("dbName") String dbName, @Param("tableName") String tableName);
-
-    int deleteByTableName(@Param("tableName") String tableName);
+@Data
+public class TbTransAudit {
+    private Integer id;
+    private Integer chainId;
+    private Integer groupId;
+    private String keyword;
+    private String comment;
+    private String txHash;
+    private String address;
+    private Integer type;
+    private Integer status;
+    private String chainName;
+    private String appName;
+    private LocalDateTime createTime;
+    private LocalDateTime modifyTime;
 }
