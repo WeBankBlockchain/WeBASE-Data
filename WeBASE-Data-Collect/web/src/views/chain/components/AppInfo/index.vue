@@ -38,6 +38,10 @@ export default {
         return {
             appHead: [
                 {
+                    enName: 'groupId',
+                    name: '应用编号'
+                },
+                {
                     enName: 'appName',
                     name: '应用名称'
                 },
