@@ -1,6 +1,39 @@
 <template>
     <div>
         <content-head :headTitle="'搜索'"></content-head>
+        <div style="margin: 15px 15px 0 15px;">
+            <el-row :gutter="10">
+                <el-col :xs="8" :sm="6" :md="4" :lg="4" :xl="4" v-for="item in detailsList" :key='item.label'>
+                    <div class="overview-item" :class="item.bg">
+                        <div class="overview-item-img">
+                            <svg class="overview-item-img" aria-hidden="true" v-if='item.icon == "#wbs-icon-node1"'>
+                                <use xlink:href="#wbs-icon-node1"></use>
+                            </svg>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-contract"'>
+                                <use xlink:href="#wbs-icon-contract"></use>
+                            </svg>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-block"'>
+                                <use xlink:href="#wbs-icon-block"></use>
+                            </svg>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-transation"'>
+                                <use xlink:href="#wbs-icon-transation"></use>
+                            </svg>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-user-icon"'>
+                                <use xlink:href="#wbs-icon-user-icon"></use>
+                            </svg>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-h-group"'>
+                                <use xlink:href="#wbs-icon-h-group"></use>
+                            </svg>
+                        </div>
+                        <div class="overview-item-content">
+                            <div class="overview-item-number">{{item.value}}</div>
+                            <div class="overview-item-title">{{item.label}}</div>
+                        </div>
+                    </div>
+                </el-col>
+
+            </el-row>
+        </div>
         <div class="module-wrapper">
             <el-tabs type="border-card" @tab-click="handleClickTab" :value="tabName" v-loading="listLoading">
                 <el-tab-pane label="关键字搜索">
@@ -58,7 +91,7 @@
 </template>
 
 <script>
-import { searchAll, chainAll, groupList, simpleSearch, blockList, transList } from "@/util/api"
+import { searchAll, chainAll, groupList, simpleSearch, blockList, transList, chainGeneral } from "@/util/api"
 import contentHead from "@/components/contentHead";
 import SearchResults from "./components/SearchResults";
 import { rexIsNumber } from "@/util/util";
@@ -154,8 +187,55 @@ export default {
                     keyword: '新冠病毒'
                 }
             ],
-            rexIsNumber: rexIsNumber
+            rexIsNumber: rexIsNumber,
+            loadingNumber: false,
+            detailsList: [
+                {
+                    label: "链数量",
+                    name: "chainCount",
+                    value: 0,
+                    icon: "#wbs-icon-node1",
+                    bg: 'chain-bg'
+                },
+                {
+                    label: "应用数量",
+                    name: "groupCount",
+                    value: 0,
+                    icon: "#wbs-icon-h-group",
+                    bg: 'group-bg'
+                },
+                {
+                    label: "用户数量",
+                    name: "userCount",
+                    value: 0,
+                    icon: "#wbs-icon-user-icon",
+                    bg: 'node-bg'
+                },
+                {
+                    label: "已部署的智能合约",
+                    name: "contractCount",
+                    value: 0,
+                    icon: "#wbs-icon-contract",
+                    bg: 'contract-bg'
+                },
+                {
+                    label: "区块数量",
+                    name: "blockCount",
+                    value: 0,
+                    icon: "#wbs-icon-transation",
+                    bg: "block-bg"
+                },
+                {
+                    label: "交易数量",
+                    name: "txnCount",
+                    value: 0,
+                    icon: "#wbs-icon-block",
+                    bg: 'transation-bg'
+                }
+            ]
         }
+    },
+    computed: {
     },
     mounted() {
         if (this.singleSearchValue && this.tabName == '0') {
@@ -170,7 +250,7 @@ export default {
             this.searchType = sessionStorage.getItem('searchType') || '1'
         }
         this.queryChainAll()
-
+        this.getNetworkDetails()
     },
     methods: {
         deleteKeyword() {
@@ -553,7 +633,36 @@ export default {
                 this.querySearchAll();
             }
         },
+        getNetworkDetails: function () {
+            this.loadingNumber = true;
+            chainGeneral()
+                .then(res => {
+                    this.loadingNumber = false;
+                    if (res.data.code === 0) {
+                        this.detailsList.forEach(function (value, index) {
+                            for (let i in res.data.data) {
+                                if (value.name === i) {
+                                    value.value = res.data.data[i];
+                                }
+                            }
+                        });
+                    } else {
+                        this.$message({
+                            message: this.$chooseLang(res.data.code),
+                            type: "error",
+                            duration: 2000
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.$message({
+                        message: this.$t('text.systemError'),
+                        type: "error",
+                        duration: 2000
+                    });
 
+                });
+        },
     }
 }
 </script>
@@ -566,7 +675,6 @@ export default {
 .search-table {
     padding-top: 10px;
     display: flex;
-    /* margin-top: 100px; */
 }
 .search-result {
     padding: 30px 29px 0 30px;
@@ -578,5 +686,68 @@ export default {
     height: 100%;
     width: 100%;
     margin: auto;
+}
+
+.el-col {
+    border-radius: 4px;
+}
+.overview-item {
+    border-radius: 4px;
+    height: 64px;
+    display: flex;
+    padding: 28px 16px;
+}
+.overview-item-img {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    line-height: 64px;
+}
+.overview-item-content {
+    font-size: 12px;
+    display: inline-block;
+    padding-left: 10px;
+}
+.overview-item-number {
+    font-size: 24px;
+    color: #fff;
+}
+.overview-item-title {
+    width: 100%;
+    color: #fff;
+}
+.node-bg {
+    background: linear-gradient(to top right, #47befa, #37eef2);
+}
+.contract-bg {
+    background: linear-gradient(to top right, #466dff, #30a7ff);
+}
+.block-bg {
+    background: linear-gradient(to top right, #736aff, #b287ff);
+}
+.transation-bg {
+    background: linear-gradient(to top right, #ff6e9a, #ffa895);
+}
+.chain-bg {
+    background: linear-gradient(to top right, #e87b66, #f89e8c);
+}
+.group-bg {
+    background: linear-gradient(to top right, #4acbba, #89e9d6);
+}
+@media screen and (max-width: 1400px) {
+    .overview-item-img {
+        width: 54px;
+        height: 54px;
+    }
+}
+@media screen and (max-width: 1200px) {
+    .overview-item-img {
+        width: 44px;
+        height: 44px;
+    }
+}
+@media screen and (max-width: 992px) {
+}
+@media screen and (max-width: 768px) {
 }
 </style>

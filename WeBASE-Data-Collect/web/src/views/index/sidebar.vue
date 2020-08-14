@@ -56,14 +56,12 @@
 </template>
 
 <script>
-import maxLog from "@/../static/image/logo-2 copy@1.5x.jpg";
 import router from "@/router";
 export default {
     name: "sidebar",
     props: ["minMenu"],
     data() {
         return {
-            maxLog: maxLog,
             activeIndex: 0,
             activeRoute: "",
             userRole: localStorage.getItem("root"),

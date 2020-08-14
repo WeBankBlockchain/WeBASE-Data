@@ -18,6 +18,13 @@ import { post, get, patch, put, deleted } from './http'
 import { reviseParam } from './util'
 import qs from 'qs'
 
+export function chainGeneral() {
+    return get({
+        url: `${url.ORG_LIST}/chain/general`,
+        method: 'get'
+    })
+}
+
 export function searchAll(data) {
     return post({
         url: `${url.ORG_LIST}/search/normal`,
@@ -170,6 +177,68 @@ export function auditConfirm(data) {
 export function auditDelete(data) {
     return deleted({
         url: `${url.ORG_LIST}/audit/${data}`,
+        method: 'delete',
+    })
+}
+
+export function appAuditAdd(data) {
+    return post({
+        url: `${url.ORG_LIST}/appAudit/add`,
+        method: 'post',
+        data: data
+    })
+}
+
+export function appAuditList(data, list) {
+    const params = reviseParam(data, list);
+    return get({
+        url: `${url.ORG_LIST}/appAudit/list/${params.str}`,
+        method: 'get',
+        data: params.querys
+    })
+}
+
+export function appAuditConfirm(data) {
+    return post({
+        url: `${url.ORG_LIST}/appAudit/confirm/${data}`,
+        method: 'post'
+    })
+}
+
+export function appAuditDelete(data) {
+    return deleted({
+        url: `${url.ORG_LIST}/appAudit/${data}`,
+        method: 'delete',
+    })
+}
+
+export function txAuditAdd(data) {
+    return post({
+        url: `${url.ORG_LIST}/transAudit/add`,
+        method: 'post',
+        data: data
+    })
+}
+
+export function txAuditList(data, list) {
+    const params = reviseParam(data, list);
+    return get({
+        url: `${url.ORG_LIST}/transAudit/list/${params.str}`,
+        method: 'get',
+        data: params.querys
+    })
+}
+
+export function txAuditConfirm(data) {
+    return post({
+        url: `${url.ORG_LIST}/transAudit/confirm/${data}`,
+        method: 'post'
+    })
+}
+
+export function txAuditDelete(data) {
+    return deleted({
+        url: `${url.ORG_LIST}/transAudit/${data}`,
         method: 'delete',
     })
 }
