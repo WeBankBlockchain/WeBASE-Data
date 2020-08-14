@@ -24,4 +24,5 @@ import lombok.NoArgsConstructor;
 public class ContractInfoDto {
     private String contractName;
     private String contractAddress;
+    private String contractAbi;
 }

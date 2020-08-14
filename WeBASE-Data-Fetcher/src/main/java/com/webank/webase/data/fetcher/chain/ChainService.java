@@ -14,8 +14,13 @@
 package com.webank.webase.data.fetcher.chain;
 
 import com.webank.webase.data.fetcher.base.code.ConstantCode;
+import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
+import com.webank.webase.data.fetcher.base.enums.DataStatus;
 import com.webank.webase.data.fetcher.base.exception.BaseException;
 import com.webank.webase.data.fetcher.chain.entity.ChainInfoDto;
+import com.webank.webase.data.fetcher.chain.entity.DataGeneral;
+import com.webank.webase.data.fetcher.group.GroupService;
+import com.webank.webase.data.fetcher.group.entity.GroupInfoDto;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +34,38 @@ import org.springframework.stereotype.Service;
 public class ChainService {
 
     @Autowired
+    private GroupService groupService;
+    @Autowired
     private ChainMapper chainMapper;
+
+    /**
+     * get data general
+     */
+    public DataGeneral getDataGeneral() {
+        try {
+            DataGeneral data = new DataGeneral();
+            data.setChainCount(getChainCount());
+            data.setGroupCount(groupService.countOfGroup(null, null, DataStatus.NORMAL.getValue()));
+            data.setBlockCount(groupService.getBlockCounts());
+            data.setTxnCount(groupService.getTxnCounts());
+            List<GroupInfoDto> groupList =
+                    groupService.getGroupList(null, null, DataStatus.NORMAL.getValue());
+            int userCount = 0;
+            int contractCount = 0;
+            for (GroupInfoDto groupInfoDto : groupList) {
+                BaseQueryParam queryParam =
+                        new BaseQueryParam(groupInfoDto.getChainId(), groupInfoDto.getGroupId());
+                userCount = userCount + groupService.countOfUser(queryParam);
+                contractCount = contractCount + groupService.countOfContract(queryParam);
+            }
+            data.setUserCount(userCount);
+            data.setContractCount(contractCount);
+            return data;
+        } catch (RuntimeException ex) {
+            log.error("fail getDataGeneral", ex);
+            throw new BaseException(ConstantCode.DB_EXCEPTION);
+        }
+    }
 
     /**
      * get chain count

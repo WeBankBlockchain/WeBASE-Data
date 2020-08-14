@@ -11,12 +11,14 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher.audit;
+package com.webank.webase.data.fetcher.audit.service;
 
-import com.webank.webase.data.fetcher.audit.entity.AuditInfo;
-import com.webank.webase.data.fetcher.audit.entity.TbAuditInfo;
+import com.webank.webase.data.fetcher.audit.entity.AuditQueryParam;
+import com.webank.webase.data.fetcher.audit.entity.TbTransAudit;
+import com.webank.webase.data.fetcher.audit.entity.TransAuditInfo;
+import com.webank.webase.data.fetcher.audit.mapper.TransAuditMapper;
 import com.webank.webase.data.fetcher.base.code.ConstantCode;
-import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
+import com.webank.webase.data.fetcher.base.enums.AuditType;
 import com.webank.webase.data.fetcher.base.exception.BaseException;
 import com.webank.webase.data.fetcher.chain.ChainService;
 import com.webank.webase.data.fetcher.group.GroupService;
@@ -27,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +44,10 @@ import org.springframework.util.CollectionUtils;
  */
 @Log4j2
 @Service
-public class AuditService {
+public class TransAuditService {
 
     @Autowired
-    private AuditMapper auditMapper;
+    private TransAuditMapper transAuditMapper;
     @Autowired
     private SearchService searchService;
     @Autowired
@@ -55,25 +58,34 @@ public class AuditService {
     private static final String COMMENT = "automatic scanning";
 
     /**
-     * add a new auditInfo
+     * add a new transAuditInfo
      */
-    public TbAuditInfo newAuditInfo(AuditInfo auditInfo) {
-        log.debug("start newAuditInfo auditInfo:{}", auditInfo);
-
-        TbAuditInfo tbAuditInfo = getAuditInfoByTxHash(auditInfo.getTxHash());
-        if (tbAuditInfo != null) {
+    public TbTransAudit newAuditInfo(TransAuditInfo transAuditInfo) {
+        log.debug("start newAuditInfo transAuditInfo:{}", transAuditInfo);
+        // check param
+        if (!AuditType.isInclude(transAuditInfo.getType())) {
+            log.error("invalid audit type:{}", transAuditInfo.getType());
+            throw new BaseException(ConstantCode.INVALID_AUDIT_TYPE);
+        }
+        if (transAuditInfo.getType() == AuditType.KEYWORD.getValue()
+                && StringUtils.isBlank(transAuditInfo.getKeyword())) {
+            log.error("keyword can not be empty when audit type is:{}", transAuditInfo.getType());
+            throw new BaseException(ConstantCode.KEYWORD_ID_EMPTY);
+        }
+        TbTransAudit tbTransAudit = getAuditInfoByTxHash(transAuditInfo.getTxHash());
+        if (tbTransAudit != null) {
             throw new BaseException(ConstantCode.AUDIT_EXISTS);
         }
         // copy attribute
-        TbAuditInfo tbAuditInfo1 = new TbAuditInfo();
-        BeanUtils.copyProperties(auditInfo, tbAuditInfo1);
+        TbTransAudit tbAuditInfo1 = new TbTransAudit();
+        BeanUtils.copyProperties(transAuditInfo, tbAuditInfo1);
         // save audit info
         int result = add(tbAuditInfo1);
         if (result == 0) {
-            log.warn("fail auditInfo after save.");
+            log.warn("fail transAuditInfo after save.");
             throw new BaseException(ConstantCode.SAVE_AUDIT_FAIL);
         }
-        return getAuditInfoByTxHash(auditInfo.getTxHash());
+        return getAuditInfoByTxHash(transAuditInfo.getTxHash());
     }
 
     @Async("asyncExecutor")
@@ -81,22 +93,23 @@ public class AuditService {
         try {
             SearchResponse searchResponse = searchService.findByKey(null, null, keyword);
             searchResponse.getHits().iterator().forEachRemaining(hit -> {
-                TbAuditInfo tbAuditInfo = new TbAuditInfo();
+                TbTransAudit tbTransAudit = new TbTransAudit();
                 Map<String, Object> source = hit.getSourceAsMap();
                 Integer chainId = Integer.valueOf(source.get("chainId").toString());
                 Integer groupId = Integer.valueOf(source.get("groupId").toString());
-                tbAuditInfo.setChainId(chainId);
-                tbAuditInfo.setGroupId(groupId);
-                tbAuditInfo.setKeyword(keyword);
-                tbAuditInfo.setTxHash(source.get("transHash").toString());
-                tbAuditInfo.setAddress(source.get("userAddress").toString());
-                tbAuditInfo.setComment(COMMENT);
-                tbAuditInfo.setChainName(chainService.getNameById(chainId));
+                tbTransAudit.setChainId(chainId);
+                tbTransAudit.setGroupId(groupId);
+                tbTransAudit.setKeyword(keyword);
+                tbTransAudit.setTxHash(source.get("transHash").toString());
+                tbTransAudit.setAddress(source.get("userAddress").toString());
+                tbTransAudit.setComment(COMMENT);
+                tbTransAudit.setChainName(chainService.getNameById(chainId));
+                tbTransAudit.setType(AuditType.KEYWORD.getValue());
                 List<GroupInfoDto> groupList = groupService.getGroupList(chainId, groupId, null);
                 if (!CollectionUtils.isEmpty(groupList)) {
-                    tbAuditInfo.setAppName(groupList.get(0).getAppName());
+                    tbTransAudit.setAppName(groupList.get(0).getAppName());
                 }
-                add(tbAuditInfo);
+                add(tbTransAudit);
             });
         } catch (Exception ex) {
             log.error("fail auditProcess. keyword:{} ", keyword, ex);
@@ -107,68 +120,68 @@ public class AuditService {
         }
     }
 
-    public int add(TbAuditInfo tbAuditInfo) {
-        return auditMapper.add(tbAuditInfo);
+    public int add(TbTransAudit tbTransAudit) {
+        return transAuditMapper.add(tbTransAudit);
     }
 
     /**
-     * confirm auditInfo
+     * confirm transAuditInfo
      */
-    public TbAuditInfo confirmAuditInfo(Integer id) {
+    public TbTransAudit confirmAuditInfo(Integer id) {
         if (!checkAuditInfoId(id)) {
             throw new BaseException(ConstantCode.AUDIT_ID_NOT_EXISTS);
         }
-        auditMapper.confirm(id);
+        transAuditMapper.confirm(id);
         return getAuditInfoById(id);
     }
 
     /**
-     * get auditInfo count
+     * get transAuditInfo count
      */
-    public int getAuditInfoCount() {
-        Integer count = auditMapper.getCount();
+    public int getAuditInfoCount(AuditQueryParam queryParam) {
+        Integer count = transAuditMapper.getCount(queryParam);
         return count == null ? 0 : count;
     }
 
     /**
-     * get auditInfo list
+     * get transAuditInfo list
      */
-    public List<TbAuditInfo> getAuditInfoList(BaseQueryParam queryParam) {
-        return auditMapper.getList(queryParam);
+    public List<TbTransAudit> getAuditInfoList(AuditQueryParam queryParam) {
+        return transAuditMapper.getList(queryParam);
     }
 
     /**
      * get audit info
      */
-    public TbAuditInfo getAuditInfoById(Integer id) {
-        return auditMapper.getAuditInfoById(id);
+    public TbTransAudit getAuditInfoById(Integer id) {
+        return transAuditMapper.getAuditInfoById(id);
     }
 
     /**
      * get audit info
      */
-    public TbAuditInfo getAuditInfoByTxHash(String txHash) {
-        return auditMapper.getAuditInfoByTxHash(txHash);
+    public TbTransAudit getAuditInfoByTxHash(String txHash) {
+        return transAuditMapper.getAuditInfoByTxHash(txHash);
     }
 
     /**
-     * remove auditInfo
+     * remove transAuditInfo
      */
     @Transactional
     public void removeAuditInfo(Integer id) {
-        TbAuditInfo tbAuditInfo = getAuditInfoById(id);
-        if (tbAuditInfo == null) {
+        TbTransAudit tbTransAudit = getAuditInfoById(id);
+        if (tbTransAudit == null) {
             throw new BaseException(ConstantCode.AUDIT_ID_NOT_EXISTS);
         }
-        auditMapper.remove(id);
+        transAuditMapper.remove(id);
     }
 
     /**
-     * check auditInfo id
+     * check transAuditInfo id
      */
     private boolean checkAuditInfoId(Integer id) {
-        TbAuditInfo tbAuditInfo = getAuditInfoById(id);
-        if (tbAuditInfo == null) {
+        TbTransAudit tbTransAudit = getAuditInfoById(id);
+        if (tbTransAudit == null) {
             return false;
         }
         return true;

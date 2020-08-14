@@ -21,6 +21,7 @@ public class TbChain {
     private Integer chainId;
     private String chainName;
     private Integer chainType;
+    private String attribute;
     private String description;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;

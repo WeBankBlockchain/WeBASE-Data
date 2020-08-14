@@ -13,21 +13,14 @@
  */
 package com.webank.webase.data.fetcher.audit.entity;
 
-import java.time.LocalDateTime;
+import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class TbAuditInfo {
-    private Integer id;
-    private Integer chainId;
-    private Integer groupId;
-    private String keyword;
-    private String comment;
-    private String txHash;
-    private String address;
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuditQueryParam extends BaseQueryParam {
     private Integer status;
-    private String chainName;
-    private String appName;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
 }

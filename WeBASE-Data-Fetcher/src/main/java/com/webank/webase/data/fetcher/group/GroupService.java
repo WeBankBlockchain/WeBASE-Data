@@ -28,6 +28,7 @@ import com.webank.webase.data.fetcher.group.entity.TransListParam;
 import com.webank.webase.data.fetcher.group.entity.TransactionInfoDto;
 import com.webank.webase.data.fetcher.group.entity.TxnDailyDto;
 import com.webank.webase.data.fetcher.group.entity.UserInfoDto;
+import java.math.BigInteger;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,32 @@ public class GroupService {
         generalInfo.setUserCount(countOfUser(queryParam));
         generalInfo.setContractCount(countOfContract(queryParam));
         return generalInfo;
+    }
+    
+    /**
+     * query count of all block counts.
+     */
+    public BigInteger getBlockCounts() throws BaseException {
+        try {
+            BigInteger count = groupMapper.getBlockCounts();
+            return count == null ? BigInteger.ZERO : count;
+        } catch (RuntimeException ex) {
+            log.error("fail getBlockCounts. ", ex);
+            throw new BaseException(ConstantCode.DB_EXCEPTION);
+        }
+    }
+    
+    /**
+     * query count of all transaction counts.
+     */
+    public BigInteger getTxnCounts() throws BaseException {
+        try {
+            BigInteger count = groupMapper.getTxnCounts();
+            return count == null ? BigInteger.ZERO : count;
+        } catch (RuntimeException ex) {
+            log.error("fail getTxnCounts. ", ex);
+            throw new BaseException(ConstantCode.DB_EXCEPTION);
+        }
     }
 
     /**
