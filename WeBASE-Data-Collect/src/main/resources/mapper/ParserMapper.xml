@@ -74,6 +74,10 @@
         where trans_hash = #{result.transHash}
         and (trans_parser_type = 1 or trans_parser_type = 2)
     </update>
+    
+    <select id="queryListByUserAddress" resultMap="parserMap">
+        select * from ${tableName} where user_address = #{userAddress}
+    </select>
 
     <select id="parserUserList" resultType="java.lang.String">
         select distinct user_name as userName from ${tableName}

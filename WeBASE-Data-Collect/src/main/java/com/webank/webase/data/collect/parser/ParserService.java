@@ -107,10 +107,20 @@ public class ParserService {
         }
     }
 
+    /**
+     * parser unusual user.
+     */
+    @Async("asyncExecutor")
     public void updateUnusualUser(int chainId, int groupId, String userName, String address) {
         log.info("start updateUnusualUser address:{}", address);
-        parserMapper.updateUnusualUser(TableName.PARSER.getTableName(chainId, groupId), userName,
-                address);
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
+        // update db user
+        parserMapper.updateUnusualUser(tableName, userName, address);
+        // update es user
+        List<TbParser> list = parserMapper.queryListByUserAddress(tableName, address);
+        for (TbParser tbParser : list) {
+            updateEs(chainId, groupId, tbParser);
+        }
     }
 
     /**
@@ -153,26 +163,33 @@ public class ParserService {
      * parser unusual contract.
      */
     public void updateUnusualContract(int chainId, int groupId, String transHash) {
+        TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId, transHash);
+        if (ObjectUtils.isEmpty(tbReceipt)) {
+            return;
+        }
+        TransactionReceipt receipt =
+                JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(), TransactionReceipt.class);
+        ContractParserResult contractResult = parserContract(chainId, groupId, receipt);
+        // update parser info
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
+        parserMapper.updateUnusualContract(tableName, contractResult);
+        // update es
+        TbParser tbParser = parserMapper.queryByTxHash(tableName, transHash);
+        updateEs(chainId, groupId, tbParser);
+    }
+
+    /**
+     * update es info.
+     */
+    public void updateEs(int chainId, int groupId, TbParser tbParser) {
         try {
-            TbReceipt tbReceipt = receiptService.getTbReceiptByHash(chainId, groupId, transHash);
-            if (ObjectUtils.isEmpty(tbReceipt)) {
-                return;
-            }
-            TransactionReceipt receipt = JacksonUtils.stringToObj(tbReceipt.getReceiptDetail(),
-                    TransactionReceipt.class);
-            ContractParserResult contractResult = parserContract(chainId, groupId, receipt);
-            // update parser info
-            String tableName = TableName.PARSER.getTableName(chainId, groupId);
-            parserMapper.updateUnusualContract(tableName, contractResult);
-            // update es
-            TbParser tbParser = parserMapper.queryByTxHash(tableName, transHash);
             EsParser esParser = new EsParser();
             BeanUtils.copyProperties(tbParser, esParser);
             esParser.setChainId(chainId);
             esParser.setGroupId(groupId);
-            esCurdService.update(tableService.getDbName(), transHash, esParser);
+            esCurdService.update(tableService.getDbName(), tbParser.getTransHash(), esParser);
         } catch (Exception ex) {
-            log.error("fail updateUnusualContract. transHash:{}", transHash, ex);
+            log.error("fail updateEs. transHash:{}", tbParser.getTransHash(), ex);
         }
     }
 
