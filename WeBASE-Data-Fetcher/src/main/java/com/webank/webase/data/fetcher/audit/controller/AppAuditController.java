@@ -11,10 +11,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher.audit;
+package com.webank.webase.data.fetcher.audit.controller;
 
-import com.webank.webase.data.fetcher.audit.entity.AuditInfo;
-import com.webank.webase.data.fetcher.audit.entity.TbAuditInfo;
+import com.webank.webase.data.fetcher.audit.entity.AppAuditInfo;
+import com.webank.webase.data.fetcher.audit.entity.TbAppAudit;
+import com.webank.webase.data.fetcher.audit.service.AppAuditService;
 import com.webank.webase.data.fetcher.base.code.ConstantCode;
 import com.webank.webase.data.fetcher.base.controller.BaseController;
 import com.webank.webase.data.fetcher.base.entity.BasePageResponse;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -41,24 +43,24 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Log4j2
 @RestController
-@RequestMapping("audit")
-public class AuditController extends BaseController {
+@RequestMapping("appAudit")
+public class AppAuditController extends BaseController {
 
     @Autowired
-    private AuditService auditService;
+    private AppAuditService appAuditService;
 
     /**
      * add a new auditInfo
      */
     @PostMapping("/add")
-    public BaseResponse newAuditInfo(@RequestBody @Valid AuditInfo auditInfo,
+    public BaseResponse newAuditInfo(@RequestBody @Valid AppAuditInfo appAuditInfo,
             BindingResult result) {
         checkBindResult(result);
         Instant startTime = Instant.now();
         log.info("start newAuditInfo.");
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        TbAuditInfo tbAuditInfo = auditService.newAuditInfo(auditInfo);
-        baseResponse.setData(tbAuditInfo);
+        TbAppAudit tbAppAudit = appAuditService.newAuditInfo(appAuditInfo);
+        baseResponse.setData(tbAppAudit);
         log.info("end newAuditInfo useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
@@ -72,8 +74,8 @@ public class AuditController extends BaseController {
         Instant startTime = Instant.now();
         log.info("start confirmAuditInfo.");
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
-        TbAuditInfo tbAuditInfo = auditService.confirmAuditInfo(id);
-        baseResponse.setData(tbAuditInfo);
+        TbAppAudit tbAppAudit = appAuditService.confirmAuditInfo(id);
+        baseResponse.setData(tbAppAudit);
         log.info("end confirmAuditInfo useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
@@ -84,21 +86,23 @@ public class AuditController extends BaseController {
      */
     @GetMapping("/list/{pageNumber}/{pageSize}")
     public BasePageResponse queryAuditInfoList(@PathVariable("pageNumber") Integer pageNumber,
-            @PathVariable("pageSize") Integer pageSize) {
+            @PathVariable("pageSize") Integer pageSize,
+            @RequestParam(value = "chainId", required = false) Integer chainId) {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start queryAuditInfoList.");
 
         // param
-        int count = auditService.getAuditInfoCount();
+        BaseQueryParam queryParam = new BaseQueryParam();
+        queryParam.setChainId(chainId);
+        int count = appAuditService.getAuditInfoCount(queryParam);
         pagesponse.setTotalCount(count);
         if (count > 0) {
-            BaseQueryParam queryParam = new BaseQueryParam();
             Integer start =
                     Optional.ofNullable(pageNumber).map(page -> (page - 1) * pageSize).orElse(null);
             queryParam.setStart(start);
             queryParam.setPageSize(pageSize);
-            List<TbAuditInfo> list = auditService.getAuditInfoList(queryParam);
+            List<TbAppAudit> list = appAuditService.getAuditInfoList(queryParam);
             pagesponse.setData(list);
         }
 
@@ -117,7 +121,7 @@ public class AuditController extends BaseController {
         BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
 
         // remove
-        auditService.removeAuditInfo(id);
+        appAuditService.removeAuditInfo(id);
 
         log.info("end removeAuditInfo useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());

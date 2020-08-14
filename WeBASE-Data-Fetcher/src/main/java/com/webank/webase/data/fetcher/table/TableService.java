@@ -41,7 +41,8 @@ public class TableService {
      */
     public void newCommonTable() {
         tableMapper.createTbKeyword();
-        tableMapper.createTbWarningInfo();
+        tableMapper.createTbTransAudit();
+        tableMapper.createTbAppAudit();
     }
 
     /**

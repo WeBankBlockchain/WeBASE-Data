@@ -11,24 +11,24 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher.table;
+package com.webank.webase.data.fetcher.audit.entity;
 
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
-@Repository
-public interface TableMapper {
-
-    int createTbKeyword();
-
-    int createTbTransAudit();
-    
-    int createTbAppAudit();
-
-    List<String> queryTables(@Param("dbName") String dbName, @Param("tableName") String tableName);
-
-    int dropTable(@Param("dbName") String dbName, @Param("tableName") String tableName);
-
-    int deleteByTableName(@Param("tableName") String tableName);
+@Data
+public class AppAuditInfo {
+    @NotNull
+    private Integer chainId;
+    @NotNull
+    private Integer groupId;
+    @NotBlank
+    @NotBlank
+    @Length(min=1, max=1024)
+    private String comment;
+    private String chainName;
+    private String appName;
+    private String appVersion;
 }

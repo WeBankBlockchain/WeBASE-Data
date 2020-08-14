@@ -303,14 +303,15 @@
     </select>
 
     <select id="queryContractList" resultType="com.webank.webase.data.fetcher.group.entity.ContractInfoDto">
-        select contract_name as contractName,contract_address as contractAddress
-        from ${tableName} 
+        select t1.contract_name as contractName,t1.contract_address as contractAddress,t2.contract_abi as contractAbi
+        from ${tableName} t1
+        left join tb_contract t2 on (t1.contract_name = t2.contract_name)
         where 1=1
         <if test="param.comVariable != null and param.comVariable != ''">
-            and contract_name = #{param.comVariable}
-            or contract_address = #{param.comVariable}
+            and t1.contract_name = #{param.comVariable}
+            or t1.contract_address = #{param.comVariable}
         </if>
-        group by contract_address
+        group by t1.contract_address
         <if test="param.start != null and param.pageSize != null">
             limit #{param.start},#{param.pageSize}
         </if>
