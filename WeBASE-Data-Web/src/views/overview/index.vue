@@ -7,17 +7,17 @@
                     <el-col :xs='24' :sm="24" :md="11" :lg="10" :xl="8">
                         <div class="overview-item" style="font-size:0" v-for="item in detailsList" :key='item.label' @click="goDetailRouter(item)" :class="item.bg">
                             <div class="overview-item-img">
-                                <svg class="overview-item-svg" aria-hidden="true" v-if='item.icon == "#wbs-icon-user-icon"'>
-                                    <use xlink:href="#wbs-icon-user-icon"></use>
+                                <svg class="overview-item-svg" aria-hidden="true" v-if='item.icon == "#wbs-icon-icon-user-copy"'>
+                                    <use xlink:href="#wbs-icon-icon-user-copy"></use>
                                 </svg>
-                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-contract"'>
-                                    <use xlink:href="#wbs-icon-contract"></use>
+                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-icon-contract-copy"'>
+                                    <use xlink:href="#wbs-icon-icon-contract-copy"></use>
                                 </svg>
-                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-block"'>
-                                    <use xlink:href="#wbs-icon-block"></use>
+                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-icon-block-copy"'>
+                                    <use xlink:href="#wbs-icon-icon-block-copy"></use>
                                 </svg>
-                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-transation"'>
-                                    <use xlink:href="#wbs-icon-transation"></use>
+                                <svg class="overview-item-svg" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-icon-transaction-copy"'>
+                                    <use xlink:href="#wbs-icon-icon-transaction-copy"></use>
                                 </svg>
                             </div>
                             <div class="overview-item-content">
@@ -171,28 +171,28 @@ export default {
                     label: "用户数量",
                     name: "userCount",
                     value: 0,
-                    icon: "#wbs-icon-user-icon",
+                    icon: "#wbs-icon-icon-user-copy",
                     bg: 'node-bg'
                 },
                 {
                     label: "已部署的智能合约",
                     name: "contractCount",
                     value: 0,
-                    icon: "#wbs-icon-contract",
+                    icon: "#wbs-icon-icon-contract-copy",
                     bg: 'contract-bg'
                 },
                 {
                     label: "区块数量",
                     name: "blockNumber",
                     value: 0,
-                    icon: "#wbs-icon-block",
+                    icon: "#wbs-icon-icon-block-copy",
                     bg: "block-bg"
                 },
                 {
                     label: "交易数量",
                     name: "txnCount",
                     value: 0,
-                    icon: "#wbs-icon-transation",
+                    icon: "#wbs-icon-icon-transaction-copy",
                     bg: 'transation-bg'
                 }
             ],
