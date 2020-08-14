@@ -11,18 +11,24 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher.chain.entity;
+package com.webank.webase.data.fetcher.audit.entity;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 @Data
-public class ChainInfoDto {
+public class AppAuditInfo {
+    @NotNull
     private Integer chainId;
+    @NotNull
+    private Integer groupId;
+    @NotBlank
+    @NotBlank
+    @Length(min=1, max=1024)
+    private String comment;
     private String chainName;
-    private Integer chainType;
-    private String attribute;
-    private String description;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
+    private String appName;
+    private String appVersion;
 }

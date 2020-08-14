@@ -13,7 +13,7 @@
  */
 package com.webank.webase.data.fetcher.scheduler;
 
-import com.webank.webase.data.fetcher.audit.AuditService;
+import com.webank.webase.data.fetcher.audit.service.TransAuditService;
 import com.webank.webase.data.fetcher.keyword.KeywordService;
 import com.webank.webase.data.fetcher.keyword.entity.TbKeyword;
 import java.time.Duration;
@@ -33,7 +33,7 @@ public class KeywordAuditTask {
     @Autowired
     private KeywordService keywordService;
     @Autowired
-    private AuditService auditService;
+    private TransAuditService transAuditService;
 
     @Scheduled(cron = "${constant.keywordAuditCron}")
     public void taskStart() {
@@ -53,7 +53,8 @@ public class KeywordAuditTask {
         }
         // count down , make sure all element finished
         CountDownLatch latch = new CountDownLatch(list.size());
-        list.stream().forEach(element -> auditService.auditProcess(latch, element.getKeyword()));
+        list.stream()
+                .forEach(element -> transAuditService.auditProcess(latch, element.getKeyword()));
         try {
             latch.await();
         } catch (InterruptedException ex) {

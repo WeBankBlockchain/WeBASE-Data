@@ -11,6 +11,8 @@
             jdbcType="VARCHAR" property="chainName" />
         <result column="chain_type" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="chainType" />
+        <result column="attribute" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="attribute" />
         <result column="description" javaType="java.lang.String"
             jdbcType="VARCHAR" property="description" />
         <result column="create_time" javaType="java.time.LocalDateTime"

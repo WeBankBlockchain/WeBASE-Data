@@ -3,7 +3,73 @@
 
 ## 1 区块链管理模块
 
-### 1.1 查询链列表 
+### 1.1 全量数据概览 
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/chain/general**
+- 请求方式：GET
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+无
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/chain/general
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号 | 输出参数      | 类型   |      | 备注                       |
+| ---- | ------------- | ------ | ---- | -------------------------- |
+| 1    | code          | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2    | message       | String | 否   | 描述                       |
+| 3    | data          | object | 否   | 返回信息实体               |
+| 2.1  | chainCount    | Int    | 是   | 链数量                     |
+| 2.2  | groupCount    | int    | 否   | 群组数量                   |
+| 2.3  | blockCount    | int    | 否   | 区块数量                   |
+| 2.4  | txnCount      | int    | 否   | 交易数量                   |
+| 2.5  | userCount     | int    | 否   | 用户数量                   |
+| 2.6  | contractCount | int    | 否   | 合约数量                   |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "chainCount": 1,
+    "groupCount": 2,
+    "blockCount": 360,
+    "txnCount": 360,
+    "userCount": 28,
+    "contractCount": 77
+  }
+}
+```
+
+- 失败：
+
+```
+{
+   "code": 102000,
+   "message": "system exception",
+   "data": {}
+}
+```
+
+### 1.2 查询链列表 
 
 #### 传输协议
 
@@ -38,9 +104,10 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
 | 4.1.1 | chainId     | Int           | 否   | 链编号                     |
 | 4.1.2 | chainName   | String        | 否   | 链名称                     |
 | 4.1.3 | chainType   | Int           | 否   | 链类型（0-非国密，1-国密） |
-| 4.1.4 | description | String        | 是   | 备注                       |
-| 4.1.5 | createTime  | LocalDateTime | 否   | 落库时间                   |
-| 4.1.6 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
+| 4.1.4 | attribute   | String        | 是   | 属性，默认“fisco bcos”     |
+| 4.1.5 | description | String        | 是   | 备注                       |
+| 4.1.6 | createTime  | LocalDateTime | 否   | 落库时间                   |
+| 4.1.7 | modifyTime  | LocalDateTime | 否   | 修改时间                   |
 
 ***2）出参示例***
 
@@ -55,6 +122,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
         "chainId": 1,
         "chainName": "链一",
         "chainType": 0,
+        "attribute": "fisco bcos",
         "description": "test"
         "createTime": "2019-02-14 17:47:00",
         "modifyTime": "2019-03-15 11:14:29"
@@ -774,6 +842,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/contractList/1/1/1/2
 | 5.1   |                 | Object |      | 返回信息实体               |
 | 5.1.1 | contractName    | String | 否   | 合约名称                   |
 | 5.1.2 | contractAddress | String | 否   | 合约地址                   |
+| 5.1.3 | contractAbi     | String | 是   | 合约abi文件内容            |
 
 ***2）出参示例***
 
@@ -786,14 +855,11 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/contractList/1/1/1/2
   "data": [
     {
       "contractName": "ConsensusPrecompiled",
-      "contractAddress": "0x0000000000000000000000000000000000001003"
-    },
-    {
-      "contractName": "CNSPrecompiled",
-      "contractAddress": "0x0000000000000000000000000000000000001004"
+      "contractAddress": "0x0000000000000000000000000000000000001003",
+      "contractAbi": "[{\"constant\":false,\"inputs\":[{\"name\":\"nodeID\",\"type\":\"string\"}],\"name\":\"addObserver\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"nodeID\",\"type\":\"string\"}],\"name\":\"remove\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"nodeID\",\"type\":\"string\"}],\"name\":\"addSealer\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
     }
   ],
-  "totalCount": 58
+  "totalCount": 1
 }
 ```
 
@@ -1297,14 +1363,14 @@ http://localhost:5010/WeBASE-Data-Fetcher/keywords/1
 }
 ```
 
-## 5 告警信息管理模块
+## 5 交易告警信息管理模块
 
 ### 5.1 新增告警信息
 
 #### 传输协议
 
 - 网络传输协议：使用HTTP协议
-- 请求地址： **/audit/add**
+- 请求地址： **/transAudit/add**
 - 请求方式：POST
 - 请求头：Content-type: application/json
 - 返回格式：JSON
@@ -1313,27 +1379,29 @@ http://localhost:5010/WeBASE-Data-Fetcher/keywords/1
 
 ***1）入参表***
 
-| 序号 | 输入参数  | 类型   | 可为空 | 备注     |
-| ---- | --------- | ------ | ------ | -------- |
-| 1    | chainId   | Int    | 否     | 链编号   |
-| 2    | groupId   | Int    | 否     | 群组编号 |
-| 3    | keyword   | String | 否     | 关键字   |
-| 4    | comment   | String | 否     | 监管意见 |
-| 5    | txHash    | String | 否     | 交易hash |
-| 6    | address   | String | 否     | 用户地址 |
-| 7    | chainName | String | 是     | 链名称   |
-| 8    | appName   | String | 是     | 应用名称 |
+| 序号 | 输入参数  | 类型   | 可为空 | 备注                              |
+| ---- | --------- | ------ | ------ | --------------------------------- |
+| 1    | chainId   | Int    | 否     | 链编号                            |
+| 2    | groupId   | Int    | 否     | 群组编号                          |
+| 3    | type      | Int    | 否     | 信息来源类型，1-关键字 2-交易列表 |
+| 4    | keyword   | String | 是     | 关键字，type为1是必填             |
+| 5    | comment   | String | 否     | 监管意见                          |
+| 6    | txHash    | String | 否     | 交易hash                          |
+| 7    | address   | String | 否     | 用户地址                          |
+| 8    | chainName | String | 是     | 链名称                            |
+| 9    | appName   | String | 是     | 应用名称                          |
 
 ***2）入参示例***
 
 ```
-http://localhost:5010/WeBASE-Data-Fetcher/audit/add
+http://localhost:5010/WeBASE-Data-Fetcher/transAudit/add
 ```
 
 ```
 {
   "chainId": 1,
   "groupId": 1,
+  "type": 1,
   "keyword": "禽流感",
   "comment": "停止售卖",
   "txHash": "0x8e8b15e87f09e35f4ce811fb61b0bbd730eab0cfe63a350e2bab6f7a2bfe36b0",
@@ -1347,23 +1415,24 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/add
 
 ***1）出参表***
 
-| 序号 | 输出参数   | 类型          |      | 备注                        |
-| ---- | ---------- | ------------- | ---- | --------------------------- |
-| 1    | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
-| 2    | message    | String        | 否   | 描述                        |
-| 3    | data       | Object        |      | 信息对象                    |
-| 3.1  | id         | Int           | 否   | 编号                        |
-| 3.2  | chainId    | Int           | 否   | 链编号                      |
-| 3.3  | groupId    | Int           | 否   | 群组编号                    |
-| 3.4  | keyword    | String        | 否   | 关键字                      |
-| 3.5  | comment    | String        | 否   | 监管意见                    |
-| 3.6  | txHash     | String        | 否   | 交易hash                    |
-| 3.7  | address    | String        | 否   | 用户地址                    |
-| 3.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
-| 3.9  | chainName  | String        | 是   | 链名称                      |
-| 3.10 | appName    | String        | 是   | 应用名称                    |
-| 3.11 | createTime | LocalDateTime | 否   | 落库时间                    |
-| 3.12 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+| 序号 | 输出参数   | 类型          |      | 备注                              |
+| ---- | ---------- | ------------- | ---- | --------------------------------- |
+| 1    | code       | Int           | 否   | 返回码，0：成功 其它：失败        |
+| 2    | message    | String        | 否   | 描述                              |
+| 3    | data       | Object        |      | 信息对象                          |
+| 3.1  | id         | Int           | 否   | 编号                              |
+| 3.2  | chainId    | Int           | 否   | 链编号                            |
+| 3.3  | groupId    | Int           | 否   | 群组编号                          |
+| 3.4  | type       | Int           | 否   | 信息来源类型，1-关键字 2-交易列表 |
+| 3.5  | keyword    | String        | 否   | 关键字                            |
+| 3.6  | comment    | String        | 否   | 监管意见                          |
+| 3.7  | txHash     | String        | 否   | 交易hash                          |
+| 3.8  | address    | String        | 否   | 用户地址                          |
+| 3.9  | status     | Int           | 否   | 状态（1-未处理， 2-已处理）       |
+| 3.10 | chainName  | String        | 是   | 链名称                            |
+| 3.11 | appName    | String        | 是   | 应用名称                          |
+| 3.12 | createTime | LocalDateTime | 否   | 落库时间                          |
+| 3.13 | modifyTime | LocalDateTime | 否   | 修改时间                          |
 
 ***2）出参示例***
 
@@ -1377,6 +1446,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/add
     "id": 1,
     "chainId": 1,
     "groupId": 1,
+    "type": 1,
     "keyword": "禽流感",
     "comment": "停止售卖",
     "txHash": "0x8e8b15e87f09e35f4ce811fb61b0bbd730eab0cfe63a350e2bab6f7a2bfe36b0",
@@ -1405,7 +1475,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/add
 #### 传输协议
 
 - 网络传输协议：使用HTTP协议
-- 请求地址：**/audit/list/{pageNumber}/{pageSize}**
+- 请求地址：**/transAudit/list/{pageNumber}/{pageSize}?status={status}&chainId={chainId}&groupId={groupId}**
 - 请求方式：GET
 - 返回格式：JSON
 
@@ -1413,40 +1483,44 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/add
 
 ***1）入参表***
 
-| 序号 | 输入参数   | 类型 | 可为空 | 备注       |
-| ---- | ---------- | ---- | ------ | ---------- |
-| 1    | pageNumber | Int  | 否     | 当前页码   |
-| 2    | pageSize   | Int  | 否     | 每页记录数 |
+| 序号 | 输入参数   | 类型 | 可为空 | 备注                        |
+| ---- | ---------- | ---- | ------ | --------------------------- |
+| 1    | pageNumber | Int  | 否     | 当前页码                    |
+| 2    | pageSize   | Int  | 否     | 每页记录数                  |
+| 3    | status     | Int  | 是     | 状态（1-未处理， 2-已处理） |
+| 4    | chainId    | Int  | 是     | 链编号                      |
+| 5    | groupId    | Int  | 是     | 群组编号                    |
 
 ***2）入参示例***
 
 ```
-http://localhost:5010/WeBASE-Data-Fetcher/audit/list/1/2
+http://localhost:5010/WeBASE-Data-Fetcher/transAudit/list/1/2
 ```
 
 #### 返回参数 
 
 ***1）出参表***
 
-| 序号   | 输出参数   | 类型          |      | 备注                        |
-| ------ | ---------- | ------------- | ---- | --------------------------- |
-| 1      | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
-| 2      | message    | String        | 否   | 描述                        |
-| 3      | totalCount | Int           | 否   | 总记录数                    |
-| 4      | data       | List          | 否   | 列表                        |
-| 4.1    |            | Object        |      | 对象                        |
-| 4.1.1  | id         | Int           | 否   | 编号                        |
-| 4.1.2  | chainId    | Int           | 否   | 链编号                      |
-| 4.1.3  | groupId    | Int           | 否   | 群组编号                    |
-| 4.1.4  | keyword    | String        | 否   | 关键字                      |
-| 4.1.5  | comment    | String        | 是   | 监管意见                    |
-| 4.1.6  | txHash     | String        | 否   | 交易hash                    |
-| 4.1.7  | address    | String        | 否   | 用户地址                    |
-| 4.1.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
-| 4.1.9  | chainName  | String        | 是   | 链名称                      |
-| 4.1.10 | appName    | String        | 是   | 应用名称                    |
-| 4.1.11 | createTime | LocalDateTime | 否   | 落库时间                    |
-| 4.1.12 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+| 序号   | 输出参数   | 类型          |      | 备注                              |
+| ------ | ---------- | ------------- | ---- | --------------------------------- |
+| 1      | code       | Int           | 否   | 返回码，0：成功 其它：失败        |
+| 2      | message    | String        | 否   | 描述                              |
+| 3      | totalCount | Int           | 否   | 总记录数                          |
+| 4      | data       | List          | 否   | 列表                              |
+| 4.1    |            | Object        |      | 对象                              |
+| 4.1.1  | id         | Int           | 否   | 编号                              |
+| 4.1.2  | chainId    | Int           | 否   | 链编号                            |
+| 4.1.3  | groupId    | Int           | 否   | 群组编号                          |
+| 4.1.4  | type       | Int           | 否   | 信息来源类型，1-关键字 2-交易列表 |
+| 4.1.5  | keyword    | String        | 是   | 关键字                            |
+| 4.1.6  | comment    | String        | 是   | 监管意见                          |
+| 4.1.7  | txHash     | String        | 否   | 交易hash                          |
+| 4.1.8  | address    | String        | 否   | 用户地址                          |
+| 4.1.9  | status     | Int           | 否   | 状态（1-未处理， 2-已处理）       |
+| 4.1.10 | chainName  | String        | 是   | 链名称                            |
+| 4.1.11 | appName    | String        | 是   | 应用名称                          |
+| 4.1.12 | createTime | LocalDateTime | 否   | 落库时间                          |
+| 4.1.13 | modifyTime | LocalDateTime | 否   | 修改时间                          |
 
 ***2）出参示例***
 
@@ -1461,6 +1535,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/list/1/2
       "id": 1,
       "chainId": 1,
       "groupId": 1,
+      "type": 1,
       "keyword": "禽流感",
       "comment": "停止售卖",
       "txHash": "0x8e8b15e87f09e35f4ce811fb61b0bbd730eab0cfe63a350e2bab6f7a2bfe36b0",
@@ -1491,7 +1566,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/list/1/2
 #### 传输协议
 
 - 网络传输协议：使用HTTP协议
-- 请求地址： **/audit/confirm/{id}**
+- 请求地址： **/transAudit/confirm/{id}**
 - 请求方式：POST
 - 请求头：Content-type: application/json
 - 返回格式：JSON
@@ -1507,30 +1582,31 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/list/1/2
 ***2）入参示例***
 
 ```
-http://localhost:5010/WeBASE-Data-Fetcher/audit/confirm/1
+http://localhost:5010/WeBASE-Data-Fetcher/transAudit/confirm/1
 ```
 
 #### 返回参数
 
 ***1）出参表***
 
-| 序号 | 输出参数   | 类型          |      | 备注                        |
-| ---- | ---------- | ------------- | ---- | --------------------------- |
-| 1    | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
-| 2    | message    | String        | 否   | 描述                        |
-| 3    | data       | Object        |      | 信息对象                    |
-| 3.1  | id         | Int           | 否   | 编号                        |
-| 3.2  | chainId    | Int           | 否   | 链编号                      |
-| 3.3  | groupId    | Int           | 否   | 群组编号                    |
-| 3.4  | keyword    | String        | 否   | 关键字                      |
-| 3.5  | comment    | String        | 否   | 监管意见                    |
-| 3.6  | txHash     | String        | 否   | 交易hash                    |
-| 3.7  | address    | String        | 否   | 用户地址                    |
-| 3.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
-| 3.9  | chainName  | String        | 是   | 链名称                      |
-| 3.10 | appName    | String        | 是   | 应用名称                    |
-| 3.11 | createTime | LocalDateTime | 否   | 落库时间                    |
-| 3.12 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+| 序号 | 输出参数   | 类型          |      | 备注                              |
+| ---- | ---------- | ------------- | ---- | --------------------------------- |
+| 1    | code       | Int           | 否   | 返回码，0：成功 其它：失败        |
+| 2    | message    | String        | 否   | 描述                              |
+| 3    | data       | Object        |      | 信息对象                          |
+| 3.1  | id         | Int           | 否   | 编号                              |
+| 3.2  | chainId    | Int           | 否   | 链编号                            |
+| 3.3  | groupId    | Int           | 否   | 群组编号                          |
+| 3.4  | type       | Int           | 否   | 信息来源类型，1-关键字 2-交易列表 |
+| 3.5  | keyword    | String        | 是   | 关键字                            |
+| 3.6  | comment    | String        | 否   | 监管意见                          |
+| 3.7  | txHash     | String        | 否   | 交易hash                          |
+| 3.8  | address    | String        | 否   | 用户地址                          |
+| 3.9  | status     | Int           | 否   | 状态（1-未处理， 2-已处理）       |
+| 3.10 | chainName  | String        | 是   | 链名称                            |
+| 3.11 | appName    | String        | 是   | 应用名称                          |
+| 3.12 | createTime | LocalDateTime | 否   | 落库时间                          |
+| 3.13 | modifyTime | LocalDateTime | 否   | 修改时间                          |
 
 ***2）出参示例***
 
@@ -1544,6 +1620,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/confirm/1
     "id": 1,
     "chainId": 1,
     "groupId": 1,
+    "type": 1,
     "keyword": "禽流感",
     "comment": "停止售卖",
     "txHash": "0x8e8b15e87f09e35f4ce811fb61b0bbd730eab0cfe63a350e2bab6f7a2bfe36b0",
@@ -1572,7 +1649,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/confirm/1
 #### 传输协议
 
 - 网络传输协议：使用HTTP协议
-- 请求地址：**/audit/{id}**
+- 请求地址：**/transAudit/{id}**
 - 请求方式：DELETE
 - 请求头：Content-type: application/json
 - 返回格式：JSON
@@ -1588,7 +1665,318 @@ http://localhost:5010/WeBASE-Data-Fetcher/audit/confirm/1
 ***2）入参示例***
 
 ```
-http://localhost:5010/WeBASE-Data-Fetcher/audit/1
+http://localhost:5010/WeBASE-Data-Fetcher/transAudit/1
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号 | 输出参数 | 类型   |      | 备注                       |
+| ---- | -------- | ------ | ---- | -------------------------- |
+| 1    | code     | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2    | message  | String | 否   | 描述                       |
+| 3    | data     | object | 是   | 返回信息实体（空）         |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": null
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+## 6 应用告警信息管理模块
+
+### 6.1 新增告警信息
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址： **/appAudit/add**
+- 请求方式：POST
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数   | 类型   | 可为空 | 备注       |
+| ---- | ---------- | ------ | ------ | ---------- |
+| 1    | chainId    | Int    | 否     | 链编号     |
+| 2    | groupId    | Int    | 否     | 群组编号   |
+| 3    | comment    | String | 否     | 监管意见   |
+| 4    | chainName  | String | 是     | 链名称     |
+| 5    | appName    | String | 是     | 应用名称   |
+| 6    | appVersion | String | 是     | 应用版本号 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/appAudit/add
+```
+
+```
+{
+  "chainId": 1,
+  "groupId": 1,
+  "comment": "停止",
+  "chainName": "存证链",
+  "appName": "文件存证",
+  "appVersion": "1.0.0"
+}
+```
+
+#### 返回参数
+
+***1）出参表***
+
+| 序号 | 输出参数   | 类型          |      | 备注                        |
+| ---- | ---------- | ------------- | ---- | --------------------------- |
+| 1    | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
+| 2    | message    | String        | 否   | 描述                        |
+| 3    | data       | Object        |      | 信息对象                    |
+| 3.1  | id         | Int           | 否   | 编号                        |
+| 3.2  | chainId    | Int           | 否   | 链编号                      |
+| 3.3  | groupId    | Int           | 否   | 群组编号                    |
+| 3.4  | comment    | String        | 否   | 监管意见                    |
+| 3.5  | chainName  | String        | 是   | 链名称                      |
+| 3.6  | appName    | String        | 是   | 应用名称                    |
+| 3.7  | appVersion | String        | 是   | 应用版本号                  |
+| 3.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
+| 3.9  | createTime | LocalDateTime | 否   | 落库时间                    |
+| 3.10 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "chainId": 1,
+    "groupId": 1,
+    "comment": "停止",
+    "chainName": "存证链",
+    "appName": "文件存证",
+    "appVersion": "1.0.0",
+    "status": 1,
+    "createTime": "2020-07-30 20:19:39",
+    "modifyTime": "2020-07-30 20:19:39"
+  }
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 6.2 获取告警信息列表 
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/appAudit/list/{pageNumber}/{pageSize}?chainId={chainId}**
+- 请求方式：GET
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数   | 类型 | 可为空 | 备注       |
+| ---- | ---------- | ---- | ------ | ---------- |
+| 1    | pageNumber | Int  | 否     | 当前页码   |
+| 2    | pageSize   | Int  | 否     | 每页记录数 |
+| 3    | chainId    | Int  | 是     | 链编号     |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/appAudit/list/1/2
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号   | 输出参数   | 类型          |      | 备注                        |
+| ------ | ---------- | ------------- | ---- | --------------------------- |
+| 1      | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
+| 2      | message    | String        | 否   | 描述                        |
+| 3      | totalCount | Int           | 否   | 总记录数                    |
+| 4      | data       | List          | 否   | 列表                        |
+| 4.1    |            | Object        |      | 对象                        |
+| 4.1.1  | id         | Int           | 否   | 编号                        |
+| 4.1.2  | chainId    | Int           | 否   | 链编号                      |
+| 4.1.3  | groupId    | Int           | 否   | 群组编号                    |
+| 4.1.4  | comment    | String        | 否   | 监管意见                    |
+| 4.1.5  | chainName  | String        | 是   | 链名称                      |
+| 4.1.6  | appName    | String        | 是   | 应用名称                    |
+| 4.1.7  | appVersion | String        | 是   | 应用版本号                  |
+| 4.1.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
+| 4.1.9  | createTime | LocalDateTime | 否   | 落库时间                    |
+| 4.1.10 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "chainId": 1,
+      "groupId": 1,
+      "comment": "停止",
+      "chainName": "存证链",
+      "appName": "文件存证",
+      "appVersion": "1.0.0",
+      "status": 1,
+      "createTime": "2020-07-30 20:19:39",
+      "modifyTime": "2020-07-30 20:19:39"
+    }
+  ],
+  "totalCount": 1
+}
+```
+
+- 失败：
+
+```
+{
+   "code": 102000,
+   "message": "system exception",
+   "data": {}
+}
+```
+
+### 6.3 确认处理状态
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址： **/appAudit/confirm/{id}**
+- 请求方式：POST
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型 | 可为空 | 备注         |
+| ---- | -------- | ---- | ------ | ------------ |
+| 1    | id       | Int  | 否     | 告警信息编号 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/appAudit/confirm/1
+```
+
+#### 返回参数
+
+***1）出参表***
+
+| 序号 | 输出参数   | 类型          |      | 备注                        |
+| ---- | ---------- | ------------- | ---- | --------------------------- |
+| 1    | code       | Int           | 否   | 返回码，0：成功 其它：失败  |
+| 2    | message    | String        | 否   | 描述                        |
+| 3    | data       | Object        |      | 信息对象                    |
+| 3.1  | id         | Int           | 否   | 编号                        |
+| 3.2  | chainId    | Int           | 否   | 链编号                      |
+| 3.3  | groupId    | Int           | 否   | 群组编号                    |
+| 3.4  | comment    | String        | 否   | 监管意见                    |
+| 3.5  | chainName  | String        | 是   | 链名称                      |
+| 3.6  | appName    | String        | 是   | 应用名称                    |
+| 3.7  | appVersion | String        | 是   | 应用版本号                  |
+| 3.8  | status     | Int           | 否   | 状态（1-未处理， 2-已处理） |
+| 3.9  | createTime | LocalDateTime | 否   | 落库时间                    |
+| 3.10 | modifyTime | LocalDateTime | 否   | 修改时间                    |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "chainId": 1,
+    "groupId": 1,
+    "comment": "停止",
+    "chainName": "存证链",
+    "appName": "文件存证",
+    "appVersion": "1.0.0",
+    "status": 2,
+    "createTime": "2020-07-30 20:19:39",
+    "modifyTime": "2020-07-30 20:22:06"
+  }
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 6.4 删除告警信息
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/appAudit/{id}**
+- 请求方式：DELETE
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型 | 可为空 | 备注         |
+| ---- | -------- | ---- | ------ | ------------ |
+| 1    | id       | Int  | 否     | 告警信息编号 |
+
+***2）入参示例***
+
+```
+http://localhost:5010/WeBASE-Data-Fetcher/appAudit/1
 ```
 
 #### 返回参数 

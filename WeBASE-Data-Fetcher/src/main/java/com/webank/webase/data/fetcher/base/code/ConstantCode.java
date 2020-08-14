@@ -49,6 +49,8 @@ public class ConstantCode {
     
     /* audit code */
     public static final RetCode AUDIT_ID_NOT_EXISTS = RetCode.mark(202401, "audit id not exists");
-    public static final RetCode AUDIT_EXISTS = RetCode.mark(202402, "audit inffo exists");
+    public static final RetCode AUDIT_EXISTS = RetCode.mark(202402, "audit info exists");
     public static final RetCode SAVE_AUDIT_FAIL = RetCode.mark(202403, "save audit info fail");
+    public static final RetCode INVALID_AUDIT_TYPE = RetCode.mark(202404, "invalid audit type");
+    public static final RetCode KEYWORD_ID_EMPTY = RetCode.mark(202405, "keyword can not be empty");
 }

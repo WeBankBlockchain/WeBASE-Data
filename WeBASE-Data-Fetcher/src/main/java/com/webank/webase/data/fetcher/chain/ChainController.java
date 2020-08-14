@@ -13,11 +13,12 @@
  */
 package com.webank.webase.data.fetcher.chain;
 
-
 import com.webank.webase.data.fetcher.base.code.ConstantCode;
 import com.webank.webase.data.fetcher.base.controller.BaseController;
 import com.webank.webase.data.fetcher.base.entity.BasePageResponse;
+import com.webank.webase.data.fetcher.base.entity.BaseResponse;
 import com.webank.webase.data.fetcher.chain.entity.ChainInfoDto;
+import com.webank.webase.data.fetcher.chain.entity.DataGeneral;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -37,6 +38,23 @@ public class ChainController extends BaseController {
 
     @Autowired
     private ChainService chainService;
+
+    /**
+     * query data general.
+     */
+    @GetMapping("general")
+    public BaseResponse getDataGeneral() {
+        BaseResponse pagesponse = new BaseResponse(ConstantCode.SUCCESS);
+        Instant startTime = Instant.now();
+        log.info("start getDataGeneral.");
+
+        DataGeneral data = chainService.getDataGeneral();
+        pagesponse.setData(data);
+
+        log.info("end getDataGeneral useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return pagesponse;
+    }
 
     /**
      * query chain info list.

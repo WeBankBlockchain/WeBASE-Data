@@ -13,28 +13,19 @@
  */
 package com.webank.webase.data.fetcher.audit.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
 @Data
-public class AuditInfo {
-    @NotNull
+public class TbAppAudit {
+    private Integer id;
     private Integer chainId;
-    @NotNull
     private Integer groupId;
-    @NotBlank
-    @Length(min=1, max=64)
-    private String keyword;
-    @NotBlank
-    @NotBlank
-    @Length(min=1, max=1024)
     private String comment;
-    @NotBlank
-    private String txHash;
-    @NotBlank
-    private String address;
+    private Integer status;
     private String chainName;
     private String appName;
+    private String appVersion;
+    private LocalDateTime createTime;
+    private LocalDateTime modifyTime;
 }
