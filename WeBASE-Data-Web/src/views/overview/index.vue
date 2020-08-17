@@ -50,7 +50,7 @@
                                 <span :style="{'color': textColor(scope.row[head.enName])}" class=" font-6">{{nodesStatus(scope.row[head.enName])}}</span>
                             </span>
                             <span v-else-if="head.enName === 'nodeId'">
-                                <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(scope.row[head.enName])" title="复制"></i>
+                                <i class="el-icon-copy-document font-12" @click="copyNodeIdKey(scope.row[head.enName])" title="复制"></i>
                                 {{scope.row[head.enName]}}
                             </span>
                             <span v-else>{{scope.row[head.enName]}}</span>
@@ -102,18 +102,18 @@
                             <div class="block-item font-color-2e384d" v-for="item in transactionList" :key='item.transHash'>
                                 <div class="block-amount">
                                     <p class="trans-hash" :title="`${item.transHash}`">
-                                        <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(item.transHash)" title='复制'></i>
+                                        <i class="el-icon-copy-document font-12" @click="copyNodeIdKey(item.transHash)" title='复制'></i>
 
                                         <span class="link" @click="goRouter('transactions', item.transHash)">{{item.transHash}} </span>
                                     </p>
                                     <p class="trans-address color-8798AD">
                                         <span :title="`${JSON.parse(item.receiptDetail)['from']}`">
-                                            <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(JSON.parse(item.receiptDetail)['from'])" title='复制'></i>
+                                            <i class="el-icon-copy-document font-12" @click="copyNodeIdKey(JSON.parse(item.receiptDetail)['from'])" title='复制'></i>
                                             {{splitAddress(JSON.parse(item.receiptDetail)['from'])}}
                                         </span>
                                         <img :src="sRight" :alt="$t('text.arrow')">
                                         <span :title="`${JSON.parse(item.receiptDetail)['to']}`">
-                                            <i class="wbs-icon-copy font-12" @click="copyNodeIdKey(JSON.parse(item.receiptDetail)['to'])" title='复制'></i>
+                                            <i class="el-icon-copy-document font-12" @click="copyNodeIdKey(JSON.parse(item.receiptDetail)['to'])" title='复制'></i>
                                             {{splitAddress(JSON.parse(item.receiptDetail)['to'])}}
                                         </span>
                                     </p>
