@@ -13,6 +13,13 @@
                         <el-table-column prop="type" label="type" align="left" :show-overflow-tooltip="true"></el-table-column>
                     </el-table>
                 </div>
+                <span class="label">output </span>
+                <div class="detail-input-content">
+                    <el-table class="input-data" :data="item.outputs" style="display:inline-block;width:100%;">
+                        <el-table-column prop="name" width="150" label="name" align="left"></el-table-column>
+                        <el-table-column prop="type" label="type" align="left" :show-overflow-tooltip="true"></el-table-column>
+                    </el-table>
+                </div>
             </div>
         </div>
     </div>
@@ -41,7 +48,7 @@ export default {
             arr = JSON.parse(this.contractAbi)
             let list = []
             arr.forEach(item => {
-                if (item.type === "function" && item.inputs.length) {
+                if (item.type === "function") {
                     list.push(item)
                 }
             })
@@ -111,11 +118,13 @@ export default {
 }
 .detail-input-content {
     display: inline-block;
-    width: 500px;
+    width: 39%;
     height: auto;
     border: 1px solid #eaedf3;
     border-radius: 4px;
     font-size: 12px;
+    vertical-align: top;
+    margin-right: 10px;
 }
 .receipt-field {
     font-weight: bold;
