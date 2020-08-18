@@ -97,27 +97,6 @@
       "unicode_decimal": 61742
     },
     {
-      "icon_id": "8965952",
-      "name": "blocks",
-      "font_class": "blocks",
-      "unicode": "e610",
-      "unicode_decimal": 58896
-    },
-    {
-      "icon_id": "9044457",
-      "name": "contract2",
-      "font_class": "contract",
-      "unicode": "e61e",
-      "unicode_decimal": 58910
-    },
-    {
-      "icon_id": "8965962",
-      "name": "transations",
-      "font_class": "transations",
-      "unicode": "e615",
-      "unicode_decimal": 58901
-    },
-    {
       "icon_id": "16559646",
       "name": "transation",
       "font_class": "h-transation-copy",
@@ -153,20 +132,6 @@
       "unicode_decimal": 60376
     },
     {
-      "icon_id": "1373",
-      "name": "订阅",
-      "font_class": "dingyue",
-      "unicode": "e600",
-      "unicode_decimal": 58880
-    },
-    {
-      "icon_id": "3758269",
-      "name": "钱币",
-      "font_class": "qianbi",
-      "unicode": "e621",
-      "unicode_decimal": 58913
-    },
-    {
       "icon_id": "5634494",
       "name": "user",
       "font_class": "user",
@@ -179,20 +144,6 @@
       "font_class": "xitongguanli",
       "unicode": "e620",
       "unicode_decimal": 58912
-    },
-    {
-      "icon_id": "9957236",
-      "name": "3.0中英文切换",
-      "font_class": "zhongyingwenqiehuan",
-      "unicode": "e71e",
-      "unicode_decimal": 59166
-    },
-    {
-      "icon_id": "6883114",
-      "name": "中英文",
-      "font_class": "zhongyingwen",
-      "unicode": "e7a3",
-      "unicode_decimal": 59299
     },
     {
       "icon_id": "337273",
@@ -459,13 +410,6 @@
       "font_class": "deploy",
       "unicode": "e631",
       "unicode_decimal": 58929
-    },
-    {
-      "icon_id": "14138150",
-      "name": "overview",
-      "font_class": "overview-copy",
-      "unicode": "f12c",
-      "unicode_decimal": 61740
     },
     {
       "icon_id": "4765958",
