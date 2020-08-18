@@ -31,11 +31,11 @@
             </div>
             <div class="search-table">
                 <el-table :data="userList" tooltip-effect="dark" v-loading="loading">
-                    <!-- <el-table-column type="expand" align="center">
+                    <el-table-column type="expand" align="center">
                         <template slot-scope="scope">
-                            {{scope.row.contractAbi}}
+                            <abi :contractAbi="scope.row.contractAbi"></abi>
                         </template>
-                    </el-table-column> -->
+                    </el-table-column>
                     <el-table-column prop="contractName" label="合约名称" show-overflow-tooltip width="" align="center">
                         <template slot-scope="scope">
                             <i class="wbs-icon-copy font-12 copy-public-key" @click="handleCopy(scope.row.contractName, $event)" title="复制"></i>
@@ -51,7 +51,7 @@
                     <el-table-column prop="contractAbi" label="合约ABI" show-overflow-tooltip align="center">
                         <template slot-scope="scope">
                             <i class="wbs-icon-copy font-12 copy-public-key" v-if="scope.row.contractAbi" @click="handleCopy(scope.row.contractAbi, $event)" title="复制"></i>
-                            <span style="color:#1f83e7" class="link" @click='openAbi(scope.row)'>{{scope.row.contractAbi}}</span>
+                            <span>{{scope.row.contractAbi}}</span>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -59,7 +59,6 @@
                 </el-pagination>
             </div>
         </div>
-        <parse-abi :show="abiDialogShow" v-if="abiDialogShow" :data='abiData' @close="abiClose"></parse-abi>
     </div>
 </template>
 <script>
@@ -67,12 +66,12 @@ import contentHead from "@/components/contentHead";
 import { contractList } from "@/util/api"
 import clip from "@/util/clipboard";
 import { numberFormat } from "@/util/util";
-import parseAbi from "./components/parseAbi"
+import abi from "./components/abi"
 export default {
     name: "oldContract",
     components: {
         "v-contentHead": contentHead,
-        parseAbi
+        abi
     },
     data() {
         return {
@@ -87,8 +86,6 @@ export default {
             numberFormat: numberFormat,
             chainName: '',
             appName: '',
-            abiDialogShow: false,
-            abiData: null,
         }
     },
     mounted() {
@@ -151,15 +148,8 @@ export default {
         handleCurrentChange(val) {
             this.currentPage = val;
             this.getContracts();
-        },
-        openAbi(val) {
-            this.abiData = val.contractAbi;
-            this.abiDialogShow = true
-        },
-        abiClose() {
-            this.abiDialogShow = false;
-            this.abiData = null
-        },
+        }
+        
     }
 }
 </script>
