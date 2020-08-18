@@ -175,7 +175,7 @@ export default {
                     bg: 'node-bg'
                 },
                 {
-                    label: "已部署的智能合约",
+                    label: "智能合约",
                     name: "contractCount",
                     value: 0,
                     icon: "#wbs-icon-icon-contract-copy",
