@@ -12,7 +12,7 @@
                                 <div v-if="inputData && inputData.length" class="input-data">
                                     <div class="input-label">
                                         <span class="label">function</span>
-                                        <span>{{contractName}}</span>
+                                        <span>{{interfaceName}}</span>
                                     </div>
                                     <div class="input-label">
                                         <span class="label">data</span>
@@ -134,13 +134,14 @@ export default {
             chainId: '',
             groupId: '',
             contractName: '',
+            interfaceName: '',
             inputData: [],
             logsName: '',
             eventLog: [],
             logsMap: [],
             userName: '',
             chainName: '',
-            appName: '',
+            appName: ''
         }
     },
 
@@ -197,6 +198,7 @@ export default {
 
                     if (res.data.code === 0) {
                         this.contractName = res.data.data[0]['contractName']
+                        this.interfaceName = res.data.data[0]['interfaceName']
                         this.inputData = JSON.parse(res.data.data[0]['input'])
                         this.logsMap = JSON.parse(res.data.data[0]['logs'])
                         this.eventLog = []
