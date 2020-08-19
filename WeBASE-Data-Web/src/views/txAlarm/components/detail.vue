@@ -29,7 +29,12 @@
                                         </el-table>
                                     </div>
                                 </div>
-                                <span v-else class="input-data">{{txInfoMap[item]}}</span>
+                                <span v-else class="input-data">
+                                    <div class="input-label">
+                                        <span class="label">function</span>
+                                        <span>{{contractName}}</span>
+                                    </div>
+                                </span>
                             </div>
                         </template>
                         <template v-else-if="item==='from'">
@@ -125,6 +130,7 @@ export default {
             chainId: '',
             groupId: '',
             interfaceName: '',
+            contractName: '',
             inputData: [],
             logsName: '',
             eventLog: [],
@@ -203,6 +209,7 @@ export default {
 
                     if (res.data.code === 0) {
                         this.interfaceName = res.data.data[0]['interfaceName']
+                        this.contractName = res.data.data[0]['contractName']
                         this.inputData = JSON.parse(res.data.data[0]['input'])
                         this.logsMap = JSON.parse(res.data.data[0]['logs'])
                         this.eventLog = []
