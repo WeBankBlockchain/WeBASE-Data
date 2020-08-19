@@ -6,23 +6,23 @@
                 <el-col :xs="8" :sm="6" :md="4" :lg="4" :xl="4" v-for="item in detailsList" :key='item.label'>
                     <div class="overview-item" :class="item.bg">
                         <div class="overview-item-img">
-                            <svg class="overview-item-img" aria-hidden="true" v-if='item.icon == "#wbs-icon-node1"'>
-                                <use xlink:href="#wbs-icon-node1"></use>
+                            <svg class="overview-item-img" aria-hidden="true" v-if='item.icon == "#wbs-icon-icon-chain1"'>
+                                <use xlink:href="#wbs-icon-icon-chain1"></use>
                             </svg>
-                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-contract"'>
-                                <use xlink:href="#wbs-icon-contract"></use>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-icon-transaction-copy"'>
+                                <use xlink:href="#wbs-icon-icon-transaction-copy"></use>
                             </svg>
-                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-block"'>
-                                <use xlink:href="#wbs-icon-block"></use>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-icon-block-copy"'>
+                                <use xlink:href="#wbs-icon-icon-block-copy"></use>
                             </svg>
-                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-transation"'>
-                                <use xlink:href="#wbs-icon-transation"></use>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-icon-contract-copy"'>
+                                <use xlink:href="#wbs-icon-icon-contract-copy"></use>
                             </svg>
-                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-user-icon"'>
-                                <use xlink:href="#wbs-icon-user-icon"></use>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-icon-user-copy"'>
+                                <use xlink:href="#wbs-icon-icon-user-copy"></use>
                             </svg>
-                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-h-group"'>
-                                <use xlink:href="#wbs-icon-h-group"></use>
+                            <svg class="overview-item-img" aria-hidden="true" v-else-if='item.icon == "#wbs-icon-icon-app-copy"'>
+                                <use xlink:href="#wbs-icon-icon-app-copy"></use>
                             </svg>
                         </div>
                         <div class="overview-item-content">
@@ -194,42 +194,42 @@ export default {
                     label: "链数量",
                     name: "chainCount",
                     value: 0,
-                    icon: "#wbs-icon-node1",
+                    icon: "#wbs-icon-icon-chain1",
                     bg: 'chain-bg'
                 },
                 {
                     label: "应用数量",
                     name: "groupCount",
                     value: 0,
-                    icon: "#wbs-icon-h-group",
+                    icon: "#wbs-icon-icon-app-copy",
                     bg: 'group-bg'
                 },
                 {
                     label: "用户数量",
                     name: "userCount",
                     value: 0,
-                    icon: "#wbs-icon-user-icon",
+                    icon: "#wbs-icon-icon-user-copy",
                     bg: 'node-bg'
                 },
                 {
-                    label: "已部署的智能合约",
+                    label: "智能合约",
                     name: "contractCount",
                     value: 0,
-                    icon: "#wbs-icon-contract",
+                    icon: "#wbs-icon-icon-contract-copy",
                     bg: 'contract-bg'
                 },
                 {
                     label: "区块数量",
                     name: "blockCount",
                     value: 0,
-                    icon: "#wbs-icon-transation",
+                    icon: "#wbs-icon-icon-block-copy",
                     bg: "block-bg"
                 },
                 {
                     label: "交易数量",
                     name: "txnCount",
                     value: 0,
-                    icon: "#wbs-icon-block",
+                    icon: "#wbs-icon-icon-transaction-copy",
                     bg: 'transation-bg'
                 }
             ]

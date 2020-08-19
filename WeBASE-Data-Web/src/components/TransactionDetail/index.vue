@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-tabs type="border-card" v-model="activeName"  @tab-click="handleClick">
+        <el-tabs type="border-card" v-model="activeName" @tab-click="handleClick">
             <el-tab-pane label="交易信息" name="txInfo">
                 <el-row v-for="item in txInfoList" :key="item">
                     <el-col :xs='24' :sm="24" :md="6" :lg="4" :xl="2">
@@ -9,7 +9,6 @@
                     <el-col :xs='24' :sm="24" :md="18" :lg="20" :xl="22">
                         <template v-if="item==='input'">
                             <div class="detail-input-content">
-
                                 <div v-if="inputData && inputData.length" class="input-data">
                                     <div class="input-label">
                                         <span class="label">function</span>
@@ -29,7 +28,12 @@
                                         </el-table>
                                     </div>
                                 </div>
-                                <span v-else class="input-data">{{txInfoMap[item]}}</span>
+                                <span v-else class="input-data">
+                                    <div class="input-label">
+                                        <span class="label">function</span>
+                                        <span>{{contractName}}</span>
+                                    </div>
+                                </span>
                             </div>
                         </template>
                         <template v-else-if="item==='from'">
@@ -51,7 +55,7 @@
                         <template v-if="item==='logs'">
                             <div class="detail-input-content" v-if="eventLog&&eventLog.length >0" style="padding: 0 0 0 10px">
 
-                                <div v-for="(item) in eventLog" >
+                                <div v-for="(item) in eventLog">
                                     <div class="item">
                                         <span class="label">function </span>
                                         <span>{{item.eventName}}</span>
@@ -129,6 +133,7 @@ export default {
             ],
             chainId: '',
             groupId: '',
+            contractName: '',
             interfaceName: '',
             inputData: [],
             logsName: '',
@@ -136,7 +141,7 @@ export default {
             logsMap: [],
             userName: '',
             chainName: '',
-            appName: '',
+            appName: ''
         }
     },
 
@@ -155,7 +160,7 @@ export default {
             this.groupId = this.$route.query.groupId
             this.chainName = this.$route.query.chainName
             this.appName = this.$route.query.appName
-        }else {
+        } else {
             this.chainId = this.txData.chainId
             this.groupId = this.txData.groupId
         }
@@ -192,6 +197,7 @@ export default {
                 .then(res => {
 
                     if (res.data.code === 0) {
+                        this.contractName = res.data.data[0]['contractName']
                         this.interfaceName = res.data.data[0]['interfaceName']
                         this.inputData = JSON.parse(res.data.data[0]['input'])
                         this.logsMap = JSON.parse(res.data.data[0]['logs'])
@@ -226,12 +232,12 @@ export default {
             }, reqQuery = {
                 userParam: this.txReceiptInfoMap.from
             };
-            
+
             userList(reqData, reqQuery).then(res => {
                 if (res.data.code == 0) {
                     let list = res.data.data
-                    if(list.length) this.userName = list[0]['userName']
-                    
+                    if (list.length) this.userName = list[0]['userName']
+
                 } else {
                     this.$message({
                         message: this.$chooseLang(res.data.code),
