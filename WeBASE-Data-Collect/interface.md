@@ -290,6 +290,122 @@ http://localhost:5009/WeBASE-Data-Collect/chain/1
 }
 ```
 
+### 1.5 查询数据拉取开关
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/chain/togglePullData**
+- 请求方式：GET
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+无
+
+***2）入参示例***
+
+```
+http://localhost:5009/WeBASE-Data-Collect/chain/togglePullData
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号 | 输出参数 | 类型   |      | 备注                       |
+| ---- | -------- | ------ | ---- | -------------------------- |
+| 1    | code     | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2    | message  | String | 否   | 描述                       |
+| 3    | data     | object | 是   | 信息对象                   |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": true
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 1.6 修改数据拉取开关
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址： **/chain/update**
+- 请求方式：POST
+- 请求头：Content-type: application/json
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数 | 类型    | 可为空 | 备注                                  |
+| ---- | -------- | ------- | ------ | ------------------------------------- |
+| 1    | enable   | boolean | 否     | 是否启用开关（true-开启；false-关闭） |
+
+***2）入参示例***
+
+```
+http://localhost:5009/WeBASE-Data-Collect/chain/togglePullData
+```
+
+```
+{
+  "enable": false
+}
+```
+
+#### 返回参数
+
+***1）出参表***
+
+| 序号 | 输出参数 | 类型   |      | 备注                       |
+| ---- | -------- | ------ | ---- | -------------------------- |
+| 1    | code     | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2    | message  | String | 否   | 描述                       |
+| 3    | data     | object | 是   | 信息对象                   |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": null
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 102000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
 ## 2 前置管理模块
 
 ### 2.1 新增节点前置

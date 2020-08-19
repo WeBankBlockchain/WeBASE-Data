@@ -84,14 +84,26 @@ List elasticsearch = [
     "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
 ]
 
+
+List dangdang = [
+    'com.dangdang:elastic-job-lite-core:2.1.5',
+    'com.dangdang:elastic-job-lite-spring:2.1.5'
+]
+
+List zookeeper = [
+    'org.apache.zookeeper:zookeeper:3.4.10',
+    'com.github.sgroschupf:zkclient:0.1'
+]
+
 dependencies {
-    compile springboot,jaxb,web3jsdk,swagger,jackson,mysql,log4j,elasticsearch
+    compile springboot,jaxb,web3jsdk,swagger,jackson,mysql,log4j,elasticsearch,dangdang,zookeeper
     compile "org.apache.commons:commons-lang3:3.8.1"
     compile "cn.hutool:hutool-all:4.1.19"
     compile "com.zaxxer:HikariCP:3.2.0"
     compile "com.github.sgroschupf:zkclient:0.1"
     compile "org.bouncycastle:bcprov-jdk15on:1.54"
     compile "org.hibernate:hibernate-validator:6.1.5.Final"
+    compile ('com.google.guava:guava:20.0'){force = true}
 
     annotationProcessor lombok
     compileOnly lombok

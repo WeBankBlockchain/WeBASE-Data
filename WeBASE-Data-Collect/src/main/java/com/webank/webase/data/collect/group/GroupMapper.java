@@ -60,6 +60,14 @@ public interface GroupMapper {
             @Param("groupStatus") Integer groupStatus);
 
     /**
+     * get all group by job.
+     */
+    List<TbGroup> getListByJob(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId,
+            @Param("groupStatus") Integer groupStatus,
+            @Param("shardingTotalCount") Integer shardingTotalCount,
+            @Param("shardingItem") Integer shardingItem);
+
+    /**
      * query general info.
      */
     GroupGeneral getGeneral(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId);

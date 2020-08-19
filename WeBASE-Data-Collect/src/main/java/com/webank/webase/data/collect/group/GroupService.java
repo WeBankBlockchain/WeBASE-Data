@@ -120,7 +120,22 @@ public class GroupService {
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
-    
+
+    /**
+     * query all group info by job.
+     */
+    public List<TbGroup> getGroupListByJob(Integer chainId, Integer groupStatus,
+            Integer shardingTotalCount, Integer shardingItem) throws BaseException {
+        try {
+            List<TbGroup> groupList = groupMapper.getListByJob(chainId, null, groupStatus,
+                    shardingTotalCount, shardingItem);
+            return groupList;
+        } catch (RuntimeException ex) {
+            log.error("fail getGroupListByJob", ex);
+            throw new BaseException(ConstantCode.DB_EXCEPTION);
+        }
+    }
+
     /**
      * query group overview information.
      */
@@ -315,7 +330,7 @@ public class GroupService {
         contractService.deleteByGroupId(chainId, groupId);
         // remove method
         methodService.removeByChainIdAndGroupId(chainId, groupId);
-        //remove txnDaily
+        // remove txnDaily
         txnDailyService.deleteByGroupId(chainId, groupId);
         // drop table.
         tableService.dropTable(chainId, groupId);
