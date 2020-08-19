@@ -20,11 +20,9 @@ import com.webank.webase.data.collect.node.NodeService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -61,7 +59,7 @@ public class NodeStatusTask {
         // count down group, make sure all group's transMonitor finished
         CountDownLatch latch = new CountDownLatch(groupList.size());
         groupList.stream()
-                .forEach(group -> checkProcess(latch, group.getChainId(), group.getGroupId()));
+                .forEach(group -> nodeService.checkProcess(latch, group.getChainId(), group.getGroupId()));
         try {
             latch.await();
         } catch (InterruptedException ex) {
@@ -70,18 +68,5 @@ public class NodeStatusTask {
         }
         log.info("end nodeStatus useTime:{} ",
                 Duration.between(startTime, Instant.now()).toMillis());
-    }
-
-    @Async("asyncExecutor")
-    public void checkProcess(CountDownLatch latch, int chainId, int groupId) {
-        try {
-            nodeService.checkAndUpdateNodeStatus(chainId, groupId);
-        } catch (Exception ex) {
-            log.error("fail checkProcess. chainId:{} groupId:{} ", chainId, groupId, ex);
-        } finally {
-            if (Objects.nonNull(latch)) {
-                latch.countDown();
-            }
-        }
     }
 }

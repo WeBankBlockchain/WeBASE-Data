@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -33,6 +34,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Log4j2
 @Component
+@ConditionalOnProperty(value = {"constant.multiLiving"}, havingValue = "false")
 public class DataParserTask {
 
     @Autowired
@@ -40,7 +42,7 @@ public class DataParserTask {
     @Autowired
     private TransactionService transactionService;
 
-    @Scheduled(fixedDelayString = "${constant.dataParserTaskFixedDelay}", initialDelay = 1000)
+    @Scheduled(cron = "${constant.dataParserCron}")
     public void taskStart() {
         parserStart();
     }

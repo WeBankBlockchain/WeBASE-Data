@@ -32,9 +32,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -214,6 +216,19 @@ public class NodeService {
             return;
         }
         nodeMapper.deleteByChainId(chainId);
+    }
+    
+    @Async("asyncExecutor")
+    public void checkProcess(CountDownLatch latch, int chainId, int groupId) {
+        try {
+            checkAndUpdateNodeStatus(chainId, groupId);
+        } catch (Exception ex) {
+            log.error("fail checkProcess. chainId:{} groupId:{} ", chainId, groupId, ex);
+        } finally {
+            if (Objects.nonNull(latch)) {
+                latch.countDown();
+            }
+        }
     }
 
     /**
