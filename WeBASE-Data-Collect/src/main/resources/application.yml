@@ -30,16 +30,30 @@ constant:
   ## group update
   resetGroupListCycle: 300000
   groupInvalidGrayscaleValue: 1m    # y:year, M:month, d:day of month, h:hour, m:minute, n:forever valid
-  ## data pull
-  startBlockNumber: 0
-  crawlBatchUnit: 50
-  dataPullTaskFixedDelay: 10000
-  ## data parser
-  dataParserTaskFixedDelay: 10000
   ## update node status 
   nodeStatusTaskFixedDelay: 30000
   ## stat txn daily
   statTxnDailyTaskFixedDelay: 60000
+  
+  ## if pull data(can change by interface)
+  ifPullData: true
+  ## data pull
+  startBlockNumber: 0
+  crawlBatchUnit: 50
+  dataPullCron: 0/10 * * * * ?
+  ## data parser
+  dataParserCron: 5/10 * * * * ?
+  
+  ## if multiLiving
+  multiLiving: true
+ 
+# elastic-job config
+job:
+  regCenter:
+    serverLists: 127.0.0.1:2181
+    namespace: elasticjob-collect
+  dataflow: 
+    shardingTotalCount: 2
 
 # executor config for pulling data
 executor:
