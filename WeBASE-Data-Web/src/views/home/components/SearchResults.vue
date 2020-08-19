@@ -3,75 +3,96 @@
         <el-table :data="list" element-loading-text="Loading" fit highlight-current-row @expand-change="exChange">
             <el-table-column type="expand" v-if="handleType =='5'">
                 <template slot-scope="scope">
-                    <li v-for="(val, key) in (scope.row)">
-                        <template v-if=" key !='createTime'&&key !='modifyTime'&&key !='rawData'&&key !='groupId'&&key !='chainId'&&key !='dynamicTableName'&&key !='id' ">
-                            <template v-if="key=='transHash'">
-                                <span class="item-detail-key">txHash：</span>
-                                <span class="item-detail-val">
-                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
-                                    <span class="link link-item" @click="link(scope.row, 'transHash')">
-                                        {{val}}
-                                    </span>
+                    <li v-for="(key, index) in keyList" :key="index">
+                        <template v-if="key=='transHash'">
+                            <span class="item-detail-key">txHash：</span>
+                            <span class="item-detail-val">
+                                <i class="el-icon-copy-document font-12 copy-key" @click="handleCopy(scope.row[key], $event)" title="复制"></i>
+                                <span class="link link-item" @click="link(scope.row, 'transHash')">
+                                    {{scope.row[key]}}
                                 </span>
-                            </template>
-                            <template v-else-if="key=='blockNumber'">
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-detail-val">
-                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
-                                    <span class="link link-item" @click="link(scope.row, 'blockNumber')">
-                                        {{val}}
-                                    </span>
+                            </span>
+                        </template>
+                        <template v-else-if="key=='blockNumber'">
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-detail-val">
+                                <i class="el-icon-copy-document font-12 copy-key" @click="handleCopy(scope.row[key], $event)" title="复制"></i>
+                                <span class="link link-item" @click="link(scope.row, 'blockNumber')">
+                                    {{scope.row[key]}}
                                 </span>
-                            </template>
-                            <template v-else-if="key=='userAddress'">
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-detail-val">
-                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
-                                    <span class="link link-item" @click="link(scope.row, 'userAddress')">
-                                        {{val}}
-                                    </span>
+                            </span>
+                        </template>
+                        <template v-else-if="key=='userAddress'">
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-detail-val">
+                                <i class="el-icon-copy-document font-12 copy-key" @click="handleCopy(scope.row[key], $event)" title="复制"></i>
+                                <span class="link link-item" @click="link(scope.row, 'userAddress')">
+                                    {{scope.row[key]}}
                                 </span>
-                            </template>
-                            <template v-else-if="key=='contractAddress'">
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-detail-val">
-                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
-                                    <span class="link link-item" @click="link(scope.row, 'contractAddress')">
-                                        {{val}}
-                                    </span>
+                            </span>
+                        </template>
+                        <template v-else-if="key=='contractAddress'">
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-detail-val">
+                                <i class="el-icon-copy-document font-12 copy-key" @click="handleCopy(scope.row[key], $event)" title="复制"></i>
+                                <span class="link link-item" @click="link(scope.row, 'contractAddress')">
+                                    {{scope.row[key]}}
                                 </span>
-                            </template>
-                            <template v-else-if="key=='contractName'">
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-detail-val">
-                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
-                                    <span class="link link-item" @click="link(scope.row, 'contractName')">
-                                        {{val}}
-                                    </span>
+                            </span>
+                        </template>
+                        <template v-else-if="key=='contractName'">
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-detail-val">
+                                <i class="el-icon-copy-document font-12 copy-key" @click="handleCopy(scope.row[key], $event)" title="复制"></i>
+                                <span class="link link-item" @click="link(scope.row, 'contractName')">
+                                    {{scope.row[key]}}
                                 </span>
-                            </template>
-                            <template v-else-if="key=='userName'">
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-detail-val">
-                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
-                                    <span class="link link-item" @click="link(scope.row, 'userName')">
-                                        {{val}}
-                                    </span>
+                            </span>
+                        </template>
+                        <template v-else-if="key=='userName'">
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-detail-val">
+                                <i class="el-icon-copy-document font-12 copy-key" @click="handleCopy(scope.row[key], $event)" title="复制"></i>
+                                <span class="link link-item" @click="link(scope.row, 'userName')">
+                                    {{scope.row[key]}}
                                 </span>
-                            </template>
-                            <template v-else-if="key=='userAddress'">
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-detail-val">
-                                    <i class="wbs-icon-copy font-12 copy-key" @click="handleCopy(val, $event)" title="复制"></i>
-                                    <span class="link link-item" @click="link(scope.row, 'userAddress')">
-                                        {{val}}
-                                    </span>
+                            </span>
+                        </template>
+                        <template v-else-if="key=='userAddress'">
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-detail-val">
+                                <i class="el-icon-copy-document font-12 copy-key" @click="handleCopy(scope.row[key], $event)" title="复制"></i>
+                                <span class="link link-item" @click="link(scope.row, 'userAddress')">
+                                    {{scope.row[key]}}
                                 </span>
-                            </template>
-                            <template v-else-if="key=='input'">
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-datail-val-table">
-                                    <el-table :data="JSON.parse(val)" tooltip-effect="dark" :border="true">
+                            </span>
+                        </template>
+                        <template v-else-if="key=='input'">
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-datail-val-table">
+                                <el-table v-if="scope.row[key]" :data="JSON.parse(scope.row[key])" tooltip-effect="dark" :border="true">
+                                        <el-table-column prop="name" label="name" show-overflow-tooltip width="200" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.name}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="type" show-overflow-tooltip width="" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.type}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="data" label="data" show-overflow-tooltip width="" align="center">
+                                            <template slot-scope="scope">
+                                                <span>{{scope.row.data}}</span>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                            </span>
+                        </template>
+                        <template v-else-if="key=='output'">
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-datail-val-table">
+                                    <el-table v-if="scope.row[key]" :data="JSON.parse(scope.row[key])" tooltip-effect="dark" :border="true">
                                         <el-table-column prop="name" label="name" show-overflow-tooltip width="200" align="center">
                                             <template slot-scope="scope">
                                                 <span>{{scope.row.name}}</span>
@@ -89,33 +110,10 @@
                                         </el-table-column>
                                     </el-table>
                                 </span>
-                            </template>
-                            <template v-else-if="key=='output'">
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-datail-val-table">
-                                    <el-table :data="JSON.parse(val)" tooltip-effect="dark" :border="true">
-                                        <el-table-column prop="name" label="name" show-overflow-tooltip width="200" align="center">
-                                            <template slot-scope="scope">
-                                                <span>{{scope.row.name}}</span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column prop="type" label="type" show-overflow-tooltip width="" align="center">
-                                            <template slot-scope="scope">
-                                                <span>{{scope.row.type}}</span>
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column prop="data" label="data" show-overflow-tooltip width="" align="center">
-                                            <template slot-scope="scope">
-                                                <span>{{scope.row.data}}</span>
-                                            </template>
-                                        </el-table-column>
-                                    </el-table>
-                                </span>
-                            </template>
-                            <template v-else>
-                                <span class="item-detail-key">{{key}}：</span>
-                                <span class="item-detail-val">{{val}}</span>
-                            </template>
+                        </template>
+                        <template v-else>
+                            <span class="item-detail-key">{{key}}：</span>
+                            <span class="item-detail-val">{{scope.row[key]}}</span>
                         </template>
                     </li>
                 </template>
@@ -148,24 +146,24 @@
                         <span>{{ scope.row.appName }}</span>
                     </template>
                     <template v-else>
-                        <i v-if="scope.row[head.enName]" class="wbs-icon-copy font-12 copy-key" @click="handleCopy(scope.row[head.enName], $event)" title="复制"></i>
+                        <i v-if="scope.row[head.enName]" class="el-icon-copy-document font-12 copy-key" @click="handleCopy(scope.row[head.enName], $event)" title="复制"></i>
                         {{ scope.row[head.enName] }}
                     </template>
 
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" v-if="type=='5'">
+            <el-table-column label="操作" v-if="type=='5'">
                 <template slot-scope="scope">
                     <el-button type="text" size="small" @click="interveneKeyword(scope.row,'modify')">介入处理</el-button>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" v-if="type=='2'">
+            <el-table-column label="操作" v-if="type=='2'">
                 <template slot-scope="scope">
                     <el-button type="text" size="small" @click="interveneKeyword(scope.row,'modify')">介入处理</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <el-dialog :visible.sync="interventionVisible" title="处理意见" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="interventionVisible&&type==1">
+        <el-dialog :visible.sync="interventionVisible" title="处理意见" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="interventionVisible&&type==5">
             <intervene :rowData="rowData" :singleSearchValue="singleSearchValue" type="1" @modelClose="modelClose"></intervene>
         </el-dialog>
         <el-dialog :visible.sync="interventionVisible" title="处理意见" width="433px" :append-to-body="true" :center="true" class="dialog-wrapper" v-if="interventionVisible&&type==2">
@@ -193,7 +191,8 @@ export default {
             tableHead: head,
             interventionVisible: false,
             rowData: {},
-            txData: {}
+            txData: {},
+            keyList: ['chainName', 'appName', 'userName', 'userAddress', 'contractName', 'contractAddress', 'interfaceName', 'blockNumber', 'transHash', 'output', 'input', 'logs', 'blockTimestamp']
         }
     },
 
@@ -226,6 +225,9 @@ export default {
                 this.rowData.groupId = this.groupId
                 this.rowData.chainName = this.chainName
                 this.rowData.appName = this.appName
+                this.interventionVisible = true
+            } else if (this.type == 5) {
+                this.rowData = val
                 this.interventionVisible = true
             }
 
@@ -334,7 +336,7 @@ export default {
             clip(text, event)
         },
         exChange(row) {
-            this.txData = Object.assign(row, {
+            this.txData = Object.assign({}, row, {
                 chainId: this.chainId,
                 groupId: this.groupId
             })
@@ -345,14 +347,12 @@ export default {
 
 <style scoped>
 .link-item {
-    padding: 5px 10px 5px 10px;
-}
-.link-item {
-    padding: 5px 10px 5px 10px;
+    padding: 5px 10px 5px 0px;
 }
 .item-detail-key {
-    width: 150px;
+    width: 110px;
     display: inline-block;
+    vertical-align: top;
 }
 .item-detail-val {
 }
