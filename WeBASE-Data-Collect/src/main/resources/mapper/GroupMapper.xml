@@ -86,6 +86,21 @@
         </if>
         order by group_id asc
     </select>
+    
+    <select id="getListByJob" resultMap="groupMap">
+        select * from tb_group where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+        <if test="groupStatus != null">
+            and group_status = #{groupStatus}
+        </if>
+        and MOD(id,#{shardingTotalCount}) = #{shardingItem}
+        order by group_id asc
+    </select>
 
     <select id="getGeneral"
         resultType="com.webank.webase.data.collect.group.entity.GroupGeneral">

@@ -17,8 +17,10 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.chain.entity.ChainInfo;
 import com.webank.webase.data.collect.chain.entity.TbChain;
+import com.webank.webase.data.collect.chain.entity.ToggleInfo;
 import com.webank.webase.data.collect.chain.entity.UpdateChainInfo;
 import java.time.Duration;
 import java.time.Instant;
@@ -45,6 +47,8 @@ public class ChainController extends BaseController {
 
     @Autowired
     private ChainService chainService;
+    @Autowired
+    private ConstantProperties cProperties;
 
     /**
      * add new chain
@@ -113,6 +117,40 @@ public class ChainController extends BaseController {
         chainService.removeChain(chainId);
 
         log.info("end removeChain useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return baseResponse;
+    }
+    
+    /**
+     * toggle of pull data
+     */
+    @GetMapping("/togglePullData")
+    public BaseResponse getTogglePullData() {
+        Instant startTime = Instant.now();
+        log.info("start getTogglePullData.");
+        BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
+
+        // remove
+        baseResponse.setData(cProperties.isIfPullData());
+
+        log.info("end getTogglePullData useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return baseResponse;
+    }
+    
+    /**
+     * update toggle of pull data
+     */
+    @PostMapping("/togglePullData")
+    public BaseResponse updateTogglePullData(@RequestBody ToggleInfo toggleInfo) {
+        Instant startTime = Instant.now();
+        log.info("start updateTogglePullData.");
+        BaseResponse baseResponse = new BaseResponse(ConstantCode.SUCCESS);
+        
+        // update
+        cProperties.setIfPullData(toggleInfo.isEnable());
+        
+        log.info("end updateTogglePullData useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return baseResponse;
     }

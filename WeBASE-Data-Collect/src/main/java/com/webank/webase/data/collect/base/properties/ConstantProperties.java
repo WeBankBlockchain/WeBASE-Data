@@ -43,7 +43,9 @@ public class ConstantProperties {
     private Integer maxRequestFail = 3;
     private Long sleepWhenHttpMaxFail = 60000L; // default 1min
 
-    // data parser
+    // data handle
+    private boolean ifPullData = true; // default true
+    private boolean multiLiving = false; // default false
     private Long dataParserTaskFixedDelay = 60000L; // default 1min
 
 }
