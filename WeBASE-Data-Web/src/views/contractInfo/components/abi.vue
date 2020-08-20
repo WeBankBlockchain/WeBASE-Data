@@ -2,24 +2,28 @@
     <div>
         <div v-for="item in initArrayAbi">
             <div class="item">
-                <span class="label">function </span>
-                <span>{{item.name}}</span>
-            </div>
-            <div class="item">
-                <span class="label">input </span>
-                <div class="detail-input-content">
-                    <el-table class="input-data" :data="item.inputs" style="display:inline-block;width:100%;">
-                        <el-table-column prop="name" width="150" label="name" align="left"></el-table-column>
-                        <el-table-column prop="type" label="type" align="left" :show-overflow-tooltip="true"></el-table-column>
-                    </el-table>
-                </div>
-                <span class="label">output </span>
-                <div class="detail-input-content">
-                    <el-table class="input-data" :data="item.outputs" style="display:inline-block;width:100%;">
-                        <el-table-column prop="name" width="150" label="name" align="left"></el-table-column>
-                        <el-table-column prop="type" label="type" align="left" :show-overflow-tooltip="true"></el-table-column>
-                    </el-table>
-                </div>
+                <span class="label abi-type">{{item.type}} </span>
+                <span class="abi-function">{{item.name}}</span>
+                <span class="abi-lparen">
+                    (
+                    <span v-for="(input, i) in item.inputs">
+                        <span class="abi-type">{{input.type}}</span>
+                        {{input.name}}
+                        <i v-if="i!=item.inputs.length-1">,</i>
+                    </span>
+                    )
+                </span>
+                <!-- <span>public</span> -->
+                <span v-if="item.constant" class="abi-type">constant</span>
+                <span class="abi-type">returns</span>
+                <span class="abi-lparen">
+                    (
+                    <span v-for="(output,j) in item.outputs">
+                        <span class="abi-type">{{output.type}}</span>
+                        <i v-if="j!=item.outputs.length-1">,</i>
+                    </span>
+                    )
+                </span>
             </div>
         </div>
     </div>
@@ -52,6 +56,7 @@ export default {
                     list.push(item)
                 }
             })
+
             return list
         }
     },
@@ -75,64 +80,21 @@ export default {
 <style scoped>
 .label {
     display: inline-block;
-    width: 65px;
-    font-weight: bold;
+    width: 48px;
     vertical-align: top;
     font-size: 12px;
+}
+.abi-type {
+    color: rgb(147, 15, 128);
+}
+.abi-lparen {
+    color: black;
 }
 .item {
     padding: 3px 0;
 }
-.input {
-    display: inline-block;
-    font-size: 0;
-    vertical-align: top;
-}
-.input span {
-    font-size: 12px;
-}
-.input-data {
-    display: inline-block;
-    width: 100%;
-    padding: 10px;
-    max-height: 200px;
-    overflow: auto;
-    word-break: break-all;
-    word-wrap: break-word;
-    box-sizing: border-box;
-}
-.input-data-from {
-    display: inline-block;
-    width: calc(100% - 200px);
-    height: auto;
-    word-break: break-all;
-    word-wrap: break-word;
-    box-sizing: border-box;
-}
-.input-label {
-    padding-bottom: 15px;
-}
-.input-label .label {
-    width: 80px;
-    font-size: 12px;
-}
-.detail-input-content {
-    display: inline-block;
-    width: 39%;
-    height: auto;
-    border: 1px solid #eaedf3;
-    border-radius: 4px;
-    font-size: 12px;
-    vertical-align: top;
-    margin-right: 10px;
-}
-.receipt-field {
-    font-weight: bold;
-}
-.base-p {
-    overflow: hidden;
-    word-break: break-all;
-    word-wrap: break-word;
+.abi-function {
+    color: #0000a2;
 }
 span {
     word-break: break-all;
