@@ -538,3 +538,7 @@ th {
 .el-pager li.active {
     color: #00c1d4
 }
+
+.el-tooltip__popper {
+    max-width: 800px;
+}
