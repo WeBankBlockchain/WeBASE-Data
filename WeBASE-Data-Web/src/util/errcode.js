@@ -14,63 +14,63 @@
  * limitations under the License.
  */
 let errCode = {
-    "102000": {
+    "110000": {
         en: "system error",
         zh: '系统异常'
     },
-    "102001": {
+    "110001": {
         en: "param exception",
         zh: '请求参数错误'
     },
-    "102002": {
+    "110002": {
         en: "database exception",
         zh: '数据库异常'
     },
-    "202101": {
+    "210101": {
         en: "invalid group id",
         zh: '无效群组编号'
     },
-    "202201": {
+    "210201": {
         en: "searchType not exists",
         zh: '搜索类型不存在'
     },
-    "202202": {
+    "210202": {
         en: "search content can not be empty",
         zh: '搜索内容不能为空'
     },
-    "202203": {
+    "210203": {
         en: "search index not exists",
         zh: '索引不存在'
     },
-    "202204": {
+    "210204": {
         en: "search fail",
         zh: '搜索失败'
     },
-    "202301": {
+    "210301": {
         en: "keyword id not exists",
         zh: '关键字不存在'
     },
-    "202302": {
+    "210302": {
         en: "keyword exists",
         zh: '关键字已存在'
     },
-    "202303": {
+    "210303": {
         en: "save keyword fail",
         zh: '关键字保存失败'
     },
-    "202401": {
+    "210401": {
         en: "audit id not exists",
         zh: '告警信息不存在'
     },
-    "202402": {
+    "210402": {
         en: "audit inffo exists",
         zh: '告警信息已存在'
     },
-    "202403": {
+    "210403": {
         en: "save audit info fail",
         zh: '告警信息保存失败'
     },
-    "202405": {
+    "210405": {
         en: "keyword can not be empty",
         zh: '关键字不能为空'
     },
