@@ -18,7 +18,7 @@ package com.webank.webase.data.fetcher.base.code;
  * 1:system exception <br/>
  * 2:business exception <br/>
  * B:project number <br/>
- * WeBASE-Node-Manager:02 <br/>
+ * WeBASE-Data-Fetcher:10 <br/>
  * C: error code <br/>
  */
 public class ConstantCode {
@@ -27,30 +27,30 @@ public class ConstantCode {
     public static final RetCode SUCCESS = RetCode.mark(0, "success");
 
     /* common exception */
-    public static final RetCode SYSTEM_EXCEPTION = RetCode.mark(102000, "system exception");
-    public static final RetCode PARAM_EXCEPTION = RetCode.mark(102001, "param exception");
-    public static final RetCode DB_EXCEPTION = RetCode.mark(102002, "database exception");
+    public static final RetCode SYSTEM_EXCEPTION = RetCode.mark(110000, "system exception");
+    public static final RetCode PARAM_EXCEPTION = RetCode.mark(110001, "param exception");
+    public static final RetCode DB_EXCEPTION = RetCode.mark(110002, "database exception");
 
     /* group code */
-    public static final RetCode INVALID_GROUP_ID = RetCode.mark(202101, "invalid group id");
+    public static final RetCode INVALID_GROUP_ID = RetCode.mark(210101, "invalid group id");
 
     /* search code */
     public static final RetCode SEARCHTYPE_NOT_EXISTS =
-            RetCode.mark(202201, "searchType not exists");
+            RetCode.mark(210201, "searchType not exists");
     public static final RetCode SEARCH_CONTENT_IS_EMPTY =
-            RetCode.mark(202202, "search content can not be empty");
-    public static final RetCode INDEX_NOT_EXISTS = RetCode.mark(202203, "search index not exists");
-    public static final RetCode SEARCH_FAIL = RetCode.mark(202204, "search fail");
+            RetCode.mark(210202, "search content can not be empty");
+    public static final RetCode INDEX_NOT_EXISTS = RetCode.mark(210203, "search index not exists");
+    public static final RetCode SEARCH_FAIL = RetCode.mark(210204, "search fail");
 
     /* keyword code */
-    public static final RetCode KEYWORD_ID_NOT_EXISTS = RetCode.mark(202301, "keyword id not exists");
-    public static final RetCode KEYWORD_EXISTS = RetCode.mark(202302, "keyword exists");
-    public static final RetCode SAVE_KEYWORD_FAIL = RetCode.mark(202303, "save keyword fail");
+    public static final RetCode KEYWORD_ID_NOT_EXISTS = RetCode.mark(210301, "keyword id not exists");
+    public static final RetCode KEYWORD_EXISTS = RetCode.mark(210302, "keyword exists");
+    public static final RetCode SAVE_KEYWORD_FAIL = RetCode.mark(210303, "save keyword fail");
     
     /* audit code */
-    public static final RetCode AUDIT_ID_NOT_EXISTS = RetCode.mark(202401, "audit id not exists");
-    public static final RetCode AUDIT_EXISTS = RetCode.mark(202402, "audit info exists");
-    public static final RetCode SAVE_AUDIT_FAIL = RetCode.mark(202403, "save audit info fail");
-    public static final RetCode INVALID_AUDIT_TYPE = RetCode.mark(202404, "invalid audit type");
-    public static final RetCode KEYWORD_ID_EMPTY = RetCode.mark(202405, "keyword can not be empty");
+    public static final RetCode AUDIT_ID_NOT_EXISTS = RetCode.mark(210401, "audit id not exists");
+    public static final RetCode AUDIT_EXISTS = RetCode.mark(210402, "audit info exists");
+    public static final RetCode SAVE_AUDIT_FAIL = RetCode.mark(210403, "save audit info fail");
+    public static final RetCode INVALID_AUDIT_TYPE = RetCode.mark(210404, "invalid audit type");
+    public static final RetCode KEYWORD_ID_EMPTY = RetCode.mark(210405, "keyword can not be empty");
 }

@@ -63,7 +63,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/general
 
 ```
 {
-   "code": 102000,
+   "code": 110000,
    "message": "system exception",
    "data": {}
 }
@@ -136,7 +136,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/chain/all
 
 ```
 {
-   "code": 102000,
+   "code": 110000,
    "message": "system exception",
    "data": {}
 }
@@ -237,7 +237,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/list?chainId=1
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -308,7 +308,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/general/1/1
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -382,7 +382,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/txnDaily/1/1
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -472,7 +472,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/nodeList/100001/300001/1/10
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -543,7 +543,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/orgList/100001/1/10
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -640,7 +640,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/blockList/1/1/1/2?blockHash=
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -727,7 +727,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/transList/1/1/1/2?transHash=0x49
 * 失败：
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -796,7 +796,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/userList/1/1/1/2
 
 ```
 {
-   "code": 102000,
+   "code": 110000,
    "message": "system exception",
    "data": {}
 }
@@ -867,7 +867,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/group/contractList/1/1/1/2
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -985,7 +985,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/normal
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1085,7 +1085,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/search/keyword/1/2?keyword="测试"
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1158,7 +1158,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/keywords/add
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1228,7 +1228,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/keywords/list/1/2
 
 ```
 {
-   "code": 102000,
+   "code": 110000,
    "message": "system exception",
    "data": {}
 }
@@ -1301,7 +1301,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/keywords/update
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1357,7 +1357,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/keywords/1
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1464,7 +1464,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/transAudit/add
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1555,7 +1555,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/transAudit/list/1/2
 
 ```
 {
-   "code": 102000,
+   "code": 110000,
    "message": "system exception",
    "data": {}
 }
@@ -1638,7 +1638,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/transAudit/confirm/1
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1694,7 +1694,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/transAudit/1
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1789,7 +1789,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/appAudit/add
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -1872,7 +1872,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/appAudit/list/1/2
 
 ```
 {
-   "code": 102000,
+   "code": 110000,
    "message": "system exception",
    "data": {}
 }
@@ -1949,7 +1949,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/appAudit/confirm/1
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -2005,7 +2005,7 @@ http://localhost:5010/WeBASE-Data-Fetcher/appAudit/1
 
 ```
 {
-    "code": 102000,
+    "code": 110000,
     "message": "system exception",
     "data": {}
 }
@@ -2018,17 +2018,17 @@ http://localhost:5010/WeBASE-Data-Fetcher/appAudit/1
 | Code   | message                         | 描述             |
 | ------ | ------------------------------- | ---------------- |
 | 0      | success                         | 正常             |
-| 102000 | system exception                | 系统异常         |
-| 102001 | param exception                 | 请求参数错误     |
-| 102002 | database exception              | 数据库异常       |
-| 202101 | invalid group id                | 无效群组编号     |
-| 202201 | searchType not exists           | 搜索类型不存在   |
-| 202202 | search content can not be empty | 搜索内容不能为空 |
-| 202203 | search index not exists         | 索引不存在       |
-| 202204 | search fail                     | 搜索失败         |
-| 202301 | keyword id not exists           | 关键字不存在     |
-| 202302 | keyword exists                  | 关键字已存在     |
-| 202303 | save keyword fail               | 关键字保存失败   |
-| 202401 | audit id not exists             | 告警信息不存在   |
-| 202402 | audit inffo exists              | 告警信息已存在   |
-| 202403 | save audit info fail            | 告警信息保存失败 |
+| 110000 | system exception                | 系统异常         |
+| 110001 | param exception                 | 请求参数错误     |
+| 110002 | database exception              | 数据库异常       |
+| 210101 | invalid group id                | 无效群组编号     |
+| 210201 | searchType not exists           | 搜索类型不存在   |
+| 210202 | search content can not be empty | 搜索内容不能为空 |
+| 210203 | search index not exists         | 索引不存在       |
+| 210204 | search fail                     | 搜索失败         |
+| 210301 | keyword id not exists           | 关键字不存在     |
+| 210302 | keyword exists                  | 关键字已存在     |
+| 210303 | save keyword fail               | 关键字保存失败   |
+| 210401 | audit id not exists             | 告警信息不存在   |
+| 210402 | audit inffo exists              | 告警信息已存在   |
+| 210403 | save audit info fail            | 告警信息保存失败 |

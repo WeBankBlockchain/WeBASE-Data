@@ -78,7 +78,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/new
 
 ```
 {
-    "code": 202001,
+    "code": 209001,
     "message": "chain id already exists",
     "data": {}
 }
@@ -157,7 +157,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/update
 
 ```
 {
-    "code": 202006,
+    "code": 209006,
     "message": "chain id not exists",
     "data": {}
 }
@@ -228,7 +228,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/all
 
 ```
 {
-   "code": 102000,
+   "code": 109000,
    "message": "system exception",
    "data": {}
 }
@@ -284,7 +284,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/1
 
 ```
 {
-    "code": 202004,
+    "code": 209004,
     "message": "invalid chain id",
     "data": {}
 }
@@ -338,7 +338,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/togglePullData
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -400,7 +400,7 @@ http://localhost:5009/WeBASE-Data-Collect/chain/togglePullData
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -485,7 +485,7 @@ http://localhost:5009/WeBASE-Data-Collect/front/new
 * 失败：
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -564,7 +564,7 @@ http://localhost:5009/WeBASE-Data-Collect/front/list
 * 失败：
 ```
 {
-   "code": 102000,
+   "code": 109000,
    "message": "system exception",
    "data": {}
 }
@@ -620,7 +620,7 @@ http://localhost:5009/WeBASE-Data-Collect/front/1
 * 失败：
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -721,7 +721,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -793,7 +793,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/update
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -886,7 +886,7 @@ http://localhost:5009/WeBASE-Data-Collect/node/nodeList/100001/300001/1/10
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -957,7 +957,7 @@ http://localhost:5009/WeBASE-Data-Collect/node/orgList/100001/1/10
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -1025,7 +1025,7 @@ http://localhost:5009/WeBASE-Data-Collect/node/update
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -1114,7 +1114,7 @@ http://localhost:5009/WeBASE-Data-Collect/user/add
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -1195,7 +1195,7 @@ http://localhost:5009/WeBASE-Data-Collect/user/list/1/2
 
 ```
 {
-   "code": 102000,
+   "code": 109000,
    "message": "system exception",
    "data": {}
 }
@@ -1251,7 +1251,7 @@ http://localhost:5009/WeBASE-Data-Collect/user/1
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -1357,7 +1357,7 @@ http://localhost:5009/WeBASE-Data-Collect/contract/save
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -1457,7 +1457,7 @@ http://localhost:5009/WeBASE-Data-Collect/contract/list
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -1513,7 +1513,7 @@ http://localhost:5009/WeBASE-Data-Collect/contract/1
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -1592,7 +1592,7 @@ http://127.0.0.1:5009/WeBASE-Data-Collect/contract/addMethod
 
 ```
 {
-    "code": 102000,
+    "code": 109000,
     "message": "system exception",
     "data": {}
 }
@@ -1681,35 +1681,35 @@ http://localhost:5009/WeBASE-Data-Collect/solc/list
 | Code   | message                          | 描述               |
 | ------ | -------------------------------- | ------------------ |
 | 0      | success                          | 正常               |
-| 102000 | system exception                 | 系统异常           |
-| 102001 | system exception                 | 无效的前置编号     |
-| 102002 | database exception               | 数据库异常         |
-| 202001 | chain id already exists          | 链编号已经存在     |
-| 202002 | chain name already exists        | 链名称已经存在     |
-| 202003 | save chain fail                  | 链保存失败         |
-| 202004 | invalid chain id                 | 无效链编号         |
-| 202005 | invalid chain type               | 无效链类型         |
-| 202006 | chain id not exists              | 链编号不存在       |
-| 202101 | wrong host or port               | ip或端口错误       |
-| 202102 | invalid front id                 | 无效前置编号       |
-| 202103 | not found any front              | 找不到前置         |
-| 202104 | front already exists             | 前置已经存在       |
-| 202105 | save front fail                  | 前置保存失败       |
-| 202106 | request front fail               | 前置请求失败       |
-| 202107 | request node exception           | 前置节点请求失败   |
-| 202108 | front's encrypt type not matches | 前置类型不匹配     |
-| 202109 | invalid block number             | 无效块高           |
-| 202110 | invalid node id                  | 无效节点编号       |
-| 202201 | invalid group id                 | 无效群组编号       |
-| 202301 | user name already exists         | 用户名已存在       |
-| 202302 | user address already exists      | 用户地址已存在     |
-| 202401 | contract already exists          | 合约已存在         |
-| 202402 | invalid contract id              | 无效合约编号       |
-| 202403 | contract name cannot be repeated | 合约名重复         |
-| 202501 | task is still running            | 任务正在执行       |
-| 202502 | block has been reset             | 区块已重置         |
-| 202601 | solc js file cannot be empty     | 编译器文件不能为空 |
-| 202602 | solc js file already exist       | 编译器文件已存在   |
-| 202603 | solc js file not exist           | 编译器文件不存在   |
-| 202604 | save solc js file error          | 编译器文件保存失败 |
-| 202605 | read solc js file error          | 编译器文件读取失败 |
+| 109000 | system exception                 | 系统异常           |
+| 109001 | param exception                  | 请求参数错误       |
+| 109002 | database exception               | 数据库异常         |
+| 209001 | chain id already exists          | 链编号已经存在     |
+| 209002 | chain name already exists        | 链名称已经存在     |
+| 209003 | save chain fail                  | 链保存失败         |
+| 209004 | invalid chain id                 | 无效链编号         |
+| 209005 | invalid chain type               | 无效链类型         |
+| 209006 | chain id not exists              | 链编号不存在       |
+| 209101 | wrong host or port               | ip或端口错误       |
+| 209102 | invalid front id                 | 无效前置编号       |
+| 209103 | not found any front              | 找不到前置         |
+| 209104 | front already exists             | 前置已经存在       |
+| 209105 | save front fail                  | 前置保存失败       |
+| 209106 | request front fail               | 前置请求失败       |
+| 209107 | request node exception           | 前置节点请求失败   |
+| 209108 | front's encrypt type not matches | 前置类型不匹配     |
+| 209109 | invalid block number             | 无效块高           |
+| 209110 | invalid node id                  | 无效节点编号       |
+| 209201 | invalid group id                 | 无效群组编号       |
+| 209301 | user name already exists         | 用户名已存在       |
+| 209302 | user address already exists      | 用户地址已存在     |
+| 209401 | contract already exists          | 合约已存在         |
+| 209402 | invalid contract id              | 无效合约编号       |
+| 209403 | contract name cannot be repeated | 合约名重复         |
+| 209501 | task is still running            | 任务正在执行       |
+| 209502 | block has been reset             | 区块已重置         |
+| 209601 | solc js file cannot be empty     | 编译器文件不能为空 |
+| 209602 | solc js file already exist       | 编译器文件已存在   |
+| 209603 | solc js file not exist           | 编译器文件不存在   |
+| 209604 | save solc js file error          | 编译器文件保存失败 |
+| 209605 | read solc js file error          | 编译器文件读取失败 |
