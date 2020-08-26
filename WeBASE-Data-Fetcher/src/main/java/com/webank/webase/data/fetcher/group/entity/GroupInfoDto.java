@@ -26,10 +26,9 @@ public class GroupInfoDto {
     private Integer id;
     private Integer groupId;
     private Integer chainId;
-    private String groupName;
     private String appName;
     private String appVersion;
-    private String appSynopsis;
+    private String appSummary;
     private String genesisBlockHash;
     private Integer groupStatus;
     private Integer nodeCount;

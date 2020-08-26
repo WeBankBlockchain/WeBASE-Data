@@ -91,11 +91,11 @@ public class FrontService {
         }
         // check front's encrypt type
         int encryptType = frontInterface.getEncryptTypeFromSpecificFront(frontIp, frontPort);
-        if (encryptType != tbChain.getChainType()) {
+        if (encryptType != tbChain.getEncryptType()) {
             log.error(
                     "fail newFront, frontIp:{},frontPort:{},front's encryptType:{},"
                             + "local encryptType not match:{}",
-                    frontIp, frontPort, encryptType, tbChain.getChainType());
+                    frontIp, frontPort, encryptType, tbChain.getEncryptType());
             throw new BaseException(ConstantCode.ENCRYPT_TYPE_NOT_MATCH);
         }
         // check front not exist

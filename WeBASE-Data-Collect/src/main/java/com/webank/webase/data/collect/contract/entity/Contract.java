@@ -39,6 +39,6 @@ public class Contract {
     private String contractPath;
     private String contractSource;
     private String contractAbi;
-    private String contractBin;
+    private String runtimeBin;
     private String bytecodeBin;
 }

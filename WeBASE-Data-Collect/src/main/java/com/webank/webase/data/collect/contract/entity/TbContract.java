@@ -30,7 +30,7 @@ public class TbContract {
     private String contractName;
     private String contractSource;
     private String contractAbi;
-    private String contractBin;
+    private String runtimeBin;
     private String bytecodeBin;
     private Integer contractType;
     private String description;

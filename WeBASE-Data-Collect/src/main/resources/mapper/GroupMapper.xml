@@ -13,14 +13,12 @@
             property="chainId" />
         <result column="genesis_block_hash" javaType="java.lang.String"
             jdbcType="VARCHAR" property="genesisBlockHash" />
-        <result column="group_name" javaType="java.lang.String"
-            jdbcType="VARCHAR" property="groupName" />
         <result column="app_name" javaType="java.lang.String"
             jdbcType="VARCHAR" property="appName" />
         <result column="app_version" javaType="java.lang.String"
             jdbcType="VARCHAR" property="appVersion" />
-        <result column="app_synopsis" javaType="java.lang.String"
-            jdbcType="VARCHAR" property="appSynopsis" />
+        <result column="app_summary" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appSummary" />
         <result column="group_status" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="groupStatus" />
         <result column="node_count" javaType="java.lang.Integer"
@@ -35,8 +33,8 @@
 
     <insert id="save" parameterType="com.webank.webase.data.collect.group.entity.TbGroup">
         insert into tb_group
-        (group_id,chain_id,genesis_block_hash,group_name,node_count,create_time,modify_time)
-        values(#{groupId},#{chainId},#{genesisBlockHash},#{groupName},#{nodeCount},NOW(),NOW())
+        (group_id,chain_id,genesis_block_hash,node_count,create_time,modify_time)
+        values(#{groupId},#{chainId},#{genesisBlockHash},#{nodeCount},NOW(),NOW())
         ON DUPLICATE KEY UPDATE 
         node_count=#{nodeCount},modify_time=NOW()
     </insert>
@@ -45,7 +43,7 @@
 		update tb_group 
 		set app_name = #{appName},
 		    app_version = #{appVersion},
-		    app_synopsis = #{appSynopsis},
+		    app_summary = #{appSummary},
 		    description = #{description},
 			modify_time = now()
 		where group_id = #{groupId}

@@ -88,8 +88,7 @@ public class GroupService {
     @Transactional
     public void saveGroup(int chainId, int groupId, int nodeCount, String genesisBlockHash) {
         // save group
-        String groupName = "group" + groupId;
-        TbGroup tbGroup = new TbGroup(groupId, chainId, groupName, nodeCount, genesisBlockHash);
+        TbGroup tbGroup = new TbGroup(groupId, chainId, nodeCount, genesisBlockHash);
         groupMapper.save(tbGroup);
         // create table by group id
         tableService.newSubTable(chainId, groupId);

@@ -27,10 +27,9 @@ public class TbGroup {
     private Integer id;
     private Integer groupId;
     private Integer chainId;
-    private String groupName;
     private String appName;
     private String appVersion;
-    private String appSynopsis;
+    private String appSummary;
     private String genesisBlockHash;
     private Integer groupStatus;
     private Integer nodeCount;
@@ -38,11 +37,10 @@ public class TbGroup {
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
-    public TbGroup(Integer groupId, Integer chainId, String groupName, Integer nodeCount,
+    public TbGroup(Integer groupId, Integer chainId, Integer nodeCount,
             String genesisBlockHash) {
         this.groupId = groupId;
         this.chainId = chainId;
-        this.groupName = groupName;
         this.nodeCount = nodeCount;
         this.genesisBlockHash = genesisBlockHash;
     }
