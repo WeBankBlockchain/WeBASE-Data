@@ -40,7 +40,7 @@ public interface ParserMapper {
             @Param("userAddress") String userAddress);
 
     List<String> queryUnusualTxHashByBin(@Param("tableName") String tableName,
-            @Param("contractBin") String contractBin);
+            @Param("runtimeBin") String runtimeBin);
     
     TbParser queryByTxHash(@Param("tableName") String tableName,
             @Param("transHash") String transHash);

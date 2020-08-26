@@ -57,10 +57,10 @@ public class ContractService {
             tbContract = updateContract(contract);// update
         }
 
-        if (Objects.nonNull(tbContract) && StringUtils.isNotBlank(tbContract.getContractBin())) {
+        if (Objects.nonNull(tbContract) && StringUtils.isNotBlank(tbContract.getRuntimeBin())) {
             // update parser unusual contract
             parserService.parserUnusualContract(tbContract.getChainId(), tbContract.getGroupId(),
-                    tbContract.getContractBin());
+                    tbContract.getRuntimeBin());
         }
         return tbContract;
     }
@@ -139,10 +139,10 @@ public class ContractService {
     /**
      * queryContractByBin.
      */
-    public List<TbContract> queryContractByBin(Integer chainId, Integer groupId, String contractBin)
+    public List<TbContract> queryContractByBin(Integer chainId, Integer groupId, String runtimeBin)
             throws BaseException {
         try {
-            return contractMapper.queryContractByBin(chainId, groupId, contractBin);
+            return contractMapper.queryContractByBin(chainId, groupId, runtimeBin);
         } catch (RuntimeException ex) {
             log.error("fail queryContractByBin", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);

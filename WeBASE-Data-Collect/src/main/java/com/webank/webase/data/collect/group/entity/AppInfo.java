@@ -28,6 +28,6 @@ public class AppInfo {
     private Integer groupId;
     private String appName;
     private String appVersion;
-    private String appSynopsis;
+    private String appSummary;
     private String description;
 }

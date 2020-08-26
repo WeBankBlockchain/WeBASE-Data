@@ -51,7 +51,7 @@
             and t2.contract_address = #{contractAddress}
         </if>
         <if test="subBin != null and subBin != ''">
-            and t2.contract_bin like CONCAT(#{subBin},'%')
+            and t2.runtime_bin like CONCAT(#{subBin},'%')
         </if>
     </select>
 

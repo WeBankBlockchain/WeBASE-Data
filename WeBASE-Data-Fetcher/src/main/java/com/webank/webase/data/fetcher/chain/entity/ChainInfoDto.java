@@ -21,7 +21,7 @@ public class ChainInfoDto {
     private Integer chainId;
     private String chainName;
     private Integer chainType;
-    private String attribute;
+    private Integer encryptType;
     private String description;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;

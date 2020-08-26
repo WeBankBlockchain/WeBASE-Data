@@ -37,7 +37,7 @@ public class ConstantCode {
             RetCode.mark(209002, "chain name already exists");
     public static final RetCode SAVE_CHAIN_FAIL = RetCode.mark(209003, "save chain fail");
     public static final RetCode INVALID_CHAIN_ID = RetCode.mark(209004, "invalid chain id");
-    public static final RetCode INVALID_CHAIN_TYPE = RetCode.mark(209005, "invalid chain type");
+    public static final RetCode INVALID_ENCRYPT_TYPE = RetCode.mark(209005, "invalid encrypt type");
     public static final RetCode CHAIN_ID_NOT_EXISTS = RetCode.mark(209006, "chain id not exists");
 
     /* front code */
