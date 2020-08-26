@@ -1691,7 +1691,7 @@ http://localhost:5009/WeBASE-Data-Collect/solc/list
 | 209002 | chain name already exists        | 链名称已经存在     |
 | 209003 | save chain fail                  | 链保存失败         |
 | 209004 | invalid chain id                 | 无效链编号         |
-| 209005 | invalid chain type               | 无效链类型         |
+| 209005 | invalid encrypt type             | 无效链加密类型     |
 | 209006 | chain id not exists              | 链编号不存在       |
 | 209101 | wrong host or port               | ip或端口错误       |
 | 209102 | invalid front id                 | 无效前置编号       |
