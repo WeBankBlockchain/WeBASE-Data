@@ -127,13 +127,13 @@ public class ParserService {
      * parser unusual contract.
      */
     @Async("asyncExecutor")
-    public void parserUnusualContract(int chainId, int groupId, String contractBin) {
-        log.debug("start parserUnusualContract chainId:{} groupId:{} contractBin:{}", chainId,
-                groupId, contractBin);
+    public void parserUnusualContract(int chainId, int groupId, String runtimeBin) {
+        log.debug("start parserUnusualContract chainId:{} groupId:{} runtimeBin:{}", chainId,
+                groupId, runtimeBin);
         String tableName = TableName.PARSER.getTableName(chainId, groupId);
-        contractBin = removeBinFirstAndLast(contractBin);
-        String subContractBin = subContractBinForName(contractBin);
-        List<String> txHashList = parserMapper.queryUnusualTxHashByBin(tableName, subContractBin);
+        runtimeBin = removeBinFirstAndLast(runtimeBin);
+        String subRuntimeBin = subRuntimeBinForName(runtimeBin);
+        List<String> txHashList = parserMapper.queryUnusualTxHashByBin(tableName, subRuntimeBin);
         if (CollectionUtils.isEmpty(txHashList)) {
             return;
         }
@@ -347,34 +347,34 @@ public class ParserService {
      */
     private void parserDeploy(int chainId, int groupId, ContractParserResult contractResult,
             TransactionReceipt receipt, String contractAddress) {
-        String contractBin, contractName;
+        String runtimeBin, contractName;
         if (ConstantProperties.ADDRESS_DEPLOY.equals(contractAddress)) {
-            contractBin = StringUtils.removeStart(receipt.getInput(), "0x");
+            runtimeBin = StringUtils.removeStart(receipt.getInput(), "0x");
             ContractParam param = new ContractParam();
             param.setChainId(chainId);
             param.setGroupId(groupId);
-            param.setPartOfBytecodeBin(contractBin);
+            param.setPartOfBytecodeBin(runtimeBin);
             TbContract tbContract = contractService.queryContract(param);
             if (Objects.nonNull(tbContract)) {
                 contractName = tbContract.getContractName();
                 parserInputOutputLogs(chainId, contractResult, receipt,
                         tbContract.getContractAbi());
             } else {
-                contractName = getNameFromContractBin(chainId, groupId, contractBin);
+                contractName = getNameFromRuntimeBin(chainId, groupId, runtimeBin);
                 contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
             }
         } else {
-            contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
+            runtimeBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
                     receipt.getBlockNumber());
-            contractBin = removeBinFirstAndLast(contractBin);
+            runtimeBin = removeBinFirstAndLast(runtimeBin);
             List<TbContract> tbContract =
-                    contractService.queryContractByBin(chainId, groupId, contractBin);
+                    contractService.queryContractByBin(chainId, groupId, runtimeBin);
             if (!CollectionUtils.isEmpty(tbContract)) {
                 contractName = tbContract.get(0).getContractName();
                 parserInputOutputLogs(chainId, contractResult, receipt,
                         tbContract.get(0).getContractAbi());
             } else {
-                contractName = subContractBinForName(contractBin);
+                contractName = subRuntimeBinForName(runtimeBin);
                 contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
             }
         }
@@ -389,7 +389,7 @@ public class ParserService {
      */
     private void parserFunction(int chainId, int groupId, ContractParserResult contractResult,
             TransactionReceipt receipt, String contractAddress) {
-        String contractBin, contractName, interfaceName;
+        String runtimeBin, contractName, interfaceName;
         String methodId = receipt.getInput().substring(0, 10);
         // Precompiled contract
         if (PrecompiledAddress.isInclude(contractAddress)) {
@@ -405,11 +405,11 @@ public class ParserService {
                 contractName = contractAddress;
             }
         } else { // normal contract
-            contractBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
+            runtimeBin = frontInterfacee.getCodeFromFront(chainId, groupId, contractAddress,
                     receipt.getBlockNumber());
-            contractBin = removeBinFirstAndLast(contractBin);
+            runtimeBin = removeBinFirstAndLast(runtimeBin);
             List<MethodInfo> methodInfoList =
-                    methodService.getByMethodInfo(chainId, groupId, methodId, null, contractBin);
+                    methodService.getByMethodInfo(chainId, groupId, methodId, null, runtimeBin);
             if (!CollectionUtils.isEmpty(methodInfoList)) {
                 contractName = methodInfoList.get(0).getContractName();
                 parserInputOutputLogs(chainId, contractResult, receipt,
@@ -417,11 +417,11 @@ public class ParserService {
                 interfaceName = contractResult.getInterfaceName();
             } else {
                 interfaceName = methodId;
-                contractName = subContractBinForName(contractBin);
+                contractName = subRuntimeBinForName(runtimeBin);
                 contractResult.setTransParserType(TransParserType.CONTRACT.getValue());
-                if (StringUtils.isNoneBlank(contractBin)) {
+                if (StringUtils.isNoneBlank(runtimeBin)) {
                     List<TbContract> contractRow =
-                            contractService.queryContractByBin(chainId, groupId, contractBin);
+                            contractService.queryContractByBin(chainId, groupId, runtimeBin);
                     if (!CollectionUtils.isEmpty(contractRow)) {
                         contractName = contractRow.get(0).getContractName();
                         contractResult.setTransParserType(TransParserType.FUNCTION.getValue());
@@ -445,7 +445,8 @@ public class ParserService {
         if (ObjectUtils.isEmpty(tbChain)) {
             return;
         }
-        TransactionDecoder transactionDecoder = new TransactionDecoder(abi, tbChain.getChainType());
+        TransactionDecoder transactionDecoder =
+                new TransactionDecoder(abi, tbChain.getEncryptType());
         InputAndOutputResult inputResult = null;
         InputAndOutputResult outputResult = null;
         String logs = null;
@@ -470,17 +471,17 @@ public class ParserService {
     /**
      * remove "0x" and last 68 character.
      */
-    private String removeBinFirstAndLast(String contractBin) {
-        if (StringUtils.isBlank(contractBin)) {
+    private String removeBinFirstAndLast(String runtimeBin) {
+        if (StringUtils.isBlank(runtimeBin)) {
             return null;
         }
-        if (contractBin.startsWith("0x")) {
-            contractBin = StringUtils.removeStart(contractBin, "0x");
+        if (runtimeBin.startsWith("0x")) {
+            runtimeBin = StringUtils.removeStart(runtimeBin, "0x");
         }
-        if (contractBin.length() > 68) {
-            contractBin = contractBin.substring(0, contractBin.length() - 68);
+        if (runtimeBin.length() > 68) {
+            runtimeBin = runtimeBin.substring(0, runtimeBin.length() - 68);
         }
-        return contractBin;
+        return runtimeBin;
     }
 
     /**
@@ -494,24 +495,24 @@ public class ParserService {
     }
 
     /**
-     * get contractName from contractBin.
+     * get contractName from runtimeBin.
      */
-    private String getNameFromContractBin(int chainId, int groupId, String contractBin) {
+    private String getNameFromRuntimeBin(int chainId, int groupId, String runtimeBin) {
         List<TbContract> tbContract =
-                contractService.queryContractByBin(chainId, groupId, contractBin);
+                contractService.queryContractByBin(chainId, groupId, runtimeBin);
         if (!CollectionUtils.isEmpty(tbContract)) {
             return tbContract.get(0).getContractName();
         }
-        return subContractBinForName(contractBin);
+        return subRuntimeBinForName(runtimeBin);
     }
 
     /**
-     * substring contractBin for contractName.
+     * substring runtimeBin for contractName.
      */
-    private String subContractBinForName(String contractBin) {
+    private String subRuntimeBinForName(String runtimeBin) {
         String contractName = ConstantProperties.CONTRACT_NAME_ZERO;
-        if (StringUtils.isNotBlank(contractBin) && contractBin.length() > 10) {
-            contractName = contractBin.substring(contractBin.length() - 10);
+        if (StringUtils.isNotBlank(runtimeBin) && runtimeBin.length() > 10) {
+            contractName = runtimeBin.substring(runtimeBin.length() - 10);
         }
         return contractName;
     }

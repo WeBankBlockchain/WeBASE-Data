@@ -15,14 +15,14 @@
 package com.webank.webase.data.collect.base.enums;
 
 /**
- * Enumeration of chain type.
+ * Enumeration of encrypt type.
  */
-public enum ChainType {
+public enum EncryptType {
     ecdsa(0), guomi(1);
 
     private int type;
 
-    private ChainType(int type) {
+    private EncryptType(int type) {
         this.type = type;
     }
 
@@ -32,7 +32,7 @@ public enum ChainType {
 
     public static boolean isInclude(int type) {
         boolean include = false;
-        for (ChainType e : ChainType.values()) {
+        for (EncryptType e : EncryptType.values()) {
             if (e.getType() == type) {
                 include = true;
                 break;

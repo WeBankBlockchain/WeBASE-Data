@@ -20,8 +20,8 @@
             jdbcType="VARCHAR" property="contractSource" />
         <result column="contract_abi" javaType="java.lang.String"
             jdbcType="VARCHAR" property="contractAbi" />
-        <result column="contract_bin" javaType="java.lang.String"
-            jdbcType="VARCHAR" property="contractBin" />
+        <result column="runtime_bin" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="runtimeBin" />
         <result column="bytecode_bin" javaType="java.lang.String"
             jdbcType="VARCHAR" property="bytecodeBin" />
         <result column="contract_type" javaType="java.lang.Integer"
@@ -37,8 +37,8 @@
     <insert id="add"
         parameterType="com.webank.webase.data.collect.contract.entity.TbContract">
         insert into
-        tb_contract(chain_id,group_id,contract_path,contract_name,contract_source,contract_abi,contract_bin,bytecode_bin,description,create_time,modify_time)
-        values(#{chainId},#{groupId},#{contractPath},#{contractName},#{contractSource},#{contractAbi},#{contractBin},#{bytecodeBin},#{description},NOW(),NOW())
+        tb_contract(chain_id,group_id,contract_path,contract_name,contract_source,contract_abi,runtime_bin,bytecode_bin,description,create_time,modify_time)
+        values(#{chainId},#{groupId},#{contractPath},#{contractName},#{contractSource},#{contractAbi},#{runtimeBin},#{bytecodeBin},#{description},NOW(),NOW())
         <selectKey keyProperty="contractId" order="AFTER"
             resultType="java.lang.Integer">
             SELECT LAST_INSERT_ID()
@@ -70,8 +70,8 @@
         <if test="contractAbi != null and contractAbi != ''">
             ,contract_abi = #{contractAbi}
         </if>
-        <if test="contractBin != null and contractBin != ''">
-            ,contract_bin = #{contractBin}
+        <if test="runtimeBin != null and runtimeBin != ''">
+            ,runtime_bin = #{runtimeBin}
         </if>
         <if test="bytecodeBin != null and bytecodeBin != ''">
             ,bytecode_bin = #{bytecodeBin}
@@ -167,7 +167,7 @@
         select * from tb_contract
         where chain_id = #{chainId}
         and group_id = #{groupId}
-        and contract_bin like CONCAT(#{contractBin},'%')
+        and runtime_bin like CONCAT(#{runtimeBin},'%')
     </select>
 
 </mapper>
