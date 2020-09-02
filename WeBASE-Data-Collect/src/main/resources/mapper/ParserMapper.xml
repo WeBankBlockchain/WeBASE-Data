@@ -140,7 +140,7 @@
     <select id="queryUnusualTxHashByBin" resultType="java.lang.String">
         select trans_hash
         from ${tableName}
-        where contract_name = #{contractBin}
+        where contract_name = #{runtimeBin}
         and (trans_parser_type = 1 or trans_parser_type = 2)
     </select>
 

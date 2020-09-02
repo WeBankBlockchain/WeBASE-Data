@@ -8,8 +8,8 @@
         id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
         chain_id int(11) NOT NULL COMMENT '区块链编号',
         chain_name varchar(120) DEFAULT NULL COMMENT '区块链名称',
-        chain_type tinyint(4) DEFAULT '0' COMMENT '类型（ 0-非国密 1-国密）',
-        attribute varchar(16) DEFAULT 'fisco bcos' COMMENT '属性',
+		chain_type tinyint(4) DEFAULT '0' COMMENT '链类型（ 0-fisco 1-fabric）',
+		encrypt_type tinyint(4) DEFAULT '0' COMMENT '加密类型（ 0-非国密 1-国密）',
         description varchar(1024) COMMENT '描述',
         create_time datetime DEFAULT NULL COMMENT '创建时间',
         modify_time datetime DEFAULT NULL COMMENT '修改时间',
@@ -40,10 +40,9 @@
         group_id int(11) NOT NULL COMMENT '群组ID',
         chain_id int(11) NOT NULL COMMENT '所属区块链编号',
         genesis_block_hash varchar(128) NOT NULL COMMENT '创世块hash',
-        group_name varchar(64) NOT NULL COMMENT '群组名字',
         app_name varchar(128) DEFAULT NULL COMMENT '应用名称',
         app_version varchar(64) DEFAULT NULL COMMENT '应用版本号',
-        app_synopsis varchar(2048) DEFAULT NULL COMMENT '应用概要介绍',
+        app_summary varchar(2048) DEFAULT NULL COMMENT '应用概要介绍',
         group_status tinyint(4) DEFAULT '1' COMMENT '状态（1-正常 2-异常）',
         node_count int DEFAULT '0' COMMENT '群组下节点数',
         description text COMMENT '描述',
@@ -56,13 +55,13 @@
 
     <update id="createTbFrontGroupMap">
         CREATE TABLE IF NOT EXISTS tb_front_group_map (
-        map_id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+        id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
         chain_id int(11) NOT NULL COMMENT '区块链编号',
         front_id int(11) NOT NULL COMMENT '前置服务编号',
         group_id int(11) NOT NULL COMMENT '群组编号',
         create_time datetime DEFAULT NULL COMMENT '创建时间',
         modify_time datetime DEFAULT NULL COMMENT '修改时间',
-        PRIMARY KEY (map_id),
+        PRIMARY KEY (id),
         UNIQUE KEY uk_chain_front_group (chain_id,front_id,group_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='前置群组映射表';
     </update>
@@ -127,7 +126,7 @@
         contract_source mediumtext COMMENT '合约源码',
         contract_address varchar(64) COMMENT '合约地址',
         contract_abi mediumtext COMMENT '编译合约生成的abi文件内容',
-        contract_bin mediumtext COMMENT '合约运行时binary，用于合约解析',
+        runtime_bin mediumtext COMMENT '合约运行时binary，用于合约解析',
         bytecode_bin mediumtext COMMENT '合约bytecode binary，用于部署合约',
         contract_type tinyint(4) DEFAULT '0' COMMENT '合约类型(0-普通合约，1-系统合约)',
         description varchar(1024) COMMENT '描述',

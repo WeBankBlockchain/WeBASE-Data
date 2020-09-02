@@ -14,7 +14,7 @@
 package com.webank.webase.data.collect.chain;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
-import com.webank.webase.data.collect.base.enums.ChainType;
+import com.webank.webase.data.collect.base.enums.EncryptType;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.chain.entity.ChainInfo;
 import com.webank.webase.data.collect.chain.entity.ChainParam;
@@ -76,8 +76,8 @@ public class ChainService {
     public TbChain newChain(ChainInfo chainInfo) {
         log.debug("start newChain chainInfo:{}", chainInfo);
         // check type
-        if (!ChainType.isInclude(chainInfo.getChainType())) {
-            throw new BaseException(ConstantCode.INVALID_CHAIN_TYPE);
+        if (!EncryptType.isInclude(chainInfo.getEncryptType())) {
+            throw new BaseException(ConstantCode.INVALID_ENCRYPT_TYPE);
         }
         // check id
         if (checkChainId(chainInfo.getChainId())) {

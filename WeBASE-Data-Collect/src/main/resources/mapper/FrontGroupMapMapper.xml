@@ -7,14 +7,12 @@
     namespace="com.webank.webase.data.collect.frontgroupmap.FrontGroupMapMapper">
     <resultMap id="frontGroupMap"
         type="com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup">
-        <id column="map_id" javaType="java.lang.Integer" jdbcType="INTEGER"
+        <id column="id" javaType="java.lang.Integer" jdbcType="INTEGER"
             property="mapId" />
         <result column="chain_id" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="chainId" />
         <result column="group_id" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="groupId" />
-        <result column="group_name" javaType="java.lang.String"
-            jdbcType="VARCHAR" property="groupName" />
         <result column="front_id" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="frontId" />
         <result column="front_ip" javaType="java.lang.String" jdbcType="VARCHAR"
@@ -35,7 +33,7 @@
         parameterType="com.webank.webase.data.collect.frontgroupmap.entity.MapListParam">
         select count(1) from tb_front_group_map where 1=1
         <if test="mapId != null and mapId != ''">
-            and map_id = #{mapId}
+            and id = #{mapId}
         </if>
         <if test="chainId != null and chainId != ''">
             and a.chain_id = #{chainId}
@@ -50,7 +48,7 @@
 
     <select id="getList" resultMap="frontGroupMap"
         parameterType="com.webank.webase.data.collect.frontgroupmap.entity.MapListParam">
-        select a.map_id,a.chain_id,a.group_id,a.front_id,b.front_ip,b.front_port,c.group_status
+        select a.id,a.chain_id,a.group_id,a.front_id,b.front_ip,b.front_port,c.group_status
         from tb_front_group_map a
         left join tb_front b on(a.front_id=b.front_id)
         left join tb_group c on(
@@ -60,7 +58,7 @@
         left join tb_chain d on(a.chain_id=d.chain_id)
         where 1=1
         <if test="mapId != null and mapId != ''">
-            and a.map_id = #{mapId}
+            and a.id = #{mapId}
         </if>
         <if test="chainId != null and chainId != ''">
             and a.chain_id = #{chainId}
@@ -74,13 +72,11 @@
     </select>
 
     <delete id="removeByChainId">
-        delete from tb_front_group_map where chain_id =
-        #{chainId}
+        delete from tb_front_group_map where chain_id = #{chainId}
     </delete>
 
     <delete id="removeByFrontId">
-        delete from tb_front_group_map where front_id =
-        #{frontId}
+        delete from tb_front_group_map where front_id = #{frontId}
     </delete>
 
     <delete id="removeByGroupId">
