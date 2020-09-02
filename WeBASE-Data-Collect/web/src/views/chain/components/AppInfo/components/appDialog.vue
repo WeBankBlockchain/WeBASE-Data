@@ -22,8 +22,8 @@
             <el-form-item label="应用版本" prop="appVersion" style="width: 300px;">
                 <el-input v-model="appForm.appVersion" placeholder="请输入应用版本"></el-input>
             </el-form-item>
-            <el-form-item label="应用概要" prop="appSynopsis" style="width: 300px;">
-                <el-input v-model="appForm.appSynopsis" type="textarea" placeholder="请输入应用概要"></el-input>
+            <el-form-item label="应用概要" prop="appSummary" style="width: 300px;">
+                <el-input v-model="appForm.appSummary" type="textarea" placeholder="请输入应用概要"></el-input>
             </el-form-item>
             <el-form-item label="描述" prop="description" style="width: 300px;">
                 <el-input v-model="appForm.description" type="textarea" placeholder="请输入应用描述"></el-input>
@@ -55,7 +55,7 @@ export default {
                             appName: this.appDialogOptions.data["appName"],
                             description: this.appDialogOptions.data["description"],
                             appVersion: this.appDialogOptions.data["appVersion"],
-                            appSynopsis: this.appDialogOptions.data["appSynopsis"],
+                            appSummary: this.appDialogOptions.data["appSummary"],
                             disabled: true,
                             mDisabled: false,
                             dShow: true,
@@ -98,7 +98,7 @@ export default {
                 appVersion: [
                     { validator: validateVersion, trigger: 'blur',required: true, }
                 ],
-                appSynopsis: [
+                appSummary: [
                     {
                         required: true,
                         message: '请输入应用概要',
@@ -151,7 +151,7 @@ console.log(1111)
                 chainId: this.appDialogOptions.data.chainId,
                 groupId: this.appDialogOptions.data.groupId,
                 appName: this.appForm.appName,
-                appSynopsis: this.appForm.appSynopsis,
+                appSummary: this.appForm.appSummary,
                 appVersion: this.appForm.appVersion,
                 description: this.appForm.description,
             };

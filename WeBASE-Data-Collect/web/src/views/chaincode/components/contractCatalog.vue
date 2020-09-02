@@ -376,7 +376,7 @@ export default {
                             contractActive: false,
                             contractstatus: 0,
                             contractAbi: "",
-                            contractBin: "",
+                            runtimeBin: "",
                             contractAddress: "",
                             contractVersion: "",
                             contractNo: new Date().getTime()
@@ -442,7 +442,7 @@ export default {
                 contractPath: data.contractPath,
                 contractSource: data.contractSource,
                 contractAbi: data.contractAbi,
-                contractBin: data.contractBin,
+                runtimeBin: data.runtimeBin,
                 bytecodeBin: data.bytecodeBin,
             }
             if (data.contractId) {

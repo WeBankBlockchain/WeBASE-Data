@@ -60,7 +60,7 @@ export default {
                     name: '应用版本'
                 },
                 {
-                    enName: 'appSynopsis',
+                    enName: 'appSummary',
                     name: '应用概要'
                 },
                 {
