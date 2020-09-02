@@ -14,7 +14,7 @@
                     </el-table-column>
                     <el-table-column v-for="head in chainHead" :label="head.name" :key="head.enName" show-overflow-tooltip align="center">
                         <template slot-scope="scope">
-                            <span v-if="head.enName == 'chainType' ">{{scope.row[head.enName] | Type}}</span>
+                            <span v-if="head.enName == 'encryptType' ">{{scope.row[head.enName] | Type}}</span>
                             <span v-else>{{scope.row[head.enName]}}</span>
                         </template>
                     </el-table-column>
@@ -45,7 +45,7 @@ export default {
                     name: '区块链编号'
                 },
                 {
-                    enName: 'chainType',
+                    enName: 'encryptType',
                     name: '区块链类型'
                 },
                 {
@@ -105,9 +105,9 @@ export default {
     filters: {
         Type: function (val) {
             if (val) {
-                return "fisco-bcos(secp256k1/sha3)"
-            } else {
                 return "fisco-bcos(sm2/sm3)"
+            } else {
+                return "fisco-bcos(secp256k1/sha3)"
             }
         }
     }
