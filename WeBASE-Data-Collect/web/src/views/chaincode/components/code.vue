@@ -200,7 +200,7 @@ export default {
             this.contractAddress = data.contractAddress;
             this.errorMessage = data.description || "";
             this.contractName = data.contractName;
-            this.bin = data.contractBin;
+            this.bin = data.runtimeBin;
             this.bytecodeBin = data.bytecodeBin || "";
             this.version = data.contractVersion;
             this.complieAbiTextHeight = false;
@@ -476,7 +476,7 @@ export default {
                     this.bin = compiledMap.evm.deployedBytecode.object;
                     this.bytecodeBin = compiledMap.evm.bytecode.object;
                     this.data.contractAbi = this.abiFile;
-                    this.data.contractBin = this.bin;
+                    this.data.runtimeBin = this.bin;
                     this.data.contractSource = Base64.encode(this.content);
                     this.$set(this.data, "bytecodeBin", this.bytecodeBin);
                     this.loading = false;

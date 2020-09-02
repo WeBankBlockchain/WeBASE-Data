@@ -18,9 +18,9 @@
                     </el-table-column>
                     <el-table-column prop="chainId" label="区块链编号">
                     </el-table-column>
-                    <el-table-column prop="chainType" label="区块链类型">
+                    <el-table-column prop="encryptType" label="区块链类型">
                         <template slot-scope="scope">
-                            <span>{{scope.row.chainType | Type}}</span>
+                            <span>{{scope.row.encryptType | Type}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="createTime" label="创建时间">
@@ -166,9 +166,9 @@ export default {
     filters: {
         Type: function (val) {
             if (val) {
-                return "fisco-bcos(secp256k1/sha3)"
-            } else {
                 return "fisco-bcos(sm2/sm3)"
+            } else {
+                return "fisco-bcos(secp256k1/sha3)"
             }
         }
     }
