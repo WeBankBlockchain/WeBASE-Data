@@ -45,7 +45,7 @@ constant:
   dataParserCron: 5/10 * * * * ?
   
   ## if multiLiving
-  multiLiving: true
+  multiLiving: false
  
 # elastic-job config
 job:
