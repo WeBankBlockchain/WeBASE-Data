@@ -158,6 +158,10 @@ export default {
             addChain(data).then(res => {
                 this.loading = false
                 if (res.data.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '新增成功'
+                    })
                     this.modelClose();
                 } else {
                     this.$message({
@@ -183,6 +187,10 @@ export default {
             modifyChain(data).then(res => {
                 this.loading = false
                 if (res.data.code === 0) {
+                    this.$message({
+                        type: 'success',
+                        message: '修改成功'
+                    })
                     this.modelClose();
                 } else {
                     this.$message({

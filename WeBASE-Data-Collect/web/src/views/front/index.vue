@@ -12,7 +12,7 @@
                             <el-option
                             v-for="item in groupList"
                             :key="item.groupId"
-                            :label="item.groupName"
+                            :label="item.appName"
                             :value="item.groupId">
                             </el-option>
                         </el-select>

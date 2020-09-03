@@ -6,7 +6,7 @@
             <el-table :data="groupList" class="search-table-content" v-loading="loading">
                     <el-table-column v-for="head in groupHead" :label="head.name" :key="head.enName" :prop="head.enName" :width="head.width" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            <template v-if="head.enName=='groupName'">
+                            <template v-if="head.enName=='appName'">
                                 <span @click="toOverview(scope.row)" class="link">{{scope.row[head.enName]}}</span>
                             </template>
                             <template v-else-if="head.enName=='groupId'">
@@ -50,7 +50,7 @@ export default {
                     width: ''
                 },
                 {
-                    enName: "groupName",
+                    enName: "appName",
                     name: "群组名称",
                     width: ''
                 },
