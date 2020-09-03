@@ -55,7 +55,7 @@ export default {
                         this.chainFrom = {
                             chainName: this.chainDialogOptions.data["chainName"],
                             chainId: this.chainDialogOptions.data["chainId"],
-                            type: this.chainDialogOptions.data["chainType"],
+                            type: this.chainDialogOptions.data["encryptType"],
                             disabled: true,
                             mDisabled: true,
                             dShow: true,
@@ -151,7 +151,7 @@ export default {
         getCreatChainInfo: function () {
             let data = {
                 chainName: this.chainFrom.chainName,
-                chainType: this.chainFrom.type,
+                encryptType: this.chainFrom.type,
                 description: this.chainFrom.description,
                 chainId: this.chainFrom.chainId,
             }

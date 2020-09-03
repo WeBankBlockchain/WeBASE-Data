@@ -151,11 +151,12 @@ export default {
                         var list = res.data.data
                         this.chainList = list;
                         if (!list.length) return;
-                        if (!localStorage.getItem("chainName") || !localStorage.getItem("chainId") || !localStorage.getItem("chainType")) {
+                        if (!localStorage.getItem("chainName") || !localStorage.getItem("chainId") || !localStorage.getItem("chainType") || !localStorage.getItem("encryptType")) {
                             this.chainName = list[0]['chainName']
                             localStorage.setItem("chainName", list[0]['chainName'])
                             localStorage.setItem("chainId", list[0]['chainId'])
                             localStorage.setItem("chainType", list[0]['chainType'])
+                            localStorage.setItem("encryptType", list[0]['encryptType'])
                         }
                         callback()
                     } else {
@@ -184,8 +185,9 @@ export default {
             localStorage.setItem("chainName", val.chainName);
             localStorage.setItem("chainId", val.chainId);
             localStorage.setItem("chainType", val.chainType);
+            localStorage.setItem("encryptType", val.encryptType);
             this.queryGroupList()
-            this.$emit('changeChain', val.chainType);
+            this.$emit('changeChain', val.encryptType);
         },
         queryGroupList() {
             getGroups(localStorage.getItem('chainId')).then(res => {
