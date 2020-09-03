@@ -16,11 +16,13 @@ package com.webank.webase.data.fetcher.audit.entity;
 import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class AuditQueryParam extends BaseQueryParam {
     private Integer status;
 }
