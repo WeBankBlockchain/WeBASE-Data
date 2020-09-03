@@ -42,12 +42,12 @@
             </el-dropdown>
             <el-dropdown trigger="click" @command="changeGroup" placement="bottom" v-if="showGroup">
                 <span class="cursor-pointer font-color-fff" @click="groupVisible = !groupVisible">
-                    群组: {{groupName}}<i :class="[groupVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
+                    群组: {{appName}}<i :class="[groupVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
                     <ul style="max-height: 220px;overflow-y:auto" class="text-center">
                         <el-dropdown-item v-for=" item in groupList" :key="item.groupId" :command="item">
-                            {{item.groupName}}
+                            {{item.appName}}
                         </el-dropdown-item>
                     </ul>
                 </el-dropdown-menu>
@@ -115,7 +115,7 @@ export default {
     data() {
         return {
             title: this.headTitle,
-            groupName: "-",
+            appName: "-",
             accountName: "-",
             dialogShow: false,
             path: "",
@@ -138,8 +138,8 @@ export default {
         if (localStorage.getItem("chainName")) {
             this.chainName = localStorage.getItem("chainName");
         }
-        if (localStorage.getItem("groupName")) {
-            this.groupName = localStorage.getItem("groupName")
+        if (localStorage.getItem("appName")) {
+            this.appName = localStorage.getItem("appName")
         }
         this.queryChainList(this.queryGroupList)
     },
@@ -201,13 +201,13 @@ export default {
                     });
                     let is = arr.includes(+localStorage.getItem("groupId"))
                     if(!is){
-                        this.groupName = list[0]['groupName']
-                        localStorage.setItem("groupName", list[0]['groupName'])
+                        this.appName = list[0]['appName']
+                        localStorage.setItem("appName", list[0]['appName'])
                         localStorage.setItem("groupId", list[0]['groupId'])
                     }
                     // if (!localStorage.getItem('groupId')&&!is) {
-                    //     this.groupName = list[0]['groupName']
-                    //     localStorage.setItem("groupName", list[0]['groupName'])
+                    //     this.appName = list[0]['appName']
+                    //     localStorage.setItem("appName", list[0]['appName'])
                     //     localStorage.setItem("groupId", list[0]['groupId'])
                     // }
                 } else {
@@ -224,8 +224,8 @@ export default {
             })
         },
         changeGroup(val) {
-            this.groupName = val.groupName
-            localStorage.setItem("groupName", val.groupName);
+            this.appName = val.appName
+            localStorage.setItem("appName", val.appName);
             localStorage.setItem("groupId", val.groupId);
             this.$emit('changeGroup', val.groupId);
         },

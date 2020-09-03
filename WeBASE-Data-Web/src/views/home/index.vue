@@ -334,7 +334,7 @@ export default {
                         this.groupCollection = []
                         arr.forEach(group => {
                             this.groupCollection.push({
-                                label: group.groupName,
+                                label: group.appName,
                                 value: group.groupId.toString(),
                                 appName: group.appName,
                             })
