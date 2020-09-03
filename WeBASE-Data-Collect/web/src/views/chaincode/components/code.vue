@@ -513,7 +513,7 @@ export default {
                     if (value.name && value.type == 'function') {
                         let data = {}
                         let methodId;
-                        if (localStorage.getItem("chainType") == 1) {
+                        if (localStorage.getItem("encryptType") == 1) {
                             methodId = Web3EthAbi.smEncodeFunctionSignature({
                                 name: value.name,
                                 type: value.type,
@@ -533,7 +533,7 @@ export default {
                     } else if (value.name && value.type == 'event') {
                         let data = {}
                         let methodId;
-                        if (localStorage.getItem("chainType") == 1) {
+                        if (localStorage.getItem("encryptType") == 1) {
                             methodId = Web3EthAbi.smEncodeEventSignature({
                                 name: value.name,
                                 type: value.type,
