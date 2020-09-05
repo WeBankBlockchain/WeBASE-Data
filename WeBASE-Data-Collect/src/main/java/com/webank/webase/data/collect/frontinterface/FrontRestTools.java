@@ -14,14 +14,6 @@
 
 package com.webank.webase.data.collect.frontinterface;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.webank.webase.data.collect.base.code.ConstantCode;
-import com.webank.webase.data.collect.base.exception.BaseException;
-import com.webank.webase.data.collect.base.properties.ConstantProperties;
-import com.webank.webase.data.collect.base.tools.JacksonUtils;
-import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
-import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup;
-import com.webank.webase.data.collect.frontinterface.entity.FailInfo;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -31,20 +23,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import lombok.extern.log4j.Log4j2;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
+
+import com.webank.webase.data.collect.base.code.ConstantCode;
+import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
+import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
+import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup;
+import com.webank.webase.data.collect.frontinterface.entity.FailInfo;
+import com.webank.webase.data.collect.rest.AbstractRestService;
+
+import lombok.extern.log4j.Log4j2;
 
 /**
  * about http request for WeBASE-Front.
@@ -78,36 +74,33 @@ public class FrontRestTools {
     private static Map<String, FailInfo> failRequestMap = new HashMap<>();
 
     @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
     private ConstantProperties cproperties;
     @Autowired
     private FrontGroupMapCache frontGroupMapCache;
+    @Autowired
+    private AbstractRestService abstractRestService;
 
     /**
      * get from specific front.
      */
-    public <T> T getFromSpecificFront(int groupId, String frontIp, Integer frontPort, String uri,
-            Class<T> clazz) {
+    public <T> T getFromSpecificFront(int groupId, String frontIp, Integer frontPort, String uri, Class<T> clazz) {
         return requestSpecificFront(groupId, frontIp, frontPort, HttpMethod.GET, uri, null, clazz);
     }
 
     /**
      * post to specific front.
      */
-    public <T> T postToSpecificFront(Integer groupId, String frontIp, Integer frontPort, String uri,
-            Object param, Class<T> clazz) {
-        return requestSpecificFront(groupId, frontIp, frontPort, HttpMethod.POST, uri, param,
-                clazz);
+    public <T> T postToSpecificFront(Integer groupId, String frontIp, Integer frontPort, String uri, Object param,
+            Class<T> clazz) {
+        return requestSpecificFront(groupId, frontIp, frontPort, HttpMethod.POST, uri, param, clazz);
     }
 
     /**
      * delete to specific front.
      */
-    public <T> T deleteToSpecificFront(Integer groupId, String frontIp, Integer frontPort,
-            String uri, Object param, Class<T> clazz) {
-        return requestSpecificFront(groupId, frontIp, frontPort, HttpMethod.DELETE, uri, param,
-                clazz);
+    public <T> T deleteToSpecificFront(Integer groupId, String frontIp, Integer frontPort, String uri, Object param,
+            Class<T> clazz) {
+        return requestSpecificFront(groupId, frontIp, frontPort, HttpMethod.DELETE, uri, param, clazz);
     }
 
     /**
@@ -120,35 +113,30 @@ public class FrontRestTools {
     /**
      * post from front for entity.
      */
-    public <T> T postForEntity(Integer chainId, Integer groupId, String uri, Object params,
-            Class<T> clazz) {
+    public <T> T postForEntity(Integer chainId, Integer groupId, String uri, Object params, Class<T> clazz) {
         return restTemplateExchange(chainId, groupId, uri, HttpMethod.POST, params, clazz);
     }
 
     /**
      * delete from front for entity.
      */
-    public <T> T deleteForEntity(Integer chainId, Integer groupId, String uri, Object params,
-            Class<T> clazz) {
+    public <T> T deleteForEntity(Integer chainId, Integer groupId, String uri, Object params, Class<T> clazz) {
         return restTemplateExchange(chainId, groupId, uri, HttpMethod.DELETE, params, clazz);
     }
 
     /**
      * request from specific front.
      */
-    private <T> T requestSpecificFront(int groupId, String frontIp, Integer frontPort,
-            HttpMethod method, String uri, Object param, Class<T> clazz) {
+    private <T> T requestSpecificFront(int groupId, String frontIp, Integer frontPort, HttpMethod method, String uri,
+            Object param, Class<T> clazz) {
         uri = uriAddGroupId(groupId, uri);
         String url = String.format(FRONT_URL, frontIp, frontPort, uri);
         try {
-            HttpEntity<?> entity = buildHttpEntity(param);// build entity
-            ResponseEntity<T> response = restTemplate.exchange(url, method, entity, clazz);
-            return response.getBody();
+            return abstractRestService.restTemplate(url, method, param, clazz);
         } catch (ResourceAccessException e) {
             log.error("requestSpecificFront. ResourceAccessException:", e);
-            throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL);
         } catch (HttpStatusCodeException e) {
-            errorFormat(e.getResponseBodyAsString());
+            AbstractRestService.frontErrorFormat(e.getResponseBodyAsString());
         }
         throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL);
     }
@@ -156,9 +144,8 @@ public class FrontRestTools {
     /**
      * request exchange.
      */
-    @SuppressWarnings("rawtypes")
-    private <T> T restTemplateExchange(int chainId, int groupId, String uri, HttpMethod method,
-            Object param, Class<T> clazz) {
+    private <T> T restTemplateExchange(int chainId, int groupId, String uri, HttpMethod method, Object param,
+            Class<T> clazz) {
         List<FrontGroup> frontList = frontGroupMapCache.getMapListByChainId(chainId, groupId);
         if (frontList == null || frontList.size() == 0) {
             log.error("fail restTemplateExchange. frontList is empty");
@@ -168,9 +155,7 @@ public class FrontRestTools {
         while (list != null && list.size() > 0) {
             String url = buildFrontUrl(list, uri, method);// build url
             try {
-                HttpEntity entity = buildHttpEntity(param);// build entity
-                ResponseEntity<T> response = restTemplate.exchange(url, method, entity, clazz);
-                return response.getBody();
+                return abstractRestService.restTemplate(url, method, param, clazz);
             } catch (ResourceAccessException ex) {
                 log.warn("fail restTemplateExchange", ex);
                 setFailCount(url, method.toString());
@@ -180,7 +165,7 @@ public class FrontRestTools {
                 log.info("continue next front");
                 continue;
             } catch (HttpStatusCodeException ex) {
-                errorFormat(ex.getResponseBodyAsString());
+                AbstractRestService.frontErrorFormat(ex.getResponseBodyAsString());
             }
         }
         throw new BaseException(ConstantCode.REQUEST_FRONT_FAIL);
@@ -197,9 +182,9 @@ public class FrontRestTools {
             FrontGroup frontGroup = iterator.next();
             log.debug("============frontGroup:{}", JacksonUtils.objToString(frontGroup));
 
-            uri = uriAddGroupId(frontGroup.getGroupId(), uri);// append groupId to uri
-            String url = String
-                    .format(FRONT_URL, frontGroup.getFrontIp(), frontGroup.getFrontPort(), uri)
+            uri = uriAddGroupId(frontGroup.getGroupId(), uri);// append groupId
+                                                              // to uri
+            String url = String.format(FRONT_URL, frontGroup.getFrontIp(), frontGroup.getFrontPort(), uri)
                     .replaceAll(" ", "");
             iterator.remove();
 
@@ -222,28 +207,11 @@ public class FrontRestTools {
         }
 
         final String tempUri = uri.contains("?") ? uri.substring(0, uri.indexOf("?")) : uri;
-        long countNotAppend =
-                URI_NOT_PREPEND_GROUP_ID.stream().filter(u -> u.contains(tempUri)).count();
+        long countNotAppend = URI_NOT_PREPEND_GROUP_ID.stream().filter(u -> u.contains(tempUri)).count();
         if (countNotAppend > 0) {
             return uri;
         }
         return groupId + "/" + uri;
-    }
-
-
-    /**
-     * build httpEntity.
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static HttpEntity buildHttpEntity(Object param) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        String paramStr = null;
-        if (Objects.nonNull(param)) {
-            paramStr = JacksonUtils.objToString(param);
-        }
-        HttpEntity requestEntity = new HttpEntity(paramStr, headers);
-        return requestEntity;
     }
 
     /**
@@ -260,8 +228,7 @@ public class FrontRestTools {
         }
         int failCount = failInfo.getFailCount();
         Long subTime = Duration.between(failInfo.getLatestTime(), Instant.now()).toMillis();
-        if (failCount > cproperties.getMaxRequestFail()
-                && subTime < cproperties.getSleepWhenHttpMaxFail()) {
+        if (failCount > cproperties.getMaxRequestFail() && subTime < cproperties.getSleepWhenHttpMaxFail()) {
             return true;
         } else if (subTime > cproperties.getSleepWhenHttpMaxFail()) {
             // service is sleep
@@ -290,14 +257,12 @@ public class FrontRestTools {
         log.info("the latest failInfo:{}", JacksonUtils.objToString(failRequestMap));
     }
 
-
     /**
      * build key description: frontIp$frontPort example: 2651654951545$8081.
      */
     private String buildKey(String url, String methodType) {
         return url.hashCode() + "$" + methodType;
     }
-
 
     /**
      * delete key of map.
@@ -311,26 +276,5 @@ public class FrontRestTools {
                 iter.remove();
             }
         }
-    }
-
-    /**
-     * front error format
-     * 
-     * @param error
-     */
-    private static void errorFormat(String str) {
-        JsonNode error = JacksonUtils.stringToJsonNode(str);
-        log.error("requestFront fail. error:{}", error);
-        if (ObjectUtils.isEmpty(error.get("errorMessage"))) {
-            throw new BaseException(ConstantCode.REQUEST_NODE_EXCEPTION);
-        }
-        String errorMessage = error.get("errorMessage").asText();
-        if (errorMessage.contains("code")) {
-            JsonNode errorInside =
-                    JacksonUtils.stringToJsonNode(error.get("errorMessage").asText()).get("error");
-            throw new BaseException(errorInside.get("code").asInt(),
-                    errorInside.get("message").asText());
-        }
-        throw new BaseException(error.get("code").asInt(), errorMessage);
     }
 }

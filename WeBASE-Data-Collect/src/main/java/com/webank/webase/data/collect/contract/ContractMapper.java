@@ -13,17 +13,21 @@
  */
 package com.webank.webase.data.collect.contract;
 
-import com.webank.webase.data.collect.contract.entity.ContractParam;
-import com.webank.webase.data.collect.contract.entity.TbContract;
 import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import com.webank.webase.data.collect.contract.entity.ContractParam;
+import com.webank.webase.data.collect.contract.entity.TbContract;
 
 /**
  * contract data interface.
  */
 @Repository
 public interface ContractMapper {
+    
+    int addList(List<TbContract> list);
 
     Integer add(TbContract tbContract);
 

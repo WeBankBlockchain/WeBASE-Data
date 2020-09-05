@@ -1,4 +1,3 @@
-
 -- ----------------------------
 -- Table structure for tb_chain
 -- ----------------------------
@@ -41,7 +40,7 @@ CREATE TABLE IF NOT EXISTS tb_group (
 	id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
 	group_id int(11) NOT NULL COMMENT '群组ID',
 	chain_id int(11) NOT NULL COMMENT '所属区块链编号',
-	genesis_block_hash varchar(128) NOT NULL COMMENT '创世块hash',
+	genesis_block_hash varchar(128) DEFAULT NULL COMMENT '创世块hash',
 	app_name varchar(128) DEFAULT NULL COMMENT '应用名称',
     app_version varchar(64) DEFAULT NULL COMMENT '应用版本号',
     app_summary varchar(2048) DEFAULT NULL COMMENT '应用概要介绍',
@@ -180,3 +179,19 @@ CREATE TABLE IF NOT EXISTS tb_solc (
 	modify_time datetime DEFAULT NULL COMMENT '修改时间',
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='编译器信息表';
+
+
+-- ----------------------------
+-- Table structure for tb_config_version
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS tb_config_version (
+    id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+    chain_info_version varchar(64) DEFAULT NULL COMMENT '链信息版本',
+    front_info_version varchar(64) DEFAULT NULL COMMENT '前置信息版本',
+    group_info_verion varchar(64) DEFAULT NULL COMMENT '群组信息版本',
+    user_info_version varchar(64) DEFAULT NULL COMMENT '用户信息版本',
+    contract_info_version varchar(64) DEFAULT NULL COMMENT '合约信息版本',
+    create_time datetime DEFAULT NULL COMMENT '创建时间',
+    modify_time datetime DEFAULT NULL COMMENT '修改时间',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='配置版本信息表';

@@ -11,31 +11,23 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.node.entity;
+package com.webank.webase.data.collect.config.entity;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * Entity class of table tb_node.
+ * user's address, userName, groupId etc.
  */
 @Data
-public class TbNode {
-
-    private Integer id;
-    private String nodeId;
-    private Integer frontId;
+@NoArgsConstructor
+public class RspUserInfo {
     private Integer chainId;
+    @JsonProperty(value = "appId")
     private Integer groupId;
-    private String orgName;
-    private String nodeIp;
-    private Integer p2pPort;
+    @JsonProperty(value = "signUserId")
+    private String userName;
+    private String address;
     private String description;
-    private BigInteger blockNumber;
-    private BigInteger pbftView;
-    private int nodeActive;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
-
 }

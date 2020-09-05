@@ -26,6 +26,17 @@
         (chain_id,chain_name,encrypt_type,description,create_time,modify_time)
         values(#{chainId},#{chainName},#{encryptType},#{description},NOW(),NOW())
     </insert>
+
+    <insert id="addList">
+        insert into tb_chain
+        (chain_id,chain_name,encrypt_type,description,create_time,modify_time)
+        values
+        <foreach collection ="list" item="info" separator="," >
+        (#{info.chainId},#{info.chainName},#{info.encryptType},#{info.description},NOW(),NOW())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        chain_name=VALUES(chain_name),encrypt_type=VALUES(encrypt_type),description=VALUES(description),modify_time=NOW()
+    </insert>
     
     <update id="update">
 		update tb_chain 

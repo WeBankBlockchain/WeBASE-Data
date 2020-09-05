@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * service of chain.
@@ -70,6 +71,16 @@ public class ChainService {
     @Lazy
     private ResetGroupListTask resetGroupListTask;
 
+    /**
+     * add chain list
+     */
+    public void addChainList(List<TbChain> chainList) {
+        if (CollectionUtils.isEmpty(chainList)) {
+            log.info("contractList is empty.");
+            return;
+        }
+        chainMapper.addList(chainList);
+    }
     /**
      * add new chain
      */

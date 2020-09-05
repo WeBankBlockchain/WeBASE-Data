@@ -44,6 +44,11 @@ constant:
   ## data parser
   dataParserCron: 5/10 * * * * ?
   
+  ## if sync config from the third party
+  syncConfig: false
+  syncConfigCron: 3 0 0/1 * * ?
+  configServerIpPort: 127.0.0.1:8001
+  
   ## if multiLiving
   multiLiving: false
  

@@ -15,6 +15,7 @@ package com.webank.webase.data.collect.user;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.config.entity.RspUserInfo;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.user.entity.TbUser;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * services for user data.
@@ -42,6 +44,17 @@ public class UserService {
     private ParserService parserService;
     @Autowired
     private GroupService groupService;
+    
+    /**
+     * add user list
+     */
+    public void addUserList(List<RspUserInfo> userList) {
+        if (CollectionUtils.isEmpty(userList)) {
+            log.info("contractList is empty.");
+            return;
+        }
+        userMapper.addList(userList);
+    }
 
     /**
      * add user info.

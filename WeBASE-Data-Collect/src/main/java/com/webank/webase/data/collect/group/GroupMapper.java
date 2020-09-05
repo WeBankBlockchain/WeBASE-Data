@@ -13,18 +13,22 @@
  */
 package com.webank.webase.data.collect.group;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
 import com.webank.webase.data.collect.group.entity.AppInfo;
 import com.webank.webase.data.collect.group.entity.GroupGeneral;
 import com.webank.webase.data.collect.group.entity.TbGroup;
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
 /**
  * mapper for table tb_group.
  */
 @Repository
 public interface GroupMapper {
+    
+    int addList(List<TbGroup> list);
 
     /**
      * add group info

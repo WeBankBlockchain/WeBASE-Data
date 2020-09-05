@@ -44,6 +44,17 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
     </insert>
+    
+    <insert id="addList">
+        insert into tb_contract
+        (contract_id,group_id,chain_id,contract_path,contract_name,contract_source,contract_abi,runtime_bin,bytecode_bin,description,create_time,modify_time)
+        values
+        <foreach collection ="list" item="info" separator="," >
+        (#{info.contractId},#{info.groupId},#{info.chainId},#{info.contractPath},#{info.contractName},#{info.contractSource},#{info.contractAbi},#{info.runtimeBin},#{info.bytecodeBin},#{info.description},NOW(),NOW())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        contract_id=VALUES(contract_id),contract_source=VALUES(contract_source),contract_abi=VALUES(contract_abi),runtime_bin=VALUES(runtime_bin),bytecode_bin=VALUES(bytecode_bin),description=VALUES(description),modify_time=NOW()
+    </insert>
 
     <delete id="remove" parameterType="java.lang.Integer">
         delete from tb_contract where
@@ -57,8 +68,7 @@
     </delete>
 
     <delete id="removeByChainId">
-        delete from tb_contract
-        where chain_id = #{chainId}
+        delete from tb_contract where chain_id = #{chainId}
     </delete>
 
     <update id="update"
