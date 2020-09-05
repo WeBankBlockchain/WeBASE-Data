@@ -92,6 +92,16 @@ public class JacksonUtils {
             return null;
         }
     }
+    
+    public static <T> T objToJavaBean(Object obj, Class<T> clazz) {
+        String jsonString = objToString(obj);
+        return stringToObj(jsonString, clazz);
+    }
+    
+    public static <T> T objToJavaBean(Object obj, TypeReference<T> typeReference) {
+        String jsonString = objToString(obj);
+        return stringToObj(jsonString, typeReference);
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> T stringToObj(String str, Class<T> clazz) {

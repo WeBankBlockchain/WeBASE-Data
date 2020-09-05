@@ -50,6 +50,7 @@ public class TableService {
         tableMapper.createTbContract();
         tableMapper.createTbMethod();
         tableMapper.createTbSolc();
+        tableMapper.createTbConfigVersion();
     }
 
     /**

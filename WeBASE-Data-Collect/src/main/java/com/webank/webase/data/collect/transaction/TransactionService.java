@@ -70,8 +70,6 @@ public class TransactionService {
         transactionMapper.add(tableName, tbTransaction);
     }
 
-
-
     /**
      * query trans list.
      */

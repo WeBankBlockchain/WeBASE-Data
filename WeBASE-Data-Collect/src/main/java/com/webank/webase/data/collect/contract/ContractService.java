@@ -28,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 /**
  * services for contract data.
@@ -43,6 +44,17 @@ public class ContractService {
     private ParserService parserService;
     @Autowired
     private GroupService groupService;
+    
+    /**
+     * add contract list
+     */
+    public void addContractList(List<TbContract> contractList) {
+        if (CollectionUtils.isEmpty(contractList)) {
+            log.info("contractList is empty.");
+            return;
+        }
+        contractMapper.addList(contractList);
+    }
 
     /**
      * add new contract data.

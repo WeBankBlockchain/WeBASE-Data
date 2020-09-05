@@ -11,28 +11,18 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.chain;
+package com.webank.webase.data.collect.config;
 
-import com.webank.webase.data.collect.chain.entity.ChainParam;
-import com.webank.webase.data.collect.chain.entity.TbChain;
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import com.webank.webase.data.collect.config.entity.TbConfigVersion;
+
 @Repository
-public interface ChainMapper {
+public interface ConfigVersionMapper {
+
+    int add(TbConfigVersion tbConfigVersion);
     
-    int addList(List<TbChain> list);
+    int update(TbConfigVersion tbConfigVersion);
 
-    int add(TbChain tbChain);
-    
-    int update(TbChain tbChain);
-
-    Integer getCount(ChainParam param);
-
-    List<TbChain> getList(ChainParam param);
-
-    TbChain getChainById(@Param("chainId") Integer chainId);
-
-    int remove(@Param("chainId") Integer chainId);
+    TbConfigVersion getTbConfigVersion();
 }
