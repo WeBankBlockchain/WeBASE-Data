@@ -60,13 +60,26 @@ public class ContractService {
             Integer contractId = tbContract.getContractId();
             try {
                 if (!ifContractIdExist(contractId)) {
-                    contractMapper.addWithId(tbContract);
+                    addWithId(tbContract);
                     methodService.saveMethodFromContract(tbContract);
                 }
             } catch (Exception e) {
                 log.warn("syncContractList. contractId:{} error:{}", contractId, e);
             }
         }
+    }
+
+    /**
+     * add contract with id.
+     */
+    public TbContract addWithId(TbContract tbContract) {
+        contractMapper.addWithId(tbContract);
+        if (Objects.nonNull(tbContract) && StringUtils.isNotBlank(tbContract.getRuntimeBin())) {
+            // update parser unusual contract
+            parserService.parserUnusualContract(tbContract.getChainId(), tbContract.getGroupId(),
+                    tbContract.getRuntimeBin());
+        }
+        return tbContract;
     }
 
     /**
