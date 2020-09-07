@@ -13,18 +13,16 @@
  */
 package com.webank.webase.data.collect.scheduler;
 
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.config.ConfigService;
 import java.time.Duration;
 import java.time.Instant;
-
+import javax.annotation.PostConstruct;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import com.webank.webase.data.collect.base.properties.ConstantProperties;
-import com.webank.webase.data.collect.config.ConfigService;
-
-import lombok.extern.log4j.Log4j2;
 
 /**
  * get block info from chain. including tb_block and tb_trans (block contains trans)
@@ -39,6 +37,7 @@ public class SyncConfigTask {
     @Autowired
     private ConstantProperties cProperties;
 
+    @PostConstruct
     @Scheduled(cron = "${constant.syncConfigCron}")
     public void taskStart() {
         // toggle
