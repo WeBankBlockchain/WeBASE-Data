@@ -23,6 +23,7 @@ import lombok.Data;
 @Data
 public class NodeInfoDto {
     private String nodeId;
+    private Integer frontId;
     private Integer chainId;
     private Integer groupId;
     private String orgName;

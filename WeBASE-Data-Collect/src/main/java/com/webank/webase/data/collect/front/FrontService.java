@@ -40,6 +40,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * service of web3.
@@ -64,6 +65,81 @@ public class FrontService {
     private FrontGroupMapCache frontGroupMapCache;
     @Autowired
     private ResetGroupListTask resetGroupListTask;
+
+    /**
+     * add front list
+     */
+    public void addFrontList(List<TbFront> frontList) {
+        if (CollectionUtils.isEmpty(frontList)) {
+            log.info("frontList is empty.");
+            return;
+        }
+        frontList.stream().forEach(front -> addFrontAync(front));
+    }
+
+    /**
+     * sync front from third party
+     */
+    @Transactional
+    public void addFrontAync(TbFront tbFront) {
+        Integer frontId = tbFront.getFrontId();
+        String frontIp = tbFront.getFrontIp();
+        Integer frontPort = tbFront.getFrontPort();
+        try {
+            // check front not exist
+            if (getById(frontId) != null) {
+                log.info("end addFrontAync, frontId:{} exists", frontId);
+                return;
+            }
+            // check chainId
+            Integer chainId = tbFront.getChainId();
+            TbChain tbChain = chainService.getChainById(chainId);
+            if (tbChain == null) {
+                log.warn("fail addFrontAync, chainId:{} not exists", chainId);
+                return;
+            }
+            // check front ip and port
+            CommonTools.checkServerConnect(frontIp, frontPort);
+            // check front's encrypt type
+            int encryptType = frontInterface.getEncryptTypeFromSpecificFront(frontIp, frontPort);
+            if (encryptType != tbChain.getEncryptType()) {
+                log.warn("fail addFrontAync, frontId:{} encryptType not match.", frontId);
+                return;
+            }
+            // save front info
+            frontMapper.addIncludeId(tbFront);
+            // query group list
+            List<String> groupIdList = frontInterface.getGroupListFromSpecificFront(frontIp, frontPort);
+            for (String groupId : groupIdList) {
+                Integer gId = Integer.valueOf(groupId);
+                // peer in group
+                List<String> groupPeerList = frontInterface.getGroupPeersFromSpecificFront(frontIp, frontPort, gId);
+                // get peers on chain
+                PeerInfo[] peerArr = frontInterface.getPeersFromSpecificFront(frontIp, frontPort, gId);
+                List<PeerInfo> peerList = Arrays.asList(peerArr);
+                String genesisBlockHash = frontInterface
+                        .getBlockByNumberFromSpecificFront(frontIp, frontPort, gId, BigInteger.ZERO).getHash();
+                // add group
+                groupService.saveGroup(chainId, gId, groupPeerList.size(), genesisBlockHash);
+                // save front group map
+                frontGroupMapService.newFrontGroup(chainId, tbFront.getFrontId(), gId);
+                // save nodes
+                for (String nodeId : groupPeerList) {
+                    PeerInfo newPeer = peerList.stream()
+                            .map(p -> JacksonUtils.stringToObj(JacksonUtils.objToString(p), PeerInfo.class))
+                            .filter(peer -> nodeId.equals(peer.getNodeId())).findFirst()
+                            .orElseGet(() -> new PeerInfo(nodeId));
+                    nodeService.addNodeInfo(chainId, gId, newPeer);
+                }
+                // add sealer(consensus node) and observer in nodeList
+                refreshSealerAndObserverInNodeList(frontIp, frontPort, chainId, gId);
+            }
+            // clear cache
+            frontGroupMapCache.clearMapList(chainId);
+        } catch (Exception e) {
+            log.error("fail addFrontAync, frontId:{} ", frontId, e);
+        }
+    }
 
     /**
      * add new front
@@ -93,8 +169,7 @@ public class FrontService {
         int encryptType = frontInterface.getEncryptTypeFromSpecificFront(frontIp, frontPort);
         if (encryptType != tbChain.getEncryptType()) {
             log.error(
-                    "fail newFront, frontIp:{},frontPort:{},front's encryptType:{},"
-                            + "local encryptType not match:{}",
+                    "fail newFront, frontIp:{},frontPort:{},front's encryptType:{}," + "local encryptType not match:{}",
                     frontIp, frontPort, encryptType, tbChain.getEncryptType());
             throw new BaseException(ConstantCode.ENCRYPT_TYPE_NOT_MATCH);
         }
@@ -121,14 +196,12 @@ public class FrontService {
         for (String groupId : groupIdList) {
             Integer gId = Integer.valueOf(groupId);
             // peer in group
-            List<String> groupPeerList =
-                    frontInterface.getGroupPeersFromSpecificFront(frontIp, frontPort, gId);
+            List<String> groupPeerList = frontInterface.getGroupPeersFromSpecificFront(frontIp, frontPort, gId);
             // get peers on chain
             PeerInfo[] peerArr = frontInterface.getPeersFromSpecificFront(frontIp, frontPort, gId);
             List<PeerInfo> peerList = Arrays.asList(peerArr);
             String genesisBlockHash = frontInterface
-                    .getBlockByNumberFromSpecificFront(frontIp, frontPort, gId, BigInteger.ZERO)
-                    .getHash();
+                    .getBlockByNumberFromSpecificFront(frontIp, frontPort, gId, BigInteger.ZERO).getHash();
             // add group
             groupService.saveGroup(chainId, gId, groupPeerList.size(), genesisBlockHash);
             // save front group map
@@ -136,8 +209,7 @@ public class FrontService {
             // save nodes
             for (String nodeId : groupPeerList) {
                 PeerInfo newPeer = peerList.stream()
-                        .map(p -> JacksonUtils.stringToObj(JacksonUtils.objToString(p),
-                                PeerInfo.class))
+                        .map(p -> JacksonUtils.stringToObj(JacksonUtils.objToString(p), PeerInfo.class))
                         .filter(peer -> nodeId.equals(peer.getNodeId())).findFirst()
                         .orElseGet(() -> new PeerInfo(nodeId));
                 nodeService.addNodeInfo(chainId, gId, newPeer);
@@ -221,27 +293,22 @@ public class FrontService {
      * 
      * @param groupId
      */
-    public void refreshSealerAndObserverInNodeList(String frontIp, int frontPort, int chainId,
-            int groupId) {
-        log.debug("start refreshSealerAndObserverInNodeList frontIp:{}, frontPort:{}, groupId:{}",
-                frontIp, frontPort, groupId);
-        List<String> sealerList =
-                frontInterface.getSealerListFromSpecificFront(frontIp, frontPort, groupId);
-        List<String> observerList =
-                frontInterface.getObserverListFromSpecificFront(frontIp, frontPort, groupId);
+    public void refreshSealerAndObserverInNodeList(String frontIp, int frontPort, int chainId, int groupId) {
+        log.debug("start refreshSealerAndObserverInNodeList frontIp:{}, frontPort:{}, groupId:{}", frontIp, frontPort,
+                groupId);
+        List<String> sealerList = frontInterface.getSealerListFromSpecificFront(frontIp, frontPort, groupId);
+        List<String> observerList = frontInterface.getObserverListFromSpecificFront(frontIp, frontPort, groupId);
         List<PeerInfo> sealerAndObserverList = new ArrayList<>();
         sealerList.stream().forEach(nodeId -> sealerAndObserverList.add(new PeerInfo(nodeId)));
         observerList.stream().forEach(nodeId -> sealerAndObserverList.add(new PeerInfo(nodeId)));
-        log.debug("refreshSealerAndObserverInNodeList sealerList:{},observerList:{}", sealerList,
-                observerList);
+        log.debug("refreshSealerAndObserverInNodeList sealerList:{},observerList:{}", sealerList, observerList);
         sealerAndObserverList.stream().forEach(peerInfo -> {
             NodeParam checkParam = new NodeParam();
             checkParam.setChainId(chainId);
             checkParam.setGroupId(groupId);
             checkParam.setNodeId(peerInfo.getNodeId());
             int existedNodeCount = nodeService.countOfNode(checkParam);
-            log.debug("addSealerAndObserver peerInfo:{},existedNodeCount:{}", peerInfo,
-                    existedNodeCount);
+            log.debug("addSealerAndObserver peerInfo:{},existedNodeCount:{}", peerInfo, existedNodeCount);
             if (existedNodeCount == 0) {
                 nodeService.addNodeInfo(chainId, groupId, peerInfo);
             }

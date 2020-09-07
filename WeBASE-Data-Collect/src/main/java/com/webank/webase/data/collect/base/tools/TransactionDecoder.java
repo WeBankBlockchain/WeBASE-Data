@@ -3,6 +3,7 @@ package com.webank.webase.data.collect.base.tools;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.webank.webase.data.collect.contract.entity.Method;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,17 +48,17 @@ public class TransactionDecoder {
 
     private String abi = "";
     private int encryptType = ECDSA_TYPE;
-    private Map<String, AbiDefinition> methodIDMap;
+    private Map<String, AbiDefinition> methodIdMap;
 
     public TransactionDecoder(String abi, int encryptType) {
         this.abi = abi;
         this.encryptType = encryptType;
-        methodIDMap = new HashMap<String, AbiDefinition>();
+        methodIdMap = new HashMap<String, AbiDefinition>();
         List<AbiDefinition> funcAbiDefinitionList = ContractAbiUtil.getFuncAbiDefinition(abi);
         for (AbiDefinition abiDefinition : funcAbiDefinitionList) {
             String methodSign = decodeMethodSign(abiDefinition);
-            String methodID = buildMethodId(methodSign);
-            methodIDMap.put(methodID, abiDefinition);
+            String methodId = buildMethodId(methodSign);
+            methodIdMap.put(methodId, abiDefinition);
         }
     }
 
@@ -66,6 +67,19 @@ public class TransactionDecoder {
             return "0x" + s;
         }
         return s;
+    }
+
+    public List<Method> methodInfo() {
+        List<Method> list = new ArrayList<>();
+        for (String methodId : methodIdMap.keySet()) {
+            AbiDefinition abiDefinition = methodIdMap.get(methodId);
+            Method method = new Method();
+            method.setMethodId(methodId);
+            method.setMethodName(abiDefinition.getName());
+            method.setMethodType(abiDefinition.getType());
+            list.add(method);
+        }
+        return list;
     }
 
     /**
@@ -375,8 +389,8 @@ public class TransactionDecoder {
         if (input == null || input.length() < 10) {
             return null;
         }
-        String methodID = input.substring(0, 10);
-        AbiDefinition abiDefinition = methodIDMap.get(methodID);
+        String methodId = input.substring(0, 10);
+        AbiDefinition abiDefinition = methodIdMap.get(methodId);
         // if (abiDefinition == null) {
         // throw new TransactionException("The method is not included in the contract abi.");
         // }

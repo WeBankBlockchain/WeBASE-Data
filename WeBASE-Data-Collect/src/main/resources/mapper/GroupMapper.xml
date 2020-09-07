@@ -36,7 +36,18 @@
         (group_id,chain_id,genesis_block_hash,node_count,create_time,modify_time)
         values(#{groupId},#{chainId},#{genesisBlockHash},#{nodeCount},NOW(),NOW())
         ON DUPLICATE KEY UPDATE 
-        node_count=#{nodeCount},modify_time=NOW()
+        genesis_block_hash=#{genesisBlockHash},node_count=#{nodeCount},modify_time=NOW()
+    </insert>
+    
+    <insert id="addList">
+        insert into tb_group
+        (group_id,chain_id,app_name,app_version,app_summary,description,create_time,modify_time)
+        values
+        <foreach collection ="list" item="info" separator="," >
+        (#{info.groupId},#{info.chainId},#{info.appName},#{info.appVersion},#{info.appSummary},#{info.description},NOW(),NOW())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        app_name=VALUES(app_name),app_version=VALUES(app_version),app_summary=VALUES(app_summary),description=VALUES(description),modify_time=NOW()
     </insert>
     
     <update id="updateAppInfo">

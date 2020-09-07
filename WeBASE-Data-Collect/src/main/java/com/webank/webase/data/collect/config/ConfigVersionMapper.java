@@ -11,18 +11,18 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.fetcher.audit.entity;
+package com.webank.webase.data.collect.config;
 
-import com.webank.webase.data.fetcher.base.entity.BaseQueryParam;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Repository;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper=false)
-public class AuditQueryParam extends BaseQueryParam {
-    private Integer status;
+import com.webank.webase.data.collect.config.entity.TbConfigVersion;
+
+@Repository
+public interface ConfigVersionMapper {
+
+    int add(TbConfigVersion tbConfigVersion);
+    
+    int update(TbConfigVersion tbConfigVersion);
+
+    TbConfigVersion getTbConfigVersion();
 }
