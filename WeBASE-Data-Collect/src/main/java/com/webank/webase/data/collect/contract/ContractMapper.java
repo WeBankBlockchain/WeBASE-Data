@@ -30,6 +30,8 @@ public interface ContractMapper {
     int addList(List<TbContract> list);
 
     Integer add(TbContract tbContract);
+    
+    Integer addWithId(TbContract tbContract);
 
     Integer update(TbContract tbContract);
 

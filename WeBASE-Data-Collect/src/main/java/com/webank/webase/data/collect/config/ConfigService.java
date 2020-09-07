@@ -18,15 +18,14 @@ import com.webank.webase.data.collect.base.entity.BasePageResponse;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.chain.ChainService;
 import com.webank.webase.data.collect.config.entity.ConfigVersionInfo;
-import com.webank.webase.data.collect.config.entity.TbConfigVersion;
 import com.webank.webase.data.collect.config.entity.RspUserInfo;
+import com.webank.webase.data.collect.config.entity.TbConfigVersion;
 import com.webank.webase.data.collect.contract.ContractService;
 import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.front.FrontService;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.user.UserService;
-import com.webank.webase.data.collect.user.entity.TbUser;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -143,7 +142,7 @@ public class ConfigService {
         while ((pageNumber - 1) * pageSize < count) {
             List<TbContract> list = JacksonUtils.objToJavaBean(response.getData(),
                     new TypeReference<List<TbContract>>() {});
-            contractService.addContractList(list);
+            contractService.syncContractList(list);
             pageNumber = pageNumber + 1;
             response = webServerRestTools.getContractList(pageNumber, pageSize);
         }

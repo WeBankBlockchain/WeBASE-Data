@@ -44,6 +44,13 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
     </insert>
+
+    <insert id="addWithId"
+        parameterType="com.webank.webase.data.collect.contract.entity.TbContract">
+        insert into
+        tb_contract(contract_id,chain_id,group_id,contract_path,contract_name,contract_source,contract_abi,runtime_bin,bytecode_bin,description,create_time,modify_time)
+        values(#{contractId},#{chainId},#{groupId},#{contractPath},#{contractName},#{contractSource},#{contractAbi},#{runtimeBin},#{bytecodeBin},#{description},NOW(),NOW())
+    </insert>
     
     <insert id="addList">
         insert into tb_contract

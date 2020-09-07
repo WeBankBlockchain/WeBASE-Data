@@ -43,17 +43,30 @@ public class ContractService {
     @Lazy
     private ParserService parserService;
     @Autowired
+    @Lazy
+    private MethodService methodService;
+    @Autowired
     private GroupService groupService;
-    
+
     /**
-     * add contract list
+     * sync contract list
      */
-    public void addContractList(List<TbContract> contractList) {
+    public void syncContractList(List<TbContract> contractList) {
         if (CollectionUtils.isEmpty(contractList)) {
-            log.info("contractList is empty.");
+            log.info("syncContractList. contractList is empty.");
             return;
         }
-        contractMapper.addList(contractList);
+        for (TbContract tbContract : contractList) {
+            Integer contractId = tbContract.getContractId();
+            try {
+                if (!ifContractIdExist(contractId)) {
+                    contractMapper.addWithId(tbContract);
+                    methodService.saveMethodFromContract(tbContract);
+                }
+            } catch (Exception e) {
+                log.warn("syncContractList. contractId:{} error:{}", contractId, e);
+            }
+        }
     }
 
     /**
@@ -180,6 +193,17 @@ public class ContractService {
             throw new BaseException(ConstantCode.INVALID_CONTRACT_ID);
         }
         return contract;
+    }
+
+    /**
+     * if contractId is exist.
+     */
+    public boolean ifContractIdExist(Integer contractId) {
+        TbContract contract = queryByContractId(contractId);
+        if (Objects.isNull(contract)) {
+            return false;
+        }
+        return true;
     }
 
     /**
