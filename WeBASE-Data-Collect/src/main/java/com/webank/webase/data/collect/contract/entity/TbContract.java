@@ -13,6 +13,7 @@
  */
 package com.webank.webase.data.collect.contract.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ public class TbContract {
     private String contractName;
     private String contractSource;
     private String contractAbi;
+    @JsonProperty(value = "contractBin")
     private String runtimeBin;
     private String bytecodeBin;
     private Integer contractType;
