@@ -21,6 +21,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChainMapper {
+    
+    int addList(List<TbChain> list);
 
     int add(TbChain tbChain);
     

@@ -13,16 +13,20 @@
  */
 package com.webank.webase.data.collect.front;
 
-import com.webank.webase.data.collect.front.entity.FrontParam;
-import com.webank.webase.data.collect.front.entity.TbFront;
 import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import com.webank.webase.data.collect.front.entity.FrontParam;
+import com.webank.webase.data.collect.front.entity.TbFront;
 
 @Repository
 public interface FrontMapper {
 
     int add(TbFront tbFront);
+    
+    int addIncludeId(TbFront tbFront);
 
     Integer getCount(FrontParam param);
 

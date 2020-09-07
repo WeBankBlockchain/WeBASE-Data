@@ -47,5 +47,9 @@ public class ConstantProperties {
     private boolean ifPullData = true; // default true
     private boolean multiLiving = false; // default false
     private Long dataParserTaskFixedDelay = 60000L; // default 1min
+    
+    // config server
+    private boolean syncConfig = false; // default false
+    private String configServerIpPort = "127.0.0.1:8001";
 
 }

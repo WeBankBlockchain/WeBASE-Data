@@ -28,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 /**
  * services for contract data.
@@ -42,7 +43,31 @@ public class ContractService {
     @Lazy
     private ParserService parserService;
     @Autowired
+    @Lazy
+    private MethodService methodService;
+    @Autowired
     private GroupService groupService;
+
+    /**
+     * sync contract list
+     */
+    public void syncContractList(List<TbContract> contractList) {
+        if (CollectionUtils.isEmpty(contractList)) {
+            log.info("syncContractList. contractList is empty.");
+            return;
+        }
+        for (TbContract tbContract : contractList) {
+            Integer contractId = tbContract.getContractId();
+            try {
+                if (!ifContractIdExist(contractId)) {
+                    contractMapper.addWithId(tbContract);
+                    methodService.saveMethodFromContract(tbContract);
+                }
+            } catch (Exception e) {
+                log.warn("syncContractList. contractId:{} error:{}", contractId, e);
+            }
+        }
+    }
 
     /**
      * add new contract data.
@@ -168,6 +193,17 @@ public class ContractService {
             throw new BaseException(ConstantCode.INVALID_CONTRACT_ID);
         }
         return contract;
+    }
+
+    /**
+     * if contractId is exist.
+     */
+    public boolean ifContractIdExist(Integer contractId) {
+        TbContract contract = queryByContractId(contractId);
+        if (Objects.isNull(contract)) {
+            return false;
+        }
+        return true;
     }
 
     /**

@@ -82,4 +82,7 @@ public class ConstantCode {
     public static final RetCode READ_SOLC_FILE_ERROR =
             RetCode.mark(209605, "read solc js file error");
     
+    /* rest code */
+    public static final RetCode REMOTE_SERVER_REQUEST_FAIL = RetCode.mark(209701, "remote server request fail");
+    
 }

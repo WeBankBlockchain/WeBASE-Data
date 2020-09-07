@@ -46,6 +46,8 @@
         type="com.webank.webase.data.fetcher.group.entity.NodeInfoDto">
         <result column="node_id" javaType="java.lang.String" jdbcType="VARCHAR"
             property="nodeId" />
+        <result column="front_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="frontId" />
         <result column="chain_id" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="chainId" />
         <result column="group_id" javaType="java.lang.Integer"
@@ -183,12 +185,15 @@
     </select>
 
     <select id="queryNodeList" resultMap="nodeMap">
-        select * from tb_node where 1=1
+        select a.*,b.front_id 
+        from tb_node a
+        left join tb_front b on a.node_id = b.node_id and a.chain_id = b.chain_id 
+        where 1=1
         <if test="chainId != null">
-            and chain_id = #{chainId}
+            and a.chain_id = #{chainId}
         </if>
         <if test="groupId != null">
-            and group_id = #{groupId}
+            and a.group_id = #{groupId}
         </if>
         <if test="start != null and pageSize != null">
             limit #{start},#{pageSize}
@@ -204,9 +209,9 @@
     <select id="getOrgNodeList"
         resultType="com.webank.webase.data.fetcher.group.entity.OrgInfoDto">
         select distinct(node_id) as nodeId,
-               chain_id as chainId,
-               org_name as orgName,
-               description as description
+               max(chain_id) as chainId,
+               max(org_name) as orgName,
+               max(description) as description
           from tb_node
          where chain_id = #{chainId}
          group by node_id
@@ -277,14 +282,14 @@
     </select>
 
     <select id="queryUserList" resultType="com.webank.webase.data.fetcher.group.entity.UserInfoDto">
-        select user_name as userName,user_address as userAddress
+        select user_address as userAddress,user_name as userName
         from ${tableName} 
         where 1=1
         <if test="param.comVariable != null and param.comVariable != ''">
             and user_name = #{param.comVariable}
             or user_address = #{param.comVariable}
         </if>
-        group by user_address
+        group by user_address,user_name
         <if test="param.start != null and param.pageSize != null">
             limit #{param.start},#{param.pageSize}
         </if>
@@ -301,7 +306,7 @@
     </select>
 
     <select id="queryContractList" resultType="com.webank.webase.data.fetcher.group.entity.ContractInfoDto">
-        select t1.contract_name as contractName,t1.contract_address as contractAddress,t2.contract_abi as contractAbi
+        select max(t1.contract_name) as contractName,t1.contract_address as contractAddress,max(t2.contract_abi) as contractAbi
         from ${tableName} t1
         left join tb_contract t2 on (t1.contract_name = t2.contract_name)
         where 1=1

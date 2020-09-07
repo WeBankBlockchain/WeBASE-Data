@@ -13,6 +13,9 @@
  */
 package com.webank.webase.data.collect.contract;
 
+import com.webank.webase.data.collect.base.tools.TransactionDecoder;
+import com.webank.webase.data.collect.chain.ChainService;
+import com.webank.webase.data.collect.chain.entity.TbChain;
 import com.webank.webase.data.collect.contract.entity.Method;
 import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.contract.entity.NewMethodInput;
@@ -24,12 +27,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 @Service
 public class MethodService {
 
     @Autowired
     private MethodMapper methodMapper;
+    @Autowired
+    private ChainService chainService;
     @Autowired
     private ContractService contractService;
     @Autowired
@@ -45,6 +51,29 @@ public class MethodService {
         List<Method> methodList = newMethodInput.getMethodList();
         TbMethod tbMethod = new TbMethod();
         BeanUtils.copyProperties(contract, tbMethod);
+        // save each method
+        for (Method method : methodList) {
+            BeanUtils.copyProperties(method, tbMethod);
+            methodMapper.add(tbMethod);
+            // parser unusual methodId
+            parserService.parserUnusualMethodId(tbMethod.getChainId(), tbMethod.getGroupId(),
+                    method.getMethodId());
+        }
+    }
+
+    /**
+     * save method info from Contract.
+     */
+    public void saveMethodFromContract(TbContract tbContract) {
+        TbChain tbChain = chainService.getChainById(tbContract.getChainId());
+        if (ObjectUtils.isEmpty(tbChain)) {
+            return;
+        }
+        TransactionDecoder transactionDecoder =
+                new TransactionDecoder(tbContract.getContractAbi(), tbChain.getEncryptType());
+        List<Method> methodList = transactionDecoder.methodInfo();
+        TbMethod tbMethod = new TbMethod();
+        BeanUtils.copyProperties(tbContract, tbMethod);
         // save each method
         for (Method method : methodList) {
             BeanUtils.copyProperties(method, tbMethod);

@@ -11,39 +11,23 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.contract.entity;
+package com.webank.webase.data.collect.config.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Entity class of table tb_contract.
+ * user's address, userName, groupId etc.
  */
 @Data
 @NoArgsConstructor
-public class TbContract {
-    private Integer contractId;
+public class RspUserInfo {
     private Integer chainId;
+    @JsonProperty(value = "appId")
     private Integer groupId;
-    private String contractPath;
-    private String contractName;
-    private String contractSource;
-    private String contractAbi;
-    @JsonProperty(value = "contractBin")
-    private String runtimeBin;
-    private String bytecodeBin;
-    private Integer contractType;
+    @JsonProperty(value = "signUserId")
+    private String userName;
+    private String address;
     private String description;
-    private LocalDateTime createTime;
-    private LocalDateTime modifyTime;
-
-    public TbContract(Integer contractId, String contractName, Integer chainId, Integer groupId) {
-        super();
-        this.contractId = contractId;
-        this.contractName = contractName;
-        this.chainId = chainId;
-        this.groupId = groupId;
-    }
 }
