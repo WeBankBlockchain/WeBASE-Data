@@ -9,7 +9,7 @@
 | 3    | MySQL5.6或以上版本  |
 | 4    | Java8或以上版本     |
 | 5 | Elasticsearch7.8.0及其对应elasticsearch-analysis-ik（分词插件） |
-| 6 | ZooKeeper-3.4.10（多活场景需部署） |
+| 6 | ZooKeeper-3.6.0或以上版本（多活场景需部署） |
 
 
 ## 2. 注意事项
