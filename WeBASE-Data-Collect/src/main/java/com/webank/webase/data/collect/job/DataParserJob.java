@@ -13,21 +13,24 @@
  */
 package com.webank.webase.data.collect.job;
 
-import com.dangdang.ddframe.job.api.ShardingContext;
-import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
-import com.webank.webase.data.collect.base.enums.DataStatus;
-import com.webank.webase.data.collect.group.GroupService;
-import com.webank.webase.data.collect.group.entity.TbGroup;
-import com.webank.webase.data.collect.transaction.TransactionService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import lombok.extern.slf4j.Slf4j;
+
+import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.elasticjob.dataflow.job.DataflowJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
+import com.webank.webase.data.collect.base.enums.DataStatus;
+import com.webank.webase.data.collect.group.GroupService;
+import com.webank.webase.data.collect.group.entity.TbGroup;
+import com.webank.webase.data.collect.transaction.TransactionService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * DataParserJob.
@@ -35,7 +38,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Service
 @Slf4j
-@ConditionalOnProperty(value = {"constant.multiLiving"}, havingValue = "true")
+@ConditionalOnProperty(value = {"constant.multiLiving"}, havingValue = "true", matchIfMissing = false)
 public class DataParserJob implements DataflowJob<TbGroup> {
 
     @Autowired

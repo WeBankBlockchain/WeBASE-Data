@@ -13,31 +13,37 @@
  */
 package com.webank.webase.data.collect.job.config;
 
-import com.dangdang.ddframe.job.config.JobCoreConfiguration;
-import com.dangdang.ddframe.job.config.JobRootConfiguration;
-import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
-import com.dangdang.ddframe.job.lite.api.JobScheduler;
-import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
-import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
-import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
-import com.webank.webase.data.collect.job.DataParserJob;
-import com.webank.webase.data.collect.job.DataPullJob;
 import javax.annotation.Resource;
+
+import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
+import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.webank.webase.data.collect.job.DataParserJob;
+import com.webank.webase.data.collect.job.DataPullJob;
+
+import lombok.Data;
 
 /**
  * DataflowJobConfig.
  *
  */
+@Data
 @Configuration
-@ConditionalOnProperty(value = {"constant.multiLiving"}, havingValue = "true")
-public class DataflowJobConfig {
+@ConditionalOnProperty(value = {"constant.multiLiving"}, havingValue = "true", matchIfMissing = false)
+public class DataflowJobConfig implements InitializingBean {
 
     @Resource
     private ZookeeperRegistryCenter regCenter;
+    @Autowired
+    private DataPullJob dataPullJob;
+    @Autowired
+    private DataParserJob dataParserJob;
     
     @Value("${constant.dataPullCron}")
     private String dataPullCron;
@@ -48,26 +54,25 @@ public class DataflowJobConfig {
     @Value("${job.dataflow.shardingTotalCount}")
     private int shardingTotalCount;
 
+    @Override
+	public void afterPropertiesSet() throws Exception {
+		ScheduleJobBootstrap deploySchedule = new ScheduleJobBootstrap(regCenter, dataPullJob,
+				pullDataflowConfig());
+		deploySchedule.schedule();
+		ScheduleJobBootstrap transSchedule = new ScheduleJobBootstrap(regCenter, dataParserJob,
+				parserDataflowConfig());
+		transSchedule.schedule();
+	}
+    
     /**
-     * parserScheduler.
+     * pullDataflowConfig.
      * 
-     * @param dataflowJob instance
      * @return
      */
-    @Bean(initMethod = "init")
-    public JobScheduler parserScheduler(final DataParserJob dataflowJob) {
-        return new SpringJobScheduler(dataflowJob, regCenter, parserDataflowConfig());
-    }
-
-    /**
-     * pullScheduler.
-     * 
-     * @param dataflowJob instance
-     * @return
-     */
-    @Bean(initMethod = "init")
-    public JobScheduler pullScheduler(final DataPullJob dataflowJob) {
-        return new SpringJobScheduler(dataflowJob, regCenter, pullDataflowConfig());
+    private JobConfiguration pullDataflowConfig() {
+    	JobConfiguration jobConfiguration = JobConfiguration
+				.newBuilder(DataPullJob.class.getName(), shardingTotalCount).cron(dataParserCron).build();
+		return jobConfiguration;
     }
 
     /**
@@ -75,32 +80,10 @@ public class DataflowJobConfig {
      * 
      * @return
      */
-    private LiteJobConfiguration parserDataflowConfig() {
-        JobCoreConfiguration dataflowCoreConfig = JobCoreConfiguration
-                .newBuilder(DataParserJob.class.getName(), dataPullCron, shardingTotalCount)
-                .shardingItemParameters(null).build();
-        DataflowJobConfiguration dataflowJobConfig = new DataflowJobConfiguration(
-                dataflowCoreConfig, DataParserJob.class.getCanonicalName(), false);
-        JobRootConfiguration dataflowJobRootConfig =
-                LiteJobConfiguration.newBuilder(dataflowJobConfig).overwrite(true).build();
-
-        return (LiteJobConfiguration) dataflowJobRootConfig;
+    private JobConfiguration parserDataflowConfig() {
+        JobConfiguration jobConfiguration = JobConfiguration
+				.newBuilder(DataParserJob.class.getName(), shardingTotalCount).cron(dataParserCron).build();
+		return jobConfiguration;
     }
-
-    /**
-     * pullDataflowConfig.
-     * 
-     * @return
-     */
-    private LiteJobConfiguration pullDataflowConfig() {
-        JobCoreConfiguration dataflowCoreConfig = JobCoreConfiguration
-                .newBuilder(DataPullJob.class.getName(), dataParserCron, shardingTotalCount)
-                .shardingItemParameters(null).build();
-        DataflowJobConfiguration dataflowJobConfig = new DataflowJobConfiguration(
-                dataflowCoreConfig, DataPullJob.class.getCanonicalName(), false);
-        JobRootConfiguration dataflowJobRootConfig =
-                LiteJobConfiguration.newBuilder(dataflowJobConfig).overwrite(true).build();
-
-        return (LiteJobConfiguration) dataflowJobRootConfig;
-    }
+    
 }
