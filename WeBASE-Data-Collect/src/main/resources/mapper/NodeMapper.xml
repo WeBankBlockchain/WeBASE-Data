@@ -143,9 +143,9 @@
         parameterType="com.webank.webase.data.collect.node.entity.NodeParam"
         resultType="com.webank.webase.data.collect.node.entity.OrgInfo">
         select distinct(node_id) as nodeId,
-               chain_id as chainId,
-               org_name as orgName,
-               description as description
+               max(chain_id) as chainId,
+               max(org_name) as orgName,
+               max(description) as description
           from tb_node
          where chain_id = #{chainId}
          group by node_id

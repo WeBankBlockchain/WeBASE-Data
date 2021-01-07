@@ -14,6 +14,7 @@
 package com.webank.webase.data.collect.parser;
 
 import com.webank.webase.data.collect.parser.entity.ContractParserResult;
+import com.webank.webase.data.collect.parser.entity.ParserEventInfo;
 import com.webank.webase.data.collect.parser.entity.TbParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
 import com.webank.webase.data.collect.parser.entity.UnusualUserInfo;
@@ -62,6 +63,8 @@ public interface ParserMapper {
             @Param("contractAddress") String contractAddress);
 
     List<UnusualContractInfo> listOfUnusualContract(Map<String, Object> queryParam);
+    
+    List<ParserEventInfo> listOfEventInfo(Map<String, Object> queryParam);
 
     void rollback(@Param("tableName") String tableName, @Param("blockNumber") long blockNumber);
 }

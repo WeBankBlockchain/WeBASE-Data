@@ -28,6 +28,8 @@ public class ConstantProperties {
     public static final String CONSTANT_PREFIX = "constant";
     public static final String CONTRACT_NAME_ZERO = "0x00000000";
     public static final String ADDRESS_DEPLOY = "0x0000000000000000000000000000000000000000";
+    
+    public static final String ORDER_BY_ID_DESC = "id DESC";
 
     // group info
     private String groupInvalidGrayscaleValue = "1M"; // y:year, M:month, d:day of month, h:hour,

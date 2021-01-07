@@ -17,11 +17,14 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -35,6 +38,8 @@ public class TableService {
     private TableMapper tableMapper;
     @Value("${spring.datasource.url}")
     private String dbUrl;
+    public static Map<String, Integer> CREATED_TABLE_MAP = new ConcurrentHashMap<>();
+    public static final Integer CREATED = 1;
 
     /**
      * create common table.
@@ -51,17 +56,52 @@ public class TableService {
         tableMapper.createTbMethod();
         tableMapper.createTbSolc();
         tableMapper.createTbConfigVersion();
+        tableMapper.createTbEventExportTask();
     }
 
     /**
      * create sub table.
      */
+    @Transactional
     public void newSubTable(int chainId, int groupId) {
+        if (chainId == 0 || groupId == 0) {
+            return;
+        }
+        // table created record in map, check if exist in map
+        String chainIdGroupIndexKey = chainId + "_" + groupId;
+        if (CREATED_TABLE_MAP.get(chainIdGroupIndexKey) != null) {
+            log.debug("table of indexKey: {} created.", chainIdGroupIndexKey);
+            return;
+        }
         tableMapper.createTbTaskPool(TableName.TASK.getTableName(chainId, groupId));
         tableMapper.createTbBlock(TableName.BLOCK.getTableName(chainId, groupId));
         tableMapper.createTbTransaction(TableName.TRANS.getTableName(chainId, groupId));
         tableMapper.createTbReceipt(TableName.RECEIPT.getTableName(chainId, groupId));
         tableMapper.createTbParser(TableName.PARSER.getTableName(chainId, groupId));
+        log.info("create table of indexKey: {} ", chainIdGroupIndexKey);
+        CREATED_TABLE_MAP.put(chainIdGroupIndexKey, CREATED);
+    }
+    
+    /**
+     * newEvnetInfoTable.
+     * 
+     * @param chainId
+     * @param groupId
+     * @param eventTaskId
+     */
+    public void newEvnetInfoTable(int chainId, int groupId, int eventExportId) {
+        if (chainId == 0 || groupId == 0 || eventExportId == 0) {
+            return;
+        }
+        // table created record in map, check if exist in map
+        String indexKey = chainId + "_" + groupId + "_" + eventExportId;
+        if (CREATED_TABLE_MAP.get(indexKey) != null) {
+            log.debug("table of indexKey: {} created.", indexKey);
+            return;
+        }
+        tableMapper.createTbEventInfo(TableName.EVENT.getEventInfoTableName(chainId, groupId, eventExportId));
+        log.info("create table of indexKey: {} ", indexKey);
+        CREATED_TABLE_MAP.put(indexKey, CREATED);
     }
 
     /**
@@ -89,7 +129,7 @@ public class TableService {
     /**
      * drop table by tableName.
      */
-    private void dropTableByName(String tableName) {
+    public void dropTableByName(String tableName) {
         log.info("start drop table. tableName:{}", tableName);
         if (StringUtils.isBlank(tableName)) {
             return;

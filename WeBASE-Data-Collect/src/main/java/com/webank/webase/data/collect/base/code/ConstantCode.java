@@ -67,6 +67,8 @@ public class ConstantCode {
     public static final RetCode INVALID_CONTRACT_ID = RetCode.mark(209402, "invalid contract id");
     public static final RetCode CONTRACT_NAME_REPEAT =
             RetCode.mark(209403, "contract name cannot be repeated");
+    public static final RetCode CONTRACT_NOT_EXISTS =
+            RetCode.mark(209404, "contract name or address not exists");
 
     /* task code */
     public static final RetCode TASK_RUNNING = RetCode.mark(209501, "task is still running");
@@ -81,6 +83,13 @@ public class ConstantCode {
             RetCode.mark(209604, "save solc js file error");
     public static final RetCode READ_SOLC_FILE_ERROR =
             RetCode.mark(209605, "read solc js file error");
+    
+    /* event code */
+    public static final RetCode EVENT_NOT_EXISTS = RetCode.mark(210851, "event not exists");
+    public static final RetCode EVENT_EXISTS = RetCode.mark(210852, "event exists");
+    public static final RetCode SAVE_EVENT_FAIL = RetCode.mark(210853, "save event info fail");
+    public static final RetCode INVALID_TASK_STATUS = RetCode.mark(210854, "invalid task status");
+    public static final RetCode EVENT_NAME_FORMAT_ERROR = RetCode.mark(210855, "event name format error");
     
     /* rest code */
     public static final RetCode REMOTE_SERVER_REQUEST_FAIL = RetCode.mark(209701, "remote server request fail");
