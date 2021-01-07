@@ -346,4 +346,16 @@ public class CommonTools {
         }
         return Integer.parseInt(str.substring(2), 16);
     }
+    
+    /**
+     * @param content
+     * @return
+     */
+    public static String upperCaseFirstChar(String content) {
+        if (StringUtils.isBlank(content)) return null;
+
+        String firstChar = content.substring(0, 1);
+        String otherChars = content.substring(1);
+        return firstChar.toUpperCase() + otherChars;
+    }
 }
