@@ -186,6 +186,19 @@ public class ContractService {
             throw new BaseException(ConstantCode.DB_EXCEPTION);
         }
     }
+    
+    /**
+     * queryContractByAddress.
+     */
+    public TbContract queryContractByAddress(Integer chainId, Integer groupId, String contractName,
+            String contractAddress) {
+        ContractParam param = new ContractParam();
+        param.setChainId(chainId);
+        param.setGroupId(groupId);
+        param.setContractName(contractName);
+        param.setContractAddress(contractAddress);
+        return queryContract(param);
+    }
 
     /**
      * query contract info.

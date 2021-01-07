@@ -55,8 +55,7 @@ List jackson = [
 ]
 
 List mysql = [
-    'mysql:mysql-connector-java:8.0.13',
-    'org.mybatis:mybatis:3.2.8',
+    'mysql:mysql-connector-java:8.0.22',
     'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0'
 ]
 
@@ -86,7 +85,7 @@ dependencies {
     compile "cn.hutool:hutool-all:4.1.19"
     compile "com.zaxxer:HikariCP:3.2.0"
     compile "com.github.sgroschupf:zkclient:0.1"
-    compile 'org.bouncycastle:bcprov-jdk15on:1.54'
+    compile 'org.bouncycastle:bcprov-jdk15on:1.67'
     compile "org.hibernate:hibernate-validator:6.1.5.Final"
 
     annotationProcessor lombok

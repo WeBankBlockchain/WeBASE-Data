@@ -34,6 +34,7 @@ import com.webank.webase.data.collect.contract.entity.TbContract;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.parser.entity.ContractParserResult;
 import com.webank.webase.data.collect.parser.entity.EsParser;
+import com.webank.webase.data.collect.parser.entity.ParserEventInfo;
 import com.webank.webase.data.collect.parser.entity.ResetInfo;
 import com.webank.webase.data.collect.parser.entity.TbParser;
 import com.webank.webase.data.collect.parser.entity.UnusualContractInfo;
@@ -46,6 +47,7 @@ import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.user.UserService;
 import com.webank.webase.data.collect.user.entity.TbUser;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -303,6 +305,20 @@ public class ParserService {
         esParser.setGroupId(groupId);
         esCurdService.insert(tableService.getDbName(), String.valueOf(tbParser.getTransHash()),
                 esParser);
+    }
+    
+    /**
+     * query event info list.
+     */
+    public List<ParserEventInfo> queryEventInfoList(int chainId, int groupId, String contractAddress,
+            BigInteger blockNumber, String eventName) throws BaseException {
+        String tableName = TableName.PARSER.getTableName(chainId, groupId);
+        List<String> nameList = Arrays.asList("tableName", "contractAddress", "blockNumber", "eventName");
+        List<Object> valueList = Arrays.asList(tableName, contractAddress, blockNumber, eventName);
+        Map<String, Object> param = CommonTools.buidMap(nameList, valueList);
+
+        List<ParserEventInfo> listOfEventInfo = parserMapper.listOfEventInfo(param);
+        return listOfEventInfo;
     }
 
     /**
