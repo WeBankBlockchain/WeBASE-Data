@@ -151,6 +151,18 @@
         and (trans_parser_type = 1 or trans_parser_type = 2)
     </select>
     
+    <select id="listOfEventInfo" parameterType="Map"
+        resultType="com.webank.webase.data.collect.parser.entity.ParserEventInfo">
+        select contract_address as contractAddress, user_address as userAddress, trans_hash as transHash, 
+               block_timestamp as blockTimestamp, block_number as blockNumber,logs
+        from ${tableName}
+        where trans_parser_type=0
+          and contract_address = #{contractAddress}
+          and <![CDATA[ block_number > #{blockNumber} ]]>
+          and logs like CONCAT('%',#{eventName},'%')
+        limit 1000
+    </select>
+    
     <delete id="rollback">
         DELETE from ${tableName} where block_number = ${blockNumber}
     </delete>

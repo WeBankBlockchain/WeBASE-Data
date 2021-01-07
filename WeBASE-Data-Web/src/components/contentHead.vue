@@ -126,7 +126,7 @@ export default {
     data: function () {
         return {
             title: this.headTitle,
-            groupName: "-",
+            appName: "-",
             accountName: "admin",
             dialogShow: false,
             path: "",
@@ -162,12 +162,12 @@ export default {
                         this.groupList = res.data.data
                         if(!this.groupList.length) return;
                         if (!localStorage.getItem('groupId')) {
-                            this.groupName = res.data.data[0]['groupName']
+                            this.appName = res.data.data[0]['appName']
                             this.groupId = res.data.data[0]['groupId']
                             this.appName = res.data.data[0]['appName']
                             this.$emit('changGroup', this.groupId);
                         } else {
-                            this.groupName = localStorage.getItem('groupName')
+                            this.appName = localStorage.getItem('appName')
                             this.groupId = localStorage.getItem('groupId')
                             this.appName = localStorage.getItem('appName')
                             this.$emit('changGroup', this.groupId);
@@ -179,9 +179,9 @@ export default {
 
         },
         changeGroup: function (val) {
-            this.groupName = val.groupName
             this.appName = val.appName
-            localStorage.setItem("groupName", val.groupName);
+            this.appName = val.appName
+            localStorage.setItem("appName", val.appName);
             localStorage.setItem("groupId", val.groupId);
             localStorage.setItem("appName", val.appName);
             this.$emit('changGroup', val.groupId);

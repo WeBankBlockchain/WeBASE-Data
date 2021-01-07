@@ -195,3 +195,22 @@ CREATE TABLE IF NOT EXISTS tb_config_version (
     modify_time datetime DEFAULT NULL COMMENT '修改时间',
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='配置版本信息表';
+
+
+-- ----------------------------
+-- Table structure for tb_event_export_task
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS tb_event_export_task (
+	id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+	chain_id int(11) NOT NULL COMMENT '区块链编号',
+	group_id int(11) NOT NULL COMMENT '群组编号',
+	contract_name varchar(120) binary NOT NULL COMMENT '合约名称',
+	contract_address varchar(64) NOT NULL COMMENT '合约地址',
+	event_name varchar(64) NOT NULL COMMENT '事件名',
+	block_number bigint(25) DEFAULT '0' COMMENT '导出的最新块高',
+	task_status tinyint(4) DEFAULT '1' COMMENT '状态（1-运行，2-暂停）',
+	create_time datetime DEFAULT NULL COMMENT '创建时间',
+	modify_time datetime DEFAULT NULL COMMENT '修改时间',
+	PRIMARY KEY (id),
+	UNIQUE KEY uk_event_name (contract_address,event_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='事件导出任务表';

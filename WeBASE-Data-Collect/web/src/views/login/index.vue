@@ -159,7 +159,7 @@ export default {
             login(reqData, checkCode, this.authToken)
                 .then(res => {
                     if (res.data.code === 0) {
-                        localStorage.setItem("groupName", "");
+                        localStorage.setItem("appName", "");
                         localStorage.setItem("groupId", "");
                         localStorage.setItem("folderList", "")
                         localStorage.setItem("user", res.data.data.account);
