@@ -41,6 +41,12 @@ public interface TableMapper {
     int createTbSolc();
     
     int createTbConfigVersion();
+    
+    // event export begin
+    int createTbEventExportTask();
+
+    int createTbEventInfo(@Param("tableName") String tableName);
+    // event export end
 
     int createTbTaskPool(@Param("tableName") String tableName);
 

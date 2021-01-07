@@ -18,7 +18,7 @@ package com.webank.webase.data.collect.base.enums;
  */
 public enum TableName {
     TASK("tb_task_pool_"), BLOCK("tb_block_"), TRANS("tb_transaction_"), RECEIPT(
-            "tb_receipt_"), PARSER("tb_parser_");
+            "tb_receipt_"), PARSER("tb_parser_"), EVENT("tb_event_info_");
 
     String value;
 
@@ -32,5 +32,9 @@ public enum TableName {
 
     public String getTableName(int chainId, int groupId) {
         return value + chainId + "_" + groupId;
+    }
+    
+    public String getEventInfoTableName(int chainId, int groupId, int eventExportId) {
+        return value + chainId + "_" + groupId + "_" + eventExportId;
     }
 }
