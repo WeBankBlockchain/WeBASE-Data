@@ -386,6 +386,7 @@ export default {
                     }
                 })
                 .catch(err => {
+                    this.loadingTransaction = false;
                     this.$message({
                         message: '系统错误',
                         type: "error",
