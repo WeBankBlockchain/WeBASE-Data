@@ -26,6 +26,8 @@ import com.webank.webase.data.collect.block.enums.TxInfoStatusEnum;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -67,6 +69,8 @@ public class BlockTaskPoolService {
         log.info("start pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
         try {
             boolean check = true;
+            Instant startTimem = Instant.now();
+            Long useTimeSum = 0L;
             while (check) {
                 // max block in chain
                 long currentChainHeight =
@@ -100,7 +104,8 @@ public class BlockTaskPoolService {
                 }
                 checkTimeOut(chainId, groupId);
                 processErrors(chainId, groupId);
-                if (fromHeight > toHeight) {
+                useTimeSum = Duration.between(startTimem, Instant.now()).toMillis();
+                if (fromHeight > toHeight || useTimeSum > cProperties.getDataParserTaskFixedDelay()) {
                     check = false;
                 }
             }

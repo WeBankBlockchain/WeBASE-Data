@@ -210,7 +210,7 @@ public class TransactionService {
                         .forEach(transHash -> parserTransaction(chainId, groupId, transHash));
 
                 // parser useTime
-                useTimeSum = Duration.between(startTimem, Instant.now()).getSeconds();
+                useTimeSum = Duration.between(startTimem, Instant.now()).toMillis();
             } while (useTimeSum < cProperties.getDataParserTaskFixedDelay());
         } catch (Exception ex) {
             log.error("fail parserProcess chainId:{} groupId:{} ", chainId, groupId, ex);

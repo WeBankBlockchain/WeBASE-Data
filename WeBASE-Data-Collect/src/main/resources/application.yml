@@ -23,6 +23,9 @@ spring:
 
 # constants
 constant:
+  ## if use elasticsearch
+  ifEsEnable: false
+  
   ## front http request
   httpTimeOut: 5000
   maxRequestFail: 3
