@@ -38,7 +38,6 @@ public class ConstantProperties {
     // data pull
     private long startBlockNumber = 0;
     private int crawlBatchUnit = 100;
-    private Long pullBlockSleepTime1 = 20L; // 20 mills
 
     // front http request
     private Integer httpTimeOut = 5000;
@@ -47,6 +46,7 @@ public class ConstantProperties {
 
     // data handle
     private boolean ifPullData = true; // default true
+    private boolean ifEsEnable = false; // default false
     private boolean multiLiving = false; // default false
     private Long dataParserTaskFixedDelay = 60000L; // default 1min
     
