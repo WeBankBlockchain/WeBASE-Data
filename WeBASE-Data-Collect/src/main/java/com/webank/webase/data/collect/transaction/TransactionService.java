@@ -17,6 +17,7 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.block.entity.MinMaxBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
@@ -67,6 +68,7 @@ public class TransactionService {
     public void addTransInfo(int chainId, int groupId, TbTransaction tbTransaction)
             throws BaseException {
         String tableName = TableName.TRANS.getTableName(chainId, groupId);
+        tbTransaction.setRecordMonth(CommonTools.getYearMonth(tbTransaction.getBlockTimestamp()));
         transactionMapper.add(tableName, tbTransaction);
     }
 

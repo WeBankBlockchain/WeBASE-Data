@@ -16,6 +16,8 @@ package com.webank.webase.data.collect.table;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.group.entity.TbGroup;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,7 +40,7 @@ public class TableService {
     private TableMapper tableMapper;
     @Value("${spring.datasource.url}")
     private String dbUrl;
-    public static Map<String, Integer> CREATED_TABLE_MAP = new ConcurrentHashMap<>();
+    public static Map<String, Integer> CREATED_MAP = new ConcurrentHashMap<>();
     public static final Integer CREATED = 1;
 
     /**
@@ -55,8 +57,8 @@ public class TableService {
         tableMapper.createTbContract();
         tableMapper.createTbMethod();
         tableMapper.createTbSolc();
-        tableMapper.createTbConfigVersion();
         tableMapper.createTbEventExportTask();
+        tableMapper.createTbGas();
     }
 
     /**
@@ -69,7 +71,7 @@ public class TableService {
         }
         // table created record in map, check if exist in map
         String chainIdGroupIndexKey = chainId + "_" + groupId;
-        if (CREATED_TABLE_MAP.get(chainIdGroupIndexKey) != null) {
+        if (CREATED_MAP.get(chainIdGroupIndexKey) != null) {
             log.debug("table of indexKey: {} created.", chainIdGroupIndexKey);
             return;
         }
@@ -79,9 +81,9 @@ public class TableService {
         tableMapper.createTbReceipt(TableName.RECEIPT.getTableName(chainId, groupId));
         tableMapper.createTbParser(TableName.PARSER.getTableName(chainId, groupId));
         log.info("create table of indexKey: {} ", chainIdGroupIndexKey);
-        CREATED_TABLE_MAP.put(chainIdGroupIndexKey, CREATED);
+        CREATED_MAP.put(chainIdGroupIndexKey, CREATED);
     }
-    
+
     /**
      * newEvnetInfoTable.
      * 
@@ -95,13 +97,14 @@ public class TableService {
         }
         // table created record in map, check if exist in map
         String indexKey = chainId + "_" + groupId + "_" + eventExportId;
-        if (CREATED_TABLE_MAP.get(indexKey) != null) {
+        if (CREATED_MAP.get(indexKey) != null) {
             log.debug("table of indexKey: {} created.", indexKey);
             return;
         }
-        tableMapper.createTbEventInfo(TableName.EVENT.getEventInfoTableName(chainId, groupId, eventExportId));
+        tableMapper.createTbEventInfo(
+                TableName.EVENT.getEventInfoTableName(chainId, groupId, eventExportId));
         log.info("create table of indexKey: {} ", indexKey);
-        CREATED_TABLE_MAP.put(indexKey, CREATED);
+        CREATED_MAP.put(indexKey, CREATED);
     }
 
     /**
@@ -112,7 +115,51 @@ public class TableService {
             dropTableByName(enumName.getTableName(chainId, groupId));
         }
     }
-    
+
+    /**
+     * createPartition.
+     */
+    public void createPartition(String partitionName, int partitionValue, List<TbGroup> groupList) {
+        // partition created record in map, check if exist in map
+        String indexKey = partitionName;
+        String partitionRecord =
+                tableMapper.queryPartition(getDbName(), ConstantProperties.TB_GAS, partitionName);
+        if (CREATED_MAP.get(indexKey) != null || partitionRecord != null) {
+            log.info("partition: {} has been created.", indexKey);
+            return;
+        }
+        createPartition(ConstantProperties.TB_GAS, partitionName, partitionValue);
+        for (TbGroup tbGroup : groupList) {
+            createPartition(TableName.TASK.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+            createPartition(
+                    TableName.BLOCK.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+            createPartition(
+                    TableName.TRANS.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+            createPartition(
+                    TableName.RECEIPT.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+            createPartition(
+                    TableName.PARSER.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+        }
+        log.info("partition: {} create.", indexKey);
+        CREATED_MAP.put(indexKey, CREATED);
+    }
+
+    /**
+     * createPartition.
+     */
+    public void createPartition(String tableName, String partitionName, int partitionValue) {
+        try {
+            tableMapper.createPartition(tableName, partitionName, partitionValue);
+        } catch (Exception e) {
+            log.error("createPartition Exception", e);
+        }
+    }
+
     /**
      * get db name.
      */

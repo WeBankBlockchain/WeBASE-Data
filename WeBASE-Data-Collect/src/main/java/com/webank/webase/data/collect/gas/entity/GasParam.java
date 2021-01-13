@@ -11,20 +11,25 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.parser.entity;
+package com.webank.webase.data.collect.gas.entity;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ParserEventInfo {
-    private String transHash;
-    private BigInteger blockNumber;
-    private String contractAddress;
+@AllArgsConstructor
+public class GasParam {
+    @NotNull
+    private Integer chainId;
+    @NotNull
+    private Integer groupId;
+    @NotNull
+    private Integer pageNumber;
+    @NotNull
+    private Integer pageSize;
+    private Integer recordType;
     private String userAddress;
-    private String logs;
-    private LocalDateTime blockTimestamp;
 }
