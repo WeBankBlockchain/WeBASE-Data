@@ -29,6 +29,8 @@ public class ConstantProperties {
     public static final String CONTRACT_NAME_ZERO = "0x00000000";
     public static final String ADDRESS_DEPLOY = "0x0000000000000000000000000000000000000000";
     
+    public static final String TB_GAS = "tb_gas";
+    public static final String PREFIX_PARTITION = "p_";
     public static final String ORDER_BY_ID_DESC = "id DESC";
 
     // group info
@@ -46,12 +48,10 @@ public class ConstantProperties {
 
     // data handle
     private boolean ifPullData = true; // default true
+    private boolean ifSaveBlockAndTrans = true; // default true
+    private boolean ifSaveGas = true; // default true
     private boolean ifEsEnable = false; // default false
     private boolean multiLiving = false; // default false
     private Long dataParserTaskFixedDelay = 60000L; // default 1min
-    
-    // config server
-    private boolean syncConfig = false; // default false
-    private String configServerIpPort = "127.0.0.1:8001";
 
 }

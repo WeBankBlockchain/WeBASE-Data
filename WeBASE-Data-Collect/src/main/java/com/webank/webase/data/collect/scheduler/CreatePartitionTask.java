@@ -13,67 +13,59 @@
  */
 package com.webank.webase.data.collect.scheduler;
 
-import com.webank.webase.data.collect.base.enums.DataStatus;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
-import com.webank.webase.data.collect.txndaily.TxnDailyService;
+import com.webank.webase.data.collect.table.TableService;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 /**
- * data parser
+ * create table partition
  * 
  */
 @Log4j2
 @Component
-public class StatTxnDailyTask {
+public class CreatePartitionTask {
 
     @Autowired
     private GroupService groupService;
     @Autowired
-    private TxnDailyService txnDailyService;
-    @Autowired
-    private ConstantProperties cProperties;
+    private TableService tableService;
 
-    @Scheduled(fixedDelayString = "${constant.statTxnDailyTaskFixedDelay}", initialDelay = 1000)
+    @Scheduled(cron = "${constant.createPartitionCron}")
     public void taskStart() {
-        // toggle
-        if (!cProperties.isIfSaveBlockAndTrans()) {
-            return;
-        }
-        statStart();
+        createPartitionStart();
     }
 
     /**
-     * statStart.
+     * createPartitionStart.
      */
-    public void statStart() {
-        log.info("start StatTxnDaily.");
+    @Transactional
+    public void createPartitionStart() {
+        log.info("start createPartition.");
         Instant startTime = Instant.now();
-        List<TbGroup> groupList = groupService.getGroupList(null, DataStatus.NORMAL.getValue());
+        // get partition info
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String partitionName =
+                ConstantProperties.PREFIX_PARTITION + CommonTools.getYearMonth(localDateTime);
+        int partitionValue = CommonTools.getYearMonthNext(localDateTime);
+        // create table partition
+        List<TbGroup> groupList = groupService.getGroupList(null, null);
         if (CollectionUtils.isEmpty(groupList)) {
-            log.info("StatTxnDaily jump over: not found any group");
             return;
         }
-        // count down group, make sure all group's transMonitor finished
-        CountDownLatch latch = new CountDownLatch(groupList.size());
-        groupList.stream().forEach(group -> txnDailyService.statProcess(latch, group.getChainId(),
-                group.getGroupId()));
-        try {
-            latch.await();
-        } catch (InterruptedException ex) {
-            log.error("InterruptedException", ex);
-            Thread.currentThread().interrupt();
-        }
-        log.info("end StatTxnDaily useTime:{} ",
+        tableService.createPartition(partitionName, partitionValue, groupList);
+        log.info("end createPartition useTime:{} ",
                 Duration.between(startTime, Instant.now()).toMillis());
     }
 }

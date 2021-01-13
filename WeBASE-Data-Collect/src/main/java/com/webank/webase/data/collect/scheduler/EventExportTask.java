@@ -13,6 +13,7 @@
  */
 package com.webank.webase.data.collect.scheduler;
 
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.MybatisExampleTools;
 import com.webank.webase.data.collect.dao.entity.TbEventExportTask;
 import com.webank.webase.data.collect.dao.entity.TbEventExportTaskExample;
@@ -34,9 +35,15 @@ public class EventExportTask {
 
     @Autowired
     private EventService eventService;
+    @Autowired
+    private ConstantProperties cProperties;
 
     @Scheduled(cron = "${constant.eventExportCron}")
     public void taskStart() {
+        // toggle
+        if (!cProperties.isIfSaveBlockAndTrans()) {
+            return;
+        }
         eventExportStart();
     }
 
@@ -51,7 +58,7 @@ public class EventExportTask {
                         new TbEventExportTask((byte) TaskStatus.RUNNING.getValue()));
         List<TbEventExportTask> list = eventService.getExportInfoList(example);
         if (CollectionUtils.isEmpty(list)) {
-            log.info("eventExport jump over: not found any running export task");
+            log.debug("eventExport jump over: not found any running export task");
             return;
         }
         // count down , make sure all element finished

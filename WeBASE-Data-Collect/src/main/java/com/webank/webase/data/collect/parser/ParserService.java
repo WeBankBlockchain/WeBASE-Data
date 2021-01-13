@@ -296,6 +296,7 @@ public class ParserService {
         BeanUtils.copyProperties(contractResult, tbParser);
         tbParser.setBlockNumber(tbReceipt.getBlockNumber());
         tbParser.setBlockTimestamp(tbReceipt.getBlockTimestamp());
+        tbParser.setRecordMonth(tbReceipt.getRecordMonth());
         dataAddAndUpdate(chainId, groupId, tbParser);
     }
 

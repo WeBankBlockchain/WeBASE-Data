@@ -39,9 +39,9 @@ public interface TableMapper {
     int createTbMethod();
 
     int createTbSolc();
-    
-    int createTbConfigVersion();
-    
+
+    int createTbGas();
+
     // event export begin
     int createTbEventExportTask();
 
@@ -59,6 +59,13 @@ public interface TableMapper {
     int createTbParser(@Param("tableName") String tableName);
 
     List<String> queryTables(@Param("dbName") String dbName, @Param("tableName") String tableName);
+
+    String queryPartition(@Param("dbName") String dbName, @Param("tableName") String tableName,
+            @Param("partitionName") String partitionName);
+
+    int createPartition(@Param("tableName") String tableName,
+            @Param("partitionName") String partitionName,
+            @Param("partitionValue") int partitionValue);
 
     int dropTable(@Param("dbName") String dbName, @Param("tableName") String tableName);
 
