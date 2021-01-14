@@ -24,6 +24,7 @@ import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
+import com.webank.webase.data.collect.table.TableService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
 import java.time.Duration;
@@ -61,6 +62,8 @@ public class TransactionService {
     private ReceiptService receiptService;
     @Autowired
     private ConstantProperties cProperties;
+    @Autowired
+    private TableService tableService;
 
     /**
      * add trans hash info.
@@ -200,6 +203,8 @@ public class TransactionService {
     public void parserProcess(CountDownLatch latch, int chainId, int groupId) {
         log.info("start parserProcess. chainId:{} groupId:{}", chainId, groupId);
         try {
+            // check table
+            tableService.newSubTable(chainId, groupId);
             Instant startTimem = Instant.now();
             Long useTimeSum = 0L;
             do {

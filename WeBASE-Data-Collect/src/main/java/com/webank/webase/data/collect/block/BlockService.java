@@ -14,7 +14,6 @@
 package com.webank.webase.data.collect.block;
 
 import com.webank.webase.data.collect.base.code.ConstantCode;
-import com.webank.webase.data.collect.base.enums.GasRecordType;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
@@ -22,7 +21,6 @@ import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.block.entity.BlockListParam;
 import com.webank.webase.data.collect.block.entity.TbBlock;
-import com.webank.webase.data.collect.dao.entity.TbGas;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.gas.GasService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
@@ -34,7 +32,6 @@ import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
-import org.fisco.bcos.web3j.utils.Numeric;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +68,7 @@ public class BlockService {
      */
     @Transactional
     @SuppressWarnings("rawtypes")
-    public void saveBlockInfo(Block block, int chainId, int groupId) throws BaseException {
+    public void saveBlockInfo(Block block, int chainId, int groupId) throws Exception {
         // save block info
         TbBlock tbBlock = chainBlock2TbBlock(block);
         if (cProperties.isIfSaveBlockAndTrans()) {
@@ -93,14 +90,9 @@ public class BlockService {
                 receiptService.handleReceiptInfo(chainId, groupId, transReceipt,
                         tbBlock.getBlockTimestamp());
             }
-            if (cProperties.isIfSaveBlockAndTrans()) {
-                TbGas tbGas = new TbGas(chainId, groupId, trans.getBlockNumber(), trans.getHash(),
-                        tbBlock.getBlockTimestamp(), transReceipt.getFrom(),
-                        transReceipt.getGasUsed(),
-                        Numeric.decodeQuantity(transReceipt.getRemainGas()),
-                        CommonTools.getYearMonth(tbBlock.getBlockTimestamp()),
-                        (byte) GasRecordType.consume.getType());
-                gasService.saveGas(tbGas);
+            if (cProperties.isIfSaveGas()) {
+                gasService.parserAndSaveGas(chainId, groupId, transReceipt,
+                        tbBlock.getBlockTimestamp());
             }
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);

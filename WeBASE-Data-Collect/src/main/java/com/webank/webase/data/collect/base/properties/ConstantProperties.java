@@ -32,6 +32,10 @@ public class ConstantProperties {
     public static final String TB_GAS = "tb_gas";
     public static final String PREFIX_PARTITION = "p_";
     public static final String ORDER_BY_ID_DESC = "id DESC";
+    
+    // gas parser
+    public static final String GAS_CHARGE = "charge(address,uint256)";
+    public static final String GAS_DEDUCT = "deduct(address,uint256)";
 
     // group info
     private String groupInvalidGrayscaleValue = "1M"; // y:year, M:month, d:day of month, h:hour,

@@ -204,6 +204,7 @@ CREATE TABLE IF NOT EXISTS tb_gas (
     group_id int(11) NOT NULL COMMENT '群组编号',
     block_number bigint(25) NOT NULL COMMENT '所属区块',
     trans_hash varchar(128) NOT NULL COMMENT '交易hash',
+    trans_index int(11) NOT NULL COMMENT '交易索引',
     block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
     record_month int(11) NOT NULL COMMENT '出块时间年月，如202008',
     user_address varchar(64) NOT NULL COMMENT '用户地址',
@@ -215,6 +216,7 @@ CREATE TABLE IF NOT EXISTS tb_gas (
     PRIMARY KEY (id,record_month),
     KEY idx_block_number (block_number),
     KEY idx_trans_hash (trans_hash),
+    KEY idx_trans_index (trans_index),
     KEY idx_user (user_address)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='gas信息表'
 PARTITION BY RANGE (record_month) (
