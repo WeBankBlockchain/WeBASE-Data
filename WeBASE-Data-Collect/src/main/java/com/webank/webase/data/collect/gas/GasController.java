@@ -64,7 +64,7 @@ public class GasController extends BaseController {
         int count = gasService.getGasCount(example);
         pagesponse.setTotalCount(count);
         if (count > 0) {
-            example.setOrderByClause(ConstantProperties.ORDER_BY_ID_DESC);
+            example.setOrderByClause("block_number DESC,trans_index DESC");
             List<TbGas> list = gasService.getGasList(example);
             pagesponse.setData(list);
         }

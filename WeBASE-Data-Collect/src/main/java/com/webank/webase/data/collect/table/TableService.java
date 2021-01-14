@@ -111,9 +111,11 @@ public class TableService {
      * drop table.
      */
     public void dropTable(int chainId, int groupId) {
+        String indexKey = chainId + "_" + groupId;
         for (TableName enumName : TableName.values()) {
             dropTableByName(enumName.getTableName(chainId, groupId));
         }
+        CREATED_MAP.remove(indexKey);
     }
 
     /**

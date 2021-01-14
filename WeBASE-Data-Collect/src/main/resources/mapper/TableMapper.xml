@@ -323,6 +323,7 @@
         group_id int(11) NOT NULL COMMENT '群组编号',
         block_number bigint(25) NOT NULL COMMENT '所属区块',
         trans_hash varchar(128) NOT NULL COMMENT '交易hash',
+        trans_index int(11) NOT NULL COMMENT '交易索引',
         block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
         record_month int(11) NOT NULL COMMENT '出块时间年月，如202008',
         user_address varchar(64) NOT NULL COMMENT '用户地址',

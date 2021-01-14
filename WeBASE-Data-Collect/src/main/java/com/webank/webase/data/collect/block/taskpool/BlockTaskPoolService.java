@@ -25,6 +25,7 @@ import com.webank.webase.data.collect.block.entity.TbBlockTaskPool;
 import com.webank.webase.data.collect.block.enums.BlockCertaintyEnum;
 import com.webank.webase.data.collect.block.enums.TxInfoStatusEnum;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
+import com.webank.webase.data.collect.table.TableService;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.time.Duration;
@@ -65,11 +66,15 @@ public class BlockTaskPoolService {
     private RollBackService rollBackService;
     @Autowired
     private ConstantProperties cProperties;
+    @Autowired
+    private TableService tableService;
     
     @Async("asyncExecutor")
     public void pullBlockProcess(CountDownLatch latch, int chainId, int groupId) {
         log.info("start pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
         try {
+            // check table
+            tableService.newSubTable(chainId, groupId);
             boolean check = true;
             Instant startTimem = Instant.now();
             Long useTimeSum = 0L;
@@ -352,6 +357,7 @@ public class BlockTaskPoolService {
                 TableName.TASK.getTableName(chainId, groupId), startIndex, endIndex);
         List<Long> ids = list.stream().map(p -> p.getBlockNumber()).collect(Collectors.toList());
         List<TbBlockTaskPool> supplements = new ArrayList<>();
+        Integer recordMonth = CommonTools.getYearMonth(LocalDateTime.now());
         for (long tmpIndex = startIndex; tmpIndex <= endIndex; tmpIndex++) {
             if (ids.indexOf(tmpIndex) >= 0) {
                 continue;
@@ -360,7 +366,8 @@ public class BlockTaskPoolService {
                     tmpIndex);
             TbBlockTaskPool pool = new TbBlockTaskPool().setBlockNumber(tmpIndex)
                     .setSyncStatus(TxInfoStatusEnum.ERROR.getStatus())
-                    .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+                    .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty())
+                    .setRecordMonth(recordMonth);
             supplements.add(pool);
         }
         return Optional.of(supplements);

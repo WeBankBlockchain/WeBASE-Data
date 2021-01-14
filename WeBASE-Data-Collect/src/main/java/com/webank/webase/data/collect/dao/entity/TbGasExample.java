@@ -624,6 +624,66 @@ public class TbGasExample {
             return (Criteria) this;
         }
 
+        public Criteria andTransIndexIsNull() {
+            addCriterion("trans_index is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexIsNotNull() {
+            addCriterion("trans_index is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexEqualTo(Integer value) {
+            addCriterion("trans_index =", value, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexNotEqualTo(Integer value) {
+            addCriterion("trans_index <>", value, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexGreaterThan(Integer value) {
+            addCriterion("trans_index >", value, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexGreaterThanOrEqualTo(Integer value) {
+            addCriterion("trans_index >=", value, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexLessThan(Integer value) {
+            addCriterion("trans_index <", value, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexLessThanOrEqualTo(Integer value) {
+            addCriterion("trans_index <=", value, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexIn(List<Integer> values) {
+            addCriterion("trans_index in", values, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexNotIn(List<Integer> values) {
+            addCriterion("trans_index not in", values, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexBetween(Integer value1, Integer value2) {
+            addCriterion("trans_index between", value1, value2, "transIndex");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransIndexNotBetween(Integer value1, Integer value2) {
+            addCriterion("trans_index not between", value1, value2, "transIndex");
+            return (Criteria) this;
+        }
+
         public Criteria andBlockTimestampIsNull() {
             addCriterion("block_timestamp is null");
             return (Criteria) this;
