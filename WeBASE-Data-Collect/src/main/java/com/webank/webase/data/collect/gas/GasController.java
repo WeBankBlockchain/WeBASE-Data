@@ -16,11 +16,15 @@ package com.webank.webase.data.collect.gas;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
+import com.webank.webase.data.collect.base.enums.GasRecordType;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.MybatisExampleTools;
 import com.webank.webase.data.collect.dao.entity.TbGas;
 import com.webank.webase.data.collect.dao.entity.TbGasExample;
+import com.webank.webase.data.collect.dao.entity.TbGasReconciliation;
+import com.webank.webase.data.collect.dao.entity.TbGasReconciliationExample;
 import com.webank.webase.data.collect.gas.entity.GasParam;
+import com.webank.webase.data.collect.gas.entity.GasReconciliationParam;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -44,6 +48,8 @@ public class GasController extends BaseController {
 
     @Autowired
     private GasService gasService;
+    @Autowired
+    private GasReconciliationService gasReconciliationService;
 
     /**
      * query gas list.
@@ -59,17 +65,52 @@ public class GasController extends BaseController {
         // param
         TbGas tbGas = new TbGas();
         BeanUtils.copyProperties(gasParam, tbGas);
+        if (gasParam.getRecordType() != null) {
+            if (!GasRecordType.isInclude(gasParam.getRecordType())) {
+                
+            }
+            tbGas.setRecordType(gasParam.getRecordType().byteValue());
+        }
         TbGasExample example = MybatisExampleTools.initSamplePageExample(TbGasExample.class,
                 gasParam.getPageNumber(), gasParam.getPageSize(), tbGas);
         int count = gasService.getGasCount(example);
         pagesponse.setTotalCount(count);
         if (count > 0) {
-            example.setOrderByClause("block_number DESC,trans_index DESC");
+            example.setOrderByClause(ConstantProperties.ORDER_BY_ID_DESC);
             List<TbGas> list = gasService.getGasList(example);
             pagesponse.setData(list);
         }
 
         log.info("end queryGasList useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return pagesponse;
+    }
+
+    /**
+     * query gas reconciliation list.
+     */
+    @PostMapping("/reconciliationlist")
+    public BasePageResponse queryGasReconciliationList(
+            @RequestBody @Valid GasReconciliationParam param, BindingResult result) {
+        checkBindResult(result);
+        BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
+        Instant startTime = Instant.now();
+        log.info("start queryGasReconciliationList.");
+
+        // param
+        TbGasReconciliation tbGasReconciliation = new TbGasReconciliation();
+        BeanUtils.copyProperties(param, tbGasReconciliation);
+        TbGasReconciliationExample example =
+                MybatisExampleTools.initSamplePageExample(TbGasReconciliationExample.class,
+                        param.getPageNumber(), param.getPageSize(), tbGasReconciliation);
+        int count = gasReconciliationService.getCount(example);
+        pagesponse.setTotalCount(count);
+        if (count > 0) {
+            List<TbGasReconciliation> list = gasReconciliationService.selectByExample(example);
+            pagesponse.setData(list);
+        }
+
+        log.info("end queryGasReconciliationList useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }

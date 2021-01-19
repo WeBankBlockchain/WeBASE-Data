@@ -59,6 +59,7 @@ public class TableService {
         tableMapper.createTbSolc();
         tableMapper.createTbEventExportTask();
         tableMapper.createTbGas();
+        tableMapper.createTbGasReconciliation();
     }
 
     /**

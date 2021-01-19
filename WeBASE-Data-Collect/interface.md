@@ -616,7 +616,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 
 ## 4 Gas管理模块
 
-### 4.1 查询Gas列表
+### 4.1 查询Gas变更列表
 
 #### 传输协议
 
@@ -629,14 +629,15 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 
 ***1）入参表***
 
-| 序号 | 输入参数    | 类型   | 可为空 | 备注                             |
-| ---- | ----------- | ------ | ------ | -------------------------------- |
-| 1    | chainId     | Int    | 否     | 链编号                           |
-| 2    | groupId     | int    | 否     | 群组编号                         |
-| 3    | pageSize    | Int    | 否     | 每页记录数                       |
-| 4    | pageNumber  | Int    | 否     | 当前页码                         |
-| 5    | userAddress | String | 是     | 用户地址                         |
-| 6    | recordType  | Int    | 是     | 记录类型(0-消耗，1-充值，2-冲正) |
+| 序号 | 输入参数    | 类型   | 可为空 | 备注                                       |
+| ---- | ----------- | ------ | ------ | ------------------------------------------ |
+| 1    | chainId     | Int    | 否     | 链编号                                     |
+| 2    | groupId     | int    | 否     | 群组编号                                   |
+| 3    | pageSize    | Int    | 否     | 每页记录数                                 |
+| 4    | pageNumber  | Int    | 否     | 当前页码                                   |
+| 5    | userAddress | String | 是     | 用户地址，传入时查询对应用户               |
+| 6    | recordType  | Int    | 是     | 记录类型（0-普通交易消耗，1-充值，2-扣费） |
+| 7    | transHash   | String | 是     | 交易hash，传入时查询对应交易               |
 
 ***2）入参示例***
 
@@ -658,26 +659,26 @@ http://localhost:5009/WeBASE-Data-Collect/gas/list/
 
 ***1）出参表***
 
-| 序号   | 输出参数       | 类型          |      | 备注                                |
-| ------ | -------------- | ------------- | ---- | ----------------------------------- |
-| 1      | code           | Int           | 否   | 返回码，0：成功 其它：失败          |
-| 2      | message        | String        | 否   | 描述                                |
-| 3      | totalCount     | Int           | 否   | 总记录数                            |
-| 4      | data           | List          | 否   | 列表                                |
-| 4.1    |                | Object        |      | 信息对象                            |
-| 4.1.1  | chainId        | Int           | 否   | 链编号                              |
-| 4.1.2  | groupId        | Int           | 否   | 群组编号                            |
-| 4.1.3  | blockNumber    | BIgInteger    | 否   | 所属块高                            |
-| 4.1.4  | transHash      | String        | 否   | 交易hash                            |
-| 4.1.5  | transIndex     | Int           | 否   | 交易索引                            |
-| 4.1.6  | blockTimestamp | LocalDateTime | 否   | 出块时间                            |
-| 4.1.7  | userAddress    | String        | 否   | 用户地址                            |
-| 4.1.8  | gasValue       | BIgInteger    | 否   | gas变动值                           |
-| 4.1.9  | gasRemain      | BIgInteger    | 否   | gas余额                             |
-| 4.1.10 | recordType     | Int           | 否   | gas记录类型(0-消耗，1-充值，2-冲正) |
-| 4.1.11 | recordMonth    | Int           | 否   | 记录年月                            |
-| 4.1.12 | createTime     | LocalDateTime | 否   | 落库时间                            |
-| 4.1.13 | modifyTime     | LocalDateTime | 否   | 修改时间                            |
+| 序号   | 输出参数       | 类型          |      | 备注                                          |
+| ------ | -------------- | ------------- | ---- | --------------------------------------------- |
+| 1      | code           | Int           | 否   | 返回码，0：成功 其它：失败                    |
+| 2      | message        | String        | 否   | 描述                                          |
+| 3      | totalCount     | Int           | 否   | 总记录数                                      |
+| 4      | data           | List          | 否   | 列表                                          |
+| 4.1    |                | Object        |      | 信息对象                                      |
+| 4.1.1  | chainId        | Int           | 否   | 链编号                                        |
+| 4.1.2  | groupId        | Int           | 否   | 群组编号                                      |
+| 4.1.3  | blockNumber    | BIgInteger    | 否   | 所属块高                                      |
+| 4.1.4  | transHash      | String        | 否   | 交易hash                                      |
+| 4.1.5  | transIndex     | Int           | 否   | 交易索引                                      |
+| 4.1.6  | blockTimestamp | LocalDateTime | 否   | 出块时间                                      |
+| 4.1.7  | userAddress    | String        | 否   | 用户地址                                      |
+| 4.1.8  | gasValue       | BIgInteger    | 否   | gas变动值                                     |
+| 4.1.9  | gasRemain      | BIgInteger    | 否   | gas余额                                       |
+| 4.1.10 | recordType     | Int           | 否   | gas记录类型（0-普通交易消耗，1-充值，2-扣费） |
+| 4.1.11 | recordMonth    | Int           | 否   | 记录年月                                      |
+| 4.1.12 | createTime     | LocalDateTime | 否   | 落库时间                                      |
+| 4.1.13 | modifyTime     | LocalDateTime | 否   | 修改时间                                      |
 
 ***2）出参示例***
 
@@ -703,6 +704,98 @@ http://localhost:5009/WeBASE-Data-Collect/gas/list/
       "transIndex": 0,
       "userAddress": "0xab9f8bfe240a6970ddc9f7fff717b114c22589ae",
       "recordType": 0
+    }
+  ],
+  "totalCount": 1
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 109000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 4.2 查询Gas用户对账信息列表
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/gas/reconciliationlist**
+- 请求方式：GET
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数    | 类型   | 可为空 | 备注                         |
+| ---- | ----------- | ------ | ------ | ---------------------------- |
+| 1    | chainId     | Int    | 否     | 链编号                       |
+| 2    | groupId     | int    | 否     | 群组编号                     |
+| 3    | pageSize    | Int    | 否     | 每页记录数                   |
+| 4    | pageNumber  | Int    | 否     | 当前页码                     |
+| 5    | userAddress | String | 是     | 用户地址，传入时查询对应用户 |
+
+***2）入参示例***
+
+```
+http://localhost:5009/WeBASE-Data-Collect/gas/reconciliationlist/
+```
+
+```
+{
+  "chainId": 1,
+  "groupId": 1,
+  "pageNumber": 1,
+  "pageSize": 5,
+  "userAddress": "0xab9f8bfe240a6970ddc9f7fff717b114c22589ae"
+}
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号  | 输出参数             | 类型          |      | 备注                                   |
+| ----- | -------------------- | ------------- | ---- | -------------------------------------- |
+| 1     | code                 | Int           | 否   | 返回码，0：成功 其它：失败             |
+| 2     | message              | String        | 否   | 描述                                   |
+| 3     | totalCount           | Int           | 否   | 总记录数                               |
+| 4     | data                 | List          | 否   | 列表                                   |
+| 4.1   |                      | Object        |      | 信息对象                               |
+| 4.1.1 | chainId              | Int           | 否   | 链编号                                 |
+| 4.1.2 | groupId              | Int           | 否   | 群组编号                               |
+| 4.1.3 | userAddress          | String        | 否   | 用户地址                               |
+| 4.1.4 | blockNumber          | BIgInteger    | 否   | 块高（用户对账块高）                   |
+| 4.1.5 | transHash            | String        | 是   | 交易hash（异常时展示异常记录交易hash） |
+| 4.1.6 | reconciliationStatus | Int           | 否   | 对账状态（0-正常，1-异常）             |
+| 4.1.7 | createTime           | LocalDateTime | 否   | 落库时间                               |
+| 4.1.8 | modifyTime           | LocalDateTime | 否   | 修改时间                               |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "blockNumber": 91,
+      "createTime": "2021-01-19 10:22:51",
+      "modifyTime": "2021-01-19 10:22:57",
+      "id": 3,
+      "chainId": 1,
+      "groupId": 1,
+      "userAddress": "0xab9f8bfe240a6970ddc9f7fff717b114c22589ae",
+      "transHash": null,
+      "reconciliationStatus": 0
     }
   ],
   "totalCount": 1
@@ -758,3 +851,8 @@ http://localhost:5009/WeBASE-Data-Collect/gas/list/
 | 209603 | solc js file not exist           | 编译器文件不存在   |
 | 209604 | save solc js file error          | 编译器文件保存失败 |
 | 209605 | read solc js file error          | 编译器文件读取失败 |
+| 209851 | event not exists                 | 事件不存在         |
+| 209852 | event exists                     | 事件已存在         |
+| 209853 | save event info fail             | 事件信息保存失败   |
+| 209854 | invalid task status              | 无效事件任务状态   |
+| 209901 | gas record type not exists       | gas记录类型不存在  |
