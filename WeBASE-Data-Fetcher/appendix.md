@@ -276,8 +276,9 @@ GRANT ALL PRIVILEGES ON *.* TO 'TestUser'@'%' IDENTIFIED BY '此处为TestUser�
 | spring.datasource.username          | defaultAccount                         | mysql账号                                  |
 | spring.datasource.password          | defaultPassword                        | mysql密码                                  |
 | spring.elasticsearch.rest.uris      | 127.0.0.1:9200                         | elasticsearch服务的ip地址                  |
-| spring.elasticsearch.rest.username  |                                        | elasticsearch用户名，可以为空              |
-| spring.elasticsearch.rest.password  |                                        | elasticsearch密码，可以为空                |
+| spring.elasticsearch.rest.username  | elasticAccount                         | elasticsearch用户名，可以为空              |
+| spring.elasticsearch.rest.password  | elasticPassword                        | elasticsearch密码，可以为空                |
+| constant.ifEsEnable                 | false                                  | 是否使用elasticsearch                      |
 | constant.keywordAuditCron           | 0 0 0/1 * * ?                          | 关键字审计任务执行时间，默认每小时执行一次 |
 | executor.corePoolSize               | 50                                     | 线程池大小                                 |
 | executor.maxPoolSize                | 100                                    | 线程池最大线程数                           |

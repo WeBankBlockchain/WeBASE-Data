@@ -14,6 +14,7 @@
 package com.webank.webase.data.fetcher.search;
 
 import com.webank.webase.data.fetcher.base.code.ConstantCode;
+import com.webank.webase.data.fetcher.base.config.ConstantProperties;
 import com.webank.webase.data.fetcher.base.entity.BasePageResponse;
 import com.webank.webase.data.fetcher.base.enums.SearchParamFileds;
 import com.webank.webase.data.fetcher.base.enums.SearchType;
@@ -47,13 +48,14 @@ public class SearchService {
 
     @Value("${spring.datasource.url}")
     private String dbUrl;
-
     @Autowired
     private GroupService groupService;
     @Autowired
     private SearchMapper searchMapper;
     @Autowired
     private EsCurdService esCurdService;
+    @Autowired
+    private ConstantProperties constantProperties;
 
     /**
      * query count of search.
@@ -88,6 +90,10 @@ public class SearchService {
     public SearchResponse findByKey(Integer pageNumber, Integer pageSize, String keyword) {
         try {
             String indexName = getDbName();
+            if (!constantProperties.isIfEsEnable()) {
+                log.error("findByKey fail. elasticsearch's config is false.");
+                throw new BaseException(ConstantCode.ELASTICSEARCH_FALSE);
+            }
             boolean existIndex = esCurdService.existIndex(indexName);
             if (!existIndex) {
                 log.error("findByKey fail. index not exists.");

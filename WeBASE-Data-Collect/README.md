@@ -1,13 +1,15 @@
-# 数据监管服务
+# 数据监管服务数据导出和分析子系统
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://webasedoc.readthedocs.io/zh_CN/latest/docs/WeBASE/CONTRIBUTING.html)
 [![Code Lines](https://tokei.rs/b1/github/WeBankFinTech/WeBASE-Data?category=code)](https://github.com/WeBankFinTech/WeBASE-Data)
 [![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)](http://www.apache.org/licenses/)
 
 ## 简介
-WeBASE-Data-Collect为区块链数据监管服务，主要提供以下功能：
+WeBASE-Data-Collect为数据监管服务数据导出和分析子系统，主要提供以下功能：
 
-- 查看链上的交易数量和交易详情。
-- 通过关键字搜索，查询交易属于哪条链，哪个机构，哪个合约。保证链上数据可查可管。
+- 支持配置多个链，并通过添加区块链前置来获取区块链数据
+- 拉取链上数据，包括区块、交易、交易回执
+- 支持配置合约和用户信息，解析交易
+- 支持导出交易gas数据，并提供gas查询和gas用户对账
 
 部署和接口说明如下：
 

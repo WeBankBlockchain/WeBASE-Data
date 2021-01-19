@@ -296,10 +296,13 @@ GRANT ALL PRIVILEGES ON *.* TO 'TestUser'@'%' IDENTIFIED BY '此处为TestUser�
 | spring.datasource.username                | defaultAccount                         | mysql账号                             |
 | spring.datasource.password                | defaultPassword                        | mysql密码                             |
 | spring.elasticsearch.rest.uris            | 127.0.0.1:9200                         | elasticsearch服务的ip地址             |
-| spring.elasticsearch.rest.username        |                                        | elasticsearch用户名，可以为空         |
-| spring.elasticsearch.rest.password        |                                        | elasticsearch密码，可以为空           |
+| spring.elasticsearch.rest.username        | elasticAccount                         | elasticsearch用户名，可以为空         |
+| spring.elasticsearch.rest.password        | elasticPassword                        | elasticsearch密码，可以为空           |
 | spring.servlet.multipart.max-request-size | 30MB                                   | 请求资源最大值                        |
-| spring.servlet.multipart.max-file-size    | 20MB                                   | d单个文件最大值                       |
+| spring.servlet.multipart.max-file-size    | 20MB                                   | 单个文件最大值                        |
+| constant.ifSaveBlockAndTrans              | true                                   | 是否保存区块和交易                    |
+| constant.ifSaveGas                        | true                                   | 是否保存gas                           |
+| constant.ifEsEnable                       | false                                  | 是否使用elasticsearch                 |
 | constant.httpTimeOut                      | 5000                                   | 请求前置超时时间                      |
 | constant.maxRequestFail                   | 3                                      | 失败次数                              |
 | constant.sleepWhenHttpMaxFail             | 30000                                  | 失败后睡眠时间（毫秒）                |
@@ -310,11 +313,11 @@ GRANT ALL PRIVILEGES ON *.* TO 'TestUser'@'%' IDENTIFIED BY '此处为TestUser�
 | constant.ifPullData                       | true                                   | 是否拉取区块（可通过接口修改）        |
 | constant.startBlockNumber                 | 0                                      | 开始块                                |
 | constant.crawlBatchUnit                   | 50                                     | 异步处理条数                          |
-| constant.dataPullCron                     | 0/10 * * * * ?                         | 数据拉取任务时间间隔                  |
-| constant.dataParserCron                   | 5/10 * * * * ?                         | 数据解析任务时间间隔                  |
-| constant.syncConfig                       | false                                  | 是否从其他服务同步配置                |
-| constant.syncConfigCron                   | 3 0 0/1 * * ?                          | 同步配置时间间隔                      |
-| constant.configServerIpPort               | 127.0.0.1:8001                         | 配置服务IP端口                        |
+| constant.dataPullCron                     | 0/10 * * * * ?                         | 数据拉取任务时间间隔（10秒）          |
+| constant.dataParserCron                   | 5/10 * * * * ?                         | 数据解析任务时间间隔（10秒）          |
+| constant.eventExportCron                  | 7/10 * * * * ?                         | 事件导出任务时间间隔（10秒）          |
+| constant.createPartitionCron              | 0 0 1 * * ?                            | 创建表分区任务时间（每天凌晨1点）     |
+| constant.gasReconciliationCron            | 0 0 0/1 * * ?                          | 创建表分区任务时间间隔（每小时）      |
 | constant.multiLiving                      | false                                  | 是否使用分布式任务部署多活            |
 | job.regCenter.serverLists                 | 127.0.0.1:2181                         | 部署多活的话需配置zookeeper，支持集群 |
 | job.regCenter.namespace                   | elasticjob-collect                     | zookeeper命名空间                     |

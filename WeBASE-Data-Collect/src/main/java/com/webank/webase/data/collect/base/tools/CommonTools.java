@@ -358,4 +358,22 @@ public class CommonTools {
         String otherChars = content.substring(1);
         return firstChar.toUpperCase() + otherChars;
     }
+    
+    public static int getYearMonth(Long recordTimestamp) {
+        LocalDateTime recordTime = timestamp2LocalDateTime(recordTimestamp);
+        return getYearMonth(recordTime);
+    }
+
+    public static int getYearMonth(LocalDateTime recordTime) {
+        return recordTime.getYear() * 100 + recordTime.getMonthValue();
+    }
+    
+    public static int getYearMonthNext(LocalDateTime recordTime) {
+        int year = recordTime.getYear();
+        int month = recordTime.getMonthValue();
+        if (month == 12) {
+            return (year + 1) * 100 + 1;
+        }
+        return (year + 1) * 100 + month + 1;
+    }
 }

@@ -8,7 +8,7 @@
 | 2    | WeBASE-Front 1.3.0或以上版本 |
 | 3    | MySQL5.6或以上版本  |
 | 4    | Java8或以上版本     |
-| 5 | Elasticsearch7.8.0及其对应elasticsearch-analysis-ik（分词插件） |
+| 5 | Elasticsearch7.8.0及其对应elasticsearch-analysis-ik（分词插件），需要查询Elasticsearch里的交易数据时需部署，对应WeBASE-Data-Collect |
 
 
 ## 2. 注意事项
@@ -21,12 +21,12 @@
 ## 3. 拉取代码
 执行命令：
 ```shell
-git clone https://github.com/WeBankFinTech/WeBASE-Data-Fetcher.git
+git clone https://github.com/WeBankFinTech/WeBASE-Data.git -b bsn
 ```
 进入目录：
 
 ```shell
-cd WeBASE-Data-Fetcher
+cd WeBASE-Data/WeBASE-Data-Fetcher
 ```
 
 ## 4. 编译代码
@@ -56,6 +56,11 @@ chmod +x ./gradlew && ./gradlew build -x test
 ```
 
 （2）修改服务配置，完整配置项说明请查看 [配置说明](./appendix.md#3-applicationyml配置项说明)
+
+- 服务端口，默认不修改。
+- 数据库连接（数据库名需事先创建，需要和WeBASE-Data-Collect服务连接相同的数据库）。
+- 如果需要进行搜索，查询elasticsearch里的交易数据，需要将ifEsEnable设置成true，并配置IP端口和用户名密码。不使用则不需要修改。**使用elasticsearch的话，需先部署elasticsearch，再部署WeBASE-Data**。
+
 ```shell
 # server config
 server:
@@ -73,8 +78,12 @@ spring:
   elasticsearch:
     rest:
       uris: 127.0.0.1:9200
-      username: 
-      password: 
+      username: "elasticAccount"
+      password: "elasticPassword"
+# constant config
+constant:
+  ## if use elasticsearch
+  ifEsEnable: false
 ...
 ```
 

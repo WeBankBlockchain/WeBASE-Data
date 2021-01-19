@@ -25,6 +25,8 @@ import com.webank.webase.data.collect.contract.MethodService;
 import com.webank.webase.data.collect.front.FrontService;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
 import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapService;
+import com.webank.webase.data.collect.gas.GasReconciliationService;
+import com.webank.webase.data.collect.gas.GasService;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.node.NodeService;
@@ -67,6 +69,10 @@ public class ChainService {
     private TxnDailyService txnDailyService;
     @Autowired
     private FrontGroupMapCache frontGroupMapCache;
+    @Autowired
+    private GasService gasService;
+    @Autowired
+    private GasReconciliationService gasReconciliationService;
     @Autowired
     @Lazy
     private ResetGroupListTask resetGroupListTask;
@@ -184,6 +190,10 @@ public class ChainService {
         txnDailyService.deleteByChainId(chainId);
         // clear cache
         frontGroupMapCache.clearMapList(chainId);
+        // clear gas
+        gasService.deleteByChainId(chainId);
+        // clear gas user
+        gasReconciliationService.deleteByChainId(chainId);
         // drop sub tables
         groupList.forEach(g -> tableService.dropTable(chainId, g.getGroupId()));
     }

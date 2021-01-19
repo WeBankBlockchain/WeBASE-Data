@@ -19,13 +19,18 @@ import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.BlockConstants;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.block.BlockService;
 import com.webank.webase.data.collect.block.entity.TbBlockTaskPool;
 import com.webank.webase.data.collect.block.enums.BlockCertaintyEnum;
 import com.webank.webase.data.collect.block.enums.TxInfoStatusEnum;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
+import com.webank.webase.data.collect.table.TableService;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -61,12 +66,18 @@ public class BlockTaskPoolService {
     private RollBackService rollBackService;
     @Autowired
     private ConstantProperties cProperties;
+    @Autowired
+    private TableService tableService;
     
     @Async("asyncExecutor")
     public void pullBlockProcess(CountDownLatch latch, int chainId, int groupId) {
         log.info("start pullBlockProcess. chainId:{} groupId:{}", chainId, groupId);
         try {
+            // check table
+            tableService.newSubTable(chainId, groupId);
             boolean check = true;
+            Instant startTimem = Instant.now();
+            Long useTimeSum = 0L;
             while (check) {
                 // max block in chain
                 long currentChainHeight =
@@ -100,7 +111,8 @@ public class BlockTaskPoolService {
                 }
                 checkTimeOut(chainId, groupId);
                 processErrors(chainId, groupId);
-                if (fromHeight > toHeight) {
+                useTimeSum = Duration.between(startTimem, Instant.now()).toMillis();
+                if (fromHeight > toHeight || useTimeSum > cProperties.getDataParserTaskFixedDelay()) {
                     check = false;
                 }
             }
@@ -133,9 +145,10 @@ public class BlockTaskPoolService {
     public void prepareTask(int chainId, int groupId, long begin, long end, boolean certainty) {
         log.debug("Begin to prepare sync blocks from {} to {}", begin, end);
         List<TbBlockTaskPool> list = Lists.newArrayList();
+        Integer recordMonth = CommonTools.getYearMonth(LocalDateTime.now());
         for (long i = begin; i <= end; i++) {
             TbBlockTaskPool pool = new TbBlockTaskPool().setBlockNumber(i)
-                    .setSyncStatus(TxInfoStatusEnum.INIT.getStatus());
+                    .setSyncStatus(TxInfoStatusEnum.INIT.getStatus()).setRecordMonth(recordMonth);
             if (certainty) {
                 pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
             } else {
@@ -172,6 +185,7 @@ public class BlockTaskPoolService {
             try {
                 block = frontInterface.getBlockByNumber(chainId, groupId, bigBlockHeight);
                 result.add(block);
+                task.setRecordMonth(CommonTools.getYearMonth(block.getTimestamp().longValue()));
                 pools.add(task);
             } catch (Exception e) {
                 log.error("Block {},  exception occur in job processing: {}", task.getBlockNumber(),
@@ -343,6 +357,7 @@ public class BlockTaskPoolService {
                 TableName.TASK.getTableName(chainId, groupId), startIndex, endIndex);
         List<Long> ids = list.stream().map(p -> p.getBlockNumber()).collect(Collectors.toList());
         List<TbBlockTaskPool> supplements = new ArrayList<>();
+        Integer recordMonth = CommonTools.getYearMonth(LocalDateTime.now());
         for (long tmpIndex = startIndex; tmpIndex <= endIndex; tmpIndex++) {
             if (ids.indexOf(tmpIndex) >= 0) {
                 continue;
@@ -351,7 +366,8 @@ public class BlockTaskPoolService {
                     tmpIndex);
             TbBlockTaskPool pool = new TbBlockTaskPool().setBlockNumber(tmpIndex)
                     .setSyncStatus(TxInfoStatusEnum.ERROR.getStatus())
-                    .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty());
+                    .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty())
+                    .setRecordMonth(recordMonth);
             supplements.add(pool);
         }
         return Optional.of(supplements);

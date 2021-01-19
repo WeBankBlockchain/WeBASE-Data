@@ -16,11 +16,13 @@ package com.webank.webase.data.collect.block;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.block.entity.BlockListParam;
 import com.webank.webase.data.collect.block.entity.TbBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
+import com.webank.webase.data.collect.gas.GasService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
 import com.webank.webase.data.collect.transaction.TransactionService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
@@ -31,6 +33,7 @@ import lombok.extern.log4j.Log4j2;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -53,6 +56,10 @@ public class BlockService {
     private TransactionService transactionService;
     @Autowired
     private ReceiptService receiptService;
+    @Autowired
+    private GasService gasService;
+    @Autowired
+    private ConstantProperties cProperties;
 
     private static final Long SAVE_TRANS_SLEEP_TIME = 5L;
 
@@ -61,22 +68,32 @@ public class BlockService {
      */
     @Transactional
     @SuppressWarnings("rawtypes")
-    public void saveBlockInfo(Block block, int chainId, int groupId) throws BaseException {
+    public void saveBlockInfo(Block block, int chainId, int groupId) throws Exception {
         // save block info
         TbBlock tbBlock = chainBlock2TbBlock(block);
-        addBlockInfo(tbBlock, chainId, groupId);
+        if (cProperties.isIfSaveBlockAndTrans()) {
+            addBlockInfo(tbBlock, chainId, groupId);
+        }
 
-        // save trans hash
+        // save trans info
         List<TransactionResult> transList = block.getTransactions();
         for (TransactionResult result : transList) {
-            // save trans
             Transaction trans = (Transaction) result.get();
             TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getBlockNumber(),
                     tbBlock.getBlockTimestamp(), JacksonUtils.objToString(trans));
-            transactionService.addTransInfo(chainId, groupId, tbTransaction);
-            // save receipt
-            receiptService.handleReceiptInfo(chainId, groupId, trans.getHash(),
-                    tbBlock.getBlockTimestamp());
+            TransactionReceipt transReceipt =
+                    frontInterface.getTransReceipt(chainId, groupId, trans.getHash());
+            if (cProperties.isIfSaveBlockAndTrans()) {
+                // save trans
+                transactionService.addTransInfo(chainId, groupId, tbTransaction);
+                // save receipt
+                receiptService.handleReceiptInfo(chainId, groupId, transReceipt,
+                        tbBlock.getBlockTimestamp());
+            }
+            if (cProperties.isIfSaveGas()) {
+                gasService.parserAndSaveGas(chainId, groupId, transReceipt,
+                        tbBlock.getBlockTimestamp());
+            }
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);
             } catch (InterruptedException ex) {
@@ -198,7 +215,7 @@ public class BlockService {
         // save block info
         TbBlock tbBlock = new TbBlock(block.getHash(), block.getNumber(), blockTimestamp,
                 block.getTransactions().size(), sealerIndex, sealer,
-                JacksonUtils.objToString(block));
+                JacksonUtils.objToString(block), CommonTools.getYearMonth(blockTimestamp));
         return tbBlock;
     }
 }

@@ -36,6 +36,7 @@ public class TbParser {
     private String input;
     private String output;
     private String logs;
+    private Integer recordMonth;
     private LocalDateTime blockTimestamp;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
