@@ -41,6 +41,7 @@ public class ConstantCode {
             RetCode.mark(210202, "search content can not be empty");
     public static final RetCode INDEX_NOT_EXISTS = RetCode.mark(210203, "search index not exists");
     public static final RetCode SEARCH_FAIL = RetCode.mark(210204, "search fail");
+    public static final RetCode ELASTICSEARCH_FALSE = RetCode.mark(210205, "elasticsearch's config is false");
 
     /* keyword code */
     public static final RetCode KEYWORD_ID_NOT_EXISTS = RetCode.mark(210301, "keyword id not exists");

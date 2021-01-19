@@ -14,6 +14,7 @@
 package com.webank.webase.data.collect.scheduler;
 
 import com.webank.webase.data.collect.base.enums.DataStatus;
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.txndaily.TxnDailyService;
@@ -39,9 +40,15 @@ public class StatTxnDailyTask {
     private GroupService groupService;
     @Autowired
     private TxnDailyService txnDailyService;
+    @Autowired
+    private ConstantProperties cProperties;
 
     @Scheduled(fixedDelayString = "${constant.statTxnDailyTaskFixedDelay}", initialDelay = 1000)
     public void taskStart() {
+        // toggle
+        if (!cProperties.isIfSaveBlockAndTrans()) {
+            return;
+        }
         statStart();
     }
 
@@ -53,7 +60,7 @@ public class StatTxnDailyTask {
         Instant startTime = Instant.now();
         List<TbGroup> groupList = groupService.getGroupList(null, DataStatus.NORMAL.getValue());
         if (CollectionUtils.isEmpty(groupList)) {
-            log.warn("StatTxnDaily jump over: not found any group");
+            log.info("StatTxnDaily jump over: not found any group");
             return;
         }
         // count down group, make sure all group's transMonitor finished

@@ -205,7 +205,7 @@ public class EventService {
                         .forEach(eventInfo -> saveEventInfo(tbEventExportTask, eventInfo));
 
                 // export useTime
-                useTimeSum = Duration.between(startTimem, Instant.now()).getSeconds();
+                useTimeSum = Duration.between(startTimem, Instant.now()).toMillis();
             } while (useTimeSum < cProperties.getDataParserTaskFixedDelay());
         } catch (Exception ex) {
             log.error("fail exportProcess. taskId:{} ", taskId, ex);

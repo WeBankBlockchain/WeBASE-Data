@@ -14,7 +14,7 @@
 package com.webank.webase.data.collect.parser.entity;
 
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,5 +26,5 @@ public class ParserEventInfo {
     private String contractAddress;
     private String userAddress;
     private String logs;
-    private Date blockTimestamp;
+    private LocalDateTime blockTimestamp;
 }

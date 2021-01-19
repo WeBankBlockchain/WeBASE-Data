@@ -14,11 +14,13 @@ spring:
   elasticsearch:
     rest:
       uris: 127.0.0.1:9200
-      username:
-      password:
+      username: "elasticAccount"
+      password: "elasticPassword"
 
 # constant config
 constant:
+  ## if use elasticsearch
+  ifEsEnable: false
   ## keyword audit
   keywordAuditCron: "0 0 0/1 * * ?"
   

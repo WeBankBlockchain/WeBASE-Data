@@ -29,6 +29,7 @@ public class TbBlockTaskPool {
     private int syncStatus;
     private int certainty;
     private int handleItem = 0;
+    private Integer recordMonth;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 }

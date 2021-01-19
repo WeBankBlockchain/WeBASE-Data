@@ -14,6 +14,7 @@
 package com.webank.webase.data.collect.scheduler;
 
 import com.webank.webase.data.collect.base.enums.DataStatus;
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.group.GroupService;
 import com.webank.webase.data.collect.group.entity.TbGroup;
 import com.webank.webase.data.collect.transaction.TransactionService;
@@ -41,9 +42,15 @@ public class DataParserTask {
     private GroupService groupService;
     @Autowired
     private TransactionService transactionService;
+    @Autowired
+    private ConstantProperties cProperties;
 
     @Scheduled(cron = "${constant.dataParserCron}")
     public void taskStart() {
+        // toggle
+        if (!cProperties.isIfSaveBlockAndTrans()) {
+            return;
+        }
         parserStart();
     }
 
@@ -55,7 +62,7 @@ public class DataParserTask {
         Instant startTime = Instant.now();
         List<TbGroup> groupList = groupService.getGroupList(null, DataStatus.NORMAL.getValue());
         if (CollectionUtils.isEmpty(groupList)) {
-            log.warn("parser jump over: not found any group");
+            log.info("parser jump over: not found any group");
             return;
         }
         // count down group, make sure all group's transMonitor finished
