@@ -23,10 +23,10 @@ spring:
 
 # constants
 constant:
-  ## if save block and transaction info
-  ifSaveBlockAndTrans: true
   ## if save gas info
   ifSaveGas: true
+  ## if save block and transaction info
+  ifSaveBlockAndTrans: false
   ## if use elasticsearch
   ifEsEnable: false
   
@@ -53,7 +53,9 @@ constant:
   ## event export
   eventExportCron: 7/10 * * * * ?
   ## create table partition
-  createPartitionCron: 0 0 0 1 * ?
+  createPartitionCron: 0 1 0 1 * ?
+  ## gas user reconciliation
+  gasReconciliationCron: 0 0 0/1 * * ?
   
   ## if multiLiving
   multiLiving: false

@@ -19,6 +19,10 @@ import org.apache.ibatis.annotations.UpdateProvider;
 import org.apache.ibatis.type.JdbcType;
 
 public interface TbGasMapper {
+    
+    @Select({ "select * from tb_gas", "where chain_id = #{chainId,jdbcType=INTEGER}", "and group_id = #{groupId,jdbcType=INTEGER}", "and user_address = #{userAddress,jdbcType=VARCHAR}", "and block_number >= #{blockNumber,jdbcType=BIGINT}", "order by block_number,trans_index" })
+    @Results({ @Result(column = "id", property = "id", jdbcType = JdbcType.INTEGER, id = true), @Result(column = "record_month", property = "recordMonth", jdbcType = JdbcType.INTEGER, id = true), @Result(column = "chain_id", property = "chainId", jdbcType = JdbcType.INTEGER), @Result(column = "group_id", property = "groupId", jdbcType = JdbcType.INTEGER), @Result(column = "block_number", property = "blockNumber", jdbcType = JdbcType.BIGINT), @Result(column = "trans_hash", property = "transHash", jdbcType = JdbcType.VARCHAR), @Result(column = "trans_index", property = "transIndex", jdbcType = JdbcType.INTEGER), @Result(column = "block_timestamp", property = "blockTimestamp", jdbcType = JdbcType.TIMESTAMP), @Result(column = "user_address", property = "userAddress", jdbcType = JdbcType.VARCHAR), @Result(column = "record_type", property = "recordType", jdbcType = JdbcType.TINYINT), @Result(column = "gas_value", property = "gasValue", jdbcType = JdbcType.BIGINT), @Result(column = "gas_remain", property = "gasRemain", jdbcType = JdbcType.BIGINT), @Result(column = "create_time", property = "createTime", jdbcType = JdbcType.TIMESTAMP), @Result(column = "modify_time", property = "modifyTime", jdbcType = JdbcType.TIMESTAMP) })
+    List<TbGas> getGasListForReconciliation(@Param("chainId") int chainId, @Param("groupId") int groupId, @Param("userAddress") String userAddress, @Param("blockNumber") long blockNumber);
 
     @Delete({ "delete from tb_gas", "where chain_id = #{chainId,jdbcType=INTEGER}" })
     int deleteByChainId(@Param("chainId") int chainId);

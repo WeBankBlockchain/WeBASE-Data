@@ -24,6 +24,7 @@ import com.webank.webase.data.collect.contract.MethodService;
 import com.webank.webase.data.collect.contract.entity.MethodInfo;
 import com.webank.webase.data.collect.dao.entity.TbGas;
 import com.webank.webase.data.collect.dao.entity.TbGasExample;
+import com.webank.webase.data.collect.dao.entity.TbGasReconciliation;
 import com.webank.webase.data.collect.dao.mapper.TbGasMapper;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ import org.fisco.bcos.web3j.tx.txdecode.InputAndOutputResult;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -52,6 +54,8 @@ public class GasService {
     private MethodService methodService;
     @Autowired
     private ChainService chainService;
+    @Autowired
+    private GasReconciliationService gasReconciliationService;
 
     /**
      * parser gas
@@ -120,14 +124,22 @@ public class GasService {
         }
         tbGas.setUserAddress(userAddress).setGasValue(gasValue).setGasRemain(gasRemain)
                 .setRecordType((byte) gasRecordType);
-        saveGas(tbGas);
+        saveGasAndUser(tbGas);
     }
 
     /**
-     * save gas
+     * save gas and user
      */
-    public void saveGas(TbGas tbGas) {
+    @Transactional
+    public void saveGasAndUser(TbGas tbGas) {
         tbGasMapper.insert(tbGas);
+        TbGasReconciliation userRecord = gasReconciliationService.selectReconciliationByUser(
+                tbGas.getChainId(), tbGas.getGroupId(), tbGas.getUserAddress());
+        if (ObjectUtils.isEmpty(userRecord)) {
+            TbGasReconciliation tbGasReconciliation = new TbGasReconciliation(tbGas.getChainId(),
+                    tbGas.getGroupId(), tbGas.getUserAddress());
+            gasReconciliationService.saveGasReconciliation(tbGasReconciliation);
+        }
     }
 
     /**
@@ -143,6 +155,15 @@ public class GasService {
      */
     public List<TbGas> getGasList(TbGasExample example) {
         return tbGasMapper.selectByExample(example);
+    }
+
+    /**
+     * get gas list for reconciliation
+     */
+    public List<TbGas> getGasListForReconciliation(int chainId, int groupId, String userAddress,
+            BigInteger blockNumber) {
+        return tbGasMapper.getGasListForReconciliation(chainId, groupId, userAddress,
+                blockNumber.longValue());
     }
 
     /**

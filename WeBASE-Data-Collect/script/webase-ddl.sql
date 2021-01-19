@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS tb_gas (
     block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
     record_month int(11) NOT NULL COMMENT '出块时间年月，如202008',
     user_address varchar(64) NOT NULL COMMENT '用户地址',
-    record_type tinyint(4) DEFAULT '0' COMMENT '记录类型(0-消耗，1-充值，2-冲正)',
+    record_type tinyint(4) DEFAULT '0' COMMENT '记录类型（0-普通交易消耗，1-充值，2-扣费）',
     gas_value bigint(25) DEFAULT '0' COMMENT 'gas变动值',
     gas_remain bigint(25) DEFAULT '0' COMMENT 'gas余额',
     create_time datetime DEFAULT NULL COMMENT '创建时间',
@@ -222,3 +222,17 @@ CREATE TABLE IF NOT EXISTS tb_gas (
 PARTITION BY RANGE (record_month) (
     PARTITION p_default VALUES LESS THAN MAXVALUE
 );
+
+CREATE TABLE IF NOT EXISTS tb_gas_reconciliation (
+    id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+    chain_id int(11) NOT NULL COMMENT '区块链编号',
+    group_id int(11) NOT NULL COMMENT '群组编号',
+    user_address varchar(64) NOT NULL COMMENT '用户地址',
+    block_number bigint(25) DEFAULT '0' COMMENT '区块高度（用户对账块高）',
+    trans_hash varchar(128) DEFAULT NULL COMMENT '交易hash（异常时展示异常记录交易hash）',
+    reconciliation_status tinyint(3) DEFAULT '0' COMMENT '对账状态（0-正常，1-异常）',
+    create_time datetime DEFAULT NULL COMMENT '创建时间',
+    modify_time datetime DEFAULT NULL COMMENT '修改时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_user (chain_id,group_id,user_address)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='gas用户对账信息表';

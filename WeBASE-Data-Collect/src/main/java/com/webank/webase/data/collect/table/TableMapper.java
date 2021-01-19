@@ -41,6 +41,8 @@ public interface TableMapper {
     int createTbSolc();
 
     int createTbGas();
+    
+    int createTbGasReconciliation();
 
     // event export begin
     int createTbEventExportTask();

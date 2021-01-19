@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GasParam {
+public class GasReconciliationParam {
     @NotNull
     private Integer chainId;
     @NotNull
@@ -31,6 +31,4 @@ public class GasParam {
     @NotNull
     private Integer pageSize;
     private String userAddress;
-    private Integer recordType;
-    private String transHash;
 }
