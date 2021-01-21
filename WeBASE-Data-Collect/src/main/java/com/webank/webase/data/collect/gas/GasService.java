@@ -13,8 +13,10 @@
  */
 package com.webank.webase.data.collect.gas;
 
+import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.GasRecordType;
 import com.webank.webase.data.collect.base.enums.PrecompiledAddress;
+import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.base.tools.TransactionDecoder;
@@ -32,7 +34,6 @@ import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.fisco.bcos.web3j.protocol.exceptions.TransactionException;
-import org.fisco.bcos.web3j.tx.txdecode.BaseException;
 import org.fisco.bcos.web3j.tx.txdecode.InputAndOutputResult;
 import org.fisco.bcos.web3j.utils.Numeric;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,34 +65,36 @@ public class GasService {
      * @throws BaseException
      */
     public void parserAndSaveGas(int chainId, int groupId, TransactionReceipt transReceipt,
-            LocalDateTime blockTimestamp) throws BaseException, TransactionException {
+            LocalDateTime blockTimestamp) throws BaseException, TransactionException,
+            org.fisco.bcos.web3j.tx.txdecode.BaseException {
         BigInteger gasUsed = transReceipt.getGasUsed();
         String contractAddress = transReceipt.getTo();
-        // check gasUsed and status
-        if ((gasUsed.compareTo(BigInteger.ZERO) == 0
-                && !contractAddress.equals(PrecompiledAddress.GAS_CHARGE.getAddress()))
-                || (contractAddress.equals(PrecompiledAddress.GAS_CHARGE.getAddress())
-                        && !transReceipt.isStatusOK())) {
-            return;
-        }
         // set common parameter
         TbGas tbGas = new TbGas().setChainId(chainId).setGroupId(groupId)
                 .setBlockNumber(transReceipt.getBlockNumber())
                 .setTransHash(transReceipt.getTransactionHash())
                 .setTransIndex(transReceipt.getTransactionIndex().intValue())
                 .setBlockTimestamp(blockTimestamp)
-                .setRecordMonth(CommonTools.getYearMonth(blockTimestamp));
+                .setRecordPatition(CommonTools.getYearMonthDay(blockTimestamp));
         String userAddress = transReceipt.getFrom();
         BigInteger gasValue = gasUsed.negate();
         BigInteger gasRemain = Numeric.decodeQuantity(transReceipt.getRemainGas());
         int gasRecordType = GasRecordType.consume.getType();
-        if (contractAddress.equals(PrecompiledAddress.GAS_CHARGE.getAddress())) {
+        // gas consume
+        if (gasUsed.compareTo(BigInteger.ZERO) != 0) {
+            tbGas.setUserAddress(userAddress).setGasValue(gasValue).setGasRemain(gasRemain)
+                    .setRecordType((byte) gasRecordType);
+            saveGasAndUser(tbGas);
+        }
+        // gas charge
+        if (contractAddress.equals(PrecompiledAddress.GAS_CHARGE.getAddress())
+                && transReceipt.isStatusOK()) {
             String methodId = transReceipt.getInput().substring(0, 10);
             List<MethodInfo> methodInfoList =
                     methodService.getByMethodInfo(0, 0, methodId, contractAddress, null);
             if (CollectionUtils.isEmpty(methodInfoList)) {
                 log.error("parserAndSaveGas GasChargeManagePrecompiled not been configed.");
-                return;
+                throw new BaseException(ConstantCode.GAS_CONTRACT_NOT_INIT);
             }
             TbChain tbChain = chainService.getChainById(chainId);
             if (ObjectUtils.isEmpty(tbChain)) {
@@ -121,10 +124,10 @@ public class GasService {
             } else {
                 return;
             }
+            tbGas.setUserAddress(userAddress).setGasValue(gasValue).setGasRemain(gasRemain)
+                    .setRecordType((byte) gasRecordType);
+            saveGasAndUser(tbGas);
         }
-        tbGas.setUserAddress(userAddress).setGasValue(gasValue).setGasRemain(gasRemain)
-                .setRecordType((byte) gasRecordType);
-        saveGasAndUser(tbGas);
     }
 
     /**

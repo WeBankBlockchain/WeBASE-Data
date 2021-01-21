@@ -38,7 +38,7 @@ public class GasReconciliationTask {
     @Scheduled(cron = "${constant.gasReconciliationCron}")
     public void taskStart() {
         // toggle
-        if (!cProperties.isIfSaveGas()) {
+        if (!cProperties.isIfGasReconciliation()) {
             return;
         }
         gasReconciliationStart();

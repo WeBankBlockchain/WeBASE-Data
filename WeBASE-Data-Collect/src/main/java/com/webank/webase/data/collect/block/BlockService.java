@@ -215,7 +215,7 @@ public class BlockService {
         // save block info
         TbBlock tbBlock = new TbBlock(block.getHash(), block.getNumber(), blockTimestamp,
                 block.getTransactions().size(), sealerIndex, sealer,
-                JacksonUtils.objToString(block), CommonTools.getYearMonth(blockTimestamp));
+                JacksonUtils.objToString(block), CommonTools.getYearMonthDay(blockTimestamp));
         return tbBlock;
     }
 }

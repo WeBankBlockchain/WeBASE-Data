@@ -16,8 +16,8 @@
             jdbcType="VARCHAR" property="receiptDetail" />
         <result column="block_timestamp" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="blockTimestamp" />
-        <result column="record_month" javaType="java.lang.Integer"
-            jdbcType="INTEGER" property="recordMonth" />
+        <result column="record_patition" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="recordPatition" />
         <result column="create_time" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" javaType="java.time.LocalDateTime"
@@ -26,8 +26,8 @@
 
     <insert id="add">
         insert into
-        ${tableName}(trans_hash,block_number,receipt_detail,block_timestamp,record_month,create_time,modify_time)
-        values(#{trans.transHash},#{trans.blockNumber},#{trans.receiptDetail},#{trans.blockTimestamp},#{trans.recordMonth},NOW(),NOW())
+        ${tableName}(trans_hash,block_number,receipt_detail,block_timestamp,record_patition,create_time,modify_time)
+        values(#{trans.transHash},#{trans.blockNumber},#{trans.receiptDetail},#{trans.blockTimestamp},#{trans.recordPatition},NOW(),NOW())
     </insert>
     
     <select id="getByHash" resultMap="receiptMap">

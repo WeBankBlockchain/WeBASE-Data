@@ -11,26 +11,33 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.chain.entity;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import lombok.Data;
-import org.hibernate.validator.constraints.Length;
+package com.webank.webase.data.collect.base.enums;
 
-@Data
-public class ChainInfo {
-    @NotNull
-    @Min(1)
-    @Max(9999)
-    private Integer chainId;
-    @NotBlank
-    @Length(min=1, max=120)
-    private String chainName;
-    @NotNull
-    private Integer encryptType;
-    @Length(max=1000)
-    private String description;
+/**
+ * Enumeration of partition type.
+ */
+public enum PartitionType {
+    day(0), month(1);
+
+    private int type;
+
+    private PartitionType(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
+        return this.type;
+    }
+
+    public static boolean isInclude(int type) {
+        boolean include = false;
+        for (PartitionType e : PartitionType.values()) {
+            if (e.getType() == type) {
+                include = true;
+                break;
+            }
+        }
+        return include;
+    }
 }

@@ -27,6 +27,8 @@ constant:
   ifSaveBlockAndTrans: true
   ## if save gas info
   ifSaveGas: true
+  ## if gas reconciliation
+  ifGasReconciliation: false
   ## if use elasticsearch
   ifEsEnable: false
   
@@ -52,7 +54,9 @@ constant:
   dataParserCron: 5/10 * * * * ?
   ## event export
   eventExportCron: 7/10 * * * * ?
-  ## create table partition
+  ## create table partition (partitionType:0-by day;1-by month)
+  ## If modified, the database needs to be rebuilt
+  partitionType: 0
   createPartitionCron: 0 0 1 * * ?
   ## gas user reconciliation
   gasReconciliationCron: 0 0 0/1 * * ?
