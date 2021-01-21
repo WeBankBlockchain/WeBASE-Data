@@ -4,7 +4,7 @@
 
 **Add**
 
-- 支持导出交易gas数据，并提供gas查询和gas用户对账。增加gas数据保存开关ifSaveGas，为false时gas数据不存储数据库
+- 支持导出交易gas数据，并提供gas查询和gas用户对账。增加gas数据保存开关ifSaveGas，为false时gas数据不存储数据库；gas对账开关ifGasReconciliation，为false时gas数据不对账
 - 增加区块和交易数据保存开关ifSaveBlockAndTrans，为false时区块和交易交易数据不存储数据库
 - 增加Elasticsearch开关配置ifEsEnable，为false时交易数据不存储Elasticsearch
 - 数据表支持按天或按月分区，由定时任务创建分区

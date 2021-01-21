@@ -676,7 +676,7 @@ http://localhost:5009/WeBASE-Data-Collect/gas/list/
 | 4.1.8  | gasValue       | BIgInteger    | 否   | gas变动值                                     |
 | 4.1.9  | gasRemain      | BIgInteger    | 否   | gas余额                                       |
 | 4.1.10 | recordType     | Int           | 否   | gas记录类型（0-普通交易消耗，1-充值，2-扣费） |
-| 4.1.11 | recordMonth    | Int           | 否   | 记录年月                                      |
+| 4.1.11 | recordPatition | Int           | 否   | 记录分区（出块时间年月日）                    |
 | 4.1.12 | createTime     | LocalDateTime | 否   | 落库时间                                      |
 | 4.1.13 | modifyTime     | LocalDateTime | 否   | 修改时间                                      |
 
@@ -697,7 +697,7 @@ http://localhost:5009/WeBASE-Data-Collect/gas/list/
       "modifyTime": "2021-01-14 20:28:40",
       "gasRemain": 28999996440408,
       "id": 277,
-      "recordMonth": 202101,
+      "recordPatition": 20210114,
       "chainId": 1,
       "groupId": 1,
       "transHash": "0x35efe48f87d6f8d5b189e3c24109573edc2cf158aa2fa6d2a028df981adc81d3",
@@ -873,43 +873,45 @@ http://localhost:5009/WeBASE-Data-Collect/gas/queryRemain/1/1/0xab9f8bfe240a6970
 
 ### 1. 返回码信息列表
 
-| Code   | message                          | 描述               |
-| ------ | -------------------------------- | ------------------ |
-| 0      | success                          | 正常               |
-| 109000 | system exception                 | 系统异常           |
-| 109001 | param exception                  | 请求参数错误       |
-| 109002 | database exception               | 数据库异常         |
-| 209001 | chain id already exists          | 链编号已经存在     |
-| 209002 | chain name already exists        | 链名称已经存在     |
-| 209003 | save chain fail                  | 链保存失败         |
-| 209004 | invalid chain id                 | 无效链编号         |
-| 209005 | invalid encrypt type             | 无效链加密类型     |
-| 209006 | chain id not exists              | 链编号不存在       |
-| 209101 | wrong host or port               | ip或端口错误       |
-| 209102 | invalid front id                 | 无效前置编号       |
-| 209103 | not found any front              | 找不到前置         |
-| 209104 | front already exists             | 前置已经存在       |
-| 209105 | save front fail                  | 前置保存失败       |
-| 209106 | request front fail               | 前置请求失败       |
-| 209107 | request node exception           | 前置节点请求失败   |
-| 209108 | front's encrypt type not matches | 前置类型不匹配     |
-| 209109 | invalid block number             | 无效块高           |
-| 209110 | invalid node id                  | 无效节点编号       |
-| 209201 | invalid group id                 | 无效群组编号       |
-| 209301 | user name already exists         | 用户名已存在       |
-| 209302 | user address already exists      | 用户地址已存在     |
-| 209401 | contract already exists          | 合约已存在         |
-| 209402 | invalid contract id              | 无效合约编号       |
-| 209403 | contract name cannot be repeated | 合约名重复         |
-| 209501 | task is still running            | 任务正在执行       |
-| 209502 | block has been reset             | 区块已重置         |
-| 209601 | solc js file cannot be empty     | 编译器文件不能为空 |
-| 209602 | solc js file already exist       | 编译器文件已存在   |
-| 209603 | solc js file not exist           | 编译器文件不存在   |
-| 209604 | save solc js file error          | 编译器文件保存失败 |
-| 209605 | read solc js file error          | 编译器文件读取失败 |
-| 209851 | event not exists                 | 事件不存在         |
-| 209852 | event exists                     | 事件已存在         |
-| 209853 | save event info fail             | 事件信息保存失败   |
-| 209854 | invalid task status              | 无效事件任务状态   |
-| 209901 | gas record type not exists       | gas记录类型不存在  |
+| Code   | message                                         | 描述                      |
+| ------ | ----------------------------------------------- | ------------------------- |
+| 0      | success                                         | 正常                      |
+| 109000 | system exception                                | 系统异常                  |
+| 109001 | param exception                                 | 请求参数错误              |
+| 109002 | database exception                              | 数据库异常                |
+| 209001 | chain id already exists                         | 链编号已经存在            |
+| 209002 | chain name already exists                       | 链名称已经存在            |
+| 209003 | save chain fail                                 | 链保存失败                |
+| 209004 | invalid chain id                                | 无效链编号                |
+| 209005 | invalid encrypt type                            | 无效链加密类型            |
+| 209006 | chain id not exists                             | 链编号不存在              |
+| 209101 | wrong host or port                              | ip或端口错误              |
+| 209102 | invalid front id                                | 无效前置编号              |
+| 209103 | not found any front                             | 找不到前置                |
+| 209104 | front already exists                            | 前置已经存在              |
+| 209105 | save front fail                                 | 前置保存失败              |
+| 209106 | request front fail                              | 前置请求失败              |
+| 209107 | request node exception                          | 前置节点请求失败          |
+| 209108 | front's encrypt type not matches                | 前置类型不匹配            |
+| 209109 | invalid block number                            | 无效块高                  |
+| 209110 | invalid node id                                 | 无效节点编号              |
+| 209201 | invalid group id                                | 无效群组编号              |
+| 209301 | user name already exists                        | 用户名已存在              |
+| 209302 | user address already exists                     | 用户地址已存在            |
+| 209401 | contract already exists                         | 合约已存在                |
+| 209402 | invalid contract id                             | 无效合约编号              |
+| 209403 | contract name cannot be repeated                | 合约名重复                |
+| 209501 | task is still running                           | 任务正在执行              |
+| 209502 | block has been reset                            | 区块已重置                |
+| 209601 | solc js file cannot be empty                    | 编译器文件不能为空        |
+| 209602 | solc js file already exist                      | 编译器文件已存在          |
+| 209603 | solc js file not exist                          | 编译器文件不存在          |
+| 209604 | save solc js file error                         | 编译器文件保存失败        |
+| 209605 | read solc js file error                         | 编译器文件读取失败        |
+| 209851 | event not exists                                | 事件不存在                |
+| 209852 | event exists                                    | 事件已存在                |
+| 209853 | save event info fail                            | 事件信息保存失败          |
+| 209854 | invalid task status                             | 无效事件任务状态          |
+| 209901 | gas record type not exists                      | gas记录类型不存在         |
+| 209902 | gas charge manage precompiled contract not init | gas管理预编译合约未初始化 |
+| 209903 | gas reconciliation's config is false            | gas对账开关未开启         |

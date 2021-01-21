@@ -55,6 +55,7 @@ public class ConstantProperties {
     private boolean ifPullData = true; // default true
     private boolean ifSaveBlockAndTrans = true; // default true
     private boolean ifSaveGas = true; // default true
+    private boolean ifGasReconciliation = false; // default false
     private boolean ifEsEnable = false; // default false
     private boolean multiLiving = false; // default false
     private Long dataParserTaskFixedDelay = 60000L; // default 1min

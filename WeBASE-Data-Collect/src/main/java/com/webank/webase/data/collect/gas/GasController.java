@@ -18,6 +18,7 @@ import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
 import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.enums.GasRecordType;
+import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.MybatisExampleTools;
 import com.webank.webase.data.collect.dao.entity.TbGas;
@@ -57,6 +58,8 @@ public class GasController extends BaseController {
     private GasReconciliationService gasReconciliationService;
     @Autowired
     private FrontInterfaceService frontInterfaceService;
+    @Autowired
+    private ConstantProperties cProperties;
 
     /**
      * query gas list.
@@ -74,7 +77,8 @@ public class GasController extends BaseController {
         BeanUtils.copyProperties(gasParam, tbGas);
         if (gasParam.getRecordType() != null) {
             if (!GasRecordType.isInclude(gasParam.getRecordType())) {
-
+                log.error("gas record type:{} not exists.", gasParam.getRecordType());
+                throw new BaseException(ConstantCode.GAS_RECORD_TYPE_NOT_EXISTS);
             }
             tbGas.setRecordType(gasParam.getRecordType().byteValue());
         }
@@ -104,6 +108,11 @@ public class GasController extends BaseController {
         BasePageResponse pagesponse = new BasePageResponse(ConstantCode.SUCCESS);
         Instant startTime = Instant.now();
         log.info("start queryGasReconciliationList.");
+        
+        if (!cProperties.isIfGasReconciliation()) {
+            log.error("gas reconciliation's config is false.");
+            throw new BaseException(ConstantCode.GAS_RECONCILIATION_FALSE);
+        }
 
         // param
         TbGasReconciliation tbGasReconciliation = new TbGasReconciliation();
