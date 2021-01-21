@@ -13,6 +13,8 @@
  */
 package com.webank.webase.data.collect.scheduler;
 
+import com.webank.webase.data.collect.base.enums.PartitionType;
+import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.group.GroupService;
@@ -27,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 /**
  * create table partition
@@ -41,6 +42,8 @@ public class CreatePartitionTask {
     private GroupService groupService;
     @Autowired
     private TableService tableService;
+    @Autowired
+    private ConstantProperties constantProperties;
 
     @Scheduled(cron = "${constant.createPartitionCron}")
     public void taskStart() {
@@ -56,15 +59,36 @@ public class CreatePartitionTask {
         Instant startTime = Instant.now();
         // get partition info
         LocalDateTime localDateTime = LocalDateTime.now();
-        String partitionName =
-                ConstantProperties.PREFIX_PARTITION + CommonTools.getYearMonth(localDateTime);
-        int partitionValue = CommonTools.getYearMonthNext(localDateTime);
-        // create table partition
-        List<TbGroup> groupList = groupService.getGroupList(null, null);
-        if (CollectionUtils.isEmpty(groupList)) {
-            return;
+        String partitionName = ConstantProperties.PREFIX_PARTITION;
+        int partitionValue = 0;
+        if (constantProperties.getPartitionType() == PartitionType.month.getType()) {
+            partitionName = partitionName + CommonTools.getYearMonth(localDateTime) * 100;
+            partitionValue = CommonTools.getYearMonthNext(localDateTime) * 100;
+        } else {
+            partitionName = partitionName + CommonTools.getYearMonthDay(localDateTime);
+            partitionValue = CommonTools.getYearMonthDayNext(localDateTime);
+
         }
-        tableService.createPartition(partitionName, partitionValue, groupList);
+        // create table partition
+        tableService.createPartition(ConstantProperties.TB_GAS, partitionName, partitionValue);
+        List<TbGroup> groupList = groupService.getGroupList(null, null);
+        for (TbGroup tbGroup : groupList) {
+            tableService.createPartition(
+                    TableName.TASK.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+            tableService.createPartition(
+                    TableName.BLOCK.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+            tableService.createPartition(
+                    TableName.TRANS.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+            tableService.createPartition(
+                    TableName.RECEIPT.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+            tableService.createPartition(
+                    TableName.PARSER.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
+                    partitionName, partitionValue);
+        }
         log.info("end createPartition useTime:{} ",
                 Duration.between(startTime, Instant.now()).toMillis());
     }

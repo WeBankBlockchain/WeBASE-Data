@@ -16,6 +16,7 @@ package com.webank.webase.data.collect.gas;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.controller.BaseController;
 import com.webank.webase.data.collect.base.entity.BasePageResponse;
+import com.webank.webase.data.collect.base.entity.BaseResponse;
 import com.webank.webase.data.collect.base.enums.GasRecordType;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.base.tools.MybatisExampleTools;
@@ -23,8 +24,10 @@ import com.webank.webase.data.collect.dao.entity.TbGas;
 import com.webank.webase.data.collect.dao.entity.TbGasExample;
 import com.webank.webase.data.collect.dao.entity.TbGasReconciliation;
 import com.webank.webase.data.collect.dao.entity.TbGasReconciliationExample;
+import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.gas.entity.GasParam;
 import com.webank.webase.data.collect.gas.entity.GasReconciliationParam;
+import java.math.BigInteger;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -33,6 +36,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +55,8 @@ public class GasController extends BaseController {
     private GasService gasService;
     @Autowired
     private GasReconciliationService gasReconciliationService;
+    @Autowired
+    private FrontInterfaceService frontInterfaceService;
 
     /**
      * query gas list.
@@ -67,7 +74,7 @@ public class GasController extends BaseController {
         BeanUtils.copyProperties(gasParam, tbGas);
         if (gasParam.getRecordType() != null) {
             if (!GasRecordType.isInclude(gasParam.getRecordType())) {
-                
+
             }
             tbGas.setRecordType(gasParam.getRecordType().byteValue());
         }
@@ -76,7 +83,7 @@ public class GasController extends BaseController {
         int count = gasService.getGasCount(example);
         pagesponse.setTotalCount(count);
         if (count > 0) {
-            example.setOrderByClause(ConstantProperties.ORDER_BY_ID_DESC);
+            example.setOrderByClause(ConstantProperties.ORDER_BY_BLOCK_NUMBER_ASC);
             List<TbGas> list = gasService.getGasList(example);
             pagesponse.setData(list);
         }
@@ -85,6 +92,7 @@ public class GasController extends BaseController {
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }
+
 
     /**
      * query gas reconciliation list.
@@ -111,6 +119,23 @@ public class GasController extends BaseController {
         }
 
         log.info("end queryGasReconciliationList useTime:{}",
+                Duration.between(startTime, Instant.now()).toMillis());
+        return pagesponse;
+    }
+
+    /**
+     * query gas remain.
+     */
+    @GetMapping("/queryRemain/{chainId}/{groupId}/{userAddress}")
+    public BaseResponse queryRemain(@PathVariable("chainId") Integer chainId,
+            @PathVariable("groupId") Integer groupId,
+            @PathVariable("userAddress") String userAddress) {
+        BaseResponse pagesponse = new BaseResponse(ConstantCode.SUCCESS);
+        Instant startTime = Instant.now();
+        log.info("start queryRemain.");
+        BigInteger gasRemain = frontInterfaceService.getGasRemain(chainId, groupId, userAddress);
+        pagesponse.setData(gasRemain);
+        log.info("end queryRemain useTime:{}",
                 Duration.between(startTime, Instant.now()).toMillis());
         return pagesponse;
     }

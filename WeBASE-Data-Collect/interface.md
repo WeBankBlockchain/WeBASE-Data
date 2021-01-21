@@ -622,7 +622,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 
 - 网络传输协议：使用HTTP协议
 - 请求地址：**/gas/list**
-- 请求方式：GET
+- 请求方式：POST
 - 返回格式：JSON
 
 #### 请求参数
@@ -726,7 +726,7 @@ http://localhost:5009/WeBASE-Data-Collect/gas/list/
 
 - 网络传输协议：使用HTTP协议
 - 请求地址：**/gas/reconciliationlist**
-- 请求方式：GET
+- 请求方式：POST
 - 返回格式：JSON
 
 #### 请求参数
@@ -799,6 +799,63 @@ http://localhost:5009/WeBASE-Data-Collect/gas/reconciliationlist/
     }
   ],
   "totalCount": 1
+}
+```
+
+- 失败：
+
+```
+{
+    "code": 109000,
+    "message": "system exception",
+    "data": {}
+}
+```
+
+### 4.3 查询用户Gas余额
+
+#### 传输协议
+
+- 网络传输协议：使用HTTP协议
+- 请求地址：**/gas/queryRemain/{chainId}/{groupId}/{userAddress}**
+- 请求方式：GET
+- 返回格式：JSON
+
+#### 请求参数
+
+***1）入参表***
+
+| 序号 | 输入参数    | 类型   | 可为空 | 备注     |
+| ---- | ----------- | ------ | ------ | -------- |
+| 1    | chainId     | Int    | 否     | 链编号   |
+| 2    | groupId     | int    | 否     | 群组编号 |
+| 3    | userAddress | String | 是     | 用户地址 |
+
+***2）入参示例***
+
+```
+http://localhost:5009/WeBASE-Data-Collect/gas/queryRemain/1/1/0xab9f8bfe240a6970ddc9f7fff717b114c22589ae
+```
+
+#### 返回参数 
+
+***1）出参表***
+
+| 序号 | 输出参数 | 类型   |      | 备注                       |
+| ---- | -------- | ------ | ---- | -------------------------- |
+| 1    | code     | Int    | 否   | 返回码，0：成功 其它：失败 |
+| 2    | message  | String | 否   | 描述                       |
+| 3    | data     | Object | 否   | Gas余额                    |
+
+***2）出参示例***
+
+- 成功：
+
+```
+{
+  "code": 0,
+  "message": "success",
+  "data": 28999996440408
 }
 ```
 

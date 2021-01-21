@@ -36,8 +36,8 @@
             property="logs" />
         <result column="block_timestamp" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="blockTimestamp" />
-        <result column="record_month" javaType="java.lang.Integer"
-            jdbcType="INTEGER" property="recordMonth" />
+        <result column="record_patition" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="recordPatition" />
         <result column="create_time" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" javaType="java.time.LocalDateTime"
@@ -47,11 +47,11 @@
     <insert id="add" parameterType="com.webank.webase.data.collect.parser.entity.TbParser">
         insert into ${tableName}
         (trans_hash,block_number,user_name,user_address,user_type,contract_name,contract_address,interface_name,trans_type,
-        trans_parser_type,input,output,logs,block_timestamp,record_month,create_time,modify_time)
+        trans_parser_type,input,output,logs,block_timestamp,record_patition,create_time,modify_time)
         values
         (#{parser.transHash},#{parser.blockNumber},#{parser.userName},#{parser.userAddress},#{parser.userType},
         #{parser.contractName},#{parser.contractAddress},#{parser.interfaceName},#{parser.transType},
-        #{parser.transParserType},#{parser.input},#{parser.output},#{parser.logs},#{parser.blockTimestamp},#{parser.recordMonth},now(),now())
+        #{parser.transParserType},#{parser.input},#{parser.output},#{parser.logs},#{parser.blockTimestamp},#{parser.recordPatition},now(),now())
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
             SELECT LAST_INSERT_ID()
         </selectKey>

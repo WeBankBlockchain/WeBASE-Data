@@ -145,10 +145,10 @@ public class BlockTaskPoolService {
     public void prepareTask(int chainId, int groupId, long begin, long end, boolean certainty) {
         log.debug("Begin to prepare sync blocks from {} to {}", begin, end);
         List<TbBlockTaskPool> list = Lists.newArrayList();
-        Integer recordMonth = CommonTools.getYearMonth(LocalDateTime.now());
+        Integer recordPatition = CommonTools.getYearMonthDay(LocalDateTime.now());
         for (long i = begin; i <= end; i++) {
             TbBlockTaskPool pool = new TbBlockTaskPool().setBlockNumber(i)
-                    .setSyncStatus(TxInfoStatusEnum.INIT.getStatus()).setRecordMonth(recordMonth);
+                    .setSyncStatus(TxInfoStatusEnum.INIT.getStatus()).setRecordPatition(recordPatition);
             if (certainty) {
                 pool.setCertainty(BlockCertaintyEnum.FIXED.getCertainty());
             } else {
@@ -185,7 +185,6 @@ public class BlockTaskPoolService {
             try {
                 block = frontInterface.getBlockByNumber(chainId, groupId, bigBlockHeight);
                 result.add(block);
-                task.setRecordMonth(CommonTools.getYearMonth(block.getTimestamp().longValue()));
                 pools.add(task);
             } catch (Exception e) {
                 log.error("Block {},  exception occur in job processing: {}", task.getBlockNumber(),
@@ -357,7 +356,7 @@ public class BlockTaskPoolService {
                 TableName.TASK.getTableName(chainId, groupId), startIndex, endIndex);
         List<Long> ids = list.stream().map(p -> p.getBlockNumber()).collect(Collectors.toList());
         List<TbBlockTaskPool> supplements = new ArrayList<>();
-        Integer recordMonth = CommonTools.getYearMonth(LocalDateTime.now());
+        Integer recordPatition = CommonTools.getYearMonthDay(LocalDateTime.now());
         for (long tmpIndex = startIndex; tmpIndex <= endIndex; tmpIndex++) {
             if (ids.indexOf(tmpIndex) >= 0) {
                 continue;
@@ -367,7 +366,7 @@ public class BlockTaskPoolService {
             TbBlockTaskPool pool = new TbBlockTaskPool().setBlockNumber(tmpIndex)
                     .setSyncStatus(TxInfoStatusEnum.ERROR.getStatus())
                     .setCertainty(BlockCertaintyEnum.UNCERTAIN.getCertainty())
-                    .setRecordMonth(recordMonth);
+                    .setRecordPatition(recordPatition);
             supplements.add(pool);
         }
         return Optional.of(supplements);
