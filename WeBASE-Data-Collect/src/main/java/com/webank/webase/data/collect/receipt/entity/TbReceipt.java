@@ -30,16 +30,16 @@ public class TbReceipt {
     private BigInteger blockNumber;
     private String receiptDetail;
     private LocalDateTime blockTimestamp;
-    private Integer recordMonth;
+    private Integer recordPatition;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
     public TbReceipt(String transHash, BigInteger blockNumber, String receiptDetail,
-            LocalDateTime blockTimestamp, Integer recordMonth) {
+            LocalDateTime blockTimestamp, Integer recordPatition) {
         this.transHash = transHash;
         this.blockNumber = blockNumber;
         this.receiptDetail = receiptDetail;
         this.blockTimestamp = blockTimestamp;
-        this.recordMonth = recordMonth;
+        this.recordPatition = recordPatition;
     }
 }

@@ -17,7 +17,6 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
-import com.webank.webase.data.collect.group.entity.TbGroup;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,42 +121,25 @@ public class TableService {
     /**
      * createPartition.
      */
-    public void createPartition(String partitionName, int partitionValue, List<TbGroup> groupList) {
-        // partition created record in map, check if exist in map
-        String indexKey = partitionName;
-        String partitionRecord =
-                tableMapper.queryPartition(getDbName(), ConstantProperties.TB_GAS, partitionName);
-        if (CREATED_MAP.get(indexKey) != null || partitionRecord != null) {
-            log.info("partition: {} has been created.", indexKey);
-            return;
-        }
-        createPartition(ConstantProperties.TB_GAS, partitionName, partitionValue);
-        for (TbGroup tbGroup : groupList) {
-            createPartition(TableName.TASK.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
-                    partitionName, partitionValue);
-            createPartition(
-                    TableName.BLOCK.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
-                    partitionName, partitionValue);
-            createPartition(
-                    TableName.TRANS.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
-                    partitionName, partitionValue);
-            createPartition(
-                    TableName.RECEIPT.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
-                    partitionName, partitionValue);
-            createPartition(
-                    TableName.PARSER.getTableName(tbGroup.getChainId(), tbGroup.getGroupId()),
-                    partitionName, partitionValue);
-        }
-        log.info("partition: {} create.", indexKey);
-        CREATED_MAP.put(indexKey, CREATED);
-    }
-
-    /**
-     * createPartition.
-     */
     public void createPartition(String tableName, String partitionName, int partitionValue) {
         try {
+            // partition created record in map, check if exist in map
+            String indexKey = tableName + "_" + partitionName;
+            if (CREATED_MAP.get(indexKey) != null) {
+                log.info("partition: {} has been created.", indexKey);
+                return;
+            }
+            // check if created from db
+            String partitionRecord =
+                    tableMapper.queryPartition(getDbName(), tableName, partitionName);
+            if (partitionRecord != null) {
+                log.info("partition: {} has been created.", indexKey);
+                CREATED_MAP.put(indexKey, CREATED);
+                return;
+            }
             tableMapper.createPartition(tableName, partitionName, partitionValue);
+            log.info("partition: {} create.", indexKey);
+            CREATED_MAP.put(indexKey, CREATED);
         } catch (Exception e) {
             log.error("createPartition Exception", e);
         }

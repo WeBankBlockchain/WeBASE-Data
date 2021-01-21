@@ -314,63 +314,63 @@ public class TbGasExample {
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthIsNull() {
-            addCriterion("record_month is null");
+        public Criteria andRecordPatitionIsNull() {
+            addCriterion("record_patition is null");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthIsNotNull() {
-            addCriterion("record_month is not null");
+        public Criteria andRecordPatitionIsNotNull() {
+            addCriterion("record_patition is not null");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthEqualTo(Integer value) {
-            addCriterion("record_month =", value, "recordMonth");
+        public Criteria andRecordPatitionEqualTo(Integer value) {
+            addCriterion("record_patition =", value, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthNotEqualTo(Integer value) {
-            addCriterion("record_month <>", value, "recordMonth");
+        public Criteria andRecordPatitionNotEqualTo(Integer value) {
+            addCriterion("record_patition <>", value, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthGreaterThan(Integer value) {
-            addCriterion("record_month >", value, "recordMonth");
+        public Criteria andRecordPatitionGreaterThan(Integer value) {
+            addCriterion("record_patition >", value, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthGreaterThanOrEqualTo(Integer value) {
-            addCriterion("record_month >=", value, "recordMonth");
+        public Criteria andRecordPatitionGreaterThanOrEqualTo(Integer value) {
+            addCriterion("record_patition >=", value, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthLessThan(Integer value) {
-            addCriterion("record_month <", value, "recordMonth");
+        public Criteria andRecordPatitionLessThan(Integer value) {
+            addCriterion("record_patition <", value, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthLessThanOrEqualTo(Integer value) {
-            addCriterion("record_month <=", value, "recordMonth");
+        public Criteria andRecordPatitionLessThanOrEqualTo(Integer value) {
+            addCriterion("record_patition <=", value, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthIn(List<Integer> values) {
-            addCriterion("record_month in", values, "recordMonth");
+        public Criteria andRecordPatitionIn(List<Integer> values) {
+            addCriterion("record_patition in", values, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthNotIn(List<Integer> values) {
-            addCriterion("record_month not in", values, "recordMonth");
+        public Criteria andRecordPatitionNotIn(List<Integer> values) {
+            addCriterion("record_patition not in", values, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthBetween(Integer value1, Integer value2) {
-            addCriterion("record_month between", value1, value2, "recordMonth");
+        public Criteria andRecordPatitionBetween(Integer value1, Integer value2) {
+            addCriterion("record_patition between", value1, value2, "recordPatition");
             return (Criteria) this;
         }
 
-        public Criteria andRecordMonthNotBetween(Integer value1, Integer value2) {
-            addCriterion("record_month not between", value1, value2, "recordMonth");
+        public Criteria andRecordPatitionNotBetween(Integer value1, Integer value2) {
+            addCriterion("record_patition not between", value1, value2, "recordPatition");
             return (Criteria) this;
         }
 
