@@ -206,20 +206,20 @@ CREATE TABLE IF NOT EXISTS tb_gas (
     trans_hash varchar(128) NOT NULL COMMENT '交易hash',
     trans_index int(11) NOT NULL COMMENT '交易索引',
     block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
-    record_month int(11) NOT NULL COMMENT '出块时间年月，如202008',
+    record_patition int(11) NOT NULL COMMENT '记录分区（出块时间年月日，如20210101）',
     user_address varchar(64) NOT NULL COMMENT '用户地址',
     record_type tinyint(4) DEFAULT '0' COMMENT '记录类型（0-普通交易消耗，1-充值，2-扣费）',
     gas_value bigint(25) DEFAULT '0' COMMENT 'gas变动值',
     gas_remain bigint(25) DEFAULT '0' COMMENT 'gas余额',
     create_time datetime DEFAULT NULL COMMENT '创建时间',
     modify_time datetime DEFAULT NULL COMMENT '修改时间',
-    PRIMARY KEY (id,record_month),
+    PRIMARY KEY (id,record_patition),
     KEY idx_block_number (block_number),
     KEY idx_trans_hash (trans_hash),
     KEY idx_trans_index (trans_index),
     KEY idx_user (user_address)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='gas信息表'
-PARTITION BY RANGE (record_month) (
+PARTITION BY RANGE (record_patition) (
     PARTITION p_default VALUES LESS THAN MAXVALUE
 );
 

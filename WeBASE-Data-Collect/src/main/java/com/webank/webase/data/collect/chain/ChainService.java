@@ -196,6 +196,8 @@ public class ChainService {
         gasReconciliationService.deleteByChainId(chainId);
         // drop sub tables
         groupList.forEach(g -> tableService.dropTable(chainId, g.getGroupId()));
+        // clear table cache
+        TableService.CREATED_MAP.clear();
     }
     
     /**

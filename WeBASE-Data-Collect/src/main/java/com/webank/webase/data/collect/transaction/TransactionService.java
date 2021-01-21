@@ -71,7 +71,7 @@ public class TransactionService {
     public void addTransInfo(int chainId, int groupId, TbTransaction tbTransaction)
             throws BaseException {
         String tableName = TableName.TRANS.getTableName(chainId, groupId);
-        tbTransaction.setRecordMonth(CommonTools.getYearMonth(tbTransaction.getBlockTimestamp()));
+        tbTransaction.setRecordPatition(CommonTools.getYearMonthDay(tbTransaction.getBlockTimestamp()));
         transactionMapper.add(tableName, tbTransaction);
     }
 

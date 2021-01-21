@@ -65,9 +65,10 @@ public class FrontRestTools extends AbstractRestService {
     public static final String URI_GET_OBSERVER_LIST = "web3/observerList";
     public static final String URI_GET_CLIENT_VERSION = "web3/clientVersion";
     public static final String URI_ENCRYPT_TYPE = "encrypt";
+    public static final String URI_GAS_CHARGE_MANAGE = "precompiled/GasChargeManage";
 
     // 不需要在url的前面添加groupId的
-    private static final List<String> URI_NOT_PREPEND_GROUP_ID = Arrays.asList(URI_ENCRYPT_TYPE);
+    private static final List<String> URI_NOT_PREPEND_GROUP_ID = Arrays.asList(URI_ENCRYPT_TYPE,URI_GAS_CHARGE_MANAGE);
     private static Map<String, FailInfo> failRequestMap = new HashMap<>();
 
     @Autowired

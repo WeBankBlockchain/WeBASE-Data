@@ -32,6 +32,7 @@ public class ConstantProperties {
     public static final String TB_GAS = "tb_gas";
     public static final String PREFIX_PARTITION = "p_";
     public static final String ORDER_BY_ID_DESC = "id DESC";
+    public static final String ORDER_BY_BLOCK_NUMBER_ASC = "block_number ASC";
     
     // gas parser
     public static final String GAS_CHARGE = "charge(address,uint256)";
@@ -57,5 +58,6 @@ public class ConstantProperties {
     private boolean ifEsEnable = false; // default false
     private boolean multiLiving = false; // default false
     private Long dataParserTaskFixedDelay = 60000L; // default 1min
+    private int partitionType = 0; // default by day
 
 }

@@ -49,6 +49,7 @@ public class CommonTools {
 
     public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String DATE_TIME_FORMAT_NO_SPACE = "yyyyMMddHHmmss";
+    public static final String DATE_FORMAT_NO_SPACE = "yyyyMMdd";
 
     /**
      * convert hex to localDateTime.
@@ -346,19 +347,20 @@ public class CommonTools {
         }
         return Integer.parseInt(str.substring(2), 16);
     }
-    
+
     /**
      * @param content
      * @return
      */
     public static String upperCaseFirstChar(String content) {
-        if (StringUtils.isBlank(content)) return null;
+        if (StringUtils.isBlank(content))
+            return null;
 
         String firstChar = content.substring(0, 1);
         String otherChars = content.substring(1);
         return firstChar.toUpperCase() + otherChars;
     }
-    
+
     public static int getYearMonth(Long recordTimestamp) {
         LocalDateTime recordTime = timestamp2LocalDateTime(recordTimestamp);
         return getYearMonth(recordTime);
@@ -367,13 +369,28 @@ public class CommonTools {
     public static int getYearMonth(LocalDateTime recordTime) {
         return recordTime.getYear() * 100 + recordTime.getMonthValue();
     }
-    
+
     public static int getYearMonthNext(LocalDateTime recordTime) {
         int year = recordTime.getYear();
         int month = recordTime.getMonthValue();
         if (month == 12) {
             return (year + 1) * 100 + 1;
         }
-        return (year + 1) * 100 + month + 1;
+        return year * 100 + month + 1;
+    }
+    
+    public static int getYearMonthDay(Long recordTimestamp) {
+        LocalDateTime recordTime = timestamp2LocalDateTime(recordTimestamp);
+        return getYearMonthDay(recordTime);
+    }
+
+    public static int getYearMonthDay(LocalDateTime recordTime) {
+        String dayString = localDateTime2String(recordTime, DATE_FORMAT_NO_SPACE);
+        return Integer.valueOf(dayString);
+    }
+
+    public static int getYearMonthDayNext(LocalDateTime recordTime) {
+        String dayString = localDateTime2String(recordTime.plusDays(1), DATE_FORMAT_NO_SPACE);
+        return Integer.valueOf(dayString);
     }
 }
