@@ -95,7 +95,8 @@ public class ConstantCode {
     public static final RetCode EVENT_NAME_FORMAT_ERROR = RetCode.mark(209855, "event name format error");
     
     /* gas code */
-    public static final RetCode Gas_Record_Type_NOT_EXISTS = RetCode.mark(209901, "gas record type not exists");
-    public static final RetCode GAS_CONTRACT_NOT_INIT = RetCode.mark(209901, "gas charge manage precompiled contract not init");
+    public static final RetCode GAS_RECORD_TYPE_NOT_EXISTS = RetCode.mark(209901, "gas record type not exists");
+    public static final RetCode GAS_CONTRACT_NOT_INIT = RetCode.mark(209902, "gas charge manage precompiled contract not init");
+    public static final RetCode GAS_RECONCILIATION_FALSE = RetCode.mark(209903, "gas reconciliation's config is false");
     
 }

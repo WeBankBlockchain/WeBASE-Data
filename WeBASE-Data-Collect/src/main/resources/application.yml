@@ -27,6 +27,8 @@ constant:
   ifSaveBlockAndTrans: true
   ## if save gas info
   ifSaveGas: true
+  ## if gas reconciliation
+  ifGasReconciliation: false
   ## if use elasticsearch
   ifEsEnable: false
   

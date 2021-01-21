@@ -87,8 +87,13 @@ public abstract class AbstractRestService implements RestService {
         }
         String errorMessage = error.get("errorMessage").asText();
         if (errorMessage.contains("code")) {
-            JsonNode errorInside = JacksonUtils.stringToJsonNode(error.get("errorMessage").asText()).get("error");
-            throw new BaseException(errorInside.get("code").asInt(), errorInside.get("message").asText());
+            if (errorMessage.contains("error")) {
+                JsonNode errorInside = JacksonUtils.stringToJsonNode(errorMessage).get("error");
+                throw new BaseException(errorInside.get("code").asInt(), errorInside.get("message").asText());
+            } else {
+                JsonNode errorInside = JacksonUtils.stringToJsonNode(errorMessage);
+                throw new BaseException(errorInside.get("code").asInt(), errorInside.get("msg").asText());
+            }
         }
         throw new BaseException(error.get("code").asInt(), errorMessage);
     }
