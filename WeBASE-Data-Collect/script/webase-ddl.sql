@@ -214,10 +214,9 @@ CREATE TABLE IF NOT EXISTS tb_gas (
     create_time datetime DEFAULT NULL COMMENT '创建时间',
     modify_time datetime DEFAULT NULL COMMENT '修改时间',
     PRIMARY KEY (id,record_patition),
-    KEY idx_block_number (block_number),
-    KEY idx_trans_hash (trans_hash),
-    KEY idx_trans_index (trans_index),
-    KEY idx_user (user_address)
+    KEY idx_block_number (chain_id,group_id,block_number),
+    KEY idx_trans_hash (chain_id,group_id,trans_hash),
+    KEY idx_user (chain_id,group_id,user_address)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='gas信息表'
 PARTITION BY RANGE (record_patition) (
     PARTITION p_default VALUES LESS THAN MAXVALUE
