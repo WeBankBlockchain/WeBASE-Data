@@ -11,7 +11,7 @@
 
 
 ## 2. 注意事项
-*  Java推荐使用[OracleJDK](https://www.oracle.com/technetwork/java/javase/downloads/index.html)，[JDK配置指引](./appendix.html#jdk)
+*  Java推荐使用[OracleJDK](https://www.oracle.com/technetwork/java/javase/downloads/index.html)，[JDK配置指引](./appendix.md#jdk)
 *  安装说明可以参考 [安装示例](./appendix.md#install)
 *  在服务搭建的过程中，如碰到问题，请查看 [常见问题解答](./appendix.md#q&a)
 *  安全温馨提示： 强烈建议设置复杂的数据库登录密码，且严格控制数据操作的权限和网络策略
