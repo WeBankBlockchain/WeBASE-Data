@@ -616,7 +616,7 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 
 ## 4 Gas管理模块
 
-### 4.1 查询Gas变更列表
+### 4.1 分页查询Gas变更列表
 
 #### 传输协议
 
@@ -633,8 +633,8 @@ http://localhost:5009/WeBASE-Data-Collect/group/list/1
 | ---- | ----------- | ------ | ------ | ------------------------------------------ |
 | 1    | chainId     | Int    | 否     | 链编号                                     |
 | 2    | groupId     | int    | 否     | 群组编号                                   |
-| 3    | pageSize    | Int    | 否     | 每页记录数                                 |
-| 4    | pageNumber  | Int    | 否     | 当前页码                                   |
+| 3    | pageSize    | Int    | 否     | 分页查询，每页记录数                       |
+| 4    | pageNumber  | Int    | 否     | 分页查询，页码，从1开始                    |
 | 5    | userAddress | String | 是     | 用户地址，传入时查询对应用户               |
 | 6    | recordType  | Int    | 是     | 记录类型（0-普通交易消耗，1-充值，2-扣费） |
 | 7    | transHash   | String | 是     | 交易hash，传入时查询对应交易               |
@@ -720,7 +720,7 @@ http://localhost:5009/WeBASE-Data-Collect/gas/list/
 }
 ```
 
-### 4.2 查询Gas用户对账信息列表
+### 4.2 分页查询Gas用户对账信息列表
 
 #### 传输协议
 
@@ -737,8 +737,8 @@ http://localhost:5009/WeBASE-Data-Collect/gas/list/
 | ---- | ----------- | ------ | ------ | ---------------------------- |
 | 1    | chainId     | Int    | 否     | 链编号                       |
 | 2    | groupId     | int    | 否     | 群组编号                     |
-| 3    | pageSize    | Int    | 否     | 每页记录数                   |
-| 4    | pageNumber  | Int    | 否     | 当前页码                     |
+| 3    | pageSize    | Int    | 否     | 分页查询，每页记录数         |
+| 4    | pageNumber  | Int    | 否     | 分页查询，页码，从1开始      |
 | 5    | userAddress | String | 是     | 用户地址，传入时查询对应用户 |
 
 ***2）入参示例***

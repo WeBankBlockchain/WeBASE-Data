@@ -4,8 +4,8 @@
 
 | 序号 | 软件                |
 | ---- | ------------------- |
-| 1    | FISCO-BCOS 2.3.0或以上版本 |
-| 2    | WeBASE-Front 1.3.0或以上版本 |
+| 1    | FISCO-BCOS feature-external-support版本 |
+| 2    | WeBASE-Front feature-external-support版本 |
 | 3    | MySQL5.6或以上版本  |
 | 4    | Java8或以上版本     |
 | 5 | Elasticsearch7.8.0及其对应elasticsearch-analysis-ik（分词插件），需要将交易数据存入Elasticsearch时需部署 |
@@ -13,10 +13,19 @@
 
 
 ## 2. 注意事项
-*  Java推荐使用[OpenJDK](https://openjdk.java.net/ )，建议从OpenJDK网站自行下载（CentOS的yum仓库的OpenJDK缺少JCE(Java Cryptography Extension)，导致Web3SDK无法正常连接区块链节点）[下载地址](https://jdk.java.net/java-se-ri/11) [安装指南](https://openjdk.java.net/install/index.html)
-*  安装说明可以参考 [安装示例](./appendix.md#1-安装示例)
-*  在服务搭建的过程中，如碰到问题，请查看 [常见问题](./appendix.md#2-常见问题)
-*  安全温馨提示： 强烈建议设置复杂的数据库登录密码，且严格控制数据操作的权限和网络策略
+* FISCO-BCOS和WeBASE-Front推荐使用docker部署，可以参考[使用说明](<https://github.com/WeBankFinTech/WeBASE-Docker/blob/bsn/docker/front-install.md>)，对应修改使用以下版本：
+
+  ```
+  docker pull fiscoorg/front:feature-external-support
+  ```
+
+* Java推荐使用[OracleJDK](https://www.oracle.com/technetwork/java/javase/downloads/index.html)，[JDK配置指引](./appendix.md#jdk)
+
+*  安装说明可以参考 [安装示例](./appendix.md#install)
+
+*  在服务搭建的过程中，如碰到问题，请查看 [常见问题解答](./appendix.md#q&a)
+
+* 安全温馨提示： 强烈建议设置复杂的数据库登录密码，且严格控制数据操作的权限和网络策略
 
 
 ## 3. 拉取代码
@@ -98,7 +107,7 @@ bash webase.sh 127.0.0.1 3306
 例如：cp conf_template conf -r
 ```
 
-（2）修改服务配置，完整配置项说明请查看 [配置说明](./appendix.md#3-applicationyml配置项说明)
+（2）修改服务配置，完整配置项说明请查看 [配置说明](./appendix.md#application-yml)
 
 - 服务端口，默认不修改。
 - 数据库连接（数据库名需事先创建）。
