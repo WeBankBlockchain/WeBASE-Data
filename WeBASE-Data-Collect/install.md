@@ -19,7 +19,7 @@
   docker pull fiscoorg/front:feature-external-support
   ```
 
-* Java推荐使用[OracleJDK](https://www.oracle.com/technetwork/java/javase/downloads/index.html)，[JDK配置指引](./appendix.html#jdk)
+* Java推荐使用[OracleJDK](https://www.oracle.com/technetwork/java/javase/downloads/index.html)，[JDK配置指引](./appendix.md#jdk)
 
 *  安装说明可以参考 [安装示例](./appendix.md#install)
 
