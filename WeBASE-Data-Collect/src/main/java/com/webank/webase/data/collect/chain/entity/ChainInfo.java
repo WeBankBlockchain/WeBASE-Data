@@ -31,5 +31,6 @@ public class ChainInfo {
     private String chainName;
     @NotNull
     private Integer encryptType;
+    @Length(max=1000)
     private String description;
 }

@@ -17,6 +17,8 @@
             jdbcType="INTEGER" property="certainty" />
         <result column="handle_item" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="handleItem" />
+        <result column="record_patition" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="recordPatition" />
         <result column="create_time" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" javaType="java.time.LocalDateTime"
@@ -26,7 +28,7 @@
     <insert id="saveAll">
         insert into ${tableName}
         (
-        block_number,sync_status,certainty,handle_item,create_time,modify_time)
+        block_number,sync_status,certainty,handle_item,record_patition,create_time,modify_time)
         values
         <foreach collection="list" item="item" index="index"
             separator=",">
@@ -35,12 +37,14 @@
             #{item.syncStatus},
             #{item.certainty},
             #{item.handleItem},
+            #{item.recordPatition},
             NOW(),
             NOW()
             )
         </foreach>
         ON DUPLICATE KEY UPDATE
         sync_status = values(sync_status),
+        record_patition = values(record_patition),
         modify_time = NOW()
     </insert>
 

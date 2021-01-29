@@ -2012,20 +2012,21 @@ http://localhost:5010/WeBASE-Data-Fetcher/appAudit/1
 
 ### 1. 返回码信息列表
 
-| Code   | message                         | 描述             |
-| ------ | ------------------------------- | ---------------- |
-| 0      | success                         | 正常             |
-| 110000 | system exception                | 系统异常         |
-| 110001 | param exception                 | 请求参数错误     |
-| 110002 | database exception              | 数据库异常       |
-| 210101 | invalid group id                | 无效群组编号     |
-| 210201 | searchType not exists           | 搜索类型不存在   |
-| 210202 | search content can not be empty | 搜索内容不能为空 |
-| 210203 | search index not exists         | 索引不存在       |
-| 210204 | search fail                     | 搜索失败         |
-| 210301 | keyword id not exists           | 关键字不存在     |
-| 210302 | keyword exists                  | 关键字已存在     |
-| 210303 | save keyword fail               | 关键字保存失败   |
-| 210401 | audit id not exists             | 告警信息不存在   |
-| 210402 | audit inffo exists              | 告警信息已存在   |
-| 210403 | save audit info fail            | 告警信息保存失败 |
+| Code   | message                         | 描述                    |
+| ------ | ------------------------------- | ----------------------- |
+| 0      | success                         | 正常                    |
+| 110000 | system exception                | 系统异常                |
+| 110001 | param exception                 | 请求参数错误            |
+| 110002 | database exception              | 数据库异常              |
+| 210101 | invalid group id                | 无效群组编号            |
+| 210201 | searchType not exists           | 搜索类型不存在          |
+| 210202 | search content can not be empty | 搜索内容不能为空        |
+| 210203 | search index not exists         | 索引不存在              |
+| 210204 | search fail                     | 搜索失败                |
+| 210205 | elasticsearch's config is false | elasticsearch配置未启用 |
+| 210301 | keyword id not exists           | 关键字不存在            |
+| 210302 | keyword exists                  | 关键字已存在            |
+| 210303 | save keyword fail               | 关键字保存失败          |
+| 210401 | audit id not exists             | 告警信息不存在          |
+| 210402 | audit inffo exists              | 告警信息已存在          |
+| 210403 | save audit info fail            | 告警信息保存失败        |

@@ -53,7 +53,7 @@ public class StatTxnDailyTask {
         Instant startTime = Instant.now();
         List<TbGroup> groupList = groupService.getGroupList(null, DataStatus.NORMAL.getValue());
         if (CollectionUtils.isEmpty(groupList)) {
-            log.warn("StatTxnDaily jump over: not found any group");
+            log.info("StatTxnDaily jump over: not found any group");
             return;
         }
         // count down group, make sure all group's transMonitor finished

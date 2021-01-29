@@ -183,14 +183,16 @@ public class TransactionDecoder {
         List<NamedType> outputTypes = abiDefinition.getOutputs();
         List<TypeReference<?>> outputTypeReference = ContractAbiUtil.paramFormat(outputTypes);
         Function function = new Function(abiDefinition.getName(), null, outputTypeReference);
-        List<Type> resultType =
-                FunctionReturnDecoder.decode(updatedOutput, function.getOutputParameters());
 
         // set result to java bean
         List<ResultEntity> resultList = new ArrayList<>();
-        for (int i = 0; i < outputTypes.size(); i++) {
-            resultList.add(new ResultEntity(outputTypes.get(i).getName(),
-                    outputTypes.get(i).getType(), resultType.get(i)));
+        if (!updatedOutput.equals("0x")) {
+            List<Type> resultType =
+                    FunctionReturnDecoder.decode(updatedOutput, function.getOutputParameters());
+            for (int i = 0; i < outputTypes.size(); i++) {
+                resultList.add(new ResultEntity(outputTypes.get(i).getName(),
+                        outputTypes.get(i).getType(), resultType.get(i)));
+            }
         }
         String methodSign = decodeMethodSign(abiDefinition);
 
