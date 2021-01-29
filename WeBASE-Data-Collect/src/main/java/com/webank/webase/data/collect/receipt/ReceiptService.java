@@ -47,7 +47,7 @@ public class ReceiptService {
             LocalDateTime blockTimestamp) {
         TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
                 transReceipt.getBlockNumber(), JacksonUtils.objToString(transReceipt),
-                blockTimestamp, CommonTools.getYearMonth(blockTimestamp));
+                blockTimestamp, CommonTools.getYearMonthDay(blockTimestamp));
         addReceiptInfo(chainId, groupId, tbReceipt);
         return tbReceipt;
     }
