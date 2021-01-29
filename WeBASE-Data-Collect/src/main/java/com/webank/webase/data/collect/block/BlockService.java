@@ -31,6 +31,7 @@ import lombok.extern.log4j.Log4j2;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.TransactionResult;
 import org.fisco.bcos.web3j.protocol.core.methods.response.Transaction;
+import org.fisco.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -66,16 +67,18 @@ public class BlockService {
         TbBlock tbBlock = chainBlock2TbBlock(block);
         addBlockInfo(tbBlock, chainId, groupId);
 
-        // save trans hash
+        // save trans info
         List<TransactionResult> transList = block.getTransactions();
         for (TransactionResult result : transList) {
-            // save trans
             Transaction trans = (Transaction) result.get();
             TbTransaction tbTransaction = new TbTransaction(trans.getHash(), trans.getBlockNumber(),
                     tbBlock.getBlockTimestamp(), JacksonUtils.objToString(trans));
+            TransactionReceipt transReceipt =
+                    frontInterface.getTransReceipt(chainId, groupId, trans.getHash());
+            // save trans
             transactionService.addTransInfo(chainId, groupId, tbTransaction);
             // save receipt
-            receiptService.handleReceiptInfo(chainId, groupId, trans.getHash(),
+            receiptService.handleReceiptInfo(chainId, groupId, transReceipt,
                     tbBlock.getBlockTimestamp());
             try {
                 Thread.sleep(SAVE_TRANS_SLEEP_TIME);
@@ -198,7 +201,7 @@ public class BlockService {
         // save block info
         TbBlock tbBlock = new TbBlock(block.getHash(), block.getNumber(), blockTimestamp,
                 block.getTransactions().size(), sealerIndex, sealer,
-                JacksonUtils.objToString(block));
+                JacksonUtils.objToString(block), CommonTools.getYearMonthDay(blockTimestamp));
         return tbBlock;
     }
 }

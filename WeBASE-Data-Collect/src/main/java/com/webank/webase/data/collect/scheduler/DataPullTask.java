@@ -61,7 +61,7 @@ public class DataPullTask {
         Instant startTime = Instant.now();
         List<TbGroup> groupList = groupService.getGroupList(null, DataStatus.NORMAL.getValue());
         if (CollectionUtils.isEmpty(groupList)) {
-            log.warn("pullBlock jump over: not found any group");
+            log.info("pullBlock jump over: not found any group");
             return;
         }
 

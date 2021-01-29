@@ -32,6 +32,7 @@ public class TbBlock {
     private int sealerIndex;
     private String sealer;
     private String blockDetail;
+    private Integer recordPatition;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 
@@ -39,7 +40,8 @@ public class TbBlock {
      * init by blockHash、blockNumber、blockTimestamp、transCount.
      */
     public TbBlock(String blockHash, BigInteger blockNumber, LocalDateTime blockTimestamp,
-            Integer transCount, int sealerIndex, String sealer, String blockDetail) {
+            Integer transCount, int sealerIndex, String sealer, String blockDetail,
+            Integer recordPatition) {
         super();
         this.blockHash = blockHash;
         this.blockNumber = blockNumber;
@@ -48,5 +50,6 @@ public class TbBlock {
         this.sealerIndex = sealerIndex;
         this.sealer = sealer;
         this.blockDetail = blockDetail;
+        this.recordPatition = recordPatition;
     }
 }

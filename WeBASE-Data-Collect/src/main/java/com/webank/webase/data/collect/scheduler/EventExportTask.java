@@ -51,7 +51,7 @@ public class EventExportTask {
                         new TbEventExportTask((byte) TaskStatus.RUNNING.getValue()));
         List<TbEventExportTask> list = eventService.getExportInfoList(example);
         if (CollectionUtils.isEmpty(list)) {
-            log.info("eventExport jump over: not found any running export task");
+            log.debug("eventExport jump over: not found any running export task");
             return;
         }
         // count down , make sure all element finished

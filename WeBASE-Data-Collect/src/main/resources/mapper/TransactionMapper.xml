@@ -18,6 +18,8 @@
             property="transDetail" />
         <result column="audit_flag" javaType="java.lang.Integer"
             jdbcType="INTEGER" property="auditFlag" />
+        <result column="record_patition" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="recordPatition" />
         <result column="create_time" javaType="java.time.LocalDateTime"
             jdbcType="TIMESTAMP" property="createTime" />
         <result column="modify_time" javaType="java.time.LocalDateTime"
@@ -26,8 +28,8 @@
 
     <insert id="add">
         insert ignore into
-        ${tableName}(trans_hash,block_number,block_timestamp,trans_detail,create_time,modify_time)
-        values(#{trans.transHash},#{trans.blockNumber},#{trans.blockTimestamp},#{trans.transDetail},NOW(),NOW())
+        ${tableName}(trans_hash,block_number,block_timestamp,trans_detail,record_patition,create_time,modify_time)
+        values(#{trans.transHash},#{trans.blockNumber},#{trans.blockTimestamp},#{trans.transDetail},#{trans.recordPatition},NOW(),NOW())
     </insert>
 
     <select id="getCount"

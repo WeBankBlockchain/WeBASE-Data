@@ -31,6 +31,7 @@ public class TbTransaction {
     private LocalDateTime blockTimestamp;
     private String transDetail;
     private Integer auditFlag;
+    private Integer recordPatition;
     private LocalDateTime createTime;
     private LocalDateTime modifyTime;
 

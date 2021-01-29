@@ -97,6 +97,8 @@ public class ParserService {
     private TableService tableService;
     @Autowired
     private EsCurdService esCurdService;
+    @Autowired
+    private ConstantProperties constantProperties;
 
     public void reset(ResetInfo resetInfo) {
         blockTaskPoolService.resetDataByBlockNumber(resetInfo.getChainId(), resetInfo.getGroupId(),
@@ -119,9 +121,11 @@ public class ParserService {
         // update db user
         parserMapper.updateUnusualUser(tableName, userName, address);
         // update es user
-        List<TbParser> list = parserMapper.queryListByUserAddress(tableName, address);
-        for (TbParser tbParser : list) {
-            updateEs(chainId, groupId, tbParser);
+        if (constantProperties.isIfEsEnable()) {
+            List<TbParser> list = parserMapper.queryListByUserAddress(tableName, address);
+            for (TbParser tbParser : list) {
+                updateEs(chainId, groupId, tbParser);
+            }
         }
     }
 
@@ -176,8 +180,10 @@ public class ParserService {
         String tableName = TableName.PARSER.getTableName(chainId, groupId);
         parserMapper.updateUnusualContract(tableName, contractResult);
         // update es
-        TbParser tbParser = parserMapper.queryByTxHash(tableName, transHash);
-        updateEs(chainId, groupId, tbParser);
+        if (constantProperties.isIfEsEnable()) {
+            TbParser tbParser = parserMapper.queryByTxHash(tableName, transHash);
+            updateEs(chainId, groupId, tbParser);
+        }
     }
 
     /**
@@ -290,6 +296,7 @@ public class ParserService {
         BeanUtils.copyProperties(contractResult, tbParser);
         tbParser.setBlockNumber(tbReceipt.getBlockNumber());
         tbParser.setBlockTimestamp(tbReceipt.getBlockTimestamp());
+        tbParser.setRecordPatition(tbReceipt.getRecordPatition());
         dataAddAndUpdate(chainId, groupId, tbParser);
     }
 
@@ -298,13 +305,15 @@ public class ParserService {
         String tableName = TableName.PARSER.getTableName(chainId, groupId);
         parserMapper.add(tableName, tbParser);
         transactionService.updateTransStatFlag(chainId, groupId, tbParser.getTransHash());
-        tbParser = parserMapper.queryByTxHash(tableName, tbParser.getTransHash());
-        EsParser esParser = new EsParser();
-        BeanUtils.copyProperties(tbParser, esParser);
-        esParser.setChainId(chainId);
-        esParser.setGroupId(groupId);
-        esCurdService.insert(tableService.getDbName(), String.valueOf(tbParser.getTransHash()),
-                esParser);
+        if (constantProperties.isIfEsEnable()) {
+            tbParser = parserMapper.queryByTxHash(tableName, tbParser.getTransHash());
+            EsParser esParser = new EsParser();
+            BeanUtils.copyProperties(tbParser, esParser);
+            esParser.setChainId(chainId);
+            esParser.setGroupId(groupId);
+            esCurdService.insert(tableService.getDbName(), String.valueOf(tbParser.getTransHash()),
+                    esParser);
+        }
     }
     
     /**

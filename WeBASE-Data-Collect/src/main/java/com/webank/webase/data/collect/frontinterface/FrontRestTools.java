@@ -14,6 +14,14 @@
 
 package com.webank.webase.data.collect.frontinterface;
 
+import com.webank.webase.data.collect.base.code.ConstantCode;
+import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.base.tools.JacksonUtils;
+import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
+import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup;
+import com.webank.webase.data.collect.frontinterface.entity.FailInfo;
+import com.webank.webase.data.collect.rest.AbstractRestService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -23,7 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -31,23 +39,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 
-import com.webank.webase.data.collect.base.code.ConstantCode;
-import com.webank.webase.data.collect.base.exception.BaseException;
-import com.webank.webase.data.collect.base.properties.ConstantProperties;
-import com.webank.webase.data.collect.base.tools.JacksonUtils;
-import com.webank.webase.data.collect.frontgroupmap.FrontGroupMapCache;
-import com.webank.webase.data.collect.frontgroupmap.entity.FrontGroup;
-import com.webank.webase.data.collect.frontinterface.entity.FailInfo;
-import com.webank.webase.data.collect.rest.AbstractRestService;
-
-import lombok.extern.log4j.Log4j2;
-
 /**
  * about http request for WeBASE-Front.
  */
 @Log4j2
 @Service
-public class FrontRestTools {
+public class FrontRestTools extends AbstractRestService {
 
     public static final String FRONT_URL = "http://%1s:%2d/WeBASE-Front/%3s";
     public static final String URI_GROUP_PLIST = "web3/groupList";
@@ -68,17 +65,16 @@ public class FrontRestTools {
     public static final String URI_GET_OBSERVER_LIST = "web3/observerList";
     public static final String URI_GET_CLIENT_VERSION = "web3/clientVersion";
     public static final String URI_ENCRYPT_TYPE = "encrypt";
+    public static final String URI_GAS_CHARGE_MANAGE = "precompiled/GasChargeManage";
 
     // 不需要在url的前面添加groupId的
-    private static final List<String> URI_NOT_PREPEND_GROUP_ID = Arrays.asList(URI_ENCRYPT_TYPE);
+    private static final List<String> URI_NOT_PREPEND_GROUP_ID = Arrays.asList(URI_ENCRYPT_TYPE,URI_GAS_CHARGE_MANAGE);
     private static Map<String, FailInfo> failRequestMap = new HashMap<>();
 
     @Autowired
     private ConstantProperties cproperties;
     @Autowired
     private FrontGroupMapCache frontGroupMapCache;
-    @Autowired
-    private AbstractRestService abstractRestService;
 
     /**
      * get from specific front.
@@ -132,7 +128,7 @@ public class FrontRestTools {
         uri = uriAddGroupId(groupId, uri);
         String url = String.format(FRONT_URL, frontIp, frontPort, uri);
         try {
-            return abstractRestService.restTemplate(url, method, param, clazz);
+            return restTemplate(url, method, param, clazz);
         } catch (ResourceAccessException e) {
             log.error("requestSpecificFront. ResourceAccessException:", e);
         } catch (HttpStatusCodeException e) {
@@ -155,7 +151,7 @@ public class FrontRestTools {
         while (list != null && list.size() > 0) {
             String url = buildFrontUrl(list, uri, method);// build url
             try {
-                return abstractRestService.restTemplate(url, method, param, clazz);
+                return restTemplate(url, method, param, clazz);
             } catch (ResourceAccessException ex) {
                 log.warn("fail restTemplateExchange", ex);
                 setFailCount(url, method.toString());
@@ -276,5 +272,25 @@ public class FrontRestTools {
                 iter.remove();
             }
         }
+    }
+
+    @Override
+    public <T> T httpGet(String url, Class<T> clazz) {
+        return null;
+    }
+
+    @Override
+    public <T> T httpPost(String url, Object param, Class<T> clazz) {
+        return null;
+    }
+
+    @Override
+    public <T> T httpPut(String url, Object param, Class<T> clazz) {
+        return null;
+    }
+
+    @Override
+    public <T> T httpDelete(String url, Object param, Class<T> clazz) {
+        return null;
     }
 }

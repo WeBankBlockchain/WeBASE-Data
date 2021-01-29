@@ -2,47 +2,53 @@
 
 ## 1. 安装示例
 
+<span id="instal"></span>
+
 ### 1.1 Java部署
 
-此处给出OpenJDK安装简单步骤，供快速查阅。更详细的步骤，请参考[官网](https://openjdk.java.net/install/index.html)。
+<span id="jdk"></span>
 
-#### ① 安装包下载
+##### CentOS环境安装Java
 
-从[官网](https://jdk.java.net/java-se-ri/11)下载对应版本的java安装包，并解压到服务器相关目录
+<span id="centosjava"></span>
 
-```shell
-mkdir /software
-tar -zxvf openjdkXXX.tar.gz /software/
-```
-
-#### ② 配置环境变量
-
-- 修改/etc/profile
+**注意：CentOS下OpenJDK无法正常工作，需要安装OracleJDK[下载链接](https://www.oracle.com/technetwork/java/javase/downloads/index.html)。**
 
 ```
-sudo vi /etc/profile
-```
+# 创建新的文件夹，安装Java 8或以上的版本，将下载的jdk放在software目录
+# 从Oracle官网(https://www.oracle.com/technetwork/java/javase/downloads/index.html)选择Java 8或以上的版本下载，例如下载jdk-8u201-linux-x64.tar.gz
+$ mkdir /software
 
-- 在/etc/profile末尾添加以下信息
+# 解压jdk
+$ tar -zxvf jdk-8u201-linux-x64.tar.gz
 
-```shell
-JAVA_HOME=/software/jdk-11
-PATH=$PATH:$JAVA_HOME/bin
-CLASSPATH==.:$JAVA_HOME/lib
-export JAVA_HOME CLASSPATH PATH
-```
+# 配置Java环境，编辑/etc/profile文件
+$ vim /etc/profile
 
-- 重载/etc/profile
+# 打开以后将下面三句输入到文件里面并保存退出
+export JAVA_HOME=/software/jdk-8u201  #这是一个文件目录，非文件
+export PATH=$JAVA_HOME/bin:$PATH
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 
-```
-source /etc/profile
-```
+# 生效profile
+$ source /etc/profile
 
-#### ③ 查看版本
-
-```
+# 查询Java版本，出现的版本是自己下载的版本，则安装成功。
 java -version
 ```
+
+##### Ubuntu环境安装Java
+
+<span id="ubuntujava"></span>
+
+```
+  # 安装默认Java版本(Java 8或以上)
+  sudo apt install -y default-jdk
+  # 查询Java版本
+  java -version
+```
+
+<span id="mysql"></span>
 
 ### 1.2. 数据库部署
 
@@ -125,6 +131,8 @@ mysql -utest -p123456 -h localhost -P 3306
 ```sql
 mysql > create database webasedata;
 ```
+
+<span id="elasticsearch"></span>
 
 ### 1.3. Elasticsearch部署
 
@@ -209,7 +217,9 @@ ps -ef|grep elasticsearch
 kill -9 pid
 ```
 
-### 1.3. Zookeeper部署
+<span id="zookeeper"></span>
+
+### 1.4. Zookeeper部署
 
 此处给出简单步骤，供快速查阅。详情请参考[官网](https://zookeeper.apache.org/)。
 
@@ -230,6 +240,8 @@ ZooKeeper的安装包括单机模式安装，以及集群模式安装。具体�
 - [单机部署](https://zookeeper.apache.org/doc/r3.4.13/zookeeperAdmin.html#sc_singleAndDevSetup)
 
 ## 2. 常见问题
+
+<span id="q&a"></span>
 
 ### 2.1 脚本没权限
 
@@ -283,45 +295,68 @@ ERROR 2003 (HY000): Can't connect to MySQL server on '127.0.0.1' (110)
 GRANT ALL PRIVILEGES ON *.* TO 'TestUser'@'%' IDENTIFIED BY '此处为TestUser的密码’' WITH GRANT OPTION;
 ```
 
+- 数据存储时抛出异常：
+
+```
+Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.PacketTooBigException: Packet for query is too large (1,048,871 > 1,048,576). You can change this value on the server by setting the 'max_allowed_packet' variable.
+```
+
+答：插入数据量过大。MySQL根据配置文件会限制Server接受的数据包大小，有时候插入、更新或查询时数据包的大小，会受 max_allowed_packet 参数限制，导致操作失败。
+
+客户端执行命令查看大小：
+
+```
+show VARIABLES like '%max_allowed_packet%';
+```
+
+修改mysql的配置文件my.ini的配置，修改后重启mysql：
+
+```
+max_allowed_packet=20M
+```
+
+<span id="application-yml"></span>
+
 ## 3. application.yml配置项说明
 
-| 参数                                      | 默认值                                 | 描述                                  |
-| ----------------------------------------- | -------------------------------------- | ------------------------------------- |
-| server.port                               | 5009                                   | 当前服务端口                          |
-| server.servlet.context-path               | /WeBASE-Data-Collect                   | 当前服务访问目录                      |
-| mybatis.typeAliasesPackage                | com.webank.webase.data.collect         | mapper类扫描路径                      |
-| mybatis.mapperLocations                   | classpath:mapper/*.xml                 | mybatis的xml路径                      |
-| spring.datasource.driver-class-name       | com.mysql.cj.jdbc.Driver               | mysql驱动                             |
-| spring.datasource.url                     | jdbc:mysql://127.0.0.1:3306/webasedata | mysql连接地址                         |
-| spring.datasource.username                | defaultAccount                         | mysql账号                             |
-| spring.datasource.password                | defaultPassword                        | mysql密码                             |
-| spring.elasticsearch.rest.uris            | 127.0.0.1:9200                         | elasticsearch服务的ip地址             |
-| spring.elasticsearch.rest.username        |                                        | elasticsearch用户名，可以为空         |
-| spring.elasticsearch.rest.password        |                                        | elasticsearch密码，可以为空           |
-| spring.servlet.multipart.max-request-size | 30MB                                   | 请求资源最大值                        |
-| spring.servlet.multipart.max-file-size    | 20MB                                   | d单个文件最大值                       |
-| constant.httpTimeOut                      | 5000                                   | 请求前置超时时间                      |
-| constant.maxRequestFail                   | 3                                      | 失败次数                              |
-| constant.sleepWhenHttpMaxFail             | 30000                                  | 失败后睡眠时间（毫秒）                |
-| constant.resetGroupListCycle              | 300000                                 | 更新群组时间间隔（毫秒）              |
-| constant.groupInvalidGrayscaleValue       | 1M                                     | 群组失效后保留时间                    |
-| constant.nodeStatusTaskFixedDelay         | 30000                                  | 更新节点状态任务时间间隔（毫秒）      |
-| constant.statTxnDailyTaskFixedDelay       | 60000                                  | 统计每日交易任务时间间隔（毫秒）      |
-| constant.ifPullData                       | true                                   | 是否拉取区块（可通过接口修改）        |
-| constant.startBlockNumber                 | 0                                      | 开始块                                |
-| constant.crawlBatchUnit                   | 50                                     | 异步处理条数                          |
-| constant.dataPullCron                     | 0/10 * * * * ?                         | 数据拉取任务时间间隔                  |
-| constant.dataParserCron                   | 5/10 * * * * ?                         | 数据解析任务时间间隔                  |
-| constant.syncConfig                       | false                                  | 是否从其他服务同步配置                |
-| constant.syncConfigCron                   | 3 0 0/1 * * ?                          | 同步配置时间间隔                      |
-| constant.configServerIpPort               | 127.0.0.1:8001                         | 配置服务IP端口                        |
-| constant.multiLiving                      | false                                  | 是否使用分布式任务部署多活            |
-| job.regCenter.serverLists                 | 127.0.0.1:2181                         | 部署多活的话需配置zookeeper，支持集群 |
-| job.regCenter.namespace                   | elasticjob-collect                     | zookeeper命名空间                     |
-| job.dataflow.shardingTotalCount           | 2                                      | 多活分片数                            |
-| executor.corePoolSize                     | 50                                     | 线程池大小                            |
-| executor.maxPoolSize                      | 100                                    | 线程池最大线程数                      |
-| executor.queueSize                        | 50                                     | 线程池队列大小                        |
-| executor.threadNamePrefix                 | "custom-async-"                        | 线程名前缀                            |
-| logging.config                            | classpath:log/log4j2.xml               | 日志配置文件目                        |
-| logging.level                             | com.webank.webase.data.collect: info   | 日志级别                              |
+| 参数                                      | 默认值                                 | 描述                                                 |
+| ----------------------------------------- | -------------------------------------- | ---------------------------------------------------- |
+| server.port                               | 5009                                   | 当前服务端口                                         |
+| server.servlet.context-path               | /WeBASE-Data-Collect                   | 当前服务访问目录                                     |
+| mybatis.typeAliasesPackage                | com.webank.webase.data.collect         | mapper类扫描路径                                     |
+| mybatis.mapperLocations                   | classpath:mapper/*.xml                 | mybatis的xml路径                                     |
+| spring.datasource.driver-class-name       | com.mysql.cj.jdbc.Driver               | mysql驱动                                            |
+| spring.datasource.url                     | jdbc:mysql://127.0.0.1:3306/webasedata | mysql连接地址                                        |
+| spring.datasource.username                | defaultAccount                         | mysql账号                                            |
+| spring.datasource.password                | defaultPassword                        | mysql密码                                            |
+| spring.elasticsearch.rest.uris            | 127.0.0.1:9200                         | elasticsearch服务的ip地址                            |
+| spring.elasticsearch.rest.username        | elasticAccount                         | elasticsearch用户名，可以为空                        |
+| spring.elasticsearch.rest.password        | elasticPassword                        | elasticsearch密码，可以为空                          |
+| spring.servlet.multipart.max-request-size | 30MB                                   | 请求资源最大值                                       |
+| spring.servlet.multipart.max-file-size    | 20MB                                   | 单个文件最大值                                       |
+| constant.ifEsEnable                       | false                                  | 是否使用elasticsearch                                |
+| constant.httpTimeOut                      | 5000                                   | 请求前置超时时间                                     |
+| constant.maxRequestFail                   | 3                                      | 失败次数                                             |
+| constant.sleepWhenHttpMaxFail             | 30000                                  | 失败后睡眠时间（毫秒）                               |
+| constant.resetGroupListCycle              | 300000                                 | 更新群组时间间隔（毫秒）                             |
+| constant.groupInvalidGrayscaleValue       | 1M                                     | 群组失效后保留时间                                   |
+| constant.nodeStatusTaskFixedDelay         | 30000                                  | 更新节点状态任务时间间隔（毫秒）                     |
+| constant.statTxnDailyTaskFixedDelay       | 60000                                  | 统计每日交易任务时间间隔（毫秒）                     |
+| constant.ifPullData                       | true                                   | 是否拉取区块（可通过接口修改）                       |
+| constant.startBlockNumber                 | 0                                      | 开始块                                               |
+| constant.crawlBatchUnit                   | 50                                     | 异步处理条数                                         |
+| constant.dataPullCron                     | 0/10 * * * * ?                         | 数据拉取任务时间间隔（10秒）                         |
+| constant.dataParserCron                   | 5/10 * * * * ?                         | 数据解析任务时间间隔（10秒）                         |
+| constant.eventExportCron                  | 7/10 * * * * ?                         | 事件导出任务时间间隔（10秒）                         |
+| constant.partitionType                    | 0                                      | 表分区类型（0-按天，1-按月），部署后修改需重建数据库 |
+| constant.createPartitionCron              | 0 0 1 * * ?                            | 创建表分区任务时间（每天凌晨1点）                    |
+| constant.multiLiving                      | false                                  | 是否使用分布式任务部署多活                           |
+| job.regCenter.serverLists                 | 127.0.0.1:2181                         | 部署多活的话需配置zookeeper，支持集群                |
+| job.regCenter.namespace                   | elasticjob-collect                     | zookeeper命名空间                                    |
+| job.dataflow.shardingTotalCount           | 2                                      | 多活分片数                                           |
+| executor.corePoolSize                     | 50                                     | 线程池大小                                           |
+| executor.maxPoolSize                      | 100                                    | 线程池最大线程数                                     |
+| executor.queueSize                        | 50                                     | 线程池队列大小                                       |
+| executor.threadNamePrefix                 | "custom-async-"                        | 线程名前缀                                           |
+| logging.config                            | classpath:log/log4j2.xml               | 日志配置文件目                                       |
+| logging.level                             | com.webank.webase.data.collect: info   | 日志级别                                             |

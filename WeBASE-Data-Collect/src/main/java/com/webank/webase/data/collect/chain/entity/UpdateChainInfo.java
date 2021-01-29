@@ -29,5 +29,6 @@ public class UpdateChainInfo {
     @NotBlank
     @Length(min=1, max=120)
     private String chainName;
+    @Length(max=1000)
     private String description;
 }
