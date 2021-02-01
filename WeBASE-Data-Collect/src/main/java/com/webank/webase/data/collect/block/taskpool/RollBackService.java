@@ -15,7 +15,6 @@ package com.webank.webase.data.collect.block.taskpool;
 
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.block.BlockMapper;
-import com.webank.webase.data.collect.dao.mapper.TbGasMapper;
 import com.webank.webase.data.collect.parser.ParserMapper;
 import com.webank.webase.data.collect.receipt.ReceiptMapper;
 import com.webank.webase.data.collect.transaction.TransactionMapper;
@@ -38,8 +37,6 @@ public class RollBackService {
     private ReceiptMapper receiptMapper;
     @Autowired
     private ParserMapper parserMapper;
-    @Autowired
-    private TbGasMapper tbGasMapper;
 
     /**
      * Do rollback by blockNumber.
@@ -54,6 +51,5 @@ public class RollBackService {
         transactionMapper.rollback(TableName.TRANS.getTableName(chainId, groupId), blockNumber);
         receiptMapper.rollback(TableName.RECEIPT.getTableName(chainId, groupId), blockNumber);
         parserMapper.rollback(TableName.PARSER.getTableName(chainId, groupId), blockNumber);
-        tbGasMapper.rollback(chainId, groupId, blockNumber);
     }
 }
