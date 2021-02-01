@@ -20,6 +20,7 @@ import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -68,6 +69,19 @@ public class ExceptionsHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse typeMismatchExceptionHandler(TypeMismatchException ex) {
         log.warn("catch typeMismatchException", ex);
+        RetCode retCode = new RetCode(ConstantCode.PARAM_EXCEPTION.getCode(), ex.getMessage());
+        BaseResponse bre = new BaseResponse(retCode);
+        return bre;
+    }
+    
+    /**
+     * parameter exception:HttpMessageNotReadableException
+     */
+    @ResponseBody
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public BaseResponse httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException ex) {
+        log.warn("catch HttpMessageNotReadableException", ex);
         RetCode retCode = new RetCode(ConstantCode.PARAM_EXCEPTION.getCode(), ex.getMessage());
         BaseResponse bre = new BaseResponse(retCode);
         return bre;

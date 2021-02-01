@@ -16,6 +16,7 @@ package com.webank.webase.data.collect.txndaily;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.table.TableService;
 import com.webank.webase.data.collect.txndaily.entity.LatestTransCount;
 import com.webank.webase.data.collect.txndaily.entity.TbTxnDaily;
 import java.util.List;
@@ -34,11 +35,15 @@ public class TxnDailyService {
 
     @Autowired
     private TxnDailyMapper txnDailyMapper;
+    @Autowired
+    private TableService tableService;
 
     @Async("asyncExecutor")
     public void statProcess(CountDownLatch latch, int chainId, int groupId) {
         log.debug("start statProcess. chainId:{} groupId:{}", chainId, groupId);
         try {
+            // check table
+            tableService.newSubTable(chainId, groupId);
             String tableName = TableName.TRANS.getTableName(chainId, groupId);
             List<LatestTransCount> latestTransCountList =
                     txnDailyMapper.queryLatestTransCount(tableName, chainId, groupId);

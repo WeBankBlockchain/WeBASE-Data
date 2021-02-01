@@ -11,18 +11,33 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.webank.webase.data.collect.config.entity;
 
-import lombok.Data;
+package com.webank.webase.data.collect.base.enums;
 
 /**
- * configure version info.
+ * Enumeration of partition type.
  */
-@Data
-public class ConfigVersionInfo {
-    private String chainInfoVersion;
-    private String frontInfoVersion;
-    private String groupInfoVersion;
-    private String userInfoVersion;
-    private String contractInfoVersion;
+public enum PartitionType {
+    day(0), month(1);
+
+    private int type;
+
+    private PartitionType(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
+        return this.type;
+    }
+
+    public static boolean isInclude(int type) {
+        boolean include = false;
+        for (PartitionType e : PartitionType.values()) {
+            if (e.getType() == type) {
+                include = true;
+                break;
+            }
+        }
+        return include;
+    }
 }

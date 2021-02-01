@@ -14,6 +14,7 @@
 
 package com.webank.webase.data.collect.base.config;
 
+import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import com.webank.webase.data.collect.parser.EsCurdService;
 import com.webank.webase.data.collect.table.TableService;
 import lombok.extern.log4j.Log4j2;
@@ -32,13 +33,17 @@ public class EsInitConfig implements InitializingBean {
     private TableService tableService;
     @Autowired
     private EsCurdService esCurdService;
+    @Autowired
+    private ConstantProperties constantProperties;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String indexName = tableService.getDbName();
-        if (!esCurdService.existIndex(indexName)) {
-            log.info("create es index: {}", indexName);
-            esCurdService.createIndex(indexName);
+        if (constantProperties.isIfEsEnable()) {
+            String indexName = tableService.getDbName();
+            if (!esCurdService.existIndex(indexName)) {
+                log.info("create es index: {}", indexName);
+                esCurdService.createIndex(indexName);
+            }
         }
     }
 }

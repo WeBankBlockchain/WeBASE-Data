@@ -16,6 +16,7 @@ package com.webank.webase.data.collect.receipt;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
+import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
@@ -40,15 +41,13 @@ public class ReceiptService {
     private FrontInterfaceService frontInterface;
 
     /**
-     * handle receipt info.
+     * save receipt info.
      */
-    public TbReceipt handleReceiptInfo(int chainId, int groupId, String transHash,
+    public TbReceipt handleReceiptInfo(int chainId, int groupId, TransactionReceipt transReceipt,
             LocalDateTime blockTimestamp) {
-        TransactionReceipt transReceipt =
-                frontInterface.getTransReceipt(chainId, groupId, transHash);
-        TbReceipt tbReceipt =
-                new TbReceipt(transReceipt.getTransactionHash(), transReceipt.getBlockNumber(),
-                        JacksonUtils.objToString(transReceipt), blockTimestamp);
+        TbReceipt tbReceipt = new TbReceipt(transReceipt.getTransactionHash(),
+                transReceipt.getBlockNumber(), JacksonUtils.objToString(transReceipt),
+                blockTimestamp, CommonTools.getYearMonth(blockTimestamp));
         addReceiptInfo(chainId, groupId, tbReceipt);
         return tbReceipt;
     }

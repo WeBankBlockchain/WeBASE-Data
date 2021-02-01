@@ -32,17 +32,6 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
     </insert>
-    
-    <insert id="addList">
-        insert into tb_user
-        (group_id,chain_id,user_name,address,description,create_time,modify_time)
-        values
-        <foreach collection ="list" item="info" separator="," >
-        (#{info.groupId},#{info.chainId},#{info.userName},#{info.address},#{info.description},NOW(),NOW())
-        </foreach>
-        ON DUPLICATE KEY UPDATE
-        user_name=VALUES(user_name),description=VALUES(description),modify_time=NOW()
-    </insert>
 
     <select id="queryUser"
         parameterType="com.webank.webase.data.collect.user.entity.UserParam"
