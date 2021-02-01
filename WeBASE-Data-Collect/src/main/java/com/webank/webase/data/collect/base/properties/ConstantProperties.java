@@ -29,7 +29,14 @@ public class ConstantProperties {
     public static final String CONTRACT_NAME_ZERO = "0x00000000";
     public static final String ADDRESS_DEPLOY = "0x0000000000000000000000000000000000000000";
     
+    public static final String TB_GAS = "tb_gas";
+    public static final String PREFIX_PARTITION = "p_";
     public static final String ORDER_BY_ID_DESC = "id DESC";
+    public static final String ORDER_BY_BLOCK_NUMBER_ASC = "block_number ASC";
+    
+    // gas parser
+    public static final String GAS_CHARGE = "charge(address,uint256)";
+    public static final String GAS_DEDUCT = "deduct(address,uint256)";
 
     // group info
     private String groupInvalidGrayscaleValue = "1M"; // y:year, M:month, d:day of month, h:hour,
@@ -38,7 +45,6 @@ public class ConstantProperties {
     // data pull
     private long startBlockNumber = 0;
     private int crawlBatchUnit = 100;
-    private Long pullBlockSleepTime1 = 20L; // 20 mills
 
     // front http request
     private Integer httpTimeOut = 5000;
@@ -47,11 +53,9 @@ public class ConstantProperties {
 
     // data handle
     private boolean ifPullData = true; // default true
+    private boolean ifEsEnable = false; // default false
     private boolean multiLiving = false; // default false
     private Long dataParserTaskFixedDelay = 60000L; // default 1min
-    
-    // config server
-    private boolean syncConfig = false; // default false
-    private String configServerIpPort = "127.0.0.1:8001";
+    private int partitionType = 0; // default by day
 
 }

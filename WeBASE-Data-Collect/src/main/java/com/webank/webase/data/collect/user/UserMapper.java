@@ -13,7 +13,6 @@
  */
 package com.webank.webase.data.collect.user;
 
-import com.webank.webase.data.collect.config.entity.RspUserInfo;
 import com.webank.webase.data.collect.user.entity.TbUser;
 import com.webank.webase.data.collect.user.entity.UserParam;
 import java.util.List;
@@ -25,8 +24,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserMapper {
-    
-    int addList(List<RspUserInfo> list);
 
     /**
      * Add new user data.

@@ -14,8 +14,8 @@ spring:
   elasticsearch:
     rest:
       uris: 127.0.0.1:9200
-      username:
-      password:
+      username: "elasticAccount"
+      password: "elasticPassword"
   servlet:
     multipart:
       max-request-size: 30MB # request max size
@@ -23,6 +23,9 @@ spring:
 
 # constants
 constant:
+  ## if use elasticsearch
+  ifEsEnable: false
+  
   ## front http request
   httpTimeOut: 5000
   maxRequestFail: 3
@@ -45,6 +48,10 @@ constant:
   dataParserCron: 5/10 * * * * ?
   ## event export
   eventExportCron: 7/10 * * * * ?
+  ## create table partition (partitionType:0-by day;1-by month)
+  ## If modified, the database needs to be rebuilt
+  partitionType: 0
+  createPartitionCron: 0 0 1 * * ?
   
   ## if multiLiving
   multiLiving: false

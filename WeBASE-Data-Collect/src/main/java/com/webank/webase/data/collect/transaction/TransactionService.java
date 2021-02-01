@@ -17,12 +17,14 @@ import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
 import com.webank.webase.data.collect.base.properties.ConstantProperties;
+import com.webank.webase.data.collect.base.tools.CommonTools;
 import com.webank.webase.data.collect.base.tools.JacksonUtils;
 import com.webank.webase.data.collect.block.entity.MinMaxBlock;
 import com.webank.webase.data.collect.frontinterface.FrontInterfaceService;
 import com.webank.webase.data.collect.parser.ParserService;
 import com.webank.webase.data.collect.receipt.ReceiptService;
 import com.webank.webase.data.collect.receipt.entity.TbReceipt;
+import com.webank.webase.data.collect.table.TableService;
 import com.webank.webase.data.collect.transaction.entity.TbTransaction;
 import com.webank.webase.data.collect.transaction.entity.TransListParam;
 import java.time.Duration;
@@ -60,6 +62,8 @@ public class TransactionService {
     private ReceiptService receiptService;
     @Autowired
     private ConstantProperties cProperties;
+    @Autowired
+    private TableService tableService;
 
     /**
      * add trans hash info.
@@ -67,6 +71,7 @@ public class TransactionService {
     public void addTransInfo(int chainId, int groupId, TbTransaction tbTransaction)
             throws BaseException {
         String tableName = TableName.TRANS.getTableName(chainId, groupId);
+        tbTransaction.setRecordPatition(CommonTools.getYearMonthDay(tbTransaction.getBlockTimestamp()));
         transactionMapper.add(tableName, tbTransaction);
     }
 
@@ -198,6 +203,8 @@ public class TransactionService {
     public void parserProcess(CountDownLatch latch, int chainId, int groupId) {
         log.info("start parserProcess. chainId:{} groupId:{}", chainId, groupId);
         try {
+            // check table
+            tableService.newSubTable(chainId, groupId);
             Instant startTimem = Instant.now();
             Long useTimeSum = 0L;
             do {
@@ -210,7 +217,7 @@ public class TransactionService {
                         .forEach(transHash -> parserTransaction(chainId, groupId, transHash));
 
                 // parser useTime
-                useTimeSum = Duration.between(startTimem, Instant.now()).getSeconds();
+                useTimeSum = Duration.between(startTimem, Instant.now()).toMillis();
             } while (useTimeSum < cProperties.getDataParserTaskFixedDelay());
         } catch (Exception ex) {
             log.error("fail parserProcess chainId:{} groupId:{} ", chainId, groupId, ex);

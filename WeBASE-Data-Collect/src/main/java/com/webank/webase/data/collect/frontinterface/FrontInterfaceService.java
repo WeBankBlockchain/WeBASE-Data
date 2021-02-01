@@ -18,7 +18,9 @@ import com.webank.webase.data.collect.front.entity.TotalTransCountInfo;
 import com.webank.webase.data.collect.frontinterface.entity.PeerInfo;
 import com.webank.webase.data.collect.frontinterface.entity.SyncStatus;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.fisco.bcos.web3j.protocol.core.methods.response.BcosBlock.Block;
@@ -227,5 +229,16 @@ public class FrontInterfaceService {
         String uri = String.format(FrontRestTools.URI_SYSTEMCONFIG_BY_KEY, key);
         String config = frontRestTools.getForEntity(chainId, groupId, uri, String.class);
         return config;
+    }
+
+    public BigInteger getGasRemain(Integer chainId, Integer groupId, String userAddress) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("chainId", chainId);
+        params.put("groupId", groupId);
+        params.put("handleType", "queryRemainGas");
+        params.put("userAccount", userAddress);
+        BigInteger gasRemain = frontRestTools.postForEntity(chainId, groupId,
+                FrontRestTools.URI_GAS_CHARGE_MANAGE, params, BigInteger.class);
+        return gasRemain;
     }
 }
