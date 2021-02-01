@@ -20,36 +20,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TableMapper {
 
-    int createTbChain();
-
-    int createTbFront();
-
-    int createTbGroup();
-
-    int createTbFrontGroupMap();
-
-    int createTbNode();
-
-    int createTbTxnDaily();
-
-    int createTbUser();
-
-    int createTbContract();
-
-    int createTbMethod();
-
-    int createTbSolc();
-
-    int createTbGas();
-    
-    int createTbGasReconciliation();
-
-    // event export begin
-    int createTbEventExportTask();
-
-    int createTbEventInfo(@Param("tableName") String tableName);
-    // event export end
-
     int createTbTaskPool(@Param("tableName") String tableName);
 
     int createTbBlock(@Param("tableName") String tableName);
@@ -59,6 +29,8 @@ public interface TableMapper {
     int createTbReceipt(@Param("tableName") String tableName);
 
     int createTbParser(@Param("tableName") String tableName);
+    
+    int createTbEventInfo(@Param("tableName") String tableName);
 
     List<String> queryTables(@Param("dbName") String dbName, @Param("tableName") String tableName);
 

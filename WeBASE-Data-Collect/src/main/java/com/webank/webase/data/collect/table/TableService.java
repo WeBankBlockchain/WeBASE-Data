@@ -16,7 +16,6 @@ package com.webank.webase.data.collect.table;
 import com.webank.webase.data.collect.base.code.ConstantCode;
 import com.webank.webase.data.collect.base.enums.TableName;
 import com.webank.webase.data.collect.base.exception.BaseException;
-import com.webank.webase.data.collect.base.properties.ConstantProperties;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,25 +40,6 @@ public class TableService {
     private String dbUrl;
     public static Map<String, Integer> CREATED_MAP = new ConcurrentHashMap<>();
     public static final Integer CREATED = 1;
-
-    /**
-     * create common table.
-     */
-    public void newCommonTable() {
-        tableMapper.createTbChain();
-        tableMapper.createTbFront();
-        tableMapper.createTbGroup();
-        tableMapper.createTbFrontGroupMap();
-        tableMapper.createTbNode();
-        tableMapper.createTbTxnDaily();
-        tableMapper.createTbUser();
-        tableMapper.createTbContract();
-        tableMapper.createTbMethod();
-        tableMapper.createTbSolc();
-        tableMapper.createTbEventExportTask();
-        tableMapper.createTbGas();
-        tableMapper.createTbGasReconciliation();
-    }
 
     /**
      * create sub table.
