@@ -42,15 +42,15 @@ public class KeywordService {
     public TbKeyword newKeyword(KeywordInfo keywordInfo) {
         log.debug("start newKeyword keywordInfo:{}", keywordInfo);
 
-        TbKeyword tbKeyword = getKeywordByKeyword(keywordInfo.getKeyword());
-        if (tbKeyword != null) {
+        TbKeyword tbRecord = getKeywordByKeyword(keywordInfo.getKeyword());
+        if (tbRecord != null) {
             throw new BaseException(ConstantCode.KEYWORD_EXISTS);
         }
         // copy attribute
-        TbKeyword tbKeyword1 = new TbKeyword();
-        BeanUtils.copyProperties(keywordInfo, tbKeyword1);
+        TbKeyword tbKeyword = new TbKeyword();
+        BeanUtils.copyProperties(keywordInfo, tbKeyword);
         // save keyword info
-        int result = keywordMapper.add(tbKeyword1);
+        int result = keywordMapper.add(tbKeyword);
         if (result == 0) {
             log.warn("fail keyword after save.");
             throw new BaseException(ConstantCode.SAVE_KEYWORD_FAIL);
@@ -63,14 +63,15 @@ public class KeywordService {
      */
     public TbKeyword updateKeyword(UpdateKeywordInfo updateKeywordInfo) {
         log.debug("start updateKeyword updateKeywordInfo:{}", updateKeywordInfo);
-
+        TbKeyword tbRecord = getKeywordByKeyword(updateKeywordInfo.getKeyword());
+        if (tbRecord != null) {
+            throw new BaseException(ConstantCode.KEYWORD_EXISTS);
+        }
         if (!checkKeywordId(updateKeywordInfo.getId())) {
             throw new BaseException(ConstantCode.KEYWORD_ID_NOT_EXISTS);
         }
-
         TbKeyword tbKeyword = new TbKeyword();
         BeanUtils.copyProperties(updateKeywordInfo, tbKeyword);
-
         keywordMapper.update(tbKeyword);
         return getKeywordById(tbKeyword.getId());
     }
