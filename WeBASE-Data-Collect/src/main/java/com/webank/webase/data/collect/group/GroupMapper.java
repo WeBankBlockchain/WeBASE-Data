@@ -56,6 +56,11 @@ public interface GroupMapper {
      */
     int getCount(@Param("chainId") Integer chainId, @Param("groupId") Integer groupId,
             @Param("groupStatus") Integer groupStatus);
+    
+    /**
+     * query group count by name.
+     */
+    int getCountByName(@Param("chainId") Integer chainId, @Param("name") String name);
 
     /**
      * get all group.

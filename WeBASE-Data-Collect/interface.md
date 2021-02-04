@@ -1704,6 +1704,7 @@ http://localhost:5009/WeBASE-Data-Collect/solc/list
 | 209109 | invalid block number             | 无效块高           |
 | 209110 | invalid node id                  | 无效节点编号       |
 | 209201 | invalid group id                 | 无效群组编号       |
+| 209202 | group name already exist         | 群组名称已存在     |
 | 209301 | user name already exists         | 用户名已存在       |
 | 209302 | user address already exists      | 用户地址已存在     |
 | 209401 | contract already exists          | 合约已存在         |

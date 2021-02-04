@@ -56,6 +56,7 @@ public class ConstantCode {
 
     /* group code */
     public static final RetCode INVALID_GROUP_ID = RetCode.mark(209201, "invalid group id");
+    public static final RetCode GROUP_NAME_EXIST = RetCode.mark(209202, "group name already exist");
 
     /* user code */
     public static final RetCode USER_NAME_EXISTS = RetCode.mark(209301, "user name already exists");
