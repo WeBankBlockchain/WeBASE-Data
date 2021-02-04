@@ -17,6 +17,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 public class AppInfo {
@@ -26,8 +27,12 @@ public class AppInfo {
     private Integer chainId;
     @NotNull
     private Integer groupId;
+    @Length(max=64)
     private String appName;
+    @Length(max=16)
     private String appVersion;
+    @Length(max=1000)
     private String appSummary;
+    @Length(max=1000)
     private String description;
 }
