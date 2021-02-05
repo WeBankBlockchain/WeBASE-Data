@@ -122,11 +122,11 @@ public class GroupService {
     }
 
     /**
-     * query count of group by name.
+     * query group by name.
      */
-    public int getCountByName(Integer chainId, String name) throws BaseException {
+    public List<TbGroup> getCountByName(Integer chainId, String name) throws BaseException {
         try {
-            return groupMapper.getCountByName(chainId, name);
+            return groupMapper.getListByName(chainId, name);
         } catch (RuntimeException ex) {
             log.error("fail getCountByName", ex);
             throw new BaseException(ConstantCode.DB_EXCEPTION);
@@ -168,8 +168,11 @@ public class GroupService {
         // check groupId
         checkGroupId(appInfo.getChainId(), appInfo.getGroupId());
         // check name
-        if (getCountByName(appInfo.getChainId(), appInfo.getAppName()) > 0) {
-            throw new BaseException(ConstantCode.GROUP_NAME_EXIST);
+        List<TbGroup> groupList = getCountByName(appInfo.getChainId(), appInfo.getAppName());
+        for (TbGroup tbGroup : groupList) {
+            if (tbGroup.getGroupId() != appInfo.getGroupId()) {
+                throw new BaseException(ConstantCode.GROUP_NAME_EXIST);
+            }
         }
         // update
         groupMapper.updateAppInfo(appInfo);

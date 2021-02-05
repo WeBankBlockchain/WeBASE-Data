@@ -125,9 +125,11 @@ public class ChainService {
         // check name
         ChainParam param = new ChainParam();
         param.setChainName(chainInfo.getChainName());
-        int nameCount = getChainCount(param);
-        if (nameCount > 0) {
-            throw new BaseException(ConstantCode.CHAIN_NAME_EXISTS);
+        List<TbChain> chainList = getChainList(param);
+        for (TbChain tbChain : chainList) {
+            if (tbChain.getChainId() != chainInfo.getChainId()) {
+                throw new BaseException(ConstantCode.CHAIN_NAME_EXISTS);
+            }
         }
         // copy attribute
         TbChain tbChain = new TbChain();

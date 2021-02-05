@@ -18,6 +18,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 public class OrgInfo {
@@ -28,6 +29,8 @@ public class OrgInfo {
     @NotNull
     private String nodeId;
     @NotBlank
+    @Length(max=64)
     private String orgName;
+    @Length(max=1000)
     private String description;
 }
