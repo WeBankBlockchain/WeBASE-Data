@@ -89,7 +89,7 @@ export default {
             codeUrl: url.codeUrl,
             loginForm: {
                 user: "admin",
-                password: "password",
+                password: "",
                 vercode: "",
             },
             authToken: null,
