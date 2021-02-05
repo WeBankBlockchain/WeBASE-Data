@@ -71,6 +71,7 @@ public class EsCurdService {
             return null;
         }
         SearchRequest searchRequest = new SearchRequest(indexName);
+        sourceBuilder.trackTotalHits(true);
         sourceBuilder.timeout(new TimeValue(120, TimeUnit.SECONDS)).explain(true)
                 .query(queryBuilder);
         if (from != null && size != null) {

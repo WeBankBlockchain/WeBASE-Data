@@ -82,8 +82,8 @@
         </if>
     </select>
 
-    <select id="getCountByName" resultType="java.lang.Integer">
-        select count(1) from tb_group 
+    <select id="getListByName" resultMap="groupMap">
+        select * from tb_group 
         where chain_id = #{chainId}
           and app_name = #{name}
     </select>

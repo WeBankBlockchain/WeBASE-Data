@@ -72,15 +72,25 @@ public class TransAuditService {
             log.error("keyword can not be empty when audit type is:{}", transAuditInfo.getType());
             throw new BaseException(ConstantCode.KEYWORD_ID_EMPTY);
         }
-        TbTransAudit tbTransAudit = getAuditInfoByTxHash(transAuditInfo.getTxHash());
-        if (tbTransAudit != null) {
+        TbTransAudit tbrecord = getAuditInfoByTxHash(transAuditInfo.getTxHash());
+        if (tbrecord != null) {
             throw new BaseException(ConstantCode.AUDIT_EXISTS);
         }
         // copy attribute
-        TbTransAudit tbAuditInfo1 = new TbTransAudit();
-        BeanUtils.copyProperties(transAuditInfo, tbAuditInfo1);
+        TbTransAudit tbAuditInfo = new TbTransAudit();
+        BeanUtils.copyProperties(transAuditInfo, tbAuditInfo);
+        if (StringUtils.isBlank(tbAuditInfo.getChainName())) {
+            tbAuditInfo.setChainName(chainService.getNameById(transAuditInfo.getChainId()));
+        }
+        if (StringUtils.isBlank(tbAuditInfo.getAppName())) {
+            List<GroupInfoDto> groupList = groupService.getGroupList(transAuditInfo.getChainId(),
+                    transAuditInfo.getGroupId(), null);
+            if (!CollectionUtils.isEmpty(groupList)) {
+                tbAuditInfo.setAppName(groupList.get(0).getAppName());
+            }
+        }
         // save audit info
-        int result = add(tbAuditInfo1);
+        int result = add(tbAuditInfo);
         if (result == 0) {
             log.warn("fail transAuditInfo after save.");
             throw new BaseException(ConstantCode.SAVE_AUDIT_FAIL);
@@ -92,9 +102,17 @@ public class TransAuditService {
     public void auditProcess(CountDownLatch latch, String keyword) {
         try {
             SearchResponse searchResponse = searchService.findByKey(null, null, keyword);
+            log.info("auditProcess. keyword:{} count:{}", keyword,
+                    searchResponse.getHits().getTotalHits().value);
             searchResponse.getHits().iterator().forEachRemaining(hit -> {
                 TbTransAudit tbTransAudit = new TbTransAudit();
                 Map<String, Object> source = hit.getSourceAsMap();
+                String transHash = source.get("transHash").toString();
+                TbTransAudit tbRecord = getAuditInfoByTxHash(transHash);
+                if (tbRecord != null) {
+                    return;
+                }
+                log.info("auditProcess. transHash:{}", transHash);
                 Integer chainId = Integer.valueOf(source.get("chainId").toString());
                 Integer groupId = Integer.valueOf(source.get("groupId").toString());
                 tbTransAudit.setChainId(chainId);
