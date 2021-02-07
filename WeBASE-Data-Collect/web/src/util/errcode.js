@@ -94,6 +94,10 @@ let errCode = {
         en: "invalid group id",
         zh: '无效群组编号'
     },
+    "209202": {
+        en: "group name already exist",
+        zh: '群组已存在'
+    },
     "209301": {
         en: "user name already exists",
         zh: '用户名已存在'
