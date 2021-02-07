@@ -106,15 +106,16 @@ public class SearchService {
             } else {
                 for (SearchParamFileds filed : SearchParamFileds.values()) {
                     String value = filed.getValue();
-                    if (value.equals(SearchParamFileds.transHash.getValue())
-                            || value.equals(SearchParamFileds.userAddress.getValue())
-                            || value.equals(SearchParamFileds.contractAddress.getValue())) {
-                        boolQueryBuilder.should(QueryBuilders.matchQuery(value, keyword));
+                    if (value.equals(SearchParamFileds.interfaceName.getValue())
+                            || value.equals(SearchParamFileds.input.getValue())
+                            || value.equals(SearchParamFileds.output.getValue())
+                            || value.equals(SearchParamFileds.logs.getValue())) {
+                        boolQueryBuilder
+                                .should(QueryBuilders.matchQuery(value, "*" + keyword + "*"));
                     } else if (value.equals(SearchParamFileds.blockNumber.getValue())) {
                         continue;
                     } else {
-                        boolQueryBuilder
-                                .should(QueryBuilders.matchQuery(value, "*" + keyword + "*"));
+                        boolQueryBuilder.should(QueryBuilders.matchQuery(value, keyword));
                     }
                 }
             }

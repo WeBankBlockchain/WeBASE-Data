@@ -58,9 +58,9 @@ public interface GroupMapper {
             @Param("groupStatus") Integer groupStatus);
     
     /**
-     * query group count by name.
+     * query group by name.
      */
-    int getCountByName(@Param("chainId") Integer chainId, @Param("name") String name);
+    List<TbGroup> getListByName(@Param("chainId") Integer chainId, @Param("name") String name);
 
     /**
      * get all group.

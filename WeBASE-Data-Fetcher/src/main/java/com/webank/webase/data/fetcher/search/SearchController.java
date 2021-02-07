@@ -76,6 +76,8 @@ public class SearchController extends BaseController {
         });
         pageResponse.setData(result);
         pageResponse.setTotalCount(searchResponse.getHits().getTotalHits().value);
+        log.info("end keyword search. keyword:{} count:{}", keyword,
+                searchResponse.getHits().getTotalHits().value);
         return pageResponse;
     }
 }
