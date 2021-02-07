@@ -338,7 +338,9 @@ export default {
         exChange(row) {
             this.txData = Object.assign({}, row, {
                 chainId: this.chainId,
-                groupId: this.groupId
+                groupId: this.groupId,
+                chainName: this.chainName,
+                appName: this.appName
             })
         }
     }

@@ -197,15 +197,6 @@ export default {
                         });
                     }
                 })
-                .catch(err => {
-                    this.loading = false;
-                    this.$message({
-                        message: '系统异常',
-                        type: "error",
-                        duration: 2000
-                    });
-
-                });
         },
         handleSizeChange(val) {
             this.pageSize = val;
