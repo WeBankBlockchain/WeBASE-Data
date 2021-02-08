@@ -190,6 +190,8 @@ export default {
                 query: {
                     chainId: this.txData.chainId,
                     groupId: this.txData.groupId,
+                    chainName: this.txData.chainName,
+                    appName: this.txData.appName,
                     userParam: val
                 }
             });
