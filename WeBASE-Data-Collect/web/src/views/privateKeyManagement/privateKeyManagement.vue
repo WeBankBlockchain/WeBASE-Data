@@ -22,7 +22,7 @@
                     <el-button type="primary" class="search-part-left-btn" @click="$store.dispatch('switch_creat_user_dialog')">新增用户 </el-button>
                 </div>
                 <div class="search-part-right">
-                    <el-input placeholder="请输入用户名或公钥地址" v-model="userName" class="input-with-select" style="width: 370px;">
+                    <el-input :clearable="true" placeholder="请输入用户名或公钥地址" v-model="userName" class="input-with-select" style="width: 370px;">
                         <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
                     </el-input>
                 </div>
@@ -246,5 +246,5 @@ export default {
 };
 </script>
 <style scoped>
-@import "./rivateKeyManagement.css";
+@import "./privateKeyManagement.css";
 </style>

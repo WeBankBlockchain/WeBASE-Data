@@ -38,7 +38,7 @@
             <el-tabs type="border-card" @tab-click="handleClickTab" :value="tabName" v-loading="listLoading">
                 <el-tab-pane label="关键字搜索">
                     <div class="search-table">
-                        <el-input v-model="singleSearchValue" @keyup.enter.native="querySimpleSearch" placeholder="请输入用户名/用户地址/合约名/合约地址/块高/交易Hash/上链数据"></el-input>
+                        <el-input :clearable="true" v-model="singleSearchValue" @keyup.enter.native="querySimpleSearch" placeholder="请输入用户名/用户地址/合约名/合约地址/块高/交易Hash/上链数据"></el-input>
                         <el-button @click="querySimpleSearch" type="primary">搜索</el-button>
                     </div>
                     <div class="search-result" v-if="list.length > 0">
@@ -67,7 +67,7 @@
                             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                             </el-option>
                         </el-select>
-                        <el-input v-model.trim="searchValue" @keyup.enter.native="sureSearch"></el-input>
+                        <el-input :clearable="true" v-model.trim="searchValue" @keyup.enter.native="sureSearch"></el-input>
                         <el-button @click="sureSearch" type="primary">搜索</el-button>
                     </div>
 
