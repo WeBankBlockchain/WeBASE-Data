@@ -20,7 +20,7 @@ const main = resolve => require(['@/views/index/main'], resolve);
 const chain = resolve => require(['@/views/chain'], resolve);
 const front = resolve => require(['@/views/front'], resolve);
 const contract = resolve => require(['@/views/chaincode/contract'], resolve);
-const rivateKeyManagement = resolve => require(['@/views/rivateKeyManagement/rivateKeyManagement'], resolve); 
+const privateKeyManagement = resolve => require(['@/views/privateKeyManagement/privateKeyManagement'], resolve); 
 const keywordConfig = resolve => require(['@/views/keywordConfig/index.vue'], resolve);
 Vue.use(Router);
 const routes = [
@@ -79,7 +79,7 @@ const routes = [
         menuShow: true,
         iconCls: 'wbs-icon-lock sidebar-icon',
         children: [
-            { path: '/privateKeyManagement', component: rivateKeyManagement, name: '用户管理', nameKey: "PrivateKey", menuShow: true, meta: { requireAuth: true } }
+            { path: '/privateKeyManagement', component: privateKeyManagement, name: '用户管理', nameKey: "PrivateKey", menuShow: true, meta: { requireAuth: true } }
         ]
     }, 
     // {

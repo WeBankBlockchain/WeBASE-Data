@@ -98,7 +98,7 @@ export default {
         },
         $route: {
             handler(to, from) {
-                
+
                 if (this.$route.path == '/contract' || this.$route.path == '/privateKeyManagement') {
                     this.showChain = true;
                     this.showGroup = true
@@ -200,7 +200,7 @@ export default {
                         arr.push(item.groupId)
                     });
                     let is = arr.includes(+localStorage.getItem("groupId"))
-                    if(!is){
+                    if (!is) {
                         this.appName = list[0]['appName']
                         localStorage.setItem("appName", list[0]['appName'])
                         localStorage.setItem("groupId", list[0]['groupId'])

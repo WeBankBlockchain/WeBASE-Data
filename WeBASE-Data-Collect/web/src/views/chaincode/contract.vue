@@ -93,7 +93,7 @@ export default {
     methods: {
         querySolcList(callback, type) {
             var data = {
-                encryptType: localStorage.getItem('chainType')
+                encryptType: localStorage.getItem('encryptType')
             }
             solcList(data)
                 .then(res => {
