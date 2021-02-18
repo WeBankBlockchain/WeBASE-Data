@@ -2,7 +2,7 @@
     <div>
         <el-form :model="interventionForm" :rules="rules" ref="interventionForm" label-width="70px" class="demo-ruleForm">
             <el-form-item label="意见" prop="content" style="width: 380px;">
-                <el-input v-model="interventionForm.content" placeholder="请输入处理意见" type="textarea"></el-input>
+                <el-input v-model.trim="interventionForm.content" placeholder="请输入处理意见" type="textarea"></el-input>
             </el-form-item>
         </el-form>
         <div class="dialog-footer text-right">

@@ -2,7 +2,7 @@
     <div>
         <el-form :model="keywordForm" :rules="rules" ref="keywordForm" label-width="100px" class="demo-ruleForm">
             <el-form-item label="关键字" prop="keyword" style="width: 300px;">
-                <el-input v-model="keywordForm.keyword" placeholder="请输入关键字" :disabled="keywordForm['disabled']" clearable></el-input>
+                <el-input v-model.trim="keywordForm.keyword" placeholder="请输入关键字" :disabled="keywordForm['disabled']" clearable></el-input>
                 <!-- <el-tooltip class="item" effect="dark" content="多个关键字以英文逗号隔开" placement="top-start">
                     <i class="el-icon-info"></i>
                 </el-tooltip> -->

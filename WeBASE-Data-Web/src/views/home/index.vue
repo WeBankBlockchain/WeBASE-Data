@@ -124,6 +124,8 @@ export default {
             singleSearchValue: sessionStorage.getItem('simpleKeyword') ? sessionStorage.getItem('simpleKeyword') : '',
             chainId: sessionStorage.getItem('chainId') ? sessionStorage.getItem('chainId') : '',
             groupId: sessionStorage.getItem('groupId') ? sessionStorage.getItem('groupId') : '',
+            chainName: '',
+            appName: '',
             chainList: [],
             groupCollection: [],
             currentPage: 1,
@@ -414,6 +416,13 @@ export default {
                 })
         },
         querySimpleSearch() {
+            if (!this.singleSearchValue) {
+                this.$message({
+                    type: 'error',
+                    message: '搜索内容不能为空'
+                })
+                return;
+            }
             sessionStorage.setItem('simpleKeyword', this.singleSearchValue)
             this.listLoading = true;
             var data = {
@@ -519,6 +528,17 @@ export default {
             sessionStorage.setItem('groupId', this.groupId)
             sessionStorage.setItem('searchType', this.searchType)
             sessionStorage.setItem('searchValue', this.searchValue)
+            // this.chainList.forEach(item => {
+            //     if (item.chainId = this.chainId) {
+            //         this.chainName = item.chainName
+            //     }
+            // })
+            // this.groupCollection.forEach(group => {
+            //     if (group.value = this.groupId) {
+            //         this.appName = chain.appName
+            //     }
+            // });
+            // console.log(this.chainName, this.appName);
             // this.querySearchAll()
             switch (this.searchType) {
                 case "1":

@@ -29,9 +29,9 @@
                             <template v-else>
                                 <el-button type="text" size="small" @click="deleteKeyword(scope.row,'modify')">删除</el-button>
                                 <el-button type="text" size="small" @click="handleBtn(scope.row)">{{btnText(scope.row['status'])}}</el-button>
-                                <el-button type="text" size="small" @click="pauseBtn(scope.row)">暂停</el-button>
+                                <!-- <el-button type="text" size="small" @click="pauseBtn(scope.row)">暂停</el-button>
                                 <el-button type="text" size="small" @click="shutDownBtn(scope.row)">关停</el-button>
-                                <el-button type="text" size="small" @click="freezeBtn(scope.row)">冻结</el-button>
+                                <el-button type="text" size="small" @click="freezeBtn(scope.row)">冻结</el-button> -->
                             </template>
                         </template>
                     </el-table-column>
@@ -78,6 +78,10 @@ export default {
                 {
                     enName: 'appVersion',
                     name: '应用版本'
+                },
+                {
+                    enName: 'comment',
+                    name: '监管意见'
                 },
                 {
                     enName: 'status',
@@ -202,7 +206,7 @@ export default {
                     if (res.data.code === 0) {
                         this.$message({
                             type: "success",
-                            message: '删除成功'
+                            message: '确认成功'
                         });
                         this.queryAppAuditList()
                     } else {

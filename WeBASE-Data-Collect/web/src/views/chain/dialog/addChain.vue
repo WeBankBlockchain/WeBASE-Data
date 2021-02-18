@@ -56,6 +56,7 @@ export default {
                             chainName: this.chainDialogOptions.data["chainName"],
                             chainId: this.chainDialogOptions.data["chainId"],
                             type: this.chainDialogOptions.data["encryptType"],
+                            description: this.chainDialogOptions.data["description"],
                             disabled: true,
                             mDisabled: true,
                             dShow: true,
@@ -123,7 +124,7 @@ export default {
         }
     },
     mounted: function () {
-        this.chainFrom.type = this.options[0].value
+        // this.chainFrom.type = this.options[0].value
     },
     methods: {
         submit: function (formName) {
