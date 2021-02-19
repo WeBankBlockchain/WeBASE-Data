@@ -24,7 +24,7 @@
             <div v-show="active === 0" style="margin: 28px 0 30px 68px;position: relative;" class="base-input-placeholder">
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="合约版本" prop="version" style="width: 278px">
-                        <el-input v-model="ruleForm.version" placeholder="请输入版本号" maxlength="12"></el-input>
+                        <el-input v-model.trim="ruleForm.version" placeholder="请输入版本号" maxlength="12"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-tooltip effect="dark" placement="right">
@@ -36,7 +36,7 @@
             </div>
             <div v-show="active === 1" style="position: relative;text-align: left;padding:30px 0 30px 102px;font-site:12px;" class="base-input-placeholder">
                 <span style="display: inline-block;margin-right:8px">选择文件</span>
-                <el-input v-model="file" placeholder="请点击选择.sol格式合约" style="width: 178px;" class="unload-input"></el-input>
+                <el-input v-model.trim="file" placeholder="请点击选择.sol格式合约" style="width: 178px;" class="unload-input"></el-input>
                 <i class="wbs-icon-baocun1 font-color-333" style="margin-left:8px;"></i>
                 <span style="color: #ed5454;display: inline-block;text-align: left" v-show="fileErrShow">{{fileErr}}</span>
                 <input type="file" id="file" name="chaincodes" class="checkContract-upload" @change="upLoad($event)" />

@@ -17,16 +17,16 @@
     <div>
         <el-form :model="nodeForm" :rules="rules" ref="nodeForm" label-width="100px" class="demo-ruleForm">
             <el-form-item label="链编号" prop="chainId" style="width: 300px;">
-                <el-input v-model="nodeForm.chainId" placeholder="请输入链编号" :disabled="nodeForm.disabled"></el-input>
+                <el-input v-model.trim="nodeForm.chainId" placeholder="请输入链编号" :disabled="nodeForm.disabled"></el-input>
             </el-form-item>
             <el-form-item label="节点编号" prop="nodeId" style="width: 300px;">
-                <el-input v-model="nodeForm.nodeId" placeholder="请输入节点编号" :disabled="nodeForm.disabled"></el-input>
+                <el-input v-model.trim="nodeForm.nodeId" placeholder="请输入节点编号" :disabled="nodeForm.disabled"></el-input>
             </el-form-item>
             <el-form-item label="机构名" prop="orgName" style="width: 300px;">
-                <el-input v-model="nodeForm.orgName" placeholder="请输入机构名"></el-input>
+                <el-input v-model.trim="nodeForm.orgName" placeholder="请输入机构名"></el-input>
             </el-form-item>
             <el-form-item label="描述" prop="description" style="width: 300px;">
-                <el-input v-model="nodeForm.description" type="textarea" placeholder="请输入描述"></el-input>
+                <el-input v-model.trim="nodeForm.description" type="textarea" placeholder="请输入描述"></el-input>
             </el-form-item>
         </el-form>
         <div class="dialog-footer">

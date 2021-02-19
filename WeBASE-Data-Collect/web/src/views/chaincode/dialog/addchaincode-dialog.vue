@@ -18,7 +18,7 @@
         <el-dialog title="新建合约" :visible.sync="dialogVisible" :before-close="modelClose" class="dialog-wrapper" width="433px" :append-to-body="true" :center="true">
             <el-form :model="chaincodeForm" :rules="rules" ref="chainForm" label-width="100px" class="demo-ruleForm">
                 <el-form-item label="合约名称" prop="name" style="width:330px">
-                    <el-input v-model="chaincodeForm.name" maxlength="32" placeholder="请输入合约名称"></el-input>
+                    <el-input v-model.trim="chaincodeForm.name" maxlength="32" placeholder="请输入合约名称"></el-input>
                     <el-tooltip effect="dark" placement="right">
                         <div slot="content">
                             <p>合约名称规则：<br>(1) 32位以内数字大小写字母以及“_”</p>
@@ -27,7 +27,7 @@
                     </el-tooltip>
                 </el-form-item>
                 <el-form-item label="合约版本" prop="version" style="width:330px">
-                    <el-input v-model="chaincodeForm.version" maxlength="12" placeholder="请输入版本号"></el-input>
+                    <el-input v-model.trim="chaincodeForm.version" maxlength="12" placeholder="请输入版本号"></el-input>
                     <el-tooltip effect="dark" placement="right">
                         <div slot="content">
                             <p>合约版本规则：<br>(1) 12位以内数字小写字母以及“.”<br>(2) 数字或者小写字母开头，不能以“.”结尾<br>(3) 不能出现连续的“.”</p>

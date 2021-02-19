@@ -88,7 +88,7 @@ export default {
         this.querySolcList(this.initSolc)
     },
     mounted() {
-        // this.addBaseLoad()
+        
     },
     methods: {
         querySolcList(callback, type) {
@@ -100,6 +100,15 @@ export default {
                     if (res.data.code === 0) {
                         var list = res.data.data;
                         this.allVersion = list;
+                        if(localStorage.getItem('encryptType') == 0 && localStorage.getItem('solcName')){
+                            if (localStorage.getItem('solcName').includes('gm')) {
+                                localStorage.removeItem('solcName')
+                            }
+                        }else if(localStorage.getItem('encryptType') == 1 && localStorage.getItem('solcName')) {
+                            if (!localStorage.getItem('solcName').includes('gm')) {
+                                localStorage.removeItem('solcName')
+                            }
+                        }
                         if (!list.length) return;
                         if (!localStorage.getItem('solcName')) {
                             this.version = list[0]['solcName'];

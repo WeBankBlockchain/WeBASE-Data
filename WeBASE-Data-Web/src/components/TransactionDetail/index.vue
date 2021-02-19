@@ -195,18 +195,19 @@ export default {
             }
             searchAll(data)
                 .then(res => {
-
                     if (res.data.code === 0) {
-                        this.contractName = res.data.data[0]['contractName']
-                        this.interfaceName = res.data.data[0]['interfaceName']
-                        this.inputData = JSON.parse(res.data.data[0]['input'])
-                        this.logsMap = JSON.parse(res.data.data[0]['logs'])
-                        this.eventLog = []
-                        for (let key in this.logsMap) {
-                            this.eventLog.push({
-                                eventName: key,
-                                eventLgData: this.logsMap[key][0]
-                            })
+                        if (res.data.data.length > 0) {
+                            this.contractName = res.data.data[0]['contractName']
+                            this.interfaceName = res.data.data[0]['interfaceName']
+                            this.inputData = JSON.parse(res.data.data[0]['input'])
+                            this.logsMap = JSON.parse(res.data.data[0]['logs'])
+                            this.eventLog = []
+                            for (let key in this.logsMap) {
+                                this.eventLog.push({
+                                    eventName: key,
+                                    eventLgData: this.logsMap[key][0]
+                                })
+                            }
                         }
                     } else {
                         this.$message({
