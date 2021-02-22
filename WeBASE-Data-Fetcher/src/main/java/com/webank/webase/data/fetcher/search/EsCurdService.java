@@ -33,6 +33,8 @@ public class EsCurdService {
 
     @Autowired
     private RestHighLevelClient rhlClient;
+    
+    public static final Integer MAX_RESULT_WINDOW = 2000000000;
 
     public String createIndex(String indexName) throws IOException {
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);

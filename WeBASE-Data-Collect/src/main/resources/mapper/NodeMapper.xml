@@ -176,7 +176,7 @@
         <if test="nodeActive != null">
             ,node_active = #{nodeActive}
         </if>
-        where node_id = #{nodeId} and group_id = #{groupId}
+        where node_id = #{nodeId} and chain_id = #{chainId} and group_id = #{groupId}
     </update>
 
     <select id="queryNodeInfo"

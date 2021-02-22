@@ -32,7 +32,8 @@ public interface TransAuditMapper {
 
     TbTransAudit getAuditInfoById(@Param("id") Integer id);
 
-    TbTransAudit getAuditInfoByTxHash(@Param("txHash") String txHash);
+    TbTransAudit getAuditInfoByTxHash(@Param("chainId") int chainId, @Param("groupId") int groupId,
+            @Param("txHash") String txHash);
 
     int remove(@Param("id") Integer id);
 }
