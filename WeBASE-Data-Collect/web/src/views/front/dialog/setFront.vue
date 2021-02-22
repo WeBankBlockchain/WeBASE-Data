@@ -19,13 +19,13 @@
             <div>
                 <el-form :model="frontFrom" :rules="rules" ref="frontFrom" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="ip" prop="ip" style="width:330px">
-                        <el-input v-model="frontFrom.ip"></el-input>
+                        <el-input v-model.trim="frontFrom.ip"></el-input>
                     </el-form-item>
                     <el-form-item label="前置端口" prop="port" style="width:330px">
-                        <el-input v-model="frontFrom.port"></el-input>
+                        <el-input v-model.trim="frontFrom.port"></el-input>
                     </el-form-item>
                     <el-form-item label="所属机构" prop="company" style="width:330px">
-                        <el-input v-model="frontFrom.company"></el-input>
+                        <el-input v-model.trim="frontFrom.company"></el-input>
                     </el-form-item>
                     <!-- <el-form-item label="备注"  style="width:330px">
                         <el-input v-model="frontFrom.description"></el-input>

@@ -4,10 +4,10 @@
             <div>
                 <el-form :model="chainFrom" :rules="rules" ref="chainFrom" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="区块链编号" prop="chainId" style="width:330px">
-                        <el-input v-model="chainFrom.chainId" :disabled="chainFrom['disabled']"></el-input>
+                        <el-input v-model.trim="chainFrom.chainId" :disabled="chainFrom['disabled']"></el-input>
                     </el-form-item>
                     <el-form-item label="区块链名称" prop="chainName" style="width:330px">
-                        <el-input v-model="chainFrom.chainName" :clearable="true"></el-input>
+                        <el-input v-model.trim="chainFrom.chainName" :clearable="true"></el-input>
                     </el-form-item>
 
                     <el-form-item label="区块链类型" prop="type" style="width:330px" class="chain-type">
@@ -17,7 +17,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="区块链备注" prop="description" style="width:330px">
-                        <el-input v-model="chainFrom.description" type="textarea"></el-input>
+                        <el-input v-model.trim="chainFrom.description" type="textarea"></el-input>
                     </el-form-item>
                 </el-form>
             </div>
@@ -82,6 +82,11 @@ export default {
                         required: true,
                         message: "请输入区块链名称",
                         trigger: "blur"
+                    },
+                    {
+                        pattern: /^.{0,10}$/,
+                        message: "区块链名称长度不超过10位",
+                        trigger: "blur"
                     }
                 ],
                 chainId: [
@@ -91,8 +96,8 @@ export default {
                         trigger: "blur"
                     },
                     {
-                        pattern: /^\d{0,11}$/,
-                        message: "区块链编号仅允许数字,长度不超过11位",
+                        pattern: /^\d{0,3}$/,
+                        message: "区块链编号仅允许数字,长度不超过3位",
                         trigger: "blur"
                     }
                 ],

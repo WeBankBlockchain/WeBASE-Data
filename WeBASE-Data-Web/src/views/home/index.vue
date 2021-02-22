@@ -378,9 +378,13 @@ export default {
                 switch (this.searchType) {
                     case "1":
                         data.blockParam = this.searchValue
+                        this.getBlockList()
+                        return
                         break;
                     case "2":
                         data.transHash = this.searchValue
+                        this.getTransaction()
+                        return
                         break;
                     case "3":
                         data.userParam = this.searchValue
@@ -646,6 +650,7 @@ export default {
 
         },
         handleCurrentChange: function (val) {
+            console.log(val, this.tabName);
             this.currentPage = val;
             if (this.tabName == 0) {
                 this.querySimpleSearch()
