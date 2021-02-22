@@ -195,7 +195,8 @@ public class ParserService {
             BeanUtils.copyProperties(tbParser, esParser);
             esParser.setChainId(chainId);
             esParser.setGroupId(groupId);
-            esCurdService.update(tableService.getDbName(), tbParser.getTransHash(), esParser);
+            String esId = chainId + "_" + groupId + "_" + tbParser.getTransHash();
+            esCurdService.update(tableService.getDbName(), esId, esParser);
         } catch (Exception ex) {
             log.error("fail updateEs. transHash:{}", tbParser.getTransHash(), ex);
         }
@@ -311,18 +312,19 @@ public class ParserService {
             BeanUtils.copyProperties(tbParser, esParser);
             esParser.setChainId(chainId);
             esParser.setGroupId(groupId);
-            esCurdService.insert(tableService.getDbName(), String.valueOf(tbParser.getTransHash()),
-                    esParser);
+            String esId = chainId + "_" + groupId + "_" + tbParser.getTransHash();
+            esCurdService.insert(tableService.getDbName(), esId, esParser);
         }
     }
-    
+
     /**
      * query event info list.
      */
-    public List<ParserEventInfo> queryEventInfoList(int chainId, int groupId, String contractAddress,
-            BigInteger blockNumber, String eventName) throws BaseException {
+    public List<ParserEventInfo> queryEventInfoList(int chainId, int groupId,
+            String contractAddress, BigInteger blockNumber, String eventName) throws BaseException {
         String tableName = TableName.PARSER.getTableName(chainId, groupId);
-        List<String> nameList = Arrays.asList("tableName", "contractAddress", "blockNumber", "eventName");
+        List<String> nameList =
+                Arrays.asList("tableName", "contractAddress", "blockNumber", "eventName");
         List<Object> valueList = Arrays.asList(tableName, contractAddress, blockNumber, eventName);
         Map<String, Object> param = CommonTools.buidMap(nameList, valueList);
 

@@ -23,6 +23,7 @@ import com.webank.webase.data.fetcher.base.exception.BaseException;
 import com.webank.webase.data.fetcher.chain.ChainService;
 import com.webank.webase.data.fetcher.group.GroupService;
 import com.webank.webase.data.fetcher.group.entity.GroupInfoDto;
+import com.webank.webase.data.fetcher.search.EsCurdService;
 import com.webank.webase.data.fetcher.search.SearchService;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,9 @@ public class TransAuditService {
             log.error("keyword can not be empty when audit type is:{}", transAuditInfo.getType());
             throw new BaseException(ConstantCode.KEYWORD_ID_EMPTY);
         }
-        TbTransAudit tbrecord = getAuditInfoByTxHash(transAuditInfo.getTxHash());
+        Integer chainId = transAuditInfo.getChainId();
+        Integer groupId = transAuditInfo.getGroupId();
+        TbTransAudit tbrecord = getAuditInfoByTxHash(chainId, groupId, transAuditInfo.getTxHash());
         if (tbrecord != null) {
             throw new BaseException(ConstantCode.AUDIT_EXISTS);
         }
@@ -95,26 +98,27 @@ public class TransAuditService {
             log.warn("fail transAuditInfo after save.");
             throw new BaseException(ConstantCode.SAVE_AUDIT_FAIL);
         }
-        return getAuditInfoByTxHash(transAuditInfo.getTxHash());
+        return getAuditInfoByTxHash(chainId, groupId, transAuditInfo.getTxHash());
     }
 
     @Async("asyncExecutor")
     public void auditProcess(CountDownLatch latch, String keyword) {
         try {
-            SearchResponse searchResponse = searchService.findByKey(null, null, keyword);
+            SearchResponse searchResponse =
+                    searchService.findByKey(1, EsCurdService.MAX_RESULT_WINDOW, keyword);
             log.info("auditProcess. keyword:{} count:{}", keyword,
                     searchResponse.getHits().getTotalHits().value);
             searchResponse.getHits().iterator().forEachRemaining(hit -> {
                 TbTransAudit tbTransAudit = new TbTransAudit();
                 Map<String, Object> source = hit.getSourceAsMap();
+                Integer chainId = Integer.valueOf(source.get("chainId").toString());
+                Integer groupId = Integer.valueOf(source.get("groupId").toString());
                 String transHash = source.get("transHash").toString();
-                TbTransAudit tbRecord = getAuditInfoByTxHash(transHash);
+                TbTransAudit tbRecord = getAuditInfoByTxHash(chainId, groupId, transHash);
                 if (tbRecord != null) {
                     return;
                 }
                 log.info("auditProcess. transHash:{}", transHash);
-                Integer chainId = Integer.valueOf(source.get("chainId").toString());
-                Integer groupId = Integer.valueOf(source.get("groupId").toString());
                 tbTransAudit.setChainId(chainId);
                 tbTransAudit.setGroupId(groupId);
                 tbTransAudit.setKeyword(keyword);
@@ -178,8 +182,8 @@ public class TransAuditService {
     /**
      * get audit info
      */
-    public TbTransAudit getAuditInfoByTxHash(String txHash) {
-        return transAuditMapper.getAuditInfoByTxHash(txHash);
+    public TbTransAudit getAuditInfoByTxHash(int chainId, int groupId, String txHash) {
+        return transAuditMapper.getAuditInfoByTxHash(chainId, groupId, txHash);
     }
 
     /**

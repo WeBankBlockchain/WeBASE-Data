@@ -14,6 +14,7 @@
 package com.webank.webase.data.fetcher.scheduler;
 
 import com.webank.webase.data.fetcher.audit.service.TransAuditService;
+import com.webank.webase.data.fetcher.base.config.ConstantProperties;
 import com.webank.webase.data.fetcher.keyword.KeywordService;
 import com.webank.webase.data.fetcher.keyword.entity.TbKeyword;
 import java.time.Duration;
@@ -34,10 +35,14 @@ public class KeywordAuditTask {
     private KeywordService keywordService;
     @Autowired
     private TransAuditService transAuditService;
+    @Autowired
+    private ConstantProperties constantProperties;
 
     @Scheduled(cron = "${constant.keywordAuditCron}")
     public void taskStart() {
-        auditStart();
+        if (constantProperties.isIfEsEnable()) {
+            auditStart();
+        }
     }
 
     /**

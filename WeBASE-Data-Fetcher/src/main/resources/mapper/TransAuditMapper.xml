@@ -84,8 +84,8 @@
         select * from tb_trans_audit where id = #{id}
     </select>
 
-    <select id="getAuditInfoByTxHash" resultMap="auditInfoMap" parameterType="java.lang.String">
-        select * from tb_trans_audit where tx_hash = #{txHash}
+    <select id="getAuditInfoByTxHash" resultMap="auditInfoMap">
+        select * from tb_trans_audit where chain_id = #{chainId} and group_id = #{groupId} and tx_hash = #{txHash}
     </select>
 
     <delete id="remove" parameterType="java.lang.Integer">
