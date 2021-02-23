@@ -17,13 +17,13 @@
     <div>
         <el-form :model="rulePasswordForm" status-icon :rules="rules2" ref="rulePasswordForm" label-width="135px" class="demo-ruleForm">
             <el-form-item label="旧密码" prop="oldPass">
-                <el-input type="password" v-model="rulePasswordForm.oldPass" autocomplete="off"></el-input>
+                <el-input type="password" v-model.trim="rulePasswordForm.oldPass" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="新密码" prop="pass">
-                <el-input type="password" v-model="rulePasswordForm.pass" autocomplete="off"></el-input>
+                <el-input type="password" v-model.trim="rulePasswordForm.pass" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="确认新密码" prop="checkPass">
-                <el-input type="password" v-model="rulePasswordForm.checkPass" autocomplete="off"></el-input>
+                <el-input type="password" v-model.trim="rulePasswordForm.checkPass" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('rulePasswordForm')">提交</el-button>

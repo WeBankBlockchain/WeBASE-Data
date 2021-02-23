@@ -17,16 +17,16 @@
     <div>
         <el-form :model="appForm" :rules="rules" ref="appForm" label-width="100px" class="demo-ruleForm">
             <el-form-item label="应用名" prop="appName" style="width: 300px;">
-                <el-input v-model="appForm.appName" placeholder="请输入应用名"></el-input>
+                <el-input v-model.trim="appForm.appName" placeholder="请输入应用名"></el-input>
             </el-form-item>
             <el-form-item label="应用版本" prop="appVersion" style="width: 300px;">
-                <el-input v-model="appForm.appVersion" placeholder="请输入应用版本"></el-input>
+                <el-input v-model.trim="appForm.appVersion" placeholder="请输入应用版本"></el-input>
             </el-form-item>
             <el-form-item label="应用概要" prop="appSummary" style="width: 300px;">
-                <el-input v-model="appForm.appSummary" type="textarea" placeholder="请输入应用概要"></el-input>
+                <el-input v-model.trim="appForm.appSummary" type="textarea" placeholder="请输入应用概要"></el-input>
             </el-form-item>
             <el-form-item label="描述" prop="description" style="width: 300px;">
-                <el-input v-model="appForm.description" type="textarea" placeholder="请输入应用描述"></el-input>
+                <el-input v-model.trim="appForm.description" type="textarea" placeholder="请输入应用描述"></el-input>
             </el-form-item>
         </el-form>
         <div class="dialog-footer">

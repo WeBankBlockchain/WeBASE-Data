@@ -37,7 +37,7 @@
                     <div v-if='item.contractType == "file"' class="contract-file" :id='item.contractId'>
                         <i class="wbs-icon-file" @click='select(item)' v-if='!item.renameShow' :id='item.contractId'></i>
                         <span @contextmenu.prevent="handle($event,item)" @click='select(item)' :id='item.contractId' v-if='!item.renameShow' :class="{'colorActive': item.contractActive}">{{item.contractName}}</span>
-                        <el-input v-model="contractName" v-focus="true" autofocus='autofocus' maxlength="32" @blur="changeName(item)" v-if="item.renameShow"></el-input>
+                        <el-input v-model.trim="contractName" v-focus="true" autofocus='autofocus' maxlength="32" @blur="changeName(item)" v-if="item.renameShow"></el-input>
                         <div class="contract-menu-handle" v-if='item.handleModel' :style="{'top': clentY,'left': clentX}" v-Clickoutside="checkNull">
                             <ul v-if="contractFile">
                                 <li class="contract-menu-handle-list" v-if='!item.renameShow && !item.contractAddress' @click="deleteFile(item)">删除</li>
@@ -58,7 +58,7 @@
                             <li class="contract-file" v-for='list in item.child' :key="list.contractId">
                                 <i class="wbs-icon-file" v-if='!list.renameShow' @click='select(list)'></i>
                                 <span @click='select(list)' @contextmenu.prevent="handle($event,list)" :id='list.contractId' v-if='!list.renameShow' :class="{'colorActive': list.contractActive}">{{list.contractName}}</span>
-                                <el-input v-model="contractName" autofocus='autofocus' maxlength="32" @blur="changeName(list)" v-if="list.renameShow"></el-input>
+                                <el-input v-model.trim="contractName" autofocus='autofocus' maxlength="32" @blur="changeName(list)" v-if="list.renameShow"></el-input>
                                 <div class="contract-menu-handle" v-if='list.handleModel' :style="{'top': clentY,'left': clentX}" v-Clickoutside="checkNull">
                                     <ul v-if="contractFile">
                                         <li class="contract-menu-handle-list" v-if='!list.renameShow && !list.contractAddress' @click="deleteFile(list)">删除</li>

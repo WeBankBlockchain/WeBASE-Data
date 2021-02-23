@@ -30,7 +30,7 @@
         <div class="content-head-network">
             <el-dropdown trigger="click" @command="changeChain" placement="bottom" v-if="showChain">
                 <span class="cursor-pointer font-color-fff" @click="chainVisible = !chainVisible">
-                    区块链: {{chainName}}<i :class="[chainVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
+                    区块链: <span>{{chainName}}</span><i :class="[chainVisible?'el-icon-arrow-up':'el-icon-arrow-down']"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
                     <ul style="max-height: 220px;overflow-y:auto" class="text-center">
@@ -148,10 +148,13 @@ export default {
             getChains()
                 .then(res => {
                     if (res.data.code === 0) {
-                        var list = res.data.data
+                        var list = res.data.data;
+                        var chainNameList = list.map(item=>{
+                            return item.chainName
+                        })
                         this.chainList = list;
                         if (!list.length) return;
-                        if (!localStorage.getItem("chainName") || !localStorage.getItem("chainId") || !localStorage.getItem("chainType") || !localStorage.getItem("encryptType")) {
+                        if (!localStorage.getItem("chainName") || !localStorage.getItem("chainId") || !localStorage.getItem("chainType") || !localStorage.getItem("encryptType") || !chainNameList.includes(localStorage.getItem("chainName"))) {
                             this.chainName = list[0]['chainName']
                             localStorage.setItem("chainName", list[0]['chainName'])
                             localStorage.setItem("chainId", list[0]['chainId'])
@@ -195,12 +198,15 @@ export default {
                     var list = res.data.data;
                     this.groupList = list;
                     if (!list.length) return;
-                    let arr = []
+                    let arr = [], appNameList = []
                     list.forEach(item => {
                         arr.push(item.groupId)
+                        appNameList.push(item.appName)
                     });
+                    
                     let is = arr.includes(+localStorage.getItem("groupId"))
-                    if (!is) {
+                    let isAppName = appNameList.includes(localStorage.getItem("appName"))
+                    if (!is || !isAppName) {
                         this.appName = list[0]['appName']
                         localStorage.setItem("appName", list[0]['appName'])
                         localStorage.setItem("groupId", list[0]['groupId'])
