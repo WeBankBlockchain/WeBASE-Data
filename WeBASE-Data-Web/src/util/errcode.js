@@ -46,6 +46,10 @@ let errCode = {
         en: "search fail",
         zh: '搜索失败'
     },
+    "210205": {
+        en: "elasticsearch's config is false",
+        zh: '未开启elasticsearch配置'
+    },
     "210301": {
         en: "keyword id not exists",
         zh: '关键字不存在'
