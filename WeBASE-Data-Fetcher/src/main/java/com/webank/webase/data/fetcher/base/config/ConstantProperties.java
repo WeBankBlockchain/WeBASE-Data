@@ -28,5 +28,6 @@ public class ConstantProperties {
     public static final String CONSTANT_PREFIX = "constant";
 
     private boolean ifEsEnable = false; // default false
+    private Integer keywordAuditCountLimit = 10; // default 10
 
 }
