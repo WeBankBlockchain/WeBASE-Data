@@ -18,6 +18,7 @@ import com.webank.webase.data.fetcher.audit.entity.TbTransAudit;
 import com.webank.webase.data.fetcher.audit.entity.TransAuditInfo;
 import com.webank.webase.data.fetcher.audit.mapper.TransAuditMapper;
 import com.webank.webase.data.fetcher.base.code.ConstantCode;
+import com.webank.webase.data.fetcher.base.config.ConstantProperties;
 import com.webank.webase.data.fetcher.base.enums.AuditType;
 import com.webank.webase.data.fetcher.base.exception.BaseException;
 import com.webank.webase.data.fetcher.chain.ChainService;
@@ -55,6 +56,8 @@ public class TransAuditService {
     private ChainService chainService;
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private ConstantProperties constantProperties;
 
     private static final String COMMENT = "automatic scanning";
 
@@ -104,9 +107,10 @@ public class TransAuditService {
     @Async("asyncExecutor")
     public void auditProcess(CountDownLatch latch, String keyword) {
         try {
-            SearchResponse searchResponse =
-                    searchService.findByKey(1, EsCurdService.MAX_RESULT_WINDOW, keyword);
-            log.info("auditProcess. keyword:{} count:{}", keyword,
+            SearchResponse searchResponse = searchService.findByKey(1,
+                    constantProperties.getKeywordAuditCountLimit(), keyword);
+            log.info("auditProcess. keyword:{} count:{} totalCount:{}", keyword,
+                    searchResponse.getHits().getHits().length,
                     searchResponse.getHits().getTotalHits().value);
             searchResponse.getHits().iterator().forEachRemaining(hit -> {
                 TbTransAudit tbTransAudit = new TbTransAudit();

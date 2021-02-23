@@ -23,6 +23,7 @@ constant:
   ifEsEnable: false
   ## keyword audit
   keywordAuditCron: "0 0 0/1 * * ?"
+  keywordAuditCountLimit: 10
   
 # executor config
 executor:
