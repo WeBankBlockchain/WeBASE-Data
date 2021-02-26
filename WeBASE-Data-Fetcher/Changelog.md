@@ -15,7 +15,7 @@
 - 支持FISCO-BCOS 2.4.0或以上版本
 - WeBASE-Front 1.4.0或以上版本
 
-详细了解,请阅读[**技术文档**](https://webasedoc.readthedocs.io/zh_CN/latest/)https://webasedoc.readthedocs.io/zh_CN/latest/)
+详细了解,请阅读[**技术文档**](https://webasedoc.readthedocs.io/zh_CN/latest/)
 
 
 

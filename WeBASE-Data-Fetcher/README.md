@@ -1,7 +1,4 @@
 # 数据监管服务数据读取子系统
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://webasedoc.readthedocs.io/zh_CN/latest/docs/WeBASE/CONTRIBUTING.html)
-[![Code Lines](https://tokei.rs/b1/github/WeBankFinTech/WeBASE-Data?category=code)](https://github.com/WeBankFinTech/WeBASE-Data)
-[![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)](http://www.apache.org/licenses/)
 
 ## 简介
 WeBASE-Data-Fetcher为数据监管服务数据读取子系统，主要提供以下功能：
