@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.webase.data.collect.table.TableMapper">
+    
+    <update id="createTbTaskPool" parameterType="java.lang.String">
+        CREATE TABLE IF NOT EXISTS ${tableName}(
+        id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+        block_number bigint(25) NOT NULL COMMENT '块高',
+        sync_status tinyint(4) NOT NULL COMMENT '同步状态：INIT(0), DOING(1), DONE(2), ERROR(3), TIMEOUT(4)',
+        certainty tinyint(4) NOT NULL COMMENT '确定性',
+        handle_item tinyint(4) NOT NULL COMMENT '处理项',
+        record_patition int(11) NOT NULL COMMENT '记录分区（统计时间年月日，如20210101）',
+        create_time datetime DEFAULT NULL COMMENT '创建时间',
+        modify_time datetime DEFAULT NULL COMMENT '修改时间',
+        PRIMARY KEY (id,record_patition),
+        UNIQUE KEY uk_number (block_number,record_patition),
+        KEY idx_status (sync_status)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块拉取任务信息表'
+        PARTITION BY RANGE (record_patition) (
+            PARTITION p_default VALUES LESS THAN MAXVALUE
+        );
+    </update>
+
+    <update id="createTbBlock" parameterType="java.lang.String">
+        CREATE TABLE IF NOT EXISTS ${tableName}(
+        id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+        block_number bigint(25) NOT NULL COMMENT '块高',
+        block_hash varchar(128) NOT NULL COMMENT '块hash',
+        block_timestamp datetime NOT NULL COMMENT '出块时间',
+        record_patition int(11) NOT NULL COMMENT '记录分区（出块时间年月日，如20210101）',
+        sealer_index int(4) NOT NULL COMMENT '打包节点索引',
+        sealer varchar(250) DEFAULT NULL COMMENT '打包节点',
+        trans_count int(11) DEFAULT '0' COMMENT '块包含的交易数',
+        block_detail mediumtext COMMENT '区块详情',
+        create_time datetime DEFAULT NULL COMMENT '创建时间',
+        modify_time datetime DEFAULT NULL COMMENT '修改时间',
+        PRIMARY KEY (id,record_patition),
+        UNIQUE KEY uk_number (block_number,record_patition)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块信息表'
+        PARTITION BY RANGE (record_patition) (
+            PARTITION p_default VALUES LESS THAN MAXVALUE
+        );
+    </update>
+
+    <update id="createTbTransaction" parameterType="java.lang.String">
+        CREATE TABLE IF NOT EXISTS ${tableName} (
+        id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+        trans_hash varchar(128) NOT NULL COMMENT '交易hash',
+        block_number bigint(25) NOT NULL COMMENT '所属区块',
+        block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
+        record_patition int(11) NOT NULL COMMENT '记录分区（出块时间年月日，如20210101）',
+        trans_detail mediumtext COMMENT '交易详情',
+        audit_flag tinyint(4) DEFAULT '1' COMMENT '是否已统计（1-未审计，2-已审计）',
+        create_time datetime DEFAULT NULL COMMENT '创建时间',
+        modify_time datetime DEFAULT NULL COMMENT '修改时间',
+        PRIMARY KEY (id,record_patition),
+        UNIQUE KEY uk_hash (trans_hash,record_patition),
+        KEY idx_flag (audit_flag),
+        KEY idx_number (block_number)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易信息表'
+        PARTITION BY RANGE (record_patition) (
+            PARTITION p_default VALUES LESS THAN MAXVALUE
+        );
+    </update>
+
+    <update id="createTbReceipt" parameterType="java.lang.String">
+        CREATE TABLE IF NOT EXISTS ${tableName} (
+        id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+        trans_hash varchar(128) NOT NULL COMMENT '交易hash',
+        block_number bigint(25) NOT NULL COMMENT '所属区块',
+        block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
+        record_patition int(11) NOT NULL COMMENT '记录分区（出块时间年月日，如20210101）',
+        receipt_detail mediumtext COMMENT '交易回执详情',
+        create_time datetime DEFAULT NULL COMMENT '创建时间',
+        modify_time datetime DEFAULT NULL COMMENT '修改时间',
+        PRIMARY KEY (id,record_patition),
+        UNIQUE KEY uk_hash (trans_hash,record_patition),
+        KEY idx_number (block_number)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易回执信息表'
+        PARTITION BY RANGE (record_patition) (
+            PARTITION p_default VALUES LESS THAN MAXVALUE
+        );
+    </update>
+
+    <update id="createTbParser" parameterType="java.lang.String">
+        CREATE TABLE IF NOT EXISTS ${tableName} (
+        id bigint NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+        trans_hash varchar(128) NOT NULL COMMENT '交易hash',
+        block_number bigint(25) NOT NULL COMMENT '所属区块',
+        user_name varchar(128) NOT NULL COMMENT '用户名称',
+        user_address varchar(64) NOT NULL COMMENT '用户地址',
+        user_type tinyint(4) DEFAULT '0' COMMENT '用户类型(0-正常，1-异常)',
+        contract_name varchar(128) NOT NULL COMMENT '合约名称',
+        contract_address varchar(64) NOT NULL COMMENT '合约地址',
+        interface_name varchar(256) NOT NULL COMMENT '合约接口名',
+        trans_type tinyint(4) DEFAULT '0' COMMENT '交易类型(0-合约部署，1-接口调用)',
+        trans_parser_type tinyint(4) DEFAULT '0' COMMENT '交易解析类型(0-正常，1-异常合约，2-异常接口)',
+        input text COMMENT '输入信息',
+        output text COMMENT '输出信息',
+        logs text COMMENT '日志信息',
+        block_timestamp datetime NOT NULL COMMENT '所属块出块时间',
+        record_patition int(11) NOT NULL COMMENT '记录分区（出块时间年月日，如20210101）',
+        create_time datetime DEFAULT NULL COMMENT '创建时间',
+        modify_time datetime DEFAULT NULL COMMENT '修改时间',
+        PRIMARY KEY (id,record_patition),
+        UNIQUE KEY uk_hash (trans_hash,record_patition),
+        KEY idx_un (user_name),
+        KEY idx_ua (user_address),
+        KEY idx_cn (contract_name),
+        KEY idx_ca (contract_address)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易解析信息表'
+        PARTITION BY RANGE (record_patition) (
+            PARTITION p_default VALUES LESS THAN MAXVALUE
+        );
+    </update>
+
+    <update id="createTbEventInfo" parameterType="java.lang.String">
+        CREATE TABLE IF NOT EXISTS ${tableName} (
+        id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+        contract_name varchar(120) binary NOT NULL COMMENT '合约名称',
+        contract_address varchar(64) NOT NULL COMMENT '合约地址',
+        user_address varchar(64) NOT NULL COMMENT '用户地址',
+        block_number bigint(25) DEFAULT '0' COMMENT '块高',
+        trans_hash varchar(128) NOT NULL COMMENT '交易hash',
+        block_timestamp datetime NOT NULL COMMENT '出块时间',
+        event_info text COMMENT '事件信息',
+        create_time datetime DEFAULT NULL COMMENT '创建时间',
+        modify_time datetime DEFAULT NULL COMMENT '修改时间',
+        PRIMARY KEY (id),
+        UNIQUE KEY uk_trans_hash (trans_hash),
+        KEY idx_contract (contract_address),
+        KEY idx_user (user_address),
+        KEY idx_block_number (block_number)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='事件信息表';
+    </update>
+
+    <select id="queryTables" resultType="java.lang.String">
+        select table_name from information_schema.tables where
+        table_schema=#{dbName}
+        <if test="tableName != null">
+            and table_name = #{tableName}
+        </if>
+    </select>
+
+    <select id="queryPartition" resultType="java.lang.String">
+        select partition_name from information_schema.partitions 
+        where table_schema = #{dbName}
+          and table_name = #{tableName}
+          and partition_name = #{partitionName}
+    </select>
+
+    <delete id="deleteByTableName" parameterType="java.lang.String">
+        delete from ${tableName} limit 1000
+    </delete>
+
+    <update id="createPartition">
+        alter table ${tableName} REORGANIZE partition p_default 
+        INTO (partition ${partitionName} values less than (${partitionValue}),PARTITION p_default values less than MAXVALUE)
+    </update>
+
+    <update id="dropTable" parameterType="java.lang.String">
+        drop table if exists ${tableName}
+    </update>
+
+</mapper>

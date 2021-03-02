@@ -1,0 +1,144 @@
+{
+    "1": [
+        {
+            "enName": "blockNumber",
+            "name": "块高"
+        },
+        {
+            "enName": "transCount",
+            "name": "交易数量"
+        },
+        {
+            "enName": "blockHash",
+            "name": "区块Hash"
+        },
+        {
+            "enName": "sealer",
+            "name": "打包节点"
+        },
+        {
+            "enName": "blockTimestamp",
+            "name": "出块时间"
+        }
+    ],
+    "2": [
+        {
+            "enName": "transHash",
+            "name": "交易Hash"
+        },
+        {
+            "enName": "blockNumber",
+            "name": "块高"
+        },
+        {
+            "enName": "transDetail",
+            "name": "交易详情"
+        },
+        {
+            "enName": "receiptDetail",
+            "name": "交易回执详情"
+        },
+        {
+            "enName": "blockTimestamp",
+            "name": "出块时间"
+        }
+    ],
+    "3": [
+        {
+            "enName": "userName",
+            "name": "用户"
+        },
+        {
+            "enName": "userAddress",
+            "name": "用户地址"
+        },
+        {
+            "enName": "contractAddress",
+            "name": "合约地址"
+        },
+        {
+            "enName": "contractName",
+            "name": "合约名称"
+        },
+        {
+            "enName": "transHash",
+            "name": "交易Hash"
+        },
+        {
+            "enName": "blockNumber",
+            "name": "块高"
+        },
+        {
+            "enName": "blockTimestamp",
+            "name": "出块时间"
+        }
+    ],
+    "4": [
+        {
+            "enName": "contractAddress",
+            "name": "合约地址"
+        },
+        {
+            "enName": "contractName",
+            "name": "合约名称"
+        },
+        {
+            "enName": "userName",
+            "name": "用户"
+        },
+        {
+            "enName": "userAddress",
+            "name": "用户地址"
+        },
+        {
+            "enName": "transHash",
+            "name": "交易Hash"
+        },
+        {
+            "enName": "blockNumber",
+            "name": "块高"
+        },
+        {
+            "enName": "input",
+            "name": "Input"
+        },
+        {
+            "enName": "output",
+            "name": "Output"
+        },
+        {
+            "enName": "logs",
+            "name": "Event"
+        },
+        {
+            "enName": "blockTimestamp",
+            "name": "出块时间"
+        }
+    ],
+    "5": [
+        {
+            "enName": "chainName",
+            "name": "链名称"
+        },
+        {
+            "enName": "appName",
+            "name": "应用名"
+        },
+        {
+            "enName": "input",
+            "name": "Input"
+        },
+        {
+            "enName": "output",
+            "name": "Output"
+        },
+        {
+            "enName": "logs",
+            "name": "Event"
+        },
+        {
+            "enName": "blockTimestamp",
+            "name": "出块时间"
+        }
+    ]
+}

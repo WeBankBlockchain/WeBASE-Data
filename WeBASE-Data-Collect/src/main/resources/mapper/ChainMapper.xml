@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.webase.data.collect.chain.ChainMapper">
+    <resultMap id="chainMap"
+        type="com.webank.webase.data.collect.chain.entity.TbChain">
+        <result column="chain_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="chainId" />
+        <result column="chain_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="chainName" />
+        <result column="chain_type" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="chainType" />
+        <result column="encrypt_type" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="encryptType" />
+        <result column="description" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="description" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <insert id="add">
+        insert into tb_chain
+        (chain_id,chain_name,encrypt_type,description,create_time,modify_time)
+        values(#{chainId},#{chainName},#{encryptType},#{description},NOW(),NOW())
+    </insert>
+
+    <insert id="addList">
+        insert into tb_chain
+        (chain_id,chain_name,encrypt_type,description,create_time,modify_time)
+        values
+        <foreach collection ="list" item="info" separator="," >
+        (#{info.chainId},#{info.chainName},#{info.encryptType},#{info.description},NOW(),NOW())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        chain_name=VALUES(chain_name),encrypt_type=VALUES(encrypt_type),description=VALUES(description),modify_time=NOW()
+    </insert>
+    
+    <update id="update">
+		update tb_chain 
+		set chain_name = #{chainName},
+		    description = #{description},
+			modify_time = now()
+		where chain_id = #{chainId}
+	</update>
+
+    <select id="getCount"
+        parameterType="com.webank.webase.data.collect.chain.entity.ChainParam"
+        resultType="java.lang.Integer">
+        select count(1) from tb_chain
+        where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="chainName != null and chainName != ''">
+            and chain_name = #{chainName}
+        </if>
+    </select>
+
+    <select id="getList"
+        parameterType="com.webank.webase.data.collect.chain.entity.ChainParam"
+        resultMap="chainMap">
+        select * from tb_chain
+        where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="chainName != null and chainName != ''">
+            and chain_name = #{chainName}
+        </if>
+        order by chain_id
+    </select>
+
+    <select id="getChainById" resultMap="chainMap" parameterType="java.lang.Integer">
+        select * from tb_chain where chain_id = #{chainId}
+    </select>
+
+    <delete id="remove" parameterType="java.lang.Integer">
+        delete from tb_chain where chain_id = #{chainId}
+    </delete>
+
+</mapper>

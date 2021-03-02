@@ -1,0 +1,44 @@
+# server config
+server:
+  port: 5010
+  servlet:
+    context-path: /WeBASE-Data-Fetcher
+
+# database connection configuration
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/webasedata?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+    username: "defaultAccount"
+    password: "defaultPassword"
+  elasticsearch:
+    rest:
+      uris: 127.0.0.1:9200
+      username: "elasticAccount"
+      password: "elasticPassword"
+
+# constant config
+constant:
+  ## if use elasticsearch
+  ifEsEnable: false
+  ## keyword audit
+  keywordAuditCron: "0 0 0/1 * * ?"
+  keywordAuditCountLimit: 10
+  
+# executor config
+executor:
+  corePoolSize: 50
+  maxPoolSize: 100
+  queueSize: 50
+  threadNamePrefix: "custom-async-"
+  
+# mybatis config
+mybatis:
+  typeAliasesPackage: com.webank.webase.data.fetcher
+  mapperLocations: classpath:mapper/*.xml
+ 
+# log config
+logging:
+  config: classpath:log/log4j2.xml
+  level:
+    com.webank.webase.data.fetcher: info

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--对应mapper接口 -->
+<mapper namespace="com.webank.webase.data.collect.group.GroupMapper">
+    <resultMap id="groupMap"
+        type="com.webank.webase.data.collect.group.entity.TbGroup">
+        <id column="id" javaType="java.lang.Integer" jdbcType="INTEGER" property="id"/>
+        <result column="group_id" javaType="java.lang.Integer" jdbcType="INTEGER"
+            property="groupId" />
+        <result column="chain_id" javaType="java.lang.Integer" jdbcType="INTEGER"
+            property="chainId" />
+        <result column="genesis_block_hash" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="genesisBlockHash" />
+        <result column="app_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appName" />
+        <result column="app_version" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appVersion" />
+        <result column="app_summary" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appSummary" />
+        <result column="group_status" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="groupStatus" />
+        <result column="node_count" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="nodeCount" />
+        <result column="description" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="description" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <insert id="save" parameterType="com.webank.webase.data.collect.group.entity.TbGroup">
+        insert into tb_group
+        (group_id,chain_id,genesis_block_hash,node_count,create_time,modify_time)
+        values(#{groupId},#{chainId},#{genesisBlockHash},#{nodeCount},NOW(),NOW())
+        ON DUPLICATE KEY UPDATE 
+        genesis_block_hash=#{genesisBlockHash},node_count=#{nodeCount},modify_time=NOW()
+    </insert>
+    
+    <insert id="addList">
+        insert into tb_group
+        (group_id,chain_id,app_name,app_version,app_summary,description,create_time,modify_time)
+        values
+        <foreach collection ="list" item="info" separator="," >
+        (#{info.groupId},#{info.chainId},#{info.appName},#{info.appVersion},#{info.appSummary},#{info.description},NOW(),NOW())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        app_name=VALUES(app_name),app_version=VALUES(app_version),app_summary=VALUES(app_summary),description=VALUES(description),modify_time=NOW()
+    </insert>
+    
+    <update id="updateAppInfo">
+		update tb_group 
+		set app_name = #{appName},
+		    app_version = #{appVersion},
+		    app_summary = #{appSummary},
+		    description = #{description},
+			modify_time = now()
+		where group_id = #{groupId}
+        and chain_id = #{chainId}
+	</update>
+
+    <update id="updateStatus">
+        update tb_group 
+        set group_status = #{groupStatus},
+            modify_time = NOW()
+        where group_id = #{groupId}
+        and chain_id = #{chainId}
+    </update>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1) from tb_group where 1 = 1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+        <if test="groupStatus != null">
+            and group_status = #{groupStatus}
+        </if>
+    </select>
+
+    <select id="getListByName" resultMap="groupMap">
+        select * from tb_group 
+        where chain_id = #{chainId}
+          and app_name = #{name}
+    </select>
+
+    <select id="getList" resultMap="groupMap">
+        select * from tb_group where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+        <if test="groupStatus != null">
+            and group_status = #{groupStatus}
+        </if>
+        order by group_id asc
+    </select>
+    
+    <select id="getListByJob" resultMap="groupMap">
+        select * from tb_group where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+        <if test="groupStatus != null">
+            and group_status = #{groupStatus}
+        </if>
+        and MOD(id,#{shardingTotalCount}) = #{shardingItem}
+        order by group_id asc
+    </select>
+
+    <select id="getGeneral"
+        resultType="com.webank.webase.data.collect.group.entity.GroupGeneral">
+        SELECT a.chain_id chainId,
+               a.group_id groupId,
+               a.node_count nodeCount,
+               count(distinct(b.user_address)) userCount,
+               count(distinct(b.contract_address)) contractCount
+        FROM tb_group a, tb_parser_#{chainId}_#{groupId} b
+        WHERE a.chain_id = #{chainId}
+          AND a.group_id = #{groupId}
+    </select>
+    
+    <delete id="remove">
+        delete from tb_group
+        where chain_id = #{chainId}
+        <if test="groupId != null">
+            and group_id = #{groupId}
+        </if>
+    </delete>
+</mapper>

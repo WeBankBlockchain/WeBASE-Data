@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.webase.data.fetcher.audit.mapper.AppAuditMapper">
+    <resultMap id="auditInfoMap"
+        type="com.webank.webase.data.fetcher.audit.entity.TbAppAudit">
+        <id column="id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="id" />
+        <result column="chain_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="chainId" />
+        <result column="group_id" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="groupId" />
+        <result column="comment" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="comment" />
+        <result column="status" javaType="java.lang.Integer"
+            jdbcType="INTEGER" property="status" />
+        <result column="chain_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="chainName" />
+        <result column="app_name" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appName" />
+        <result column="app_version" javaType="java.lang.String"
+            jdbcType="VARCHAR" property="appVersion" />
+        <result column="create_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" javaType="java.time.LocalDateTime"
+            jdbcType="TIMESTAMP" property="modifyTime" />
+    </resultMap>
+
+    <insert id="add">
+        insert into tb_app_audit
+        (chain_id,group_id,comment,chain_name,app_name,app_version,create_time,modify_time)
+        values(#{chainId},#{groupId},#{comment},#{chainName},#{appName},#{appVersion},NOW(),NOW())
+    </insert>
+    
+    <update id="confirm">
+		update tb_app_audit
+		set status = 2,
+			modify_time = now()
+		where id = #{id}
+	</update>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1) from tb_app_audit
+        where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+    </select>
+
+    <select id="getList" resultMap="auditInfoMap">
+        select * from tb_app_audit
+        where 1=1
+        <if test="chainId != null">
+            and chain_id = #{chainId}
+        </if>
+        order by status,modify_time desc
+        <if test="start != null and pageSize != null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getAuditInfoById" resultMap="auditInfoMap" parameterType="java.lang.Integer">
+        select * from tb_app_audit where id = #{id}
+    </select>
+
+    <select id="getAuditInfoByGroupId" resultMap="auditInfoMap">
+        select * from tb_app_audit where chain_id = #{chainId} and group_id = #{groupId} 
+    </select>
+
+    <delete id="remove" parameterType="java.lang.Integer">
+        delete from tb_app_audit where id = #{id}
+    </delete>
+
+</mapper>

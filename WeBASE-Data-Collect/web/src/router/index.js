@@ -1,0 +1,122 @@
+/*
+ * Copyright 2014-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import Vue from 'vue'
+import Router from 'vue-router'
+const blank = resolve => require(['@/components/blank'], resolve);
+const main = resolve => require(['@/views/index/main'], resolve);
+const chain = resolve => require(['@/views/chain'], resolve);
+const front = resolve => require(['@/views/front'], resolve);
+const contract = resolve => require(['@/views/chaincode/contract'], resolve);
+const privateKeyManagement = resolve => require(['@/views/privateKeyManagement/privateKeyManagement'], resolve); 
+const keywordConfig = resolve => require(['@/views/keywordConfig/index.vue'], resolve);
+Vue.use(Router);
+const routes = [
+    {
+        path: '/',
+        redirect: '/login',
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: resolve => require(['@/views/login/index.vue'], resolve),
+    },
+    {
+        path: '/',
+        component: main,
+        name: '链管理',
+        nameKey: "Chain",
+        leaf: true,
+        menuShow: true,
+        iconCls: 'wbs-icon-qukuailian sidebar-icon',
+        children: [
+            { path: '/chain', component: chain, name: '链管理', nameKey: "Chain", menuShow: true, meta: { requireAuth: true } }
+        ]
+    },
+    {
+        path: '/',
+        component: main,
+        name: '前置管理',
+        nameKey: "Front",
+        leaf: true,
+        menuShow: true,
+        iconCls: 'wbs-icon-group sidebar-icon',
+        children: [
+            { path: '/front', component: front, name: '前置管理', nameKey: "Front", menuShow: true, meta: { requireAuth: true } }
+        ]
+    },
+    {
+        path: '/',
+        component: main,
+        name: '合约管理',
+        nameKey: "contract",
+        leaf: true,
+        menuShow: true,
+        iconCls: 'wbs-icon-heyueguanli sidebar-icon', 
+        children: [
+            { path: '/contract', component: contract, name: '合约管理', nameKey: "contract", menuShow: true, meta: { requireAuth: true } },
+            
+        ]
+    }, 
+    {
+        path: '/',
+        component: main,
+        name: '用户管理',
+        nameKey: "PrivateKey",
+        leaf: true,
+        menuShow: true,
+        iconCls: 'wbs-icon-lock sidebar-icon',
+        children: [
+            { path: '/privateKeyManagement', component: privateKeyManagement, name: '用户管理', nameKey: "PrivateKey", menuShow: true, meta: { requireAuth: true } }
+        ]
+    }, 
+    // {
+    //     path: '/',
+    //     component: main,
+    //     name: '关键字配置',
+    //     nameKey: "keywordConfig",
+    //     leaf: true,
+    //     menuShow: true,
+    //     iconCls: 'wbs-icon-key-b sidebar-icon',
+    //     children: [
+    //         { path: '/keywordConfig', component: keywordConfig, name: '关键字配置', nameKey: "keywordConfig", menuShow: true, meta: { requireAuth: true } }
+    //     ]
+    // }, 
+    {
+        path: '/',
+        component: main,
+        name: '空白页',
+        nameKey: "blank",
+        leaf: true,
+        menuShow: false,
+        iconCls: 'wbs-icon-lock sidebar-icon',
+        children: [
+            { path: '/blank', component: blank, name: '空白页', nameKey: "blank", menuShow: true, meta: { requireAuth: true } }
+        ]
+    }
+    
+]
+const router = new Router({
+    routes
+});
+const originalPush = Router.prototype.push;
+Router.prototype.push = function push(location, onResolve, onReject) {
+    if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+    return originalPush.call(this, location).catch(err => err)
+}
+Router.prototype.push = function push(location) {
+    return originalPush.call(this, location).catch(err => err)
+}
+export default router

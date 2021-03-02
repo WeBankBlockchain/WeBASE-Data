@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.webank.webase.data.fetcher.table.TableMapper">
+    <update id="createTbKeyword">
+        CREATE TABLE IF NOT EXISTS tb_keyword (
+		id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+		keyword varchar(64) COMMENT '关键字',
+		create_time datetime DEFAULT NULL COMMENT '创建时间',
+		modify_time datetime DEFAULT NULL COMMENT '修改时间',
+		PRIMARY KEY (id),
+		UNIQUE KEY uk_keyword (keyword)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='关键字信息表';
+    </update>
+
+    <update id="createTbTransAudit">
+        CREATE TABLE IF NOT EXISTS tb_trans_audit (
+		id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+	    chain_id int(11) NOT NULL COMMENT '所属区块链编号',
+	    chain_name varchar(120) COMMENT '区块链名称',
+	    group_id int(11) NOT NULL COMMENT '所属群组编号',
+	    app_name varchar(128) COMMENT '应用名称',
+		keyword varchar(64) COMMENT '关键字',
+	    comment varchar(1024) COMMENT '监管意见',
+	    tx_hash varchar(128) COMMENT '交易hash',
+	    address varchar(64) COMMENT '用户地址',
+	    type tinyint(4) DEFAULT '1' COMMENT '信息来源类型，1-关键字 2-交易列表',
+	    status tinyint(4) DEFAULT '1' COMMENT '状态（1-未处理， 2-已处理）',
+		create_time datetime DEFAULT NULL COMMENT '创建时间',
+		modify_time datetime DEFAULT NULL COMMENT '修改时间',
+		PRIMARY KEY (id),
+		UNIQUE KEY uk_hash (chain_id,group_id,tx_hash)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易审计告警信息表';
+    </update>
+
+    <update id="createTbAppAudit">
+        CREATE TABLE IF NOT EXISTS tb_app_audit (
+		id int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+	    chain_id int(11) NOT NULL COMMENT '所属区块链编号',
+	    chain_name varchar(120) COMMENT '区块链名称',
+	    group_id int(11) NOT NULL COMMENT '所属群组编号',
+	    app_name varchar(128) COMMENT '应用名称',
+        app_version varchar(64) DEFAULT NULL COMMENT '应用版本号',
+	    comment varchar(1024) COMMENT '监管意见',
+	    status tinyint(4) DEFAULT '1' COMMENT '状态（1-未处理， 2-已处理）',
+		create_time datetime DEFAULT NULL COMMENT '创建时间',
+		modify_time datetime DEFAULT NULL COMMENT '修改时间',
+		PRIMARY KEY (id),
+		UNIQUE KEY uk_group (chain_id,group_id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='应用审计告警信息表';
+    </update>
+
+    <select id="queryTables" resultType="java.lang.String">
+        select table_name from information_schema.tables where
+        table_schema=#{dbName}
+        <if test="tableName != null">
+            and table_name = #{tableName}
+        </if>
+    </select>
+
+    <delete id="deleteByTableName" parameterType="java.lang.String">
+        delete from ${tableName} limit 1000
+    </delete>
+
+    <update id="dropTable" parameterType="java.lang.String">
+        drop table if exists ${tableName}
+    </update>
+
+</mapper>

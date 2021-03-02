@@ -1,0 +1,83 @@
+# server config
+server:
+  port: 5009
+  servlet:
+    context-path: /WeBASE-Data-Collect
+
+# database connection configuration
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/webasedata?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+    username: "defaultAccount"
+    password: "defaultPassword"
+  elasticsearch:
+    rest:
+      uris: 127.0.0.1:9200
+      username: "elasticAccount"
+      password: "elasticPassword"
+  servlet:
+    multipart:
+      max-request-size: 30MB # request max size
+      max-file-size: 20MB # single file size
+
+# constants
+constant:
+  ## if use elasticsearch
+  ifEsEnable: false
+  
+  ## front http request
+  httpTimeOut: 5000
+  maxRequestFail: 3
+  sleepWhenHttpMaxFail: 30000
+  ## group update
+  resetGroupListCycle: 300000
+  groupInvalidGrayscaleValue: 1m    # y:year, M:month, d:day of month, h:hour, m:minute, n:forever valid
+  ## update node status 
+  nodeStatusTaskFixedDelay: 30000
+  ## stat txn daily
+  statTxnDailyTaskFixedDelay: 60000
+  
+  ## if pull data(can change by interface)
+  ifPullData: true
+  ## data pull
+  startBlockNumber: 0
+  crawlBatchUnit: 50
+  dataPullCron: 0/10 * * * * ?
+  ## data parser
+  dataParserCron: 5/10 * * * * ?
+  ## event export
+  eventExportCron: 7/10 * * * * ?
+  ## create table partition (partitionType:0-by day;1-by month)
+  ## If modified, the database needs to be rebuilt
+  partitionType: 0
+  createPartitionCron: 0 0 1 * * ?
+  
+  ## if multiLiving
+  multiLiving: false
+ 
+# elastic-job config
+job:
+  regCenter:
+    serverLists: 127.0.0.1:2181
+    namespace: elasticjob-collect
+  dataflow: 
+    shardingTotalCount: 2
+
+# executor config for pulling data
+executor:
+  corePoolSize: 50
+  maxPoolSize: 100
+  queueSize: 50
+  threadNamePrefix: "custom-async-"
+
+# mybatis config
+mybatis:
+  typeAliasesPackage: com.webank.webase.data.collect
+  mapperLocations: classpath:mapper/*.xml
+ 
+# log config
+logging:
+  config: classpath:log/log4j2.xml
+  level:
+    com.webank.webase.data.collect: info
