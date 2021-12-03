@@ -1,9 +1,9 @@
 # 数据监管服务
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://webasedoc.readthedocs.io/zh_CN/latest/docs/WeBASE/CONTRIBUTING.html)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/92c4a706a51d4ad5a6a0387233d4650e)](https://www.codacy.com/gh/WeBankFinTech/WeBASE-Data?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WeBankFinTech/WeBASE-Data&amp;utm_campaign=Badge_Grade)
-[![Code Lines](https://tokei.rs/b1/github/WeBankFinTech/WeBASE-Data?category=code)](https://github.com/WeBankFinTech/WeBASE-Data)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/92c4a706a51d4ad5a6a0387233d4650e)](https://www.codacy.com/gh/WeBankBlockchain/WeBASE-Data?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=WeBankBlockchain/WeBASE-Data&amp;utm_campaign=Badge_Grade)
+[![Code Lines](https://tokei.rs/b1/github/WeBankBlockchain/WeBASE-Data?category=code)](https://github.com/WeBankBlockchain/WeBASE-Data)
 [![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)](http://www.apache.org/licenses/)
-[![GitHub (pre-)release](https://img.shields.io/github/release/WeBankFinTech/WeBASE-Data/all.svg)](https://github.com/WeBankFinTech/WeBASE-Data/releases)
+[![GitHub (pre-)release](https://img.shields.io/github/release/WeBankBlockchain/WeBASE-Data/all.svg)](https://github.com/WeBankBlockchain/WeBASE-Data/releases)
 
 
 ## 简介
