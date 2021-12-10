@@ -25,7 +25,6 @@ repositories {
 def springboot_version = "2.3.1.RELEASE"
 List springboot = [
         "org.springframework.boot:spring-boot-starter-web:$springboot_version",
-        "org.springframework.boot:spring-boot-starter-log4j2:$springboot_version",
         "org.springframework.boot:spring-boot-starter-jdbc:$springboot_version"
 ]
 
@@ -63,12 +62,13 @@ List test = [
         "org.springframework.boot:spring-boot-starter-test:$springboot_version"
 ]
 
-def log4j_version = "2.13.3"
+def log4j_version = "2.15.0"
 List log4j = [
         "org.apache.logging.log4j:log4j-api:$log4j_version",
         "org.apache.logging.log4j:log4j-core:$log4j_version",
         "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
-        "org.apache.logging.log4j:log4j-web:$log4j_version"
+        "org.apache.logging.log4j:log4j-web:$log4j_version",
+        "org.apache.logging.log4j:log4j-jul:$log4j_version"
 ]
 
 def elastic_version = "7.8.0"
@@ -90,6 +90,9 @@ List zookeeper = [
 
 dependencies {
     compile springboot, jaxb, swagger, jackson, mysql, log4j, elasticsearch, elasticjob, zookeeper
+    compile("org.springframework.boot:spring-boot-starter-log4j2:$springboot_version",) {
+        exclude group: 'org.apache.logging.log4j', module: 'log4j-jul'
+    }
     compile('org.fisco-bcos:web3sdk:2.6.2') {
         exclude group: 'org.ethereum', module: 'solcJ-all'
     }

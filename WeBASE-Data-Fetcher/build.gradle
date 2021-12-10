@@ -14,73 +14,76 @@ targetCompatibility = 1.8
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    maven {url "http://maven.aliyun.com/nexus/content/groups/public/"}
-    
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     maven { url 'https://dl.bintray.com/ethereum/maven/' }
     mavenLocal()
     mavenCentral()
 }
 
-def springboot_version="2.3.1.RELEASE"
+def springboot_version = "2.3.1.RELEASE"
 List springboot = [
-     "org.springframework.boot:spring-boot-starter-web:$springboot_version",
-     "org.springframework.boot:spring-boot-starter-log4j2:$springboot_version",
-     "org.springframework.boot:spring-boot-starter-jdbc:$springboot_version"
+        "org.springframework.boot:spring-boot-starter-web:$springboot_version",
+        "org.springframework.boot:spring-boot-starter-jdbc:$springboot_version"
 ]
 
 List jaxb = [
-     "javax.xml.bind:jaxb-api:2.3.0",
-     "com.sun.xml.bind:jaxb-impl:2.3.0",
-     "com.sun.xml.bind:jaxb-core:2.3.0",
-     "javax.activation:activation:1.1.1",
-     "javax.validation:validation-api:2.0.1.Final"
+        "javax.xml.bind:jaxb-api:2.3.0",
+        "com.sun.xml.bind:jaxb-impl:2.3.0",
+        "com.sun.xml.bind:jaxb-core:2.3.0",
+        "javax.activation:activation:1.1.1",
+        "javax.validation:validation-api:2.0.1.Final"
 ]
 
 List lombok = [
-    "org.projectlombok:lombok:1.18.8"
+        "org.projectlombok:lombok:1.18.8"
 ]
 
 List swagger = [
-    'io.springfox:springfox-swagger2:2.8.0',
-    'io.springfox:springfox-swagger-ui:2.8.0'
+        'io.springfox:springfox-swagger2:2.8.0',
+        'io.springfox:springfox-swagger-ui:2.8.0'
 ]
 
-def jackson_version="2.11.0"
+def jackson_version = "2.11.0"
 List jackson = [
-    "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
-    "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson_version",
-    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson_version",
-    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
+        "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
+        "com.fasterxml.jackson.module:jackson-module-parameter-names:$jackson_version",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jackson_version",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
 ]
 
 List mysql = [
-    'mysql:mysql-connector-java:8.0.22',
-    'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0'
+        'mysql:mysql-connector-java:8.0.22',
+        'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0'
 ]
 
 List test = [
-    "org.springframework.boot:spring-boot-starter-test:$springboot_version"
+        "org.springframework.boot:spring-boot-starter-test:$springboot_version"
 ]
 
-def log4j_version="2.13.3"
+def log4j_version = "2.15.0"
 List log4j = [
-    "org.apache.logging.log4j:log4j-api:$log4j_version",
-    "org.apache.logging.log4j:log4j-core:$log4j_version",
-    "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
-    "org.apache.logging.log4j:log4j-web:$log4j_version"
+        "org.apache.logging.log4j:log4j-api:$log4j_version",
+        "org.apache.logging.log4j:log4j-core:$log4j_version",
+        "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
+        "org.apache.logging.log4j:log4j-web:$log4j_version",
+        "org.apache.logging.log4j:log4j-jul:$log4j_version"
 ]
 
-def elastic_version="7.8.0"
+def elastic_version = "7.8.0"
 List elasticsearch = [
-    "org.elasticsearch:elasticsearch:$elastic_version",
-    "org.elasticsearch.client:elasticsearch-rest-high-level-client:$elastic_version",
-    "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version",
-    "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
+        "org.elasticsearch:elasticsearch:$elastic_version",
+        "org.elasticsearch.client:elasticsearch-rest-high-level-client:$elastic_version",
+        "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version",
+        "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
 ]
 
 dependencies {
-    compile springboot,jaxb,swagger,jackson,mysql,log4j,elasticsearch
+    compile springboot, jaxb, swagger, jackson, mysql, log4j, elasticsearch
+    compile("org.springframework.boot:spring-boot-starter-log4j2:$springboot_version",) {
+        exclude group: 'org.apache.logging.log4j', module: 'log4j-jul'
+    }
     compile "org.apache.commons:commons-lang3:3.8.1"
     compile "cn.hutool:hutool-all:4.1.19"
     compile "com.zaxxer:HikariCP:3.2.0"
@@ -139,7 +142,7 @@ jar {
             into 'dist/lib'
         }
         copy {
-            from file('.').listFiles().findAll{File f -> (f.name.endsWith('.sh') || f.name.endsWith('.env'))}
+            from file('.').listFiles().findAll { File f -> (f.name.endsWith('.sh') || f.name.endsWith('.env')) }
             into 'dist'
         }
     }
