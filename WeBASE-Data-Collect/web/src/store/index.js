@@ -25,6 +25,7 @@ const state = {
     isLogin: 0,
     loading: false,
     language: getLanguage(),
+    worker: null,
     importRivateKey: false
 }
 export default new Vuex.Store({

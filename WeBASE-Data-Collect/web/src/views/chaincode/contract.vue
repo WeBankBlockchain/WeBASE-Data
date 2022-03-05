@@ -30,7 +30,7 @@
             <div class="move" @mousedown="dragDetailWeight($event)"></div>
         </div>
         <div :class="[!menuHide ?  'code-detail-wrapper' : 'code-detail-reset-wrapper']" :style="{width: contentWidth}">
-            <v-code :changeStyle="changeWidth" :data="contractData" :show="showCode" @add="add($event)" @compile="compile($event)" @deploy="deploy($event)">
+            <v-code :selected-version="selectedVersion" :changeStyle="changeWidth" :data="contractData" :show="showCode" @add="add($event)" @compile="compile($event)" @deploy="deploy($event)">
             </v-code>
         </div>
     </div>
@@ -41,6 +41,7 @@ import menu from "./components/contractCatalog";
 import codes from "./components/code";
 import contentHead from "@/components/contentHead";
 import { solcList } from "@/util/api";
+import webworkify from 'webworkify-webpack'
 export default {
     name: "contract",
     components: {
@@ -73,9 +74,13 @@ export default {
             version: localStorage.getItem('solcName') ? localStorage.getItem('solcName') : '',
             baseURLWasm: './static/js',
             versionId: localStorage.getItem('versionId') ? localStorage.getItem('versionId') : '',
+            host: location.host,
         };
     },
     computed: {
+        selectedVersion() {
+          return this.version.split('-')[0]
+        },
         contentWidth() {
             if (this.menuWidth) {
                 return `calc(100% - ${this.menuWidth}px)`;
@@ -88,7 +93,7 @@ export default {
         this.querySolcList(this.initSolc)
     },
     mounted() {
-        
+
     },
     methods: {
         querySolcList(callback, type) {
@@ -135,6 +140,34 @@ export default {
 
         },
         initSolc(version) {
+          let that = this;
+          console.log(this.allVersion.find(x => x.solcName === version))
+          if (version.split('-')[0] === 'v0.6.10') {
+              console.log(`init solc ${version}`)
+              let w = webworkify(require.resolve('@/util/file.worker'));
+              this.$store.state.worker = w
+              w.addEventListener('message', function (ev) {
+                if (ev.data.cmd == 'versionLoaded') {
+                  that.loading = false
+                } else {
+                  console.log(ev.data);
+                  console.log(JSON.parse(ev.data.data))
+                }
+              });
+              w.postMessage({
+                cmd: "loadVersion",
+                data: process.env.NODE_ENV === 'development' ? `http://${this.host}/static/js/${version}` : `http://${this.host}/WeBASE-Data-Collect/static/js/${version}`
+              });
+              w.addEventListener("error", function (ev) {
+                that.$message({
+                  type: "error",
+                  message: that.$t('text.versionError')
+                });
+                that.loading = false
+                console.log(ev)
+              })
+              return
+            }
             var head = document.head;
             var script = document.createElement("script");
             script.src = `${this.baseURLWasm}/${version}`;

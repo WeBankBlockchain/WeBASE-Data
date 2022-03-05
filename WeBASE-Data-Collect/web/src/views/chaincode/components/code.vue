@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 <template>
     <div class="contract-code" :class="{changeActive:changeWidth }" v-loading="loading">
         <div class="contract-code-head">
@@ -120,9 +120,9 @@ import {
 } from "@/util/api";
 
 export default {
-    
+
     name: "codes",
-    props: ["show", "changeStyle"],
+    props: ["show", "changeStyle", "selectedVersion"],
     components: {
         "v-editor": editor,
         "v-upload": uploadFileAdr
@@ -413,6 +413,86 @@ export default {
             }
         },
         compile() {
+          if (this.selectedVersion === 'v0.6.10') {
+            this.compileHighVersion()
+          } else {
+            this.compileLowVersion()
+          }
+        },
+        compileHighVersion() {
+          //  this.loadingAce = true;
+          let that = this;
+          this.refreshMessage();
+          this.contractList = JSON.parse(
+            localStorage.getItem("contractList")
+          );
+          let content = "";
+          let output;
+          let input = {
+            language: "Solidity",
+            settings: {
+              outputSelection: {
+                "*": {
+                  "*": ["*"],
+                },
+              },
+            },
+          };
+          input.sources = {};
+          input.sources[this.contractName + ".sol"] = {};
+          let libs = [];
+          input.sources[this.contractName + ".sol"] = {
+            content: this.content,
+          };
+          let w = this.$store.state.worker;
+          w.postMessage({
+            cmd: "compile",
+            input: JSON.stringify(input),
+            list: this.contractList,
+            path: this.data.contractPath,
+          });
+          let num = 0;
+          // w.addEventListener('message', function (ev) {
+          w.onmessage = function (ev) {
+            num++;
+            if (ev.data.cmd == "compiled" && num == 1) {
+              that.loading = false;
+              output = JSON.parse(ev.data.data);
+              if (
+                output &&
+                output.contracts &&
+                JSON.stringify(output.contracts) != "{}"
+              ) {
+                that.status = 1;
+                if (output.contracts[that.contractName + ".sol"]) {
+                  that.changeOutput(
+                    output.contracts[that.contractName + ".sol"],
+                  );
+                }
+              } else {
+                that.errorMessage = output.errors;
+                if (output.error) {
+                  that.errorMessage = [
+                    { component: "general", formattedMessage: output.error },
+                  ];
+                }
+                that.errorInfo = that.$t("contracts.contractCompileFail");
+                that.loadingAce = false;
+              }
+            } else {
+              console.log(ev.data);
+              console.log(JSON.parse(ev.data.data));
+            }
+          };
+
+          w.addEventListener("error", function (ev) {
+            that.errorInfo = ev;
+            that.errorMessage = ev;
+            that.compileShow = true;
+            that.loading = false;
+          });
+        },
+        compileLowVersion() {
             let wrapper = require("solc/wrapper");
             let solc = wrapper(window.Module);
             this.loading = true;
@@ -442,7 +522,9 @@ export default {
                 content: this.content
             };
             try {
-                output = JSON.parse(solc.compileStandard(JSON.stringify(input), this.findImports));
+              output = JSON.parse(
+                solc.compile(JSON.stringify(input), { import: this.findImports })
+              );
             } catch (error) {
                 this.errorInfo = "合约编译失败！";
                 this.errorMessage = error;
@@ -603,7 +685,7 @@ export default {
 
         },
         hiddenHover() {
-            
+
         },
         collapse() {
             this.showCompileText = !this.showCompileText
