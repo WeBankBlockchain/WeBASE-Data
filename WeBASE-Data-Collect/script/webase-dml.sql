@@ -129,3 +129,8 @@ INSERT INTO tb_solc (id,solc_name,encrypt_type,md5,file_size,description,create_
 ,(2,'v0.4.25-gm.js',1,'c0810103136fb9177df943346b2dcad4',8273598,'guomi','2020-06-19 11:05:56','2020-06-19 11:05:56')
 ,(3,'v0.5.1.js',0,'6b99bd0cc1a470bfda4a540d1e2f2b44',9083012,'ecdsa','2020-06-19 18:56:27','2020-06-19 18:56:27')
 ,(4,'v0.5.1-gm.js',1,'4a41dd17d82d8047744a184d98abf54a',9232616,'gm','2020-06-19 18:59:32','2020-06-19 18:59:32');
+INSERT INTO `tb_solc` (`id`, `solc_name`, `encrypt_type`, `md5`, `file_size`, `description`, `create_time`, `modify_time`)
+VALUES
+    (5, 'v0.6.10.js', 0, '59d4674c804df75604c08b28237ad996', 11506346, 'upload by postman', '2022-05-25 09:46:40', '2022-05-25 09:46:40'),
+    (6, 'v0.6.10-gm.js', 1, 'e2610c5c39b7936568e878db7f61e10c', 10630668, 'upload by postman', '2022-05-25 09:47:13', '2022-05-25 09:47:13');
+
