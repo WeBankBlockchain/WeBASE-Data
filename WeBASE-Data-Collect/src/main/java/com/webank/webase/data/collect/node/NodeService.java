@@ -31,6 +31,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
@@ -332,15 +333,15 @@ public class NodeService {
         if (StringUtils.isBlank(consensusStatusJson)) {
             return null;
         }
-        List jsonArr = JacksonUtils.stringToObj(consensusStatusJson, List.class);
+        Map jsonArr = JacksonUtils.stringToObj(consensusStatusJson, Map.class);
         if (jsonArr == null) {
             return null;
         }
         List<PeerOfConsensusStatus> dataIsList = new ArrayList<>();
         for (int i = 0; i < jsonArr.size(); i++) {
-            if (jsonArr.get(i) instanceof List) {
+            if (jsonArr.get("viewInfos") instanceof List) {
                 List<PeerOfConsensusStatus> tempList =
-                        JacksonUtils.stringToObj(JacksonUtils.objToString(jsonArr.get(i)),
+                        JacksonUtils.stringToObj(JacksonUtils.objToString(jsonArr.get("viewInfos")),
                                 new TypeReference<List<PeerOfConsensusStatus>>() {});
                 if (tempList != null) {
                     dataIsList.addAll(tempList);
