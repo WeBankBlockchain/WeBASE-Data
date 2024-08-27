@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configuration>
+<Configuration monitorInterval="5" status="info">
+    <!--定义日志文件 输入位置 -->
+    <Properties>
+        <Property name="sysName">wsbcs-chdis</Property>
+        <Property name="sysNumber">43781</Property>
+        <Property name="logPath">/data/app/logs/${sysName}</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c{1}(%F:%L) - %m%n" />
+        </Console>
+        <!--这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+        <RollingFile name="fileAppender" fileName="${logPath}/${sysName}.log" filePattern="${logPath}/${sysName}.log.%d{yyyy-MM-dd}.%i.log.gz">
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c{1}(%L) - %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <!-- 日志文件大小 -->
+                <SizeBasedTriggeringPolicy size="1000 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="100" />
+        </RollingFile>
+
+        <RollingFile name="errorLog" fileName="${logPath}/error.log" filePattern="${logPath}/error.log.%d{yyyy-MM-dd}.%i.log.gz">
+            <PatternLayout pattern="[%-5p][%d{yyyy-MM-dd HH:mm:ss.SSS}][%t][${sysName}][${sysNumber}][${sysNumber}][LOG_POINT]%m%n" />
+            <ThresholdFilter level="error" onMatch="ACCEPT"
+                             onMismatch="DENY" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="1000 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="100" />
+        </RollingFile>
+
+        <RollingFile name="monitor" fileName="${logPath}/appmonitor.log" filePattern="${logPath}/appmonitor.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="[%-5p][%d{yyyy-MM-dd HH:mm:ss.SSS}][%t][${sysName}][${sysNumber}][${sysNumber}][LOG_POINT]%m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="200 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="24" />
+        </RollingFile>
+
+        <RollingFile name="javasdk" fileName="${logPath}/javasdk.log"
+                     filePattern="${logPath}/javasdk.log.%d{yyyy-MM-dd}.%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c{1}(%L) - %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="1000 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="100" />
+        </RollingFile>
+
+        <Async bufferSize="512" name="asyncErrorLog">
+            <AppenderRef ref="errorLog" />
+        </Async>
+        <Async bufferSize="512" name="asyncInfo">
+            <AppenderRef ref="fileAppender" />
+        </Async>
+        <Async bufferSize="512" name="asyncJavasdk">
+            <AppenderRef ref="javasdk" />
+        </Async>
+    </Appenders>
+
+    <!--根据Logger和Root的定义写入相应的appender格式的日志 -->
+    <Loggers>
+        <AsyncLogger name="appmonitor" level="info" additivity="false">
+            <AppenderRef ref="monitor" />
+        </AsyncLogger>
+        <AsyncLogger name="error" level="info" additivity="false">
+            <AppenderRef ref="errorLog" />
+        </AsyncLogger>
+        <AsyncLogger name="org.fisco.bcos" level="info" additivity="false">
+            <AppenderRef ref="asyncJavasdk" />
+        </AsyncLogger>
+        <Root level="info">
+            <AppenderRef ref="asyncInfo" />
+            <AppenderRef ref="asyncErrorLog" />
+        </Root>
+    </Loggers>
+</Configuration>

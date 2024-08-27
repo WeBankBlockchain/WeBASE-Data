@@ -1,0 +1,28 @@
+[cryptoMaterial]
+
+certPath = "cert-v3/chain0_group0"                           # The certification path
+disableSsl = "true"                        # Communication with nodes without SSL
+#useSMCrypto = "true"                       # RPC SM crypto type
+
+[network]
+peers=[#peerValues]   # The peer list to connect
+
+[threadPool]
+channelProcessorThreadSize = "16"         # The size of the thread pool to process channel callback
+                                            # Default is the number of cpu cores
+
+receiptProcessorThreadSize = "16"         # The size of the thread pool to process transaction receipt notification
+                                            # Default is the number of cpu cores
+
+maxBlockingQueueSize = "102400"             # The max blocking queue size of the thread pool
+
+[account]
+keyStoreDir = "account"         # The directory to load/store the account file, default is "account"
+# accountFilePath = ""          # The account file path (default load from the path specified by the keyStoreDir)
+accountFileFormat = "pem"       # The storage format of account file (Default is "pem", "p12" as an option)
+
+# accountAddress = ""           # The transactions sending account address
+                                # Default is a randomly generated account
+                                # The randomly generated account is stored in the path specified by the keyStoreDir
+
+# password = ""                 # The password used to load the account file

@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+clean {
+    delete 'dist'
+    delete 'build'
+    delete 'out'
+}
+
+jar {
+    doLast {
+        copy {
+            from file('static')
+            into 'dist/'
+        }
+    }
+}

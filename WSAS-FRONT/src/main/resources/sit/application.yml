@@ -1,0 +1,33 @@
+server:
+  port: 43671
+  
+spring:
+  application:
+    name: WSAS-FRONT
+  cloud:
+    gateway:
+      httpclient:
+        pool:
+          type: elastic
+          maxIdleTime: 2000
+        connect-timeout: 5000
+        response-timeout: 10s
+      routes:
+        - id: front_route
+          uri: http://[#wsbcs_chdis_ipport]
+          predicates:
+            - Path=/wsas-front/**
+          filters:
+            - StripPrefix=1
+            - PrefixPath=/wsbcs-chdis
+
+# 接口单机限流
+servicelimit:
+  limitConfigMap:
+    get: 200
+    post: 100
+
+logging:
+  config: classpath:log4j2.xml
+  level:
+    com.webank.wsas.front: info
